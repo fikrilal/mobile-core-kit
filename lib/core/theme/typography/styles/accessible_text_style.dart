@@ -13,12 +13,15 @@ class AccessibleTextStyles {
   /// Apply accessibility adjustments to a text style
   ///
   /// This method respects the user's text scale preference while
-  /// enforcing reasonable min/max bounds to maintain layout integrity
+  /// enforcing reasonable min/max bounds to maintain layout integrity.
+  ///
+  /// Defaults are chosen to respect user accessibility settings while
+  /// avoiding extreme values that can completely break layouts.
   static TextStyle applyAccessibility(
     BuildContext context,
     TextStyle baseStyle, {
-    double minScaleFactor = 0.8,
-    double maxScaleFactor = 1.5,
+    double minScaleFactor = 1.0,
+    double maxScaleFactor = 2.5,
   }) {
     // Get the user's text scale factor preference
     final scaleFactor = context.textScaleFactor.clamp(

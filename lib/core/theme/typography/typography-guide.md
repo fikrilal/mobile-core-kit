@@ -18,9 +18,12 @@ The typography system is organized into several components:
 
 ```dart
 // In your main.dart or theme configuration
+import 'core/theme/theme.dart';
+
 return MaterialApp(
-  theme: EnhancedAppTheme.light,
-  darkTheme: EnhancedAppTheme.dark,
+  theme: AppTheme.light(),
+  darkTheme: AppTheme.dark(),
+  themeMode: ThemeMode.system,
   // ...
 );
 ```
@@ -91,6 +94,40 @@ Paragraph(
 )
 ```
 
+### Recommended Usage (Keep it Simple)
+
+In everyday code, prefer a small, consistent set of parameters:
+
+```dart
+// Page titles and section headings
+Heading.h1(
+  'Page Title',
+  color: context.brand,
+);
+
+Heading.h2(
+  'Section Title',
+  color: context.textPrimary,
+  textAlign: TextAlign.left,
+);
+
+// Body copy
+AppText.bodyMedium(
+  'Body text goes here',
+  color: context.textPrimary,
+  maxLines: 3,
+);
+
+// Small labels
+AppText.labelSmall(
+  'Label',
+  color: context.textSecondary,
+);
+```
+
+Stick to `text`, `color`, `textAlign`, `maxLines`, and occasionally `padding`/`margin` and `selectable`.  
+For complex cases (custom selection behavior, drag, etc.), use Flutter's `Text` / `SelectableText` directly with `context.bodyMedium` styles.
+
 ## Using Style Extensions
 
 Extension methods make it easy to access typography styles directly from a BuildContext:
@@ -138,7 +175,8 @@ The typography system is designed to adapt to different screen sizes:
 
 The typography system respects user accessibility preferences:
 
-- Text scales appropriately based on system text size settings (within reasonable bounds)
+- Text scales appropriately based on system text size settings
+- By default, text scale is respected in the range 1.0x–2.5x to balance readability and layout stability
 - Headings use proper semantic markup for screen readers
 - Contrast can be automatically enhanced for better readability
 
@@ -171,7 +209,7 @@ class CustomLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppText.labelMedium(
       text.toUpperCase(),
-      color: color ?? context.theme.colorScheme.primary,
+      color: color ?? Theme.of(context).colorScheme.primary,
     );
   }
 }
