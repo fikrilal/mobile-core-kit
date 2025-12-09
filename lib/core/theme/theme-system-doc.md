@@ -105,10 +105,6 @@ lib/core/theme/
 ├── theme.dart                 # Main theme entry point
 ├── light_theme.dart          # Light theme configuration
 ├── dark_theme.dart           # Dark theme configuration
-├── components/               # Component-specific color tokens
-│   ├── comp_button_colors.dart
-│   ├── comp_card_colors.dart
-│   └── comp_chip_colors.dart
 ├── extensions/               # Theme extension utilities
 │   └── theme_extensions_utils.dart
 ├── responsive/               # Responsive design system
@@ -119,10 +115,6 @@ lib/core/theme/
 │   ├── screen_utils.dart     # Screen utility extensions
 │   ├── sizing.dart           # Component sizing
 │   └── spacing.dart          # Spacing tokens
-├── system/                   # System color tokens
-│   ├── system_primary_colors.dart
-│   ├── system_secondary_colors.dart
-│   └── ...
 ├── tokens/                   # Base color tokens
 │   ├── primary_colors.dart
 │   ├── secondary_colors.dart
@@ -150,23 +142,55 @@ lib/core/theme/
 
 ### Color Token Structure
 
-The color system uses a three-tier approach:
+The color system uses a two-layer approach:
 
-1. **Base Tokens** (`tokens/`): Raw color values
-2. **System Tokens** (`system/`): Semantic color assignments
-3. **Component Tokens** (`components/`): Component-specific colors
+1. **Base Tokens** (`tokens/`): Raw brand and neutral color values
+2. **Theme Colors** (`ColorScheme` + `SemanticColors`): Colors used by UI components
 
 ### Using Colors
 
-```dart
-// Access colors through theme
-final primaryColor = Theme.of(context).colorScheme.primary;
-final surfaceColor = Theme.of(context).colorScheme.surface;
+#### 1. Preferred: `ColorScheme` and helpers
 
-// Access custom color tokens
-final customColors = Theme.of(context).extension<PrimaryColors>();
-final primary500 = customColors?.primary500;
+```dart
+// Directly from ColorScheme
+final cs = Theme.of(context).colorScheme;
+final primary = cs.primary;
+final surface = cs.surface;
+final onSurface = cs.onSurface;
+
+// Or via ThemeRoleColors extension (see theme_extensions_utils.dart)
+final brand = context.brand;           // cs.primary
+final onBrand = context.onBrand;       // cs.onPrimary
+final textPrimary = context.textPrimary;
+final border = context.border;
+final bgContainer = context.bgContainer;
 ```
+
+#### 2. Semantic status colors
+
+```dart
+final semantic = context.semanticColors;
+
+final success = semantic.success;
+final warning = semantic.warning;
+final infoContainer = semantic.infoContainer;
+final onWarningText = semantic.onWarning;
+```
+
+Use these for non‑Material status UI (badges, banners, charts) where `ColorScheme.error` is not enough.
+
+#### 3. Brand token palettes (advanced)
+
+```dart
+// Access raw brand tokens when you need specific steps
+final primaryTokens = context.primary; // PrimaryColors
+final primary500 = primaryTokens.primary500;
+
+final greyTokens = context.grey;       // GreyColors
+final neutralBackground = greyTokens.grey100;
+```
+
+Token palettes are useful for design‑system primitives, charts, and marketing visuals. For regular app UI, prefer `ColorScheme` and `SemanticColors`.
 
 ### Available Color Palettes
 
