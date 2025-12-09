@@ -5,8 +5,7 @@ class ResponsiveScale {
 
   // Base scaling factors (consistent across all components)
   static const double mobileScale = 1.0; // Base scale
-  static const double tabletScale =
-      1.125; // 12.5% larger (more subtle than 1.1)
+  static const double tabletScale = 1.125; // 12.5% larger (more subtle than 1.1)
   static const double desktopScale = 1.25; // 25% larger (more subtle than 1.2)
 
   // Content width strategy: Fluid → Constrained → Fixed
@@ -20,13 +19,6 @@ class ResponsiveScale {
     Breakpoint.mobile: double.infinity, // No max constraint
     Breakpoint.tablet: 720.0, // Max 720px on tablets
     Breakpoint.desktop: 1200.0, // Max 1200px on desktop
-  };
-
-  // Spacing scale (follows same scaling philosophy)
-  static const Map<Breakpoint, double> spacingBase = {
-    Breakpoint.mobile: 16.0,
-    Breakpoint.tablet: 20.0, // 16 * 1.25 = 20
-    Breakpoint.desktop: 24.0, // 16 * 1.5 = 24
   };
 
   /// Get scaled value for any base value across breakpoints
@@ -47,10 +39,5 @@ class ResponsiveScale {
     final maxWidth = contentWidthMaxValues[breakpoint] ?? double.infinity;
 
     return (screenWidth * percentage).clamp(0, maxWidth);
-  }
-
-  /// Get spacing value for breakpoint
-  static double getSpacing(Breakpoint breakpoint) {
-    return spacingBase[breakpoint] ?? spacingBase[Breakpoint.mobile]!;
   }
 }

@@ -11,6 +11,50 @@ Our responsive design system follows these key principles:
 3. **Selective scaling for specific UI elements** - Applied only where proportional scaling enhances UX
 4. **Consistent component sizing** - Touch targets and key UI elements maintain consistent dimensions
 
+## Quick Cheat Sheet
+
+Use these building blocks in most cases:
+
+- **Spacing & sizes**  
+  - `AppSpacing.*` for all padding/gaps.  
+  - `AppSizing.*` for fixed sizes (buttons, icons, avatar) + `heroHeight` / `modalWidth`.
+
+- **Screen information** (`ScreenUtils`)  
+  - `context.screenWidth`, `context.screenHeight`  
+  - `context.isMobile`, `context.isTablet`, `context.isDesktop`  
+  - `context.contentMaxWidth`, `context.gridColumns`, `context.gridCellWidth()`
+
+- **Layout switching** (`ResponsiveLayout`)  
+  - `ResponsiveLayout.builder` to choose different widgets for mobile/tablet/desktop.  
+  - `ResponsiveLayout.value` to choose different values (e.g. padding) per device.
+
+- **Content width constraints** (`ResponsiveContainer`)  
+  - Wrap page content in `ResponsiveContainer` to center and clamp width on large screens while staying fluid on mobile.
+
+In practice:
+
+```dart
+// 1) Layout switching
+body: ResponsiveLayout.builder(
+  context: context,
+  mobile: MobileView(),
+  tablet: TabletView(),
+  desktop: DesktopView(),
+),
+
+// 2) Screen-aware values
+final contentWidth = context.contentMaxWidth;
+final columns = context.gridColumns;
+
+// 3) Consistent spacing
+padding: AppSpacing.screenPadding(context),
+
+// 4) Constrained content
+body: ResponsiveContainer(
+  child: ListView(children: [...]),
+),
+```
+
 ## Folder Structure
 
 ```
@@ -85,7 +129,7 @@ Padding(
 
 ### AppSizing
 
-`sizing.dart` contains component sizes and dimensions that adapt to different screen sizes.
+`sizing.dart` contains fixed component sizes and a few responsive helpers.
 
 ```dart
 class AppSizing {
@@ -93,10 +137,9 @@ class AppSizing {
   static const double buttonHeightSmall = 32.0;
   static const double buttonHeightMedium = 40.0;
   static const double buttonHeightLarge = 48.0;
-  
-  // Methods that return different values based on screen size
-  static double maxContentWidth(BuildContext context) { ... }
-  static int gridColumns(BuildContext context) { ... }
+  // ...
+
+  // Responsive helpers
   static double heroHeight(BuildContext context) { ... }
   static double modalWidth(BuildContext context) { ... }
 }
@@ -108,13 +151,6 @@ class AppSizing {
 SizedBox(
   height: AppSizing.buttonHeightMedium,
   child: ElevatedButton(...),
-)
-
-// Get appropriate grid column count for current screen
-GridView.builder(
-  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    crossAxisCount: AppSizing.gridColumns(context),
-  ),
 )
 ```
 
@@ -177,26 +213,37 @@ final spacing = ResponsiveLayout.value(
 
 ### ScreenUtils
 
-`screen_utils.dart` provides extension methods on BuildContext for easy access to screen properties.
+`screen_utils.dart` provides extension methods on BuildContext for easy access to screen and layout properties.
 
 ```dart
 extension ScreenUtils on BuildContext {
   // Screen dimensions
   double get screenWidth => MediaQuery.of(this).size.width;
   double get screenHeight => MediaQuery.of(this).size.height;
-  
+
   // Device type checks
   bool get isMobile => screenWidth < Breakpoints.sm;
-  bool get isTablet => screenWidth >= Breakpoints.sm && screenWidth < Breakpoints.lg;
+  bool get isTablet =>
+      screenWidth >= Breakpoints.sm && screenWidth < Breakpoints.lg;
   bool get isDesktop => screenWidth >= Breakpoints.lg;
-  
+
+  // Breakpoint
+  Breakpoint get breakpoint => Breakpoints.getBreakpoint(screenWidth);
+
+  // Ideal content width and grid
+  double get contentMaxWidth => Breakpoints.getMaxContentWidth(screenWidth);
+  int get gridColumns => Breakpoints.getGridColumns(screenWidth);
+  double gridCellWidth({double gutter = 16.0}) { ... }
+
   // Orientation checks
-  bool get isPortrait => MediaQuery.of(this).orientation == Orientation.portrait;
-  bool get isLandscape => MediaQuery.of(this).orientation == Orientation.landscape;
-  
+  bool get isPortrait =>
+      MediaQuery.of(this).orientation == Orientation.portrait;
+  bool get isLandscape =>
+      MediaQuery.of(this).orientation == Orientation.landscape;
+
   // Screen size percentages
-  double percentWidth(double percent) => screenWidth * percent;
-  double percentHeight(double percent) => screenHeight * percent;
+  double percentWidth(double factor) => screenWidth * factor;
+  double percentHeight(double factor) => screenHeight * factor;
 }
 ```
 
@@ -207,10 +254,18 @@ if (context.isMobile) {
   // Mobile-specific code
 }
 
-// Use screen dimensions
+// Use screen dimensions and grid
+final contentWidth = context.contentMaxWidth;
+final columns = context.gridColumns;
+
 Container(
-  width: context.screenWidth,
-  height: context.percentHeight(0.3), // 30% of screen height
+  width: contentWidth,
+  child: GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: columns,
+    ),
+    itemBuilder: (context, index) => ...,
+  ),
 )
 ```
 
@@ -290,7 +345,7 @@ class ProductGrid extends StatelessWidget {
       padding: AppSpacing.screenPadding(context),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         // Number of columns changes based on screen size
-        crossAxisCount: AppSizing.gridColumns(context),
+        crossAxisCount: context.gridColumns,
         childAspectRatio: 0.7,
         // Spacing between items changes based on screen size
         crossAxisSpacing: AppSpacing.horizontalSpacing(context),
@@ -423,11 +478,11 @@ Text(
 
 ### Issue: Content is too wide on large screens
 
-**Solution:** Use `ResponsiveContainer` to constrain content to appropriate max widths, or set explicit max width using `AppSizing.maxContentWidth(context)`.
+**Solution:** Use `ResponsiveContainer` to constrain content to appropriate max widths, or set explicit max width using `context.contentMaxWidth`.
 
 ### Issue: Grid items are too small or large
 
-**Solution:** Adjust the number of columns using `AppSizing.gridColumns(context)` and ensure appropriate spacing between items with `AppSpacing.horizontalSpacing(context)`.
+**Solution:** Adjust the number of columns using `context.gridColumns` and ensure appropriate spacing between items with `AppSpacing.horizontalSpacing(context)`.
 
 ### Issue: Navigation doesn't work well across devices
 
