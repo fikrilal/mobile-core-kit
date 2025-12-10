@@ -6,6 +6,8 @@ import '../services/connectivity/connectivity_service_impl.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
+import '../../features/auth/di/auth_module.dart';
+import '../session/session_manager.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
 final GetIt locator = GetIt.instance;
@@ -60,11 +62,14 @@ Future<void> setupLocator() async {
     );
   }
 
+  // Feature modules
+  AuthModule.register(locator);
+
   // Initialize connectivity listener
   await locator<ConnectivityService>().initialize();
 
-  // TODO: Register additional core/feature modules here as your app grows.
-  // e.g. CoreModule.register(locator); AuthModule.register(locator); etc.
+  // Initialize session manager (load any existing session)
+  await locator<SessionManager>().init();
 
   // Wait for async dependencies to be ready (if any were registered with signalsReady)
   if (locator.allReadySync() == false) {
