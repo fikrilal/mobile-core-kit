@@ -1,0 +1,3 @@
+class ApiNoData {
+  const ApiNoData();
+}

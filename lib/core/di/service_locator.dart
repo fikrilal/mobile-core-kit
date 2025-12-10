@@ -1,6 +1,11 @@
 import 'package:get_it/get_it.dart';
 import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
+import '../services/connectivity/connectivity_service.dart';
+import '../services/connectivity/connectivity_service_impl.dart';
+import '../network/api/api_client.dart';
+import '../network/api/api_helper.dart';
+import '../network/logging/network_log_config.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
 final GetIt locator = GetIt.instance;
@@ -32,6 +37,31 @@ Future<void> setupLocator() async {
   if (!locator.isRegistered<AppEventBus>()) {
     locator.registerLazySingleton<AppEventBus>(() => AppEventBus());
   }
+
+  if (!locator.isRegistered<ConnectivityService>()) {
+    locator.registerLazySingleton<ConnectivityService>(
+      () => ConnectivityServiceImpl(),
+    );
+  }
+
+  // Network logging config (must be initialized before ApiClient)
+  NetworkLogConfig.initFromBuildConfig();
+
+  if (!locator.isRegistered<ApiClient>()) {
+    locator.registerLazySingleton<ApiClient>(() => ApiClient()..init());
+  }
+
+  if (!locator.isRegistered<ApiHelper>()) {
+    locator.registerLazySingleton<ApiHelper>(
+      () => ApiHelper(
+        locator<ApiClient>().dio,
+        connectivity: locator<ConnectivityService>(),
+      ),
+    );
+  }
+
+  // Initialize connectivity listener
+  await locator<ConnectivityService>().initialize();
 
   // TODO: Register additional core/feature modules here as your app grows.
   // e.g. CoreModule.register(locator); AuthModule.register(locator); etc.

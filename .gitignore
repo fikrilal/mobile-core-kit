@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Generated configuration
+lib/core/configs/build_config.g.dart
+
 # Symbolication related
 app.*.symbols
 
