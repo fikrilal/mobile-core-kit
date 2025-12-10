@@ -356,34 +356,34 @@ class BookController extends GetxController {
 class UserRemoteModel {
   final String id;
   final String email;
-  final String name;
-  final DateTime? lastLoginAt;
+  final String displayName;
+  final String? avatarUrl;
 
   UserRemoteModel({
     required this.id,
     required this.email,
-    required this.name,
-    this.lastLoginAt,
+    required this.displayName,
+    this.avatarUrl,
   });
 
   factory UserRemoteModel.fromJson(Map<String, dynamic> json) {
     return UserRemoteModel(
       id: json['id'] as String,
       email: json['email'] as String,
-      name: json['name'] as String,
-      lastLoginAt: json['last_login_at'] != null
-          ? DateTime.parse(json['last_login_at'] as String)
-          : null,
+      displayName: json['display_name'] as String? ??
+          json['name'] as String? ??
+          '',
+      avatarUrl: json['avatar_url'] as String?,
     );
   }
 
-  // Convert to domain entity
+  // Convert to domain entity (matches core UserEntity shape)
   UserEntity toEntity() {
     return UserEntity(
       id: id,
       email: email,
-      name: name,
-      lastLoginAt: lastLoginAt,
+      displayName: displayName,
+      avatarUrl: avatarUrl,
     );
   }
 }
