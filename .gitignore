@@ -46,3 +46,7 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Environment configuration
+.env/*.yaml
+!.env/*.example.yaml

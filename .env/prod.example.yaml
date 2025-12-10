@@ -1,0 +1,16 @@
+core: https://prod-core.example.com/api
+auth: https://prod-auth.example.com/api
+profile: https://prod-profile.example.com/api
+enableLogging: false
+googleAndroidClientId: "YOUR_PROD_ANDROID_CLIENT_ID"
+googleWebClientId: "YOUR_PROD_WEB_CLIENT_ID"
+googleIosClientId: "YOUR_PROD_IOS_CLIENT_ID"
+reminderExperiment: false
+
+# Network logging (console-only)
+netLogMode: off
+netLogBodyLimitBytes: 8192
+netLogLargeThresholdBytes: 65536
+netLogSlowMs: 800
+netLogRedact: true
+

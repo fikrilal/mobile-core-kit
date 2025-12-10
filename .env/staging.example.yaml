@@ -1,0 +1,16 @@
+core: https://staging-core.example.com/api
+auth: https://staging-auth.example.com/api
+profile: https://staging-profile.example.com/api
+enableLogging: true
+googleAndroidClientId: "YOUR_STAGING_ANDROID_CLIENT_ID"
+googleWebClientId: "YOUR_STAGING_WEB_CLIENT_ID"
+googleIosClientId: "YOUR_STAGING_IOS_CLIENT_ID"
+reminderExperiment: false
+
+# Network logging (console-only)
+netLogMode: summary
+netLogBodyLimitBytes: 8192
+netLogLargeThresholdBytes: 65536
+netLogSlowMs: 800
+netLogRedact: true
+
