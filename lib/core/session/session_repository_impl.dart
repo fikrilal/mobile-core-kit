@@ -1,6 +1,6 @@
-import 'package:orymu_mobile/core/storage/secure/token_secure_storage.dart';
-import 'package:orymu_mobile/features/auth/domain/entity/user_entity.dart';
-import '../../../features/auth/data/datasource/local/auth_local_datasource.dart';
+import '../../features/auth/data/datasource/local/auth_local_datasource.dart';
+import '../../features/auth/domain/entity/user_entity.dart';
+import '../storage/secure/token_secure_storage.dart';
 import 'session_repository.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
@@ -15,7 +15,7 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<void> saveSession(UserEntity user) async {
-    // Save auth tokens only
+    // save auth tokens only
     if (user.accessToken != null &&
         user.refreshToken != null &&
         user.expiresIn != null) {

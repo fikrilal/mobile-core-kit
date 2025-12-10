@@ -1,4 +1,4 @@
-import 'package:orymu_mobile/features/auth/domain/entity/user_entity.dart';
+import '../../features/auth/domain/entity/user_entity.dart';
 
 abstract class SessionRepository {
   Future<void> saveSession(UserEntity user);
