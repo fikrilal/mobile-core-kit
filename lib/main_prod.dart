@@ -7,13 +7,16 @@ import 'app.dart';
 import 'core/configs/build_config.dart';
 import 'core/configs/app_config.dart';
 import 'core/di/service_locator.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
 
       // Initialize AppConfig
       AppConfig.init(const AppConfig(accessToken: ''));
@@ -23,17 +26,18 @@ Future<void> main() async {
         BuildConfig.env == BuildEnv.prod,
       );
 
-      await initializeDateFormatting('en_US', '');
-
       FlutterError.onError =
           FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+      await initializeDateFormatting('en_US', '');
 
       await setupLocator();
 
       runApp(MyApp());
     },
-    (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    (error, stack) async {
+      await FirebaseCrashlytics.instance
+          .recordError(error, stack, fatal: true);
     },
   );
 }

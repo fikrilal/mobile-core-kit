@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
 
 import '../../../core/events/app_event_bus.dart';
+import '../../../core/database/app_database.dart';
 import '../../../core/network/api/api_helper.dart';
 import '../../../core/session/session_manager.dart';
 import '../../../core/session/session_repository.dart';
 import '../../../core/session/session_repository_impl.dart';
+import '../data/datasource/local/dao/user_dao.dart';
 import '../data/datasource/local/auth_local_datasource.dart';
 import '../data/datasource/remote/auth_remote_datasource.dart';
 import '../data/repository/auth_repository_impl.dart';
@@ -18,6 +20,11 @@ import '../presentation/cubit/login/login_cubit.dart';
 
 class AuthModule {
   static void register(GetIt getIt) {
+    // Database table registration
+    AppDatabase.registerOnCreate(
+      (db) async => UserDao(db).createTable(),
+    );
+
     // Data sources
     if (!getIt.isRegistered<AuthRemoteDataSource>()) {
       getIt.registerLazySingleton<AuthRemoteDataSource>(

@@ -36,6 +36,10 @@ migrate_working_dir/
 # Generated configuration
 lib/core/configs/build_config.g.dart
 
+# Firebase platform configs (can be regenerated via flutterfire configure)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
 # Symbolication related
 app.*.symbols
 
