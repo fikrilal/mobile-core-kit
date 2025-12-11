@@ -3,6 +3,9 @@ import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
 import '../services/connectivity/connectivity_service.dart';
 import '../services/connectivity/connectivity_service_impl.dart';
+import '../services/analytics/analytics_service.dart';
+import '../services/analytics/analytics_service_impl.dart';
+import '../services/analytics/analytics_tracker.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
@@ -46,6 +49,18 @@ Future<void> setupLocator() async {
     );
   }
 
+  if (!locator.isRegistered<IAnalyticsService>()) {
+    locator.registerLazySingleton<IAnalyticsService>(
+      () => AnalyticsServiceImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<AnalyticsTracker>()) {
+    locator.registerLazySingleton<AnalyticsTracker>(
+      () => AnalyticsTracker(locator<IAnalyticsService>()),
+    );
+  }
+
   // Network logging config (must be initialized before ApiClient)
   NetworkLogConfig.initFromBuildConfig();
 
@@ -64,6 +79,9 @@ Future<void> setupLocator() async {
 
   // Feature modules
   AuthModule.register(locator);
+
+  // Initialize analytics
+  await locator<IAnalyticsService>().initialize();
 
   // Initialize connectivity listener
   await locator<ConnectivityService>().initialize();
