@@ -105,6 +105,12 @@ void main(List<String> argv) {
         'const bool _${env}ReminderExperiment = ${boolLiteralForKey(map, 'reminderExperiment')};',
       )
       ..writeln(
+        'const bool _${env}AnalyticsEnabledDefault = ${boolLiteralForKey(map, 'analyticsEnabledDefault')};',
+      )
+      ..writeln(
+        'const bool _${env}AnalyticsDebugLoggingEnabled = ${boolLiteralForKey(map, 'analyticsDebugLoggingEnabled', defaultValue: false)};',
+      )
+      ..writeln(
         "const String _${env}GoogleWebClientId = ${stringLiteral(map, 'googleWebClientId')};",
       )
       ..writeln(

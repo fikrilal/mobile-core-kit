@@ -1,6 +1,16 @@
 import 'package:get_it/get_it.dart';
 import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
+import '../services/connectivity/connectivity_service.dart';
+import '../services/connectivity/connectivity_service_impl.dart';
+import '../services/analytics/analytics_service.dart';
+import '../services/analytics/analytics_service_impl.dart';
+import '../services/analytics/analytics_tracker.dart';
+import '../network/api/api_client.dart';
+import '../network/api/api_helper.dart';
+import '../network/logging/network_log_config.dart';
+import '../../features/auth/di/auth_module.dart';
+import '../session/session_manager.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
 final GetIt locator = GetIt.instance;
@@ -33,8 +43,51 @@ Future<void> setupLocator() async {
     locator.registerLazySingleton<AppEventBus>(() => AppEventBus());
   }
 
-  // TODO: Register additional core/feature modules here as your app grows.
-  // e.g. CoreModule.register(locator); AuthModule.register(locator); etc.
+  if (!locator.isRegistered<ConnectivityService>()) {
+    locator.registerLazySingleton<ConnectivityService>(
+      () => ConnectivityServiceImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<IAnalyticsService>()) {
+    locator.registerLazySingleton<IAnalyticsService>(
+      () => AnalyticsServiceImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<AnalyticsTracker>()) {
+    locator.registerLazySingleton<AnalyticsTracker>(
+      () => AnalyticsTracker(locator<IAnalyticsService>()),
+    );
+  }
+
+  // Network logging config (must be initialized before ApiClient)
+  NetworkLogConfig.initFromBuildConfig();
+
+  if (!locator.isRegistered<ApiClient>()) {
+    locator.registerLazySingleton<ApiClient>(() => ApiClient()..init());
+  }
+
+  if (!locator.isRegistered<ApiHelper>()) {
+    locator.registerLazySingleton<ApiHelper>(
+      () => ApiHelper(
+        locator<ApiClient>().dio,
+        connectivity: locator<ConnectivityService>(),
+      ),
+    );
+  }
+
+  // Feature modules
+  AuthModule.register(locator);
+
+  // Initialize analytics
+  await locator<IAnalyticsService>().initialize();
+
+  // Initialize connectivity listener
+  await locator<ConnectivityService>().initialize();
+
+  // Initialize session manager (load any existing session)
+  await locator<SessionManager>().init();
 
   // Wait for async dependencies to be ready (if any were registered with signalsReady)
   if (locator.allReadySync() == false) {

@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import '../core/di/service_locator.dart';
 import '../core/services/navigation/navigation_service.dart';
+import '../core/services/analytics/analytics_route_observer.dart';
+import '../core/services/analytics/analytics_tracker.dart';
 import 'auth/auth_routes.dart';
 import 'auth/auth_routes_list.dart';
 
@@ -11,10 +13,14 @@ import 'auth/auth_routes_list.dart';
 /// `List<GoRoute>` and combining them here.
 GoRouter createRouter() {
   final navigation = locator<NavigationService>();
+  final analyticsTracker = locator<AnalyticsTracker>();
   return GoRouter(
     navigatorKey: navigation.rootNavigatorKey,
     debugLogDiagnostics: true,
     initialLocation: AuthRoutes.signIn,
+    observers: [
+      AnalyticsRouteObserver(analyticsTracker),
+    ],
     routes: [
       ...authRoutes,
     ],

@@ -31,6 +31,20 @@ class BuildConfig {
     BuildEnv.prod => _prodReminderExperiment,
   };
 
+  /// Whether analytics collection should be enabled by default for this build.
+  static bool get analyticsEnabledDefault => switch (env) {
+    BuildEnv.dev => _devAnalyticsEnabledDefault,
+    BuildEnv.stage => _stagingAnalyticsEnabledDefault,
+    BuildEnv.prod => _prodAnalyticsEnabledDefault,
+  };
+
+  /// Whether verbose analytics debug logging is enabled for this build.
+  static bool get analyticsDebugLoggingEnabled => switch (env) {
+    BuildEnv.dev => _devAnalyticsDebugLoggingEnabled,
+    BuildEnv.stage => _stagingAnalyticsDebugLoggingEnabled,
+    BuildEnv.prod => _prodAnalyticsDebugLoggingEnabled,
+  };
+
   /// Google OAuth Client IDs for mobile sign-in
   static String get googleWebClientId => switch (env) {
     BuildEnv.dev => _devGoogleWebClientId,
