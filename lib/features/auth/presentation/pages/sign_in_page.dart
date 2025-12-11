@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/widgets/button/app_button.dart';
 
 import '../cubit/login/login_cubit.dart';
 import '../cubit/login/login_state.dart';
@@ -63,20 +64,15 @@ class _SignInForm extends StatelessWidget {
                 onChanged: context.read<LoginCubit>().passwordChanged,
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: state.canSubmit
-                      ? () => context.read<LoginCubit>().submit()
-                      : null,
-                  child: state.isSubmitting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Sign In'),
-                ),
+              AppButton.primary(
+                text: 'Sign In',
+                isExpanded: true,
+                isLoading: state.isSubmitting,
+                isDisabled: !state.canSubmit,
+                semanticLabel: 'Sign in to your account',
+                onPressed: state.canSubmit
+                    ? () => context.read<LoginCubit>().submit()
+                    : null,
               ),
             ],
           );
