@@ -5,7 +5,7 @@
 - `lib/`: Dart source. Organized by feature: `core/` (config, theme, network, DI), `features/`,
   `navigation/`, `presentation/`.
 - `assets/`: images, icons, fonts (declared in `pubspec.yaml`).
-- `env/`: YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
+- `.env/`: YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
 - `tool/`: project scripts (e.g., `gen_config.dart`).
 - Platform folders: `android/`, `ios/`, `web/`, `linux/`, `macos/`, `windows/`.
 - `test/`: Flutter tests (by feature when present).
@@ -13,7 +13,7 @@
 ## Build, Test, Develop
 
 - Install deps: `fvm flutter pub get`
-- Generate config: `dart run tool/gen_config.dart -e dev` (or `staging`/`prod`)
+- Generate config: `dart run tool/gen_config.dart --env dev` (or `staging`/`prod`)
 - Codegen (Freezed/JSON): `dart run build_runner build --delete-conflicting-outputs`
 - Run app (dev): `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`
 - Analyze: `fvm flutter analyze`  • Format: `fvm dart format .`
@@ -58,7 +58,7 @@ silenced with `git config core.autocrlf true`.
 ## Security & Config
 
 - Do not commit secrets; tokens flow via `AppConfig.init` and secure storage.
-- Edit `env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config.g.dart`.
+- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config.g.dart`.
 - Firebase: ensure platform configs are present and FCM background handler remains registered.
 
 ## Agent Preferences (Code Authoring)
@@ -96,16 +96,19 @@ silenced with `git config core.autocrlf true`.
     - Fetch latest package docs/changelogs as needed. If internet access is restricted or fails,
       pause and ask the user for network access instead of forcing execution.
     - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
-- Follow the technical guides under `docs/techincal/` for architecture and implementation details:
-    - `docs/techincal/project_architecture.md` — Clean Architecture + vertical slices, DI,
+- Follow the engineering guides under `docs/engineering/` for architecture and implementation details:
+    - `docs/engineering/project_architecture.md` — Clean Architecture + vertical slices, DI,
       navigation.
-    - `docs/techincal/ui_state_architecture.md` — UI state with Bloc/Cubit, status enums, effects.
-    - `docs/techincal/validation_architecture.md` — Layered, predictable validation approach.
-    - `docs/techincal/validation_cookbook.md` — Practical validation patterns and snippets.
-    - `docs/techincal/value_objects_validation.md` — Value objects for inputs and form validation.
-- Testing rules of the road live in `docs/testing/testing_strategy.md`. Follow the pyramid + naming
-  conventions there, use `bloc_test`/`mocktail`, and ensure every change adds/updates the required
-  unit + bloc tests before merging.
+    - `docs/engineering/ui_state_architecture.md` — UI state with Bloc/Cubit, status enums, effects.
+    - `docs/engineering/model_entity_guide.md` — Freezed models, entities, and mapping patterns.
+    - `docs/engineering/validation_architecture.md` — Layered, predictable validation approach.
+    - `docs/engineering/validation_cookbook.md` — Practical validation patterns and snippets.
+    - `docs/engineering/value_objects_validation.md` — Value objects for inputs and form validation.
+    - `docs/engineering/firebase_setup.md` — Flavor-aware Firebase + env config.
+    - `docs/engineering/testing_strategy.md` — Testing pyramid, patterns, and examples.
+- Testing rules of the road live in `docs/engineering/testing_strategy.md`. Follow the pyramid +
+  naming conventions there, use `bloc_test`/`mocktail`, and ensure every change adds/updates the
+  required unit + bloc tests before merging.
 - After every code change, run analyze/lints to detect regressions early. If tooling fails, request
   command access and do not force-run in constrained environments.
 
@@ -115,9 +118,9 @@ silenced with `git config core.autocrlf true`.
   `fvm flutter` with `flutter` and `fvm dart` with `dart`.
 - When working inside WSL, run Flutter/Dart via the Windows toolchain to avoid CRLF shim issues. The
   SDK is at: `C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin`.
-    - Example: `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.35.2\\bin\\flutter.bat analyze`
+    - Example: `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin\\flutter.bat analyze`
     - Example:
-      `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.35.2\\bin\\dart.bat run build_runner build --delete-conflicting-outputs`
+      `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin\\dart.bat run build_runner build --delete-conflicting-outputs`
 - Always run lint/analyze after making changes to catch errors early:
     - `fvm flutter analyze` (or the WSL/Windows command shown above)
 - If analyze/lint or other commands fail due to environment or permission constraints, do not force

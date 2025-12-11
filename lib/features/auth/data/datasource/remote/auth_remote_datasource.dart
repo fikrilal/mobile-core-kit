@@ -20,7 +20,7 @@ class AuthRemoteDataSource {
   Future<ApiResponse<UserModel>> register(
     RegisterRequestModel requestModel,
   ) async {
-    Log.info('🔐 Starting user registration', name: _tag);
+    Log.info('Starting user registration', name: _tag);
 
     final response = await _apiHelper.post<UserModel>(
       AuthEndpoint.register,
@@ -29,12 +29,12 @@ class AuthRemoteDataSource {
       parser: UserModel.fromJson,
     );
 
-    Log.info('🔐 User registration successful', name: _tag);
+    Log.info('User registration successful', name: _tag);
     return response;
   }
 
   Future<ApiResponse<UserModel>> login(LoginRequestModel requestModel) async {
-    Log.info('🔐 Starting user login', name: _tag);
+    Log.info('Starting user login', name: _tag);
 
     final response = await _apiHelper.post<UserModel>(
       AuthEndpoint.login,
@@ -43,14 +43,14 @@ class AuthRemoteDataSource {
       parser: UserModel.fromJson,
     );
 
-    Log.info('🔐 User login successful', name: _tag);
+    Log.info('User login successful', name: _tag);
     return response;
   }
 
   Future<ApiResponse<RefreshResponseModel>> refreshToken(
     RefreshRequestModel requestModel,
   ) async {
-    Log.info('🔐 Refreshing token', name: _tag);
+    Log.info('Refreshing token', name: _tag);
 
     final response = await _apiHelper.post<RefreshResponseModel>(
       AuthEndpoint.refreshToken,
@@ -59,14 +59,14 @@ class AuthRemoteDataSource {
       parser: RefreshResponseModel.fromJson,
     );
 
-    Log.info('🔐 Token refreshed successfully', name: _tag);
+    Log.info('Token refreshed successfully', name: _tag);
     return response;
   }
 
   Future<ApiResponse<ApiNoData>> logout(
     RefreshRequestModel requestModel,
   ) async {
-    Log.info('🔐 Logging out user', name: _tag);
+    Log.info('Logging out user', name: _tag);
 
     final response = await _apiHelper.post<ApiNoData>(
       AuthEndpoint.logout,
@@ -74,7 +74,7 @@ class AuthRemoteDataSource {
       host: ApiHost.auth,
     );
 
-    Log.info('🔐 Logout request completed', name: _tag);
+    Log.info('Logout request completed', name: _tag);
     return response;
   }
 
@@ -82,7 +82,7 @@ class AuthRemoteDataSource {
     GoogleMobileRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
-    Log.info('🔐 Google mobile sign-in (idToken.length=$len)', name: _tag);
+    Log.info('Google mobile sign-in (idToken.length=$len)', name: _tag);
 
     final response = await _apiHelper.post<UserModel>(
       AuthEndpoint.googleMobile,
@@ -91,7 +91,7 @@ class AuthRemoteDataSource {
       parser: UserModel.fromJson,
     );
 
-    Log.info('🔐 Google mobile sign-in successful', name: _tag);
+    Log.info('Google mobile sign-in successful', name: _tag);
     return response;
   }
 }

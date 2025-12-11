@@ -154,7 +154,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     final apiRequest = GoogleMobileRequestModel(idToken);
     try {
-      // Log token length only; never log full token.
       Log.debug(
         'Exchanging Google ID token (length=${idToken.length})',
         name: 'AuthRepository',
