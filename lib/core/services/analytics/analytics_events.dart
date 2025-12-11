@@ -24,4 +24,3 @@ class AnalyticsParams {
 
   static const String appEnvironment = 'app_environment';
 }
-

@@ -6,6 +6,7 @@ import '../../../core/network/api/api_helper.dart';
 import '../../../core/session/session_manager.dart';
 import '../../../core/session/session_repository.dart';
 import '../../../core/session/session_repository_impl.dart';
+import '../../../core/services/analytics/analytics_tracker.dart';
 import '../data/datasource/local/dao/user_dao.dart';
 import '../data/datasource/local/auth_local_datasource.dart';
 import '../data/datasource/remote/auth_remote_datasource.dart';
@@ -101,6 +102,7 @@ class AuthModule {
         () => LoginCubit(
           getIt<LoginUserUseCase>(),
           getIt<SessionManager>(),
+          getIt<AnalyticsTracker>(),
         ),
       );
     }

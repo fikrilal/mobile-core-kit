@@ -10,12 +10,9 @@ import 'analytics_service.dart';
 /// This class should not be used directly from features. Prefer injecting
 /// [IAnalyticsService] or using a higher-level tracker facade.
 class AnalyticsServiceImpl implements IAnalyticsService {
-  AnalyticsServiceImpl({
-    FirebaseAnalytics? analytics,
-    bool? initialEnabled,
-  })  : _analytics = analytics ?? FirebaseAnalytics.instance,
-        _analyticsEnabled =
-            initialEnabled ?? BuildConfig.analyticsEnabledDefault;
+  AnalyticsServiceImpl({FirebaseAnalytics? analytics, bool? initialEnabled})
+    : _analytics = analytics ?? FirebaseAnalytics.instance,
+      _analyticsEnabled = initialEnabled ?? BuildConfig.analyticsEnabledDefault;
 
   final FirebaseAnalytics _analytics;
   bool _isInitialized = false;
@@ -42,73 +39,45 @@ class AnalyticsServiceImpl implements IAnalyticsService {
         name: _tag,
       );
     } catch (e, st) {
-      Log.error(
-        'Failed to initialize analytics service',
-        e,
-        st,
-        false,
-        _tag,
-      );
+      Log.error('Failed to initialize analytics service', e, st, false, _tag);
     }
   }
 
   @override
-  Future<void> logEvent(
-    String name, {
-    Map<String, Object?>? parameters,
-  }) async {
+  Future<void> logEvent(String name, {Map<String, Object?>? parameters}) async {
     if (!_isInitialized) {
-      Log.warning(
-        'Analytics not initialized, skipping event: $name',
-        name: _tag,
-      );
+      Log.warning('Analytics not initialized, skipping event: $name', name: _tag);
       return;
     }
 
     if (!_analyticsEnabled) {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Analytics disabled; would log event: $name | $parameters',
-          name: _tag,
-        );
+        Log.debug('Analytics disabled; would log event: $name | $parameters', name: _tag);
       }
       return;
     }
 
     try {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Analytics event: $name | $parameters',
-          name: _tag,
-        );
+        Log.debug('Analytics event: $name | $parameters', name: _tag);
       }
 
-      await _analytics.logEvent(
-        name: name,
-        parameters: parameters?.cast<String, Object>(),
-      );
+      await _analytics.logEvent(name: name, parameters: parameters?.cast<String, Object>());
     } catch (e, st) {
-      Log.error(
-        'Failed to log event $name',
-        e,
-        st,
-        false,
-        _tag,
-      );
+      Log.error('Failed to log event $name', e, st, false, _tag);
     }
   }
 
   @override
   Future<void> logScreenView(
     String screenName, {
-      String? previousScreenName,
-      Map<String, Object?>? parameters,
+    String? previousScreenName,
+    Map<String, Object?>? parameters,
   }) async {
     final mergedParams = <String, Object?>{
       if (parameters != null) ...parameters,
       AnalyticsParams.screenName: screenName,
-      if (previousScreenName != null)
-        AnalyticsParams.previousScreenName: previousScreenName,
+      if (previousScreenName != null) AnalyticsParams.previousScreenName: previousScreenName,
     };
 
     await logEvent(AnalyticsEvents.screenView, parameters: mergedParams);
@@ -117,29 +86,20 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   @override
   Future<void> setUserId(String userId) async {
     if (!_isInitialized) {
-      Log.warning(
-        'Analytics not initialized, skipping setUserId',
-        name: _tag,
-      );
+      Log.warning('Analytics not initialized, skipping setUserId', name: _tag);
       return;
     }
 
     if (!_analyticsEnabled) {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Analytics disabled; would set user ID: $userId',
-          name: _tag,
-        );
+        Log.debug('Analytics disabled; would set user ID: $userId', name: _tag);
       }
       return;
     }
 
     try {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Setting analytics user ID: $userId',
-          name: _tag,
-        );
+        Log.debug('Setting analytics user ID: $userId', name: _tag);
       }
 
       await _analytics.setUserId(id: userId);
@@ -169,40 +129,25 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   @override
   Future<void> setUserProperty(String name, String value) async {
     if (!_isInitialized) {
-      Log.warning(
-        'Analytics not initialized, skipping setUserProperty',
-        name: _tag,
-      );
+      Log.warning('Analytics not initialized, skipping setUserProperty', name: _tag);
       return;
     }
 
     if (!_analyticsEnabled) {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Analytics disabled; would set user property: $name = $value',
-          name: _tag,
-        );
+        Log.debug('Analytics disabled; would set user property: $name = $value', name: _tag);
       }
       return;
     }
 
     try {
       if (_debugLoggingEnabled) {
-        Log.debug(
-          'Setting analytics user property: $name = $value',
-          name: _tag,
-        );
+        Log.debug('Setting analytics user property: $name = $value', name: _tag);
       }
 
       await _analytics.setUserProperty(name: name, value: value);
     } catch (e, st) {
-      Log.error(
-        'Failed to set user property $name',
-        e,
-        st,
-        false,
-        _tag,
-      );
+      Log.error('Failed to set user property $name', e, st, false, _tag);
     }
   }
 
@@ -211,18 +156,9 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     try {
       _analyticsEnabled = enabled;
       await _analytics.setAnalyticsCollectionEnabled(enabled);
-      Log.info(
-        'Analytics collection ${enabled ? 'enabled' : 'disabled'}',
-        name: _tag,
-      );
+      Log.info('Analytics collection ${enabled ? 'enabled' : 'disabled'}', name: _tag);
     } catch (e, st) {
-      Log.error(
-        'Failed to set analytics collection enabled',
-        e,
-        st,
-        false,
-        _tag,
-      );
+      Log.error('Failed to set analytics collection enabled', e, st, false, _tag);
     }
   }
 

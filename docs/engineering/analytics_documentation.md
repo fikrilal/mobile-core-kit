@@ -110,6 +110,8 @@ Features usually **do not** depend on `IAnalyticsService` directly; they use
 All event and parameter keys live in
 `lib/core/services/analytics/analytics_events.dart`:
 
+Core-level constants (`lib/core/services/analytics/analytics_events.dart`):
+
 ```dart
 class AnalyticsEvents {
   static const String screenView = 'screen_view';
@@ -129,8 +131,23 @@ class AnalyticsParams {
 }
 ```
 
-Only these constants should be used in code (no raw string literals) to keep
-the taxonomy consistent.
+Feature-level identifiers (example: `lib/features/auth/analytics/auth_analytics_screens.dart` and `auth_analytics_targets.dart`):
+
+```dart
+// auth_analytics_screens.dart
+class AuthAnalyticsScreens {
+  static const String signIn = 'auth_sign_in';
+}
+
+// auth_analytics_targets.dart
+class AuthAnalyticsTargets {
+  static const String signInSubmit = 'auth_sign_in_submit';
+}
+```
+
+Use the core constants for event/param names and the feature constants for
+screen/element IDs. This keeps core generic while allowing each feature to own
+its own analytics vocabulary.
 
 ## Feature-Facing Facade (`AnalyticsTracker`)
 

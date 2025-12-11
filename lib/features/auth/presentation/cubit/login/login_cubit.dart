@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 
+import '../../../analytics/auth_analytics_screens.dart';
+import '../../../analytics/auth_analytics_targets.dart';
 import '../../../domain/entity/login_request_entity.dart';
 import '../../../domain/entity/user_entity.dart';
 import '../../../domain/failure/auth_failure.dart';
@@ -15,10 +20,12 @@ class LoginCubit extends Cubit<LoginState> {
   LoginCubit(
     this._loginUser,
     this._sessionManager,
+    this._analytics,
   ) : super(LoginState.initial());
 
   final LoginUserUseCase _loginUser;
   final SessionManager _sessionManager;
+  final AnalyticsTracker _analytics;
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
@@ -61,6 +68,16 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> submit() async {
     if (state.isSubmitting) return;
+
+    /// EXAMPLE: feature-level analytics hook for a primary CTA.
+    /// In real projects, keep the `id` stable (e.g. for A/B tests)
+    /// and avoid passing any PII (emails, names, etc.).
+    unawaited(
+      _analytics.trackButtonClick(
+        id: AuthAnalyticsTargets.signInSubmit,
+        screen: AuthAnalyticsScreens.signIn,
+      ),
+    );
 
     // Re-run validation as a pre-flight check.
     final emailResult = EmailAddress.create(state.email);
@@ -145,6 +162,15 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> _handleSuccess(UserEntity user) async {
     await _sessionManager.login(user);
+
+    /// EXAMPLE: login success event with a generic method label.
+    /// Do not pass user identifiers or tokens here; use `setUserId`
+    /// / `setUserProperty` in a privacy-aware place if needed.
+    unawaited(
+      _analytics.trackLogin(
+        method: 'email_password',
+      ),
+    );
 
     emit(
       state.copyWith(
