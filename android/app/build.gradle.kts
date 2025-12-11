@@ -65,4 +65,5 @@ android {
 
 flutter {
     source = "../.."
+    target = "lib/main_prod.dart"
 }
