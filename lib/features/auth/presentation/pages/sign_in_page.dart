@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/widgets/button/app_button.dart';
+import 'package:mobile_core_kit/core/widgets/button/button.dart';
 
 import '../cubit/login/login_cubit.dart';
 import '../cubit/login/login_state.dart';

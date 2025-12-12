@@ -52,14 +52,6 @@ The `AppButton` component is an enterprise-grade button widget that provides com
 - **Loading Indicator Size**: Custom spinner dimensions
 - **Loading State Management**: Automatic state handling
 
-### ✅ Advanced Styling
-
-- **Animation Duration**: Custom transition timing
-- **Animation Curves**: Easing function control
-- **Content Alignment**: Flexible content positioning
-- **Layout Control**: MainAxis and CrossAxis alignment
-- **Responsive Design**: Adaptive sizing and spacing
-
 ## Usage Examples
 
 ### Basic Usage
@@ -179,12 +171,8 @@ class _MyWidgetState extends State<MyWidget> {
 AppButton(
   text: 'Custom Button',
   width: 200,
-  height: 60,
   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
   margin: EdgeInsets.all(16),
-  alignment: Alignment.centerLeft,
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  crossAxisAlignment: CrossAxisAlignment.center,
   onPressed: () => handleAction(),
 )
 ```
@@ -221,7 +209,6 @@ AppButton(
 | `width`           | `double?`       | auto    | Custom width            |
 | `padding`         | `EdgeInsets?`   | theme   | Custom padding          |
 | `margin`          | `EdgeInsets?`   | null    | Custom margin           |
-| `borderRadius`    | `BorderRadius?` | theme   | Custom border radius    |
 
 ### Accessibility
 

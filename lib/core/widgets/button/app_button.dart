@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/typography/components/text.dart';
+import '../common/app_haptic_feedback.dart';
 import 'button_variants.dart';
 import 'button_styles.dart';
 
@@ -538,10 +539,4 @@ class AppButton extends StatelessWidget {
 }
 
 // Enum for haptic feedback types
-enum AppHapticFeedback {
-  lightImpact,
-  mediumImpact,
-  heavyImpact,
-  selectionClick,
-  vibrate,
-}
+// AppHapticFeedback lives in core/widgets/common/app_haptic_feedback.dart

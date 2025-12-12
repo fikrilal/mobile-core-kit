@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mobile_core_kit/core/theme/theme.dart';
-import 'package:mobile_core_kit/core/widgets/button/app_button.dart';
+import 'package:mobile_core_kit/core/widgets/button/button.dart';
 
 void main() {
   Widget _wrap(Widget child) {
