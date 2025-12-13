@@ -1,15 +1,14 @@
 import 'package:fpdart/fpdart.dart';
-import '../model/remote/refresh_response_model.dart';
 import '../../domain/entity/login_request_entity.dart';
 import '../../domain/entity/refresh_request_entity.dart';
-import '../../domain/entity/refresh_response_entity.dart';
-import '../../domain/entity/user_entity.dart';
+import '../../domain/entity/auth_session_entity.dart';
+import '../../domain/entity/auth_tokens_entity.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../datasource/remote/auth_remote_datasource.dart';
 import '../model/remote/login_request_model.dart';
 import '../model/remote/refresh_request_model.dart';
 import '../model/remote/register_request_model.dart';
-import '../model/remote/user_model.dart';
+import '../model/remote/auth_session_model.dart';
 import '../../../../../core/network/exceptions/api_failure.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../../domain/entity/register_request_entity.dart';
@@ -22,14 +21,14 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._remote);
 
   @override
-  Future<Either<AuthFailure, UserEntity>> register(
+  Future<Either<AuthFailure, AuthSessionEntity>> register(
     RegisterRequestEntity request,
   ) async {
     final apiRequest = RegisterRequestModel.fromEntity(request);
 
     try {
       final apiResponse = await _remote.register(apiRequest);
-      final model = apiResponse.data!;
+      final AuthSessionModel model = apiResponse.data!;
       return right(model.toEntity());
     } on ApiFailure catch (f) {
       return left(_mapApiFailure(f));
@@ -46,14 +45,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, UserEntity>> login(
+  Future<Either<AuthFailure, AuthSessionEntity>> login(
     LoginRequestEntity request,
   ) async {
     final apiRequest = LoginRequestModel.fromEntity(request);
 
     try {
       final apiResponse = await _remote.login(apiRequest);
-      final model = apiResponse.data!;
+      final AuthSessionModel model = apiResponse.data!;
       return right(model.toEntity());
     } on ApiFailure catch (f) {
       return left(_mapApiFailure(f));
@@ -70,14 +69,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, RefreshResponseEntity>> refreshToken(
+  Future<Either<AuthFailure, AuthTokensEntity>> refreshToken(
     RefreshRequestEntity request,
   ) async {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.refreshToken(apiRequest);
       final model = apiResponse.data!;
-      return right(model.toEntity());
+      if (model.accessToken == null ||
+          model.refreshToken == null ||
+          model.expiresIn == null) {
+        return left(const AuthFailure.unexpected());
+      }
+      return right(
+        AuthTokensEntity(
+          accessToken: model.accessToken!,
+          refreshToken: model.refreshToken!,
+          tokenType: 'Bearer',
+          expiresIn: model.expiresIn!,
+        ),
+      );
     } on ApiFailure catch (f) {
       return left(_mapApiFailure(f));
     } catch (e, st) {
@@ -149,7 +160,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, UserEntity>> googleMobileSignIn({
+  Future<Either<AuthFailure, AuthSessionEntity>> googleMobileSignIn({
     required String idToken,
   }) async {
     final apiRequest = GoogleMobileRequestModel(idToken);
@@ -159,12 +170,13 @@ class AuthRepositoryImpl implements AuthRepository {
         name: 'AuthRepository',
       );
       final apiResponse = await _remote.googleMobileSignIn(apiRequest);
-      final model = apiResponse.data!;
+      final AuthSessionModel model = apiResponse.data!;
+      final session = model.toEntity();
       Log.info(
-        'Google mobile exchange success; token lengths (access=${model.accessToken?.length ?? 0}, refresh=${model.refreshToken?.length ?? 0})',
+        'Google mobile exchange success; token lengths (access=${session.tokens.accessToken.length}, refresh=${session.tokens.refreshToken.length})',
         name: 'AuthRepository',
       );
-      return right(model.toEntity());
+      return right(session);
     } on ApiFailure catch (f) {
       Log.error(
         'Google mobile exchange failed',

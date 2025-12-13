@@ -8,7 +8,7 @@ import 'package:mobile_core_kit/core/session/session_manager.dart';
 import '../../../analytics/auth_analytics_screens.dart';
 import '../../../analytics/auth_analytics_targets.dart';
 import '../../../domain/entity/login_request_entity.dart';
-import '../../../domain/entity/user_entity.dart';
+import '../../../domain/entity/auth_session_entity.dart';
 import '../../../domain/failure/auth_failure.dart';
 import '../../../domain/usecase/login_user_usecase.dart';
 import '../../../domain/value/email_address.dart';
@@ -160,8 +160,8 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
-  Future<void> _handleSuccess(UserEntity user) async {
-    await _sessionManager.login(user);
+  Future<void> _handleSuccess(AuthSessionEntity session) async {
+    await _sessionManager.login(session);
 
     /// EXAMPLE: login success event with a generic method label.
     /// Do not pass user identifiers or tokens here; use `setUserId`

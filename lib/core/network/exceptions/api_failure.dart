@@ -4,9 +4,17 @@ import '../api/api_response.dart';
 class ApiFailure implements Exception {
   final String message;
   final int? statusCode;
+  final String? code;
+  final String? traceId;
   final List<ValidationError>? validationErrors;
 
-  ApiFailure({required this.message, this.statusCode, this.validationErrors});
+  ApiFailure({
+    required this.message,
+    this.statusCode,
+    this.code,
+    this.traceId,
+    this.validationErrors,
+  });
 
   factory ApiFailure.fromApiResponse(ApiResponse<dynamic> response) {
     return ApiFailure(
@@ -21,6 +29,8 @@ class ApiFailure implements Exception {
     final statusCode = response?.statusCode;
     final data = response?.data;
     String message = response?.statusMessage ?? e.message ?? 'Unknown error';
+    String? code;
+    String? traceId;
 
     List<ValidationError>? validationErrors;
     if (data is Map && data['errors'] is List) {
@@ -29,18 +39,59 @@ class ApiFailure implements Exception {
           .toList();
     }
 
-    if (data is Map &&
-        (data['error_message'] != null || data['message'] != null)) {
-      message = data['error_message'] ?? data['message'];
+    if (data is Map) {
+      // Support both custom error bodies and RFC7807-style problem details.
+      //
+      // Example:
+      // {
+      //   "type": "about:blank",
+      //   "title": "Invalid credentials",
+      //   "status": 401,
+      //   "code": "UNAUTHORIZED",
+      //   "traceId": "..."
+      // }
+      final dynamic rawStatus = data['status'];
+      final dynamic rawCode = data['code'];
+      final dynamic rawTraceId = data['traceId'];
+
+      if (rawStatus is int && rawStatus > 0) {
+        // Prefer server-reported status if present.
+        // (Some backends include it even when proxies strip HTTP status text.)
+        // Keep HTTP statusCode as-is if rawStatus is absent.
+      }
+      if (rawCode is String && rawCode.isNotEmpty) code = rawCode;
+      if (rawTraceId is String && rawTraceId.isNotEmpty) traceId = rawTraceId;
+
+      final dynamic title = data['title'];
+      final dynamic detail = data['detail'];
+      final dynamic errorMessage = data['error_message'];
+      final dynamic msg = data['message'];
+
+      final resolved = (title is String && title.isNotEmpty)
+          ? title
+          : (detail is String && detail.isNotEmpty)
+          ? detail
+          : (errorMessage is String && errorMessage.isNotEmpty)
+          ? errorMessage
+          : (msg is String && msg.isNotEmpty)
+          ? msg
+          : null;
+
+      if (resolved != null) {
+        message = resolved;
+      }
     }
 
     return ApiFailure(
       message: message,
       statusCode: statusCode,
+      code: code,
+      traceId: traceId,
       validationErrors: validationErrors,
     );
   }
 
   @override
-  String toString() => 'ApiFailure(statusCode: $statusCode, message: $message)';
+  String toString() =>
+      'ApiFailure(statusCode: $statusCode, code: $code, traceId: $traceId, message: $message)';
 }

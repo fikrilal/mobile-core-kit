@@ -1,9 +1,9 @@
-import '../../features/auth/domain/entity/user_entity.dart';
+import '../../features/auth/domain/entity/auth_session_entity.dart';
 
 abstract class SessionRepository {
-  Future<void> saveSession(UserEntity user);
+  Future<void> saveSession(AuthSessionEntity session);
 
-  Future<UserEntity?> loadSession();
+  Future<AuthSessionEntity?> loadSession();
 
   Future<void> clearSession();
 }

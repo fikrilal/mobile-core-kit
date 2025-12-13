@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../features/auth/domain/entity/refresh_request_entity.dart';
-import '../../features/auth/domain/entity/user_entity.dart';
+import '../../features/auth/domain/entity/auth_session_entity.dart';
+import '../../features/auth/domain/entity/auth_tokens_entity.dart';
 import '../../features/auth/domain/usecase/refresh_token_usecase.dart';
 import '../events/app_event.dart';
 import '../events/app_event_bus.dart';
@@ -18,74 +19,67 @@ class SessionManager {
 
   final SessionRepository _repository;
   final RefreshTokenUsecase _refreshTokenUsecase;
-  final StreamController<UserEntity?> _userController =
-      StreamController<UserEntity?>.broadcast();
-  final ValueNotifier<UserEntity?> _userNotifier = ValueNotifier<UserEntity?>(
-    null,
-  );
+  final StreamController<AuthSessionEntity?> _sessionController =
+      StreamController<AuthSessionEntity?>.broadcast();
+  final ValueNotifier<AuthSessionEntity?> _sessionNotifier =
+      ValueNotifier<AuthSessionEntity?>(null);
   final AppEventBus _events;
-  UserEntity? _currentUser;
+  AuthSessionEntity? _currentSession;
 
   Future<void> init() async {
-    _currentUser = await _repository.loadSession();
+    _currentSession = await _repository.loadSession();
     Log.debug(
-      'Session init: user loaded=${_currentUser != null}',
+      'Session init: session loaded=${_currentSession != null}',
       name: 'SessionManager',
     );
-    if (_currentUser != null) {
+    if (_currentSession != null) {
       Log.debug(
-        'Loaded access(~5)=${_mask(_currentUser!.accessToken)} refresh(~5)=${_mask(_currentUser!.refreshToken)}',
+        'Loaded access(~5)=${_mask(_currentSession!.tokens.accessToken)} refresh(~5)=${_mask(_currentSession!.tokens.refreshToken)}',
         name: 'SessionManager',
       );
     }
-    _userController.add(_currentUser);
-    _userNotifier.value = _currentUser;
+    _sessionController.add(_currentSession);
+    _sessionNotifier.value = _currentSession;
   }
 
-  UserEntity? get user => _currentUser;
-  bool get isAuthenticated => _currentUser != null;
-  Stream<UserEntity?> get stream => _userController.stream;
-  String? get accessToken => _currentUser?.accessToken;
-  ValueListenable<UserEntity?> get userNotifier => _userNotifier;
+  AuthSessionEntity? get session => _currentSession;
+  bool get isAuthenticated => _currentSession != null;
+  Stream<AuthSessionEntity?> get stream => _sessionController.stream;
+  String? get accessToken => _currentSession?.tokens.accessToken;
+  ValueListenable<AuthSessionEntity?> get sessionNotifier => _sessionNotifier;
 
   void dispose() {
-    _userController.close();
-    _userNotifier.dispose();
+    _sessionController.close();
+    _sessionNotifier.dispose();
   }
 
-  Future<void> login(UserEntity user) async {
+  Future<void> login(AuthSessionEntity session) async {
     Log.info('Login: saving session', name: 'SessionManager');
-    await _repository.saveSession(user);
-    _currentUser = user;
+    await _repository.saveSession(session);
+    _currentSession = session;
     Log.debug(
-      'Login saved. access(~5)=${_mask(user.accessToken)} refresh(~5)=${_mask(user.refreshToken)}',
+      'Login saved. access(~5)=${_mask(session.tokens.accessToken)} refresh(~5)=${_mask(session.tokens.refreshToken)}',
       name: 'SessionManager',
     );
-    _userController.add(_currentUser);
-    _userNotifier.value = _currentUser;
+    _sessionController.add(_currentSession);
+    _sessionNotifier.value = _currentSession;
   }
 
-  UserEntity _attachTokens(
-    UserEntity user,
-    String accessToken,
-    String refreshToken,
-    int expiresIn,
-  ) => user.copyWith(
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-    expiresIn: expiresIn,
-  );
+  AuthSessionEntity _attachTokens(
+    AuthSessionEntity session,
+    AuthTokensEntity tokens,
+  ) => session.copyWith(tokens: tokens);
 
   Future<bool> refreshTokens() async {
-    final current = _currentUser;
-    if (current?.refreshToken == null) return false;
+    final current = _currentSession;
+    if (current == null) return false;
     Log.debug('Refreshing tokens…', name: 'SessionManager');
     Log.debug(
-      'Using refresh(~5)=${_mask(current!.refreshToken)}',
+      'Using refresh(~5)=${_mask(current.tokens.refreshToken)}',
       name: 'SessionManager',
     );
     final result = await _refreshTokenUsecase(
-      RefreshRequestEntity(refreshToken: current.refreshToken!),
+      RefreshRequestEntity(refreshToken: current.tokens.refreshToken),
     );
 
     return result.match(
@@ -106,17 +100,12 @@ class SessionManager {
           'Refresh success. New access(~5)=${_mask(tokens.accessToken)} refresh(~5)=${_mask(tokens.refreshToken)}',
           name: 'SessionManager',
         );
-        final updated = _attachTokens(
-          current,
-          tokens.accessToken!,
-          tokens.refreshToken!,
-          tokens.expiresIn!,
-        );
+        final updated = _attachTokens(current, tokens);
         await _repository.saveSession(updated);
         Log.debug('Session persisted after refresh', name: 'SessionManager');
-        _currentUser = updated;
-        _userController.add(_currentUser);
-        _userNotifier.value = _currentUser;
+        _currentSession = updated;
+        _sessionController.add(_currentSession);
+        _sessionNotifier.value = _currentSession;
         return true;
       },
     );
@@ -125,9 +114,9 @@ class SessionManager {
   Future<void> logout({String reason = 'manual_logout'}) async {
     Log.info('Logout: clearing session', name: 'SessionManager');
     await _repository.clearSession();
-    _currentUser = null;
-    _userController.add(_currentUser);
-    _userNotifier.value = _currentUser;
+    _currentSession = null;
+    _sessionController.add(_currentSession);
+    _sessionNotifier.value = _currentSession;
     _events.publish(SessionCleared(reason: reason));
   }
 
