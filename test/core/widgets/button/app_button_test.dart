@@ -5,7 +5,7 @@ import 'package:mobile_core_kit/core/theme/theme.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 
 void main() {
-  Widget _wrap(Widget child) {
+  Widget wrap(Widget child) {
     return MaterialApp(
       theme: AppTheme.light(),
       home: Scaffold(body: Center(child: child)),
@@ -16,7 +16,7 @@ void main() {
     var tapCount = 0;
 
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         AppButton(
           text: 'Submit',
           isLoading: true,
@@ -37,7 +37,7 @@ void main() {
   testWidgets('AppButton expands to full width when isExpanded in bounded width',
       (tester) async {
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         SizedBox(
           width: 200,
           child: AppButton(
@@ -55,7 +55,7 @@ void main() {
 
   testWidgets('AppButton exposes semantics label', (tester) async {
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         AppButton(
           text: 'Save',
           semanticLabel: 'Save document',

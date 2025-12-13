@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../di/service_locator.dart';
 import '../../events/app_event.dart';
 import '../../events/app_event_bus.dart';
-import '../../services/navigation/navigation_service.dart';
 
 /// Listens to global [AppEvent]s and surfaces cross-cutting UI side-effects.
 ///
@@ -20,25 +19,17 @@ class AppEventListener extends StatefulWidget {
 
 class _AppEventListenerState extends State<AppEventListener> {
   late final AppEventBus _eventBus;
-  late final NavigationService _navigation;
   StreamSubscription<AppEvent>? _subscription;
 
   @override
   void initState() {
     super.initState();
     _eventBus = locator<AppEventBus>();
-    _navigation = locator<NavigationService>();
     _subscription = _eventBus.stream.listen(_handleEvent);
   }
 
   void _handleEvent(AppEvent event) {
-    // if (event is SessionExpired) {
-    //   _navigation.showSnackBar(
-    //     SnackBar(
-    //       content: const Text('Your session expired. Please sign in again.'),
-    //     ),
-    //   );
-    // }
+    // Intentionally empty: wire global UI side-effects here when needed.
   }
 
   @override

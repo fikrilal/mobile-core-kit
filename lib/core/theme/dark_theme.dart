@@ -91,8 +91,8 @@ final ThemeData darkTheme =
           ),
           disabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: scheme.onSurface.withOpacity(
-                StateOpacities.disabledContainer,
+              color: scheme.onSurface.withValues(
+                alpha: StateOpacities.disabledContainer,
               ),
             ),
           ),

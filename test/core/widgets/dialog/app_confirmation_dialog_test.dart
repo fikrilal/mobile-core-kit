@@ -5,7 +5,7 @@ import 'package:mobile_core_kit/core/theme/theme.dart';
 import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart';
 
 void main() {
-  Widget _wrap(Widget child) {
+  Widget wrap(Widget child) {
     return MaterialApp(theme: AppTheme.light(), home: Scaffold(body: child));
   }
 
@@ -13,7 +13,7 @@ void main() {
     late BuildContext context;
 
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         Builder(
           builder: (c) {
             context = c;
@@ -42,7 +42,7 @@ void main() {
     late BuildContext context;
 
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         Builder(
           builder: (c) {
             context = c;
@@ -73,7 +73,7 @@ void main() {
     late BuildContext context;
 
     await tester.pumpWidget(
-      _wrap(
+      wrap(
         Builder(
           builder: (c) {
             context = c;
