@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../theme/responsive/spacing.dart';
 import '../../theme/system/state_opacities.dart';
+import '../../theme/typography/components/text.dart';
 import '../common/app_haptic_feedback.dart';
 import 'app_checkbox.dart';
 import 'checkbox_variants.dart';
@@ -58,7 +59,6 @@ class AppCheckboxTile extends StatelessWidget {
     );
 
     final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final isEnabled = enabled && onChanged != null;
 
     final effectivePadding = padding ??
@@ -90,19 +90,17 @@ class AppCheckboxTile extends StatelessWidget {
       hapticFeedback: hapticFeedback,
     );
 
-    final labelWidget = Text(
+    final labelWidget = AppText.bodyMedium(
       label,
-      style: textTheme.bodyMedium?.copyWith(
-        color: labelColor,
-        fontWeight: FontWeight.w600,
-      ),
+      color: labelColor,
+      style: const TextStyle(fontWeight: FontWeight.w600),
     );
 
     final helperWidget = helperText == null
         ? null
-        : Text(
+        : AppText.bodySmall(
             helperText!,
-            style: textTheme.bodySmall?.copyWith(color: helperColor),
+            color: helperColor,
           );
 
     final textColumn = Expanded(
