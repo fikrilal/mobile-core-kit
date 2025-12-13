@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../snackbar/snackbar.dart';
 import '../common/app_haptic_feedback.dart';
 import 'app_textfield.dart';
 import 'field_variants.dart';
@@ -55,12 +56,7 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
       setState(() {
         _validationMessage = 'Form is valid! ✅';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Form submitted successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      AppSnackBar.showSuccess(context, message: 'Form submitted successfully!');
     } else {
       setState(() {
         _validationMessage = 'Please fix the errors above ❌';
@@ -405,9 +401,7 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
           suffixIcon: IconButton(
             icon: const Icon(Icons.contacts),
             onPressed: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Open contacts')));
+              AppSnackBar.showInfo(context, message: 'Open contacts');
             },
           ),
         ),

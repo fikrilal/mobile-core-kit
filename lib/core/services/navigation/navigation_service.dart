@@ -15,6 +15,7 @@ class NavigationService {
     }
   }
 
+  @Deprecated('Use AppSnackBar for transient UI messages.')
   void showSnackBar(SnackBar snackBar) {
     final messenger = scaffoldMessengerKey.currentState;
     if (messenger == null) return;

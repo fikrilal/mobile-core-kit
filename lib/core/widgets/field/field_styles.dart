@@ -14,14 +14,14 @@ class FieldStyles {
       height: 36.0,
       fontSize: 13.0,
       iconSize: 16.0,
-      borderRadius: 6.0,
+      borderRadius: 8.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
     ),
     FieldSize.medium: FieldSizeConfig(
       height: 44.0,
       fontSize: 15.0,
       iconSize: 20.0,
-      borderRadius: 8.0,
+      borderRadius: 10.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
     ),
     FieldSize.large: FieldSizeConfig(
@@ -117,6 +117,12 @@ class FieldStyles {
       hintText: hintText,
       helperText: helperText,
       errorText: errorText,
+      labelStyle: theme.textTheme.labelLarge?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
+      floatingLabelStyle: theme.textTheme.labelLarge?.copyWith(
+        color: colorScheme.primary,
+      ),
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       prefixText: prefixText,
@@ -143,7 +149,7 @@ class FieldStyles {
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
             borderSide: BorderSide(
               color: colorScheme.primary,
-              width: 2.0,
+              width: 1.5,
             ),
           ),
           errorBorder: OutlineInputBorder(
@@ -152,7 +158,7 @@ class FieldStyles {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.error, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.error, width: 1.5),
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -172,7 +178,7 @@ class FieldStyles {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.secondary, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.secondary, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -180,7 +186,7 @@ class FieldStyles {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.error, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.error, width: 1.5),
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -200,7 +206,7 @@ class FieldStyles {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.primary, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -208,7 +214,7 @@ class FieldStyles {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.error, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.error, width: 1.5),
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -217,18 +223,26 @@ class FieldStyles {
         );
 
       case FieldVariant.filled:
+        final baseBorderSide = BorderSide(
+          color:
+              state == FieldState.enabled && borderColor == null
+                  ? context.grey.grey200
+                  : getBorderColor(),
+          width: 1.0,
+        );
+
         return decoration.copyWith(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide.none,
+            borderSide: baseBorderSide,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide.none,
+            borderSide: baseBorderSide,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.primary, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -236,11 +250,11 @@ class FieldStyles {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(color: colorScheme.error, width: 2.0),
+            borderSide: BorderSide(color: colorScheme.error, width: 1.5),
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide.none,
+            borderSide: baseBorderSide,
           ),
         );
     }

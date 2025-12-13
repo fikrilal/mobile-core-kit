@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import '../../theme/typography/components/text.dart';
 import '../common/app_haptic_feedback.dart';
 import 'button_variants.dart';
@@ -174,7 +175,7 @@ class AppButton extends StatelessWidget {
     super.key,
     required this.text,
     this.onPressed,
-    this.size = ButtonSize.medium,
+    this.size = ButtonSize.large,
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
@@ -213,7 +214,7 @@ class AppButton extends StatelessWidget {
     super.key,
     required this.text,
     this.onPressed,
-    this.size = ButtonSize.medium,
+    this.size = ButtonSize.large,
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
@@ -283,16 +284,25 @@ class AppButton extends StatelessWidget {
       child: buttonChild,
     );
 
-    // Wrap with accessibility features
-    button = _wrapWithAccessibility(button);
+	    // Wrap with accessibility features
+	    button = _wrapWithAccessibility(button);
 
-    // Wrap with focus management
-    button = _wrapWithFocusManagement(button);
+	    // Wrap with focus management
+	    button = _wrapWithFocusManagement(button);
 
-    // Apply margin if specified
-    if (margin != null) {
-      button = Padding(padding: margin!, child: button);
-    }
+	    // Add subtle zoom interaction on tap for enabled buttons.
+	    if (!isButtonDisabled) {
+	      button = ZoomTapAnimation(
+	        begin: 1.0,
+	        end: 0.98,
+	        child: button,
+	      );
+	    }
+
+	    // Apply margin if specified
+	    if (margin != null) {
+	      button = Padding(padding: margin!, child: button);
+	    }
 
     // Apply safe expansion: only when width is bounded
     return LayoutBuilder(

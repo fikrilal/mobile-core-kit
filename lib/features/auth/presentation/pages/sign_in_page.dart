@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
+import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
 
 import '../cubit/login/login_cubit.dart';
 import '../cubit/login/login_state.dart';
@@ -19,9 +20,7 @@ class SignInPage extends StatelessWidget {
         listener: (context, state) {
           if (state.status == LoginStatus.failure &&
               state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage!)),
-            );
+            AppSnackBar.showError(context, message: state.errorMessage!);
           }
 
           if (state.status == LoginStatus.success) {

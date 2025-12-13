@@ -649,7 +649,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   color: _currentState == FieldState.error
                       ? Theme.of(context).colorScheme.error
                       : Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
           const SizedBox(height: 8),
@@ -661,4 +661,3 @@ class _AppTextFieldState extends State<AppTextField> {
     return textField;
   }
 }
-
