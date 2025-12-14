@@ -296,7 +296,7 @@ $AuthSessionDataModelCopyWith<$Res> get data {
 /// @nodoc
 mixin _$AuthSessionDataModel {
 
- AuthTokensModel get tokens; AuthUserModel get user;
+ AuthTokensModel get tokens; UserModel get user;
 /// Create a copy of AuthSessionDataModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -329,11 +329,11 @@ abstract mixin class $AuthSessionDataModelCopyWith<$Res>  {
   factory $AuthSessionDataModelCopyWith(AuthSessionDataModel value, $Res Function(AuthSessionDataModel) _then) = _$AuthSessionDataModelCopyWithImpl;
 @useResult
 $Res call({
- AuthTokensModel tokens, AuthUserModel user
+ AuthTokensModel tokens, UserModel user
 });
 
 
-$AuthTokensModelCopyWith<$Res> get tokens;$AuthUserModelCopyWith<$Res> get user;
+$AuthTokensModelCopyWith<$Res> get tokens;$UserModelCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -350,7 +350,7 @@ class _$AuthSessionDataModelCopyWithImpl<$Res>
   return _then(_self.copyWith(
 tokens: null == tokens ? _self.tokens : tokens // ignore: cast_nullable_to_non_nullable
 as AuthTokensModel,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as AuthUserModel,
+as UserModel,
   ));
 }
 /// Create a copy of AuthSessionDataModel
@@ -366,9 +366,9 @@ $AuthTokensModelCopyWith<$Res> get tokens {
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$AuthUserModelCopyWith<$Res> get user {
+$UserModelCopyWith<$Res> get user {
   
-  return $AuthUserModelCopyWith<$Res>(_self.user, (value) {
+  return $UserModelCopyWith<$Res>(_self.user, (value) {
     return _then(_self.copyWith(user: value));
   });
 }
@@ -453,7 +453,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthTokensModel tokens,  AuthUserModel user)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthTokensModel tokens,  UserModel user)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthSessionDataModel() when $default != null:
 return $default(_that.tokens,_that.user);case _:
@@ -474,7 +474,7 @@ return $default(_that.tokens,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthTokensModel tokens,  AuthUserModel user)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthTokensModel tokens,  UserModel user)  $default,) {final _that = this;
 switch (_that) {
 case _AuthSessionDataModel():
 return $default(_that.tokens,_that.user);case _:
@@ -494,7 +494,7 @@ return $default(_that.tokens,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthTokensModel tokens,  AuthUserModel user)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthTokensModel tokens,  UserModel user)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthSessionDataModel() when $default != null:
 return $default(_that.tokens,_that.user);case _:
@@ -513,7 +513,7 @@ class _AuthSessionDataModel implements AuthSessionDataModel {
   factory _AuthSessionDataModel.fromJson(Map<String, dynamic> json) => _$AuthSessionDataModelFromJson(json);
 
 @override final  AuthTokensModel tokens;
-@override final  AuthUserModel user;
+@override final  UserModel user;
 
 /// Create a copy of AuthSessionDataModel
 /// with the given fields replaced by the non-null parameter values.
@@ -548,11 +548,11 @@ abstract mixin class _$AuthSessionDataModelCopyWith<$Res> implements $AuthSessio
   factory _$AuthSessionDataModelCopyWith(_AuthSessionDataModel value, $Res Function(_AuthSessionDataModel) _then) = __$AuthSessionDataModelCopyWithImpl;
 @override @useResult
 $Res call({
- AuthTokensModel tokens, AuthUserModel user
+ AuthTokensModel tokens, UserModel user
 });
 
 
-@override $AuthTokensModelCopyWith<$Res> get tokens;@override $AuthUserModelCopyWith<$Res> get user;
+@override $AuthTokensModelCopyWith<$Res> get tokens;@override $UserModelCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -569,7 +569,7 @@ class __$AuthSessionDataModelCopyWithImpl<$Res>
   return _then(_AuthSessionDataModel(
 tokens: null == tokens ? _self.tokens : tokens // ignore: cast_nullable_to_non_nullable
 as AuthTokensModel,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as AuthUserModel,
+as UserModel,
   ));
 }
 
@@ -586,9 +586,9 @@ $AuthTokensModelCopyWith<$Res> get tokens {
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$AuthUserModelCopyWith<$Res> get user {
+$UserModelCopyWith<$Res> get user {
   
-  return $AuthUserModelCopyWith<$Res>(_self.user, (value) {
+  return $UserModelCopyWith<$Res>(_self.user, (value) {
     return _then(_self.copyWith(user: value));
   });
 }
@@ -860,281 +860,6 @@ as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken
 as String,tokenType: null == tokenType ? _self.tokenType : tokenType // ignore: cast_nullable_to_non_nullable
 as String,expiresIn: null == expiresIn ? _self.expiresIn : expiresIn // ignore: cast_nullable_to_non_nullable
 as int,
-  ));
-}
-
-
-}
-
-
-/// @nodoc
-mixin _$AuthUserModel {
-
- String get id; String get email; String? get firstName; String? get lastName; bool get emailVerified;
-/// Create a copy of AuthUserModel
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$AuthUserModelCopyWith<AuthUserModel> get copyWith => _$AuthUserModelCopyWithImpl<AuthUserModel>(this as AuthUserModel, _$identity);
-
-  /// Serializes this AuthUserModel to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthUserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified);
-
-@override
-String toString() {
-  return 'AuthUserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $AuthUserModelCopyWith<$Res>  {
-  factory $AuthUserModelCopyWith(AuthUserModel value, $Res Function(AuthUserModel) _then) = _$AuthUserModelCopyWithImpl;
-@useResult
-$Res call({
- String id, String email, String? firstName, String? lastName, bool emailVerified
-});
-
-
-
-
-}
-/// @nodoc
-class _$AuthUserModelCopyWithImpl<$Res>
-    implements $AuthUserModelCopyWith<$Res> {
-  _$AuthUserModelCopyWithImpl(this._self, this._then);
-
-  final AuthUserModel _self;
-  final $Res Function(AuthUserModel) _then;
-
-/// Create a copy of AuthUserModel
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = null,}) {
-  return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [AuthUserModel].
-extension AuthUserModelPatterns on AuthUserModel {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AuthUserModel value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _AuthUserModel() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AuthUserModel value)  $default,){
-final _that = this;
-switch (_that) {
-case _AuthUserModel():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AuthUserModel value)?  $default,){
-final _that = this;
-switch (_that) {
-case _AuthUserModel() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? firstName,  String? lastName,  bool emailVerified)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _AuthUserModel() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? firstName,  String? lastName,  bool emailVerified)  $default,) {final _that = this;
-switch (_that) {
-case _AuthUserModel():
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? firstName,  String? lastName,  bool emailVerified)?  $default,) {final _that = this;
-switch (_that) {
-case _AuthUserModel() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _AuthUserModel extends AuthUserModel {
-  const _AuthUserModel({required this.id, required this.email, this.firstName, this.lastName, required this.emailVerified}): super._();
-  factory _AuthUserModel.fromJson(Map<String, dynamic> json) => _$AuthUserModelFromJson(json);
-
-@override final  String id;
-@override final  String email;
-@override final  String? firstName;
-@override final  String? lastName;
-@override final  bool emailVerified;
-
-/// Create a copy of AuthUserModel
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$AuthUserModelCopyWith<_AuthUserModel> get copyWith => __$AuthUserModelCopyWithImpl<_AuthUserModel>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$AuthUserModelToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthUserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified);
-
-@override
-String toString() {
-  return 'AuthUserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$AuthUserModelCopyWith<$Res> implements $AuthUserModelCopyWith<$Res> {
-  factory _$AuthUserModelCopyWith(_AuthUserModel value, $Res Function(_AuthUserModel) _then) = __$AuthUserModelCopyWithImpl;
-@override @useResult
-$Res call({
- String id, String email, String? firstName, String? lastName, bool emailVerified
-});
-
-
-
-
-}
-/// @nodoc
-class __$AuthUserModelCopyWithImpl<$Res>
-    implements _$AuthUserModelCopyWith<$Res> {
-  __$AuthUserModelCopyWithImpl(this._self, this._then);
-
-  final _AuthUserModel _self;
-  final $Res Function(_AuthUserModel) _then;
-
-/// Create a copy of AuthUserModel
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = null,}) {
-  return _then(_AuthUserModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool,
   ));
 }
 

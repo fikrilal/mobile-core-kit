@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entity/auth_user_entity.dart';
+import '../../../../user/domain/entity/user_entity.dart';
 
 part 'user_local_model.freezed.dart';
 
@@ -13,7 +13,8 @@ abstract class UserLocalModel with _$UserLocalModel {
       'email TEXT,'
       'firstName TEXT,'
       'lastName TEXT,'
-      'emailVerified INTEGER'
+      'emailVerified INTEGER,'
+      'createdAt TEXT'
       ');';
 
   const factory UserLocalModel({
@@ -22,6 +23,7 @@ abstract class UserLocalModel with _$UserLocalModel {
     String? firstName,
     String? lastName,
     bool? emailVerified,
+    String? createdAt,
   }) = _UserLocalModel;
 
   const UserLocalModel._();
@@ -34,6 +36,7 @@ abstract class UserLocalModel with _$UserLocalModel {
         emailVerified: m['emailVerified'] == null
             ? null
             : (m['emailVerified'] as int) == 1,
+        createdAt: m['createdAt'] as String?,
       );
 
   Map<String, dynamic> toMap() => {
@@ -43,28 +46,31 @@ abstract class UserLocalModel with _$UserLocalModel {
         'lastName': lastName,
         'emailVerified':
             emailVerified == null ? null : (emailVerified! ? 1 : 0),
+        'createdAt': createdAt,
       };
 
-  AuthUserEntity? toEntity() {
+  UserEntity? toEntity() {
     if (id == null || id!.isEmpty || email == null || email!.isEmpty) {
       return null;
     }
-    return AuthUserEntity(
+    return UserEntity(
       id: id!,
       email: email!,
       firstName: firstName,
       lastName: lastName,
-      emailVerified: emailVerified ?? false,
+      emailVerified: emailVerified,
+      createdAt: createdAt,
     );
   }
 }
 
-extension AuthUserEntityLocalX on AuthUserEntity {
+extension UserEntityLocalX on UserEntity {
   UserLocalModel toLocalModel() => UserLocalModel(
         id: id,
         email: email,
         firstName: firstName,
         lastName: lastName,
         emailVerified: emailVerified,
+        createdAt: createdAt,
       );
 }

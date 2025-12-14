@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/entity/auth_session_entity.dart';
 import '../../../domain/entity/auth_tokens_entity.dart';
-import '../../../domain/entity/auth_user_entity.dart';
+import '../../../../user/data/model/remote/user_model.dart';
 
 part 'auth_session_model.freezed.dart';
 part 'auth_session_model.g.dart';
@@ -43,7 +43,7 @@ abstract class AuthSessionModel with _$AuthSessionModel {
 abstract class AuthSessionDataModel with _$AuthSessionDataModel {
   const factory AuthSessionDataModel({
     required AuthTokensModel tokens,
-    required AuthUserModel user,
+    required UserModel user,
   }) = _AuthSessionDataModel;
 
   factory AuthSessionDataModel.fromJson(Map<String, dynamic> json) =>
@@ -69,30 +69,6 @@ abstract class AuthTokensModel with _$AuthTokensModel {
         refreshToken: refreshToken,
         tokenType: tokenType,
         expiresIn: expiresIn,
-      );
-}
-
-@freezed
-abstract class AuthUserModel with _$AuthUserModel {
-  const factory AuthUserModel({
-    required String id,
-    required String email,
-    String? firstName,
-    String? lastName,
-    required bool emailVerified,
-  }) = _AuthUserModel;
-
-  factory AuthUserModel.fromJson(Map<String, dynamic> json) =>
-      _$AuthUserModelFromJson(json);
-
-  const AuthUserModel._();
-
-  AuthUserEntity toEntity() => AuthUserEntity(
-        id: id,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        emailVerified: emailVerified,
       );
 }
 

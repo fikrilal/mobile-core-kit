@@ -1,6 +1,6 @@
 import '../../../../../core/database/app_database.dart';
 import '../../model/local/user_local_model.dart';
-import '../../../domain/entity/auth_user_entity.dart';
+import '../../../../user/domain/entity/user_entity.dart';
 import 'dao/user_dao.dart';
 
 class AuthLocalDataSource {
@@ -8,7 +8,7 @@ class AuthLocalDataSource {
 
   Future get _db async => AppDatabase().database;
 
-  Future cacheUserEntity(AuthUserEntity user) async => cacheUser(
+  Future cacheUserEntity(UserEntity user) async => cacheUser(
         user.toLocalModel(),
       );
 

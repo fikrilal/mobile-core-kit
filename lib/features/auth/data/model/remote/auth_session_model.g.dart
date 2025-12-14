@@ -18,7 +18,7 @@ _AuthSessionDataModel _$AuthSessionDataModelFromJson(
   Map<String, dynamic> json,
 ) => _AuthSessionDataModel(
   tokens: AuthTokensModel.fromJson(json['tokens'] as Map<String, dynamic>),
-  user: AuthUserModel.fromJson(json['user'] as Map<String, dynamic>),
+  user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$AuthSessionDataModelToJson(
@@ -39,22 +39,4 @@ Map<String, dynamic> _$AuthTokensModelToJson(_AuthTokensModel instance) =>
       'refreshToken': instance.refreshToken,
       'tokenType': instance.tokenType,
       'expiresIn': instance.expiresIn,
-    };
-
-_AuthUserModel _$AuthUserModelFromJson(Map<String, dynamic> json) =>
-    _AuthUserModel(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      firstName: json['firstName'] as String?,
-      lastName: json['lastName'] as String?,
-      emailVerified: json['emailVerified'] as bool,
-    );
-
-Map<String, dynamic> _$AuthUserModelToJson(_AuthUserModel instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'email': instance.email,
-      'firstName': instance.firstName,
-      'lastName': instance.lastName,
-      'emailVerified': instance.emailVerified,
     };
