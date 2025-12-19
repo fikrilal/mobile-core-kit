@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import '../entity/register_request_entity.dart';
-import '../entity/user_entity.dart';
+import '../entity/auth_session_entity.dart';
 import '../repository/auth_repository.dart';
 import '../failure/auth_failure.dart';
 import '../value/email_address.dart';
@@ -14,7 +14,7 @@ class RegisterUserUseCase {
 
   RegisterUserUseCase(this._repository);
 
-  Future<Either<AuthFailure, UserEntity>> call(
+  Future<Either<AuthFailure, AuthSessionEntity>> call(
     RegisterRequestEntity request,
   ) async {
     // Final gate validation: email format, strong password, display name
@@ -55,7 +55,7 @@ class RegisterUserUseCase {
     );
 
     if (errors.isNotEmpty) {
-      return left<AuthFailure, UserEntity>(AuthFailure.validation(errors));
+      return left<AuthFailure, AuthSessionEntity>(AuthFailure.validation(errors));
     }
 
     return _repository.register(request);

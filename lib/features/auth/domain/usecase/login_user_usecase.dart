@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import '../entity/login_request_entity.dart';
-import '../entity/user_entity.dart';
+import '../entity/auth_session_entity.dart';
 import '../failure/auth_failure.dart';
 import '../repository/auth_repository.dart';
 import '../value/email_address.dart';
@@ -13,7 +13,7 @@ class LoginUserUseCase {
 
   LoginUserUseCase(this._repository);
 
-  Future<Either<AuthFailure, UserEntity>> call(
+  Future<Either<AuthFailure, AuthSessionEntity>> call(
     LoginRequestEntity request,
   ) async {
     // Final gate validation: email format + non-empty password
@@ -48,7 +48,7 @@ class LoginUserUseCase {
     );
 
     if (errors.isNotEmpty) {
-      return left<AuthFailure, UserEntity>(AuthFailure.validation(errors));
+      return left<AuthFailure, AuthSessionEntity>(AuthFailure.validation(errors));
     }
 
     return _repository.login(

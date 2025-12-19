@@ -10,7 +10,7 @@ import 'auth_routes.dart';
 final List<GoRoute> authRoutes = [
   GoRoute(
     path: AuthRoutes.signIn,
-    builder: (_, __) => BlocProvider<LoginCubit>(
+    builder: (context, state) => BlocProvider<LoginCubit>(
       create: (_) => locator<LoginCubit>(),
       child: const SignInPage(),
     ),

@@ -1,6 +1,6 @@
 /// Extension to safely convert dynamic JSON to typed parsers
 extension JsonParser on dynamic {
-  /// Safely converts dynamic JSON to Map<String, dynamic> and applies parser
+  /// Safely converts dynamic JSON to `Map<String, dynamic>` and applies parser
   T parseWith<T>(T Function(Map<String, dynamic>) parser) {
     if (this == null) {
       throw const FormatException('Cannot parse null JSON');

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserLocalModel {
 
- String? get id; String? get email; String? get displayName; bool? get emailVerified; String? get createdAt; String? get avatarUrl;
+ String? get id; String? get email; String? get firstName; String? get lastName; bool? get emailVerified; String? get createdAt;
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $UserLocalModelCopyWith<UserLocalModel> get copyWith => _$UserLocalModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,displayName,emailVerified,createdAt,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
 
 @override
 String toString() {
-  return 'UserLocalModel(id: $id, email: $email, displayName: $displayName, emailVerified: $emailVerified, createdAt: $createdAt, avatarUrl: $avatarUrl)';
+  return 'UserLocalModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $UserLocalModelCopyWith<$Res>  {
   factory $UserLocalModelCopyWith(UserLocalModel value, $Res Function(UserLocalModel) _then) = _$UserLocalModelCopyWithImpl;
 @useResult
 $Res call({
- String? id, String? email, String? displayName, bool? emailVerified, String? createdAt, String? avatarUrl
+ String? id, String? email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
 });
 
 
@@ -62,14 +62,14 @@ class _$UserLocalModelCopyWithImpl<$Res>
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? displayName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,Object? avatarUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
+as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -155,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  String? displayName,  bool? emailVerified,  String? createdAt,  String? avatarUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserLocalModel() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that.createdAt,_that.avatarUrl);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
   return orElse();
 
 }
@@ -176,10 +176,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  String? displayName,  bool? emailVerified,  String? createdAt,  String? avatarUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserLocalModel():
-return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that.createdAt,_that.avatarUrl);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +196,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  String? displayName,  bool? emailVerified,  String? createdAt,  String? avatarUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserLocalModel() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that.createdAt,_that.avatarUrl);case _:
+return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
   return null;
 
 }
@@ -211,15 +211,15 @@ return $default(_that.id,_that.email,_that.displayName,_that.emailVerified,_that
 
 
 class _UserLocalModel extends UserLocalModel {
-  const _UserLocalModel({this.id, this.email, this.displayName, this.emailVerified, this.createdAt, this.avatarUrl}): super._();
+  const _UserLocalModel({this.id, this.email, this.firstName, this.lastName, this.emailVerified, this.createdAt}): super._();
   
 
 @override final  String? id;
 @override final  String? email;
-@override final  String? displayName;
+@override final  String? firstName;
+@override final  String? lastName;
 @override final  bool? emailVerified;
 @override final  String? createdAt;
-@override final  String? avatarUrl;
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +231,16 @@ _$UserLocalModelCopyWith<_UserLocalModel> get copyWith => __$UserLocalModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,displayName,emailVerified,createdAt,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
 
 @override
 String toString() {
-  return 'UserLocalModel(id: $id, email: $email, displayName: $displayName, emailVerified: $emailVerified, createdAt: $createdAt, avatarUrl: $avatarUrl)';
+  return 'UserLocalModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
 }
 
 
@@ -251,7 +251,7 @@ abstract mixin class _$UserLocalModelCopyWith<$Res> implements $UserLocalModelCo
   factory _$UserLocalModelCopyWith(_UserLocalModel value, $Res Function(_UserLocalModel) _then) = __$UserLocalModelCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String? email, String? displayName, bool? emailVerified, String? createdAt, String? avatarUrl
+ String? id, String? email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
 });
 
 
@@ -268,14 +268,14 @@ class __$UserLocalModelCopyWithImpl<$Res>
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? displayName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,Object? avatarUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
   return _then(_UserLocalModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
+as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

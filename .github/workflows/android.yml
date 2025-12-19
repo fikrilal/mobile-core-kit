@@ -1,0 +1,138 @@
+name: Android CI & Release (template)
+
+# NOTE: This workflow is shipped as a template only.
+# It is configured to run *only* when manually triggered from the Actions tab.
+# If you want automatic runs on push (e.g., to main), uncomment the `push:` block below.
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      KEYSTORE_PATH: /tmp/upload-keystore.jks
+      KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      PLAY_CONFIG_PATH: /tmp/play-credentials.json
+      PLAY_TRACK: internal
+      PLAY_RELEASE_STATUS: draft
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore env YAML configs
+        run: |
+          restore_env() {
+            local content="$1"
+            local destination="$2"
+            if [[ -z "$content" ]]; then
+              echo "Secret for $destination not provided; keeping repo copy."
+              return
+            fi
+            mkdir -p "$(dirname "$destination")"
+            printf '%s\n' "$content" > "$destination"
+            echo "Wrote $destination from secret."
+          }
+
+          restore_env "$ENV_DEV_YAML" .env/dev.yaml
+          restore_env "$ENV_STAGING_YAML" .env/staging.yaml
+          restore_env "$ENV_PROD_YAML" .env/prod.yaml
+        env:
+          ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
+          ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
+          ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+
+      - name: Restore google-services.json
+        run: |
+          if [[ -n "$GOOGLE_SERVICES_JSON" ]]; then
+            printf '%s\n' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            echo "Wrote android/app/google-services.json from secret."
+          elif [[ ! -f android/app/google-services.json ]]; then
+            echo "google-services.json missing and no secret provided."
+            exit 1
+          else
+            echo "Using committed android/app/google-services.json"
+          fi
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            build
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Generate build config (prod env)
+        run: dart run tool/gen_config.dart --env prod
+
+      - name: Run unit tests
+        run: flutter test
+
+      - name: Prepare upload keystore
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Prepare Play credentials (optional)
+        if: ${{ secrets.PLAY_STORE_JSON != '' }}
+        run: |
+          printf '%s' "$PLAY_STORE_JSON" > "$PLAY_CONFIG_PATH"
+          chmod 600 "$PLAY_CONFIG_PATH"
+        env:
+          PLAY_STORE_JSON: ${{ secrets.PLAY_STORE_JSON }}
+
+      - name: Build app bundle (prod)
+        run: flutter build appbundle --release --flavor prod -t lib/main_prod.dart --dart-define=ENV=prod
+
+      - name: Upload app bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appbundle-prod-release
+          path: build/app/outputs/bundle/prodRelease/app-prod-release.aab
+
+      # NOTE (template author):
+      # In my Orymu project I only pushed builds to Google Play as DRAFT and did the final
+      # review/rollout manually from the Play Console. I keep the publish step commented out
+      # here so this boilerplate behaves the same way by default.
+      #
+      # Once you add Gradle Play Publisher (GPP) and a play{} block to android/app/build.gradle.kts,
+      # you can uncomment the step below if you want CI to upload straight to the internal track.
+      # I still recommend leaving PLAY_RELEASE_STATUS=draft and promoting/releasing manually.
+      #
+      # - name: Publish to Play Internal track
+      #   if: ${{ secrets.PLAY_STORE_JSON != '' }}
+      #   working-directory: android
+      #   env:
+      #     DART_DEFINES: RU5WPXByb2Q= # base64 for ENV=prod
+      #   run: ./gradlew :app:publishProdReleaseBundle -Ptarget=lib/main_prod.dart -Pdart-defines=$DART_DEFINES --release-status $PLAY_RELEASE_STATUS

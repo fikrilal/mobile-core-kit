@@ -1,18 +1,15 @@
 /// App-wide domain events.
 ///
-/// This file should only contain:
-/// - The [AppEvent] base class
-/// - Truly cross-cutting events that span multiple features
-///   (e.g. session lifecycle, global settings changes)
+/// Keep this file small:
+/// - The [AppEvent] base class.
+/// - Truly cross-cutting events that span multiple features (e.g. session lifecycle).
 ///
-/// Feature- or domain-specific events should live closer to their feature,
-/// for example:
+/// Feature-specific events should live inside their feature:
 /// - `features/auth/events/auth_events.dart`
 /// - `features/library/events/library_events.dart`
 ///
-/// If you want a single "barrel" of all events, re-export those feature
-/// event files from here instead of adding more concrete classes directly.
-
+/// If you want a single “barrel” of all events, re-export feature event files
+/// from here instead of adding more concrete classes directly.
 abstract class AppEvent {
   const AppEvent();
 }

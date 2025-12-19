@@ -10,6 +10,13 @@ class ErrorInterceptor extends Interceptor {
     // Get error information
     final int? statusCode = err.response?.statusCode;
     final dynamic errorData = err.response?.data;
+    final resolvedMessage = _resolveMessage(errorData) ?? err.message ?? '';
+    final traceId = _resolveString(errorData, 'traceId');
+    if (resolvedMessage.isNotEmpty) {
+      Log.error(
+        'HTTP $statusCode error: $resolvedMessage${traceId == null ? '' : ' (traceId=$traceId)'}',
+      );
+    }
 
     // Handle specific error cases
     switch (statusCode) {
@@ -51,9 +58,7 @@ class ErrorInterceptor extends Interceptor {
     // Token expired, invalid credentials, etc.
     String message = 'Unauthorized';
 
-    if (errorData is Map && errorData.containsKey('message')) {
-      message = errorData['message'];
-    }
+    message = _resolveMessage(errorData) ?? message;
 
     Log.error('Unauthorized: $message');
 
@@ -64,9 +69,7 @@ class ErrorInterceptor extends Interceptor {
     // Access forbidden
     String message = 'Access forbidden';
 
-    if (errorData is Map && errorData.containsKey('message')) {
-      message = errorData['message'];
-    }
+    message = _resolveMessage(errorData) ?? message;
 
     Log.error('Forbidden: $message');
   }
@@ -75,9 +78,7 @@ class ErrorInterceptor extends Interceptor {
     // Resource not found
     String message = 'Resource not found';
 
-    if (errorData is Map && errorData.containsKey('message')) {
-      message = errorData['message'];
-    }
+    message = _resolveMessage(errorData) ?? message;
 
     Log.error('Not Found: $message');
   }
@@ -86,10 +87,28 @@ class ErrorInterceptor extends Interceptor {
     // Server errors
     String message = 'Server error';
 
-    if (errorData is Map && errorData.containsKey('message')) {
-      message = errorData['message'];
-    }
+    message = _resolveMessage(errorData) ?? message;
 
     Log.error('Server Error: $message');
+  }
+
+  String? _resolveMessage(dynamic errorData) {
+    if (errorData is! Map) return null;
+    final title = _resolveString(errorData, 'title');
+    if (title != null) return title;
+    final detail = _resolveString(errorData, 'detail');
+    if (detail != null) return detail;
+    final message = _resolveString(errorData, 'message');
+    if (message != null) return message;
+    final errorMessage = _resolveString(errorData, 'error_message');
+    if (errorMessage != null) return errorMessage;
+    return null;
+  }
+
+  String? _resolveString(dynamic errorData, String key) {
+    if (errorData is! Map) return null;
+    final value = errorData[key];
+    if (value is String && value.isNotEmpty) return value;
+    return null;
   }
 }

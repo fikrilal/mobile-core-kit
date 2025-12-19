@@ -1,0 +1,50 @@
+import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/network/exceptions/api_failure.dart';
+import '../../../../core/utilities/log_utils.dart';
+import '../../../auth/domain/failure/auth_failure.dart';
+import '../../domain/entity/user_entity.dart';
+import '../../domain/repository/user_repository.dart';
+import '../datasource/remote/user_remote_datasource.dart';
+
+class UserRepositoryImpl implements UserRepository {
+  UserRepositoryImpl(this._remote);
+
+  final UserRemoteDataSource _remote;
+
+  @override
+  Future<Either<AuthFailure, UserEntity>> getMe() async {
+    try {
+      final apiResponse = await _remote.getMe();
+      final model = apiResponse.data!;
+      return right(model.toEntity());
+    } on ApiFailure catch (f) {
+      return left(_mapApiFailure(f));
+    } catch (e, st) {
+      Log.error(
+        'GetMe unexpected error',
+        e,
+        st,
+        true,
+        'UserRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  AuthFailure _mapApiFailure(ApiFailure f) {
+    switch (f.statusCode) {
+      case 401:
+        return const AuthFailure.invalidCredentials();
+      case 429:
+        return const AuthFailure.tooManyRequests();
+      case 500:
+        return const AuthFailure.serverError();
+      case -1:
+        return const AuthFailure.network();
+      default:
+        return const AuthFailure.unexpected();
+    }
+  }
+}
+

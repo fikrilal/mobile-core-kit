@@ -10,6 +10,7 @@ import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
 import '../../features/auth/di/auth_module.dart';
+import '../../features/user/di/user_module.dart';
 import '../session/session_manager.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
@@ -79,6 +80,7 @@ Future<void> setupLocator() async {
 
   // Feature modules
   AuthModule.register(locator);
+  UserModule.register(locator);
 
   // Initialize analytics
   await locator<IAnalyticsService>().initialize();

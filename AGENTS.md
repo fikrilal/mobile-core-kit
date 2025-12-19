@@ -106,6 +106,7 @@ silenced with `git config core.autocrlf true`.
     - `docs/engineering/value_objects_validation.md` — Value objects for inputs and form validation.
     - `docs/engineering/firebase_setup.md` — Flavor-aware Firebase + env config.
     - `docs/engineering/testing_strategy.md` — Testing pyramid, patterns, and examples.
+    - `docs/engineering/android_ci_cd.md` — Android CI/CD pipeline and Play upload strategy.
 - Testing rules of the road live in `docs/engineering/testing_strategy.md`. Follow the pyramid +
   naming conventions there, use `bloc_test`/`mocktail`, and ensure every change adds/updates the
   required unit + bloc tests before merging.

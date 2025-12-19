@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import '../entity/refresh_request_entity.dart';
-import '../entity/refresh_response_entity.dart';
+import '../entity/auth_tokens_entity.dart';
 import '../failure/auth_failure.dart';
 import '../repository/auth_repository.dart';
 
@@ -9,7 +9,7 @@ class RefreshTokenUsecase {
 
   RefreshTokenUsecase(this._repository);
 
-  Future<Either<AuthFailure, RefreshResponseEntity>> call(
+  Future<Either<AuthFailure, AuthTokensEntity>> call(
     RefreshRequestEntity request,
   ) async {
     return _repository.refreshToken(request);
