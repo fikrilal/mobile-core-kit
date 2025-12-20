@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
@@ -6,6 +8,9 @@ import '../services/connectivity/connectivity_service_impl.dart';
 import '../services/analytics/analytics_service.dart';
 import '../services/analytics/analytics_service_impl.dart';
 import '../services/analytics/analytics_tracker.dart';
+import '../services/app_launch/app_launch_service.dart';
+import '../services/app_launch/app_launch_service_impl.dart';
+import '../services/app_startup/app_startup_controller.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
@@ -50,6 +55,19 @@ Future<void> setupLocator() async {
     );
   }
 
+  if (!locator.isRegistered<AppLaunchService>()) {
+    locator.registerLazySingleton<AppLaunchService>(() => AppLaunchServiceImpl());
+  }
+
+  if (!locator.isRegistered<AppStartupController>()) {
+    locator.registerLazySingleton<AppStartupController>(
+      () => AppStartupController(
+        appLaunch: locator<AppLaunchService>(),
+        sessionManager: locator<SessionManager>(),
+      ),
+    );
+  }
+
   if (!locator.isRegistered<IAnalyticsService>()) {
     locator.registerLazySingleton<IAnalyticsService>(
       () => AnalyticsServiceImpl(),
@@ -91,10 +109,8 @@ Future<void> setupLocator() async {
   // Initialize session manager (load any existing session)
   await locator<SessionManager>().init();
 
-  // Wait for async dependencies to be ready (if any were registered with signalsReady)
-  if (locator.allReadySync() == false) {
-    await locator.allReady();
-  }
+  // Kick off startup gating checks (onboarding/auth) without blocking app start.
+  unawaited(locator<AppStartupController>().initialize());
 }
 
 /// Resets the service locator (useful for testing).
