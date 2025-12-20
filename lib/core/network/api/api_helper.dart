@@ -118,6 +118,8 @@ class ApiHelper {
     if (listResp.isError) {
       return ApiResponse<ApiPaginatedResult<R>>.error(
         message: listResp.message,
+        code: listResp.code,
+        traceId: listResp.traceId,
         errors: listResp.errors,
         meta: listResp.meta,
         statusCode: listResp.statusCode,
@@ -136,6 +138,8 @@ class ApiHelper {
     return ApiResponse<ApiPaginatedResult<R>>.success(
       data: paginated,
       message: listResp.message,
+      code: listResp.code,
+      traceId: listResp.traceId,
       meta: listResp.meta,
       statusCode: listResp.statusCode,
     );
@@ -184,6 +188,8 @@ class ApiHelper {
     if (listResp.isError) {
       return ApiResponse<ApiPaginatedResult<R>>.error(
         message: listResp.message,
+        code: listResp.code,
+        traceId: listResp.traceId,
         errors: listResp.errors,
         meta: listResp.meta,
         statusCode: listResp.statusCode,
@@ -202,6 +208,8 @@ class ApiHelper {
     return ApiResponse<ApiPaginatedResult<R>>.success(
       data: paginated,
       message: listResp.message,
+      code: listResp.code,
+      traceId: listResp.traceId,
       meta: listResp.meta,
       statusCode: listResp.statusCode,
     );
@@ -390,6 +398,8 @@ class ApiHelper {
       if (throwOnError) throw failure;
       return ApiResponse.error(
         message: failure.message,
+        code: failure.code,
+        traceId: failure.traceId,
         statusCode: failure.statusCode,
       );
     }
@@ -429,6 +439,8 @@ class ApiHelper {
       return ApiResponse.error(
         statusCode: failure.statusCode,
         message: failure.message,
+        code: failure.code,
+        traceId: failure.traceId,
         errors: failure.validationErrors,
       );
     } catch (e, st) {
@@ -442,6 +454,8 @@ class ApiHelper {
       return ApiResponse.error(
         statusCode: failure.statusCode,
         message: failure.message,
+        code: failure.code,
+        traceId: failure.traceId,
       );
     }
   }
@@ -488,9 +502,14 @@ class ApiHelper {
 
     final raw = response.data;
 
-    // Use ApiResponse.fromJson for structured parsing when the backend
-    // returns the standard { status, data, message, meta } envelope.
-    if (raw is Map && raw.containsKey('status')) {
+    // Use ApiResponse.fromJson only when the backend returns the standard
+    // envelope: { status: "success" | "error", data?, message?, meta?, errors? }.
+    //
+    // Important: don't treat arbitrary payloads that happen to have a `status`
+    // key (e.g. RFC7807 uses `status: 401`) as our envelope.
+    if (raw is Map &&
+        raw['status'] is String &&
+        (raw['status'] == 'success' || raw['status'] == 'error')) {
       final T Function(dynamic) effectiveParser =
           parser ?? (dynamic d) => d as T;
 

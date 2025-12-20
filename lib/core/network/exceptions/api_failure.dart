@@ -21,6 +21,8 @@ class ApiFailure implements Exception {
     return ApiFailure(
       message: response.message ?? 'Unknown error',
       statusCode: response.statusCode,
+      code: response.code,
+      traceId: response.traceId,
       validationErrors: response.errors,
     );
   }

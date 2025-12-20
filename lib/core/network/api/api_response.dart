@@ -5,6 +5,8 @@ class ApiResponse<T> {
   final String status; // "success" | "error"
   final T? data;
   final String? message;
+  final String? code;
+  final String? traceId;
   final Map<String, dynamic>? meta;
   final List<ValidationError>? errors;
   final int? statusCode; // HTTP status code for client-side tracking
@@ -13,6 +15,8 @@ class ApiResponse<T> {
     required this.status,
     this.data,
     this.message,
+    this.code,
+    this.traceId,
     this.meta,
     this.errors,
     this.statusCode,
@@ -22,24 +26,32 @@ class ApiResponse<T> {
   factory ApiResponse.success({
     required T data,
     String? message,
+    String? code,
+    String? traceId,
     Map<String, dynamic>? meta,
     int? statusCode,
   }) => ApiResponse._(
     status: 'success',
     data: data,
     message: message,
+    code: code,
+    traceId: traceId,
     meta: meta,
     statusCode: statusCode,
   );
 
   factory ApiResponse.error({
     String? message,
+    String? code,
+    String? traceId,
     List<ValidationError>? errors,
     Map<String, dynamic>? meta,
     int? statusCode,
   }) => ApiResponse._(
     status: 'error',
     message: message ?? 'An unexpected error occurred',
+    code: code,
+    traceId: traceId,
     errors: errors,
     meta: meta,
     statusCode: statusCode,
@@ -54,6 +66,8 @@ class ApiResponse<T> {
     int? statusCode,
   }) {
     final status = json['status'] as String;
+    final code = json['code'] as String?;
+    final traceId = json['traceId'] as String?;
 
     if (status == 'success') {
       final rawData = json['data'];
@@ -63,12 +77,16 @@ class ApiResponse<T> {
           return ApiResponse.success(
             data: const ApiNoData() as T,
             message: json['message'],
+            code: code,
+            traceId: traceId,
             meta: json['meta'] as Map<String, dynamic>?,
             statusCode: statusCode,
           );
         }
         return ApiResponse.error(
           message: 'No data received in successful response',
+          code: code,
+          traceId: traceId,
           statusCode: statusCode,
         );
       }
@@ -80,6 +98,8 @@ class ApiResponse<T> {
       if (parsedData == null) {
         return ApiResponse.error(
           message: 'Failed to parse response data',
+          code: code,
+          traceId: traceId,
           statusCode: statusCode,
         );
       }
@@ -87,6 +107,8 @@ class ApiResponse<T> {
       return ApiResponse.success(
         data: parsedData as T,
         message: json['message'],
+        code: code,
+        traceId: traceId,
         meta: json['meta'] as Map<String, dynamic>?,
         statusCode: statusCode,
       );
@@ -101,6 +123,8 @@ class ApiResponse<T> {
 
       return ApiResponse.error(
         message: json['message'],
+        code: code,
+        traceId: traceId,
         errors: validationErrors,
         meta: json['meta'] as Map<String, dynamic>?,
         statusCode: statusCode,
@@ -136,6 +160,6 @@ class ApiResponse<T> {
   @override
   String toString() {
     return 'ApiResponse(status: $status, data: $data, message: $message, '
-        'meta: $meta, errors: $errors, statusCode: $statusCode)';
+        'code: $code, traceId: $traceId, meta: $meta, errors: $errors, statusCode: $statusCode)';
   }
 }

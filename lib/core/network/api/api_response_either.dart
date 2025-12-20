@@ -14,6 +14,8 @@ extension ApiResponseEitherX<T> on ApiResponse<T> {
       ApiFailure(
         message: message ?? fallbackMessage,
         statusCode: statusCode,
+        code: code,
+        traceId: traceId,
         validationErrors: errors,
       ),
     );

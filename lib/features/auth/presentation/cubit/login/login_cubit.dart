@@ -130,7 +130,9 @@ class LoginCubit extends Cubit<LoginState> {
   void _handleFailure(AuthFailure failure) {
     failure.map(
       network: (_) => _emitError(failure.userMessage),
+      unauthenticated: (_) => _emitError(failure.userMessage),
       emailTaken: (_) => _emitError(failure.userMessage),
+      emailNotVerified: (_) => _emitError(failure.userMessage),
       validation: (v) {
         String? emailError;
         String? passwordError;

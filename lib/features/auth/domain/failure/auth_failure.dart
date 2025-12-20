@@ -6,7 +6,13 @@ part 'auth_failure.freezed.dart';
 @freezed
 sealed class AuthFailure with _$AuthFailure {
   const factory AuthFailure.network() = _NetworkFailure;
+  /// Session is missing/expired or the user is not authenticated.
+  ///
+  /// Use this for protected endpoints that return 401 (e.g. `GET /users/me`),
+  /// not for login failures (use [invalidCredentials] instead).
+  const factory AuthFailure.unauthenticated() = _UnauthenticatedFailure;
   const factory AuthFailure.emailTaken() = _EmailTakenFailure;
+  const factory AuthFailure.emailNotVerified() = _EmailNotVerifiedFailure;
   const factory AuthFailure.validation(List<ValidationError> errors) =
       _ValidationFailure;
   // Login
@@ -20,7 +26,9 @@ extension AuthFailureX on AuthFailure {
   /// Human-readable message for generic snackbars, dialogs, etc.
   String get userMessage => when(
     network: () => 'Please check your internet connection and try again.',
+    unauthenticated: () => 'Session expired. Please sign in again.',
     emailTaken: () => 'Email already in use.',
+    emailNotVerified: () => 'Please verify your email before continuing.',
     validation: (_) => 'Please fix the highlighted errors',
     invalidCredentials: () => 'Invalid email or password',
     tooManyRequests: () => 'Too many requests. Please try again later.',
