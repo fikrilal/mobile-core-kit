@@ -9,6 +9,7 @@ import '../model/remote/login_request_model.dart';
 import '../model/remote/refresh_request_model.dart';
 import '../model/remote/register_request_model.dart';
 import '../model/remote/auth_session_model.dart';
+import '../../../../../core/network/api/api_response_either.dart';
 import '../../../../../core/network/exceptions/api_failure.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../../domain/entity/register_request_entity.dart';
@@ -28,10 +29,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final apiResponse = await _remote.register(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      return right(model.toEntity());
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Register failed.')
+          .mapLeft(_mapApiFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Register user unexpected error',
@@ -52,10 +53,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final apiResponse = await _remote.login(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      return right(model.toEntity());
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Login failed.')
+          .mapLeft(_mapApiFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Login user unexpected error',
@@ -75,10 +76,10 @@ class AuthRepositoryImpl implements AuthRepository {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.refreshToken(apiRequest);
-      final tokens = apiResponse.data!;
-      return right(tokens.toEntity());
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Token refresh failed.')
+          .mapLeft(_mapApiFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Refresh token unexpected error',
@@ -98,9 +99,11 @@ class AuthRepositoryImpl implements AuthRepository {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.logout(apiRequest);
-      return right(apiResponse.message);
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      final message = apiResponse.message;
+      return apiResponse
+          .toEitherWithFallback('Logout failed.')
+          .mapLeft(_mapApiFailure)
+          .map((_) => message);
     } catch (e, st) {
       Log.error(
         'Logout unexpected error',
@@ -119,31 +122,17 @@ class AuthRepositoryImpl implements AuthRepository {
         return const AuthFailure.invalidCredentials();
       case 429:
         return const AuthFailure.tooManyRequests();
-      case 500:
-        return const AuthFailure.serverError();
       case 409:
-        final msg = f.message.toLowerCase();
-        if (msg.contains('email')) return const AuthFailure.emailTaken();
-        if (msg.contains('username')) return const AuthFailure.usernameTaken();
-
-        return const AuthFailure.usernameTaken();
+        return const AuthFailure.emailTaken();
       case 422:
       case 400:
-        final hasValidationErrors = (f.validationErrors ?? []).isNotEmpty;
-        if (!hasValidationErrors) {
-          final msg = f.message.toLowerCase();
-          if (msg.contains('already') && msg.contains('email')) {
-            return const AuthFailure.emailTaken();
-          }
-          if (msg.contains('already') && msg.contains('username')) {
-            return const AuthFailure.usernameTaken();
-          }
-        }
-        return AuthFailure.validation(f.validationErrors ?? []);
+        return AuthFailure.validation(f.validationErrors ?? const []);
       case -1:
         return const AuthFailure.network();
       default:
-        return const AuthFailure.unexpected();
+        // Fallback for server errors and unexpected shapes.
+        if ((f.statusCode ?? 0) >= 500) return const AuthFailure.serverError();
+        return AuthFailure.unexpected(message: f.message);
     }
   }
 
@@ -158,22 +147,10 @@ class AuthRepositoryImpl implements AuthRepository {
         name: 'AuthRepository',
       );
       final apiResponse = await _remote.googleMobileSignIn(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      final session = model.toEntity();
-      Log.info(
-        'Google mobile exchange success; token lengths (access=${session.tokens.accessToken.length}, refresh=${session.tokens.refreshToken.length})',
-        name: 'AuthRepository',
-      );
-      return right(session);
-    } on ApiFailure catch (f) {
-      Log.error(
-        'Google mobile exchange failed',
-        f,
-        StackTrace.current,
-        true,
-        'AuthRepository',
-      );
-      return left(_mapApiFailureForGoogle(f));
+      return apiResponse
+          .toEitherWithFallback('Google sign-in failed.')
+          .mapLeft(_mapApiFailureForGoogle)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Unexpected error during Google mobile exchange',
@@ -193,15 +170,14 @@ class AuthRepositoryImpl implements AuthRepository {
         return const AuthFailure.invalidCredentials();
       case 400:
         // Invalid/missing token, audience/issuer mismatch, expired token
-        return AuthFailure.validation(f.validationErrors ?? []);
+        return AuthFailure.validation(f.validationErrors ?? const []);
       case 429:
         return const AuthFailure.tooManyRequests();
-      case 500:
-        return const AuthFailure.serverError();
       case -1:
         return const AuthFailure.network();
       default:
-        return const AuthFailure.unexpected();
+        if ((f.statusCode ?? 0) >= 500) return const AuthFailure.serverError();
+        return AuthFailure.unexpected(message: f.message);
     }
   }
 }

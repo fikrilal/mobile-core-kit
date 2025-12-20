@@ -25,10 +25,6 @@ class SignInPage extends StatelessWidget {
               state.errorMessage != null) {
             AppSnackBar.showError(context, message: state.errorMessage!);
           }
-
-          if (state.status == LoginStatus.success) {
-            // TODO: Navigate to main shell route, e.g. context.go('/main');
-          }
         },
         child: const _SignInForm(),
       ),

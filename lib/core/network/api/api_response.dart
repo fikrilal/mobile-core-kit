@@ -1,32 +1,5 @@
 import 'no_data.dart';
-
-class ValidationError {
-  final String? field;
-  final String message;
-  final String? code;
-
-  const ValidationError({this.field, required this.message, this.code});
-
-  factory ValidationError.fromJson(Map<String, dynamic> json) {
-    return ValidationError(
-      field: json['field'],
-      message: json['message'] ?? 'Unknown error',
-      code: json['code'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      if (field != null) 'field': field,
-      'message': message,
-      if (code != null) 'code': code,
-    };
-  }
-
-  @override
-  String toString() =>
-      'ValidationError(field: $field, message: $message, code: $code)';
-}
+import '../../validation/validation_error.dart';
 
 class ApiResponse<T> {
   final String status; // "success" | "error"
@@ -142,10 +115,12 @@ class ApiResponse<T> {
 
   // Get first validation error for a specific field
   ValidationError? getFieldError(String field) {
-    return errors?.firstWhere(
-      (error) => error.field == field,
-      orElse: () => ValidationError(message: ''),
-    );
+    final list = errors;
+    if (list == null) return null;
+    for (final error in list) {
+      if (error.field == field) return error;
+    }
+    return null;
   }
 
   // Get all validation errors for a specific field

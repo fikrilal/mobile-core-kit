@@ -27,10 +27,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('User registration successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'User registration failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -44,10 +50,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('User login successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'User login failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -61,10 +73,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthTokensModel.fromJson,
     );
 
-    Log.info('Token refreshed successfully', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Token refresh failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -77,10 +95,16 @@ class AuthRemoteDataSource {
       AuthEndpoint.logout,
       data: requestModel.toJson(),
       host: ApiHost.auth,
+      throwOnError: false,
       parser: (_) => const ApiNoData(),
     );
 
-    Log.info('Logout request completed', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Logout failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -95,10 +119,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('Google mobile sign-in successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Google mobile sign-in failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 }

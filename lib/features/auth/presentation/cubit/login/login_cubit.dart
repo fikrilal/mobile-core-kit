@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
 
 import '../../../analytics/auth_analytics_screens.dart';
 import '../../../analytics/auth_analytics_targets.dart';
@@ -131,7 +131,6 @@ class LoginCubit extends Cubit<LoginState> {
     failure.map(
       network: (_) => _emitError(failure.userMessage),
       emailTaken: (_) => _emitError(failure.userMessage),
-      usernameTaken: (_) => _emitError(failure.userMessage),
       validation: (v) {
         String? emailError;
         String? passwordError;
@@ -178,13 +177,6 @@ class LoginCubit extends Cubit<LoginState> {
         errorMessage: null,
       ),
     );
-
-    // Navigation to main shell should be handled in the UI layer
-    // using a BlocListener, e.g.:
-    //
-    // if (state.status == LoginStatus.success) {
-    //   // TODO: Navigate to main shell route, e.g. context.go('/main');
-    // }
   }
 
   void _emitError(String message) {

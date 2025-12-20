@@ -17,10 +17,16 @@ class UserRemoteDataSource {
     final response = await _apiHelper.getOne<UserModel>(
       UserEndpoint.me,
       host: ApiHost.profile,
+      throwOnError: false,
       parser: UserModel.fromJson,
     );
 
-    Log.info('Fetched current user successfully', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Fetching current user failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 }

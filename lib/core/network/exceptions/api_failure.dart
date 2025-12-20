@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../api/api_response.dart';
+import '../../validation/validation_error.dart';
 
 class ApiFailure implements Exception {
   final String message;

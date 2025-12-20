@@ -6,7 +6,7 @@ import '../repository/auth_repository.dart';
 import '../value/email_address.dart';
 import '../value/login_password.dart';
 import '../value/value_failure.dart';
-import '../../../../core/network/api/api_response.dart';
+import '../../../../core/validation/validation_error.dart';
 
 class LoginUserUseCase {
   final AuthRepository _repository;
