@@ -40,7 +40,7 @@ See also: `docs/engineering/project_architecture.md`.
 - Domain Value Objects
   - Define `create(String)` returning `Either<ValueFailure, VO>`.
   - Keep rules (regex/length/format) in one place.
-  - Files: `lib/features/auth/domain/value/*.dart` (e.g., `email_address.dart`, `password.dart`, `confirm_password.dart`, `display_name.dart`, `username.dart`).
+  - Files: `lib/features/auth/domain/value/*.dart` (e.g., `email_address.dart`, `login_password.dart`, `password.dart`, `confirm_password.dart`, `display_name.dart`).
 
 - Presentation (Bloc/Cubit, real‑time validation)
   - On each field‑change event, call `VO.create(value)` and store `errorText` in state.
@@ -124,10 +124,10 @@ This gives fast feedback without compromising correctness if UI code is bypassed
 
 - Value Objects (examples)
   - `lib/features/auth/domain/value/email_address.dart:1`
+  - `lib/features/auth/domain/value/login_password.dart:1`
   - `lib/features/auth/domain/value/password.dart:1`
   - `lib/features/auth/domain/value/confirm_password.dart:1`
   - `lib/features/auth/domain/value/display_name.dart:1`
-  - `lib/features/auth/domain/value/username.dart:1`
 
 - Use cases (final gate location)
   - `lib/features/auth/domain/usecase/login_user_usecase.dart:1`
@@ -138,12 +138,8 @@ This gives fast feedback without compromising correctness if UI code is bypassed
   - `lib/features/auth/domain/failure/auth_failure.dart:1`
 
 - Bloc/Cubit patterns (real‑time validation)
-  - `lib/features/auth/presentation/bloc/login/auth_login_bloc.dart:1`
-  - `lib/features/auth/presentation/bloc/register/auth_register_bloc.dart:1`
-  - `lib/features/auth/presentation/bloc/username/auth_username_bloc.dart:1`
-  - `lib/features/auth/subfeatures/forgot_password/presentation/bloc/forgot_password_bloc.dart:1`
-  - `lib/features/auth/subfeatures/reset_password/presentation/bloc/reset_password_bloc.dart:1`
-  - `lib/features/profile/subfeatures/update_password/presentation/bloc/update_password_bloc.dart:1`
+  - `lib/features/auth/presentation/cubit/login/login_cubit.dart:1`
+  - `lib/features/auth/presentation/pages/sign_in_page.dart:1`
 
 - UI state guide (complementary)
   - `docs/engineering/ui_state_architecture.md:1`

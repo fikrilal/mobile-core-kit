@@ -1,8 +1,8 @@
-# Orymu API Helper Guide
+# API Helper Guide
 
 > **Audience:** Backend integrators, data‑source authors, and anyone touching the network layer
 >
-> **Scope:** How to call the `ApiHelper`, parse responses, handle errors, and log/trace requests in a Clean‑Architecture + GetX Flutter codebase.
+> **Scope:** How to call the `ApiHelper`, parse responses, handle errors, and log/trace requests in a Clean Architecture + GetIt + Bloc/Cubit Flutter codebase.
 
 ---
 
@@ -592,7 +592,7 @@ final response = await ApiRetryService.withRetry(() =>
 class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   @override
   Future<ApiResponse<List<BookRemoteModel>>> getUserBooks() async {
-    Log.info('📚 Fetching user books', name: 'BookDataSource');
+    Log.info('Fetching user books', name: 'BookDataSource');
 
     final response = await _apiHelper.getList<BookRemoteModel>(
       '/books/my-library',
@@ -600,9 +600,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     );
 
     if (response.isSuccess) {
-      Log.info('📚 Successfully loaded ${response.data!.length} books', name: 'BookDataSource');
+      Log.info('Successfully loaded ${response.data!.length} books', name: 'BookDataSource');
     } else {
-      Log.error('📚 Failed to load books: ${response.message}', name: 'BookDataSource');
+      Log.error('Failed to load books: ${response.message}', name: 'BookDataSource');
     }
 
     return response;
@@ -763,4 +763,4 @@ class ValidationException implements Exception {
 - Catch all exceptions without specific handling
 - Let exceptions bubble up to UI without proper handling
 
-Your network layer is now perfectly aligned with your backend structure! 🚀
+Your network layer is now perfectly aligned with your backend structure.
