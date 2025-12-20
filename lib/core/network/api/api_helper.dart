@@ -5,6 +5,7 @@ import '../../services/connectivity/connectivity_service.dart';
 import '../../services/connectivity/connectivity_service_impl.dart';
 import 'api_paginated_result.dart';
 import 'api_response.dart';
+import 'no_data.dart';
 import '../exceptions/api_failure.dart';
 
 typedef JsonParser<R> = R Function(Map<String, dynamic> json);
@@ -476,6 +477,12 @@ class ApiHelper {
 
     // Handle 204 NO CONTENT ---------------------------------------------------
     if (statusCode == 204) {
+      if (T == ApiNoData) {
+        return ApiResponse<T>.success(
+          data: const ApiNoData() as T,
+          statusCode: statusCode,
+        );
+      }
       return ApiResponse<T>.success(data: null as T, statusCode: statusCode);
     }
 
@@ -504,13 +511,25 @@ class ApiHelper {
     int statusCode,
   ) {
     try {
+      if (parser == null && T == ApiNoData) {
+        return ApiResponse<T>.success(
+          data: const ApiNoData() as T,
+          statusCode: statusCode,
+        );
+      }
+
+      final dynamic effectiveRaw =
+          (rawData is Map && rawData.containsKey('data') && rawData['data'] != null)
+              ? rawData['data']
+              : rawData;
+
       T parsed;
 
       if (parser != null) {
-        parsed = parser(rawData);
+        parsed = parser(effectiveRaw);
       } else {
         // Fallback for primitive or already-typed data.
-        parsed = rawData as T;
+        parsed = effectiveRaw as T;
       }
 
       return ApiResponse<T>.success(data: parsed, statusCode: statusCode);

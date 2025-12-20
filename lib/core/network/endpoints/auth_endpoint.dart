@@ -6,7 +6,9 @@ class AuthEndpoint {
   static const String login = passwordLogin;
 
   static const String register = '/auth/register';
-  static const String refreshToken = '/auth/refresh-token';
+
+  /// Refresh access token using a refresh token.
+  static const String refreshToken = '/auth/password/refresh';
   static const String logout = '/auth/logout';
   static const String googleMobile = '/auth/google/mobile';
 }

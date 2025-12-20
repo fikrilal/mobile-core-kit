@@ -75,20 +75,8 @@ class AuthRepositoryImpl implements AuthRepository {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.refreshToken(apiRequest);
-      final model = apiResponse.data!;
-      if (model.accessToken == null ||
-          model.refreshToken == null ||
-          model.expiresIn == null) {
-        return left(const AuthFailure.unexpected());
-      }
-      return right(
-        AuthTokensEntity(
-          accessToken: model.accessToken!,
-          refreshToken: model.refreshToken!,
-          tokenType: 'Bearer',
-          expiresIn: model.expiresIn!,
-        ),
-      );
+      final tokens = apiResponse.data!;
+      return right(tokens.toEntity());
     } on ApiFailure catch (f) {
       return left(_mapApiFailure(f));
     } catch (e, st) {
