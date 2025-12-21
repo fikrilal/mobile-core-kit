@@ -430,9 +430,20 @@ class ApiHelper {
         throw ApiFailure.fromApiResponse(result);
       }
       return result;
+    } on ApiFailure catch (failure) {
+      // ApiFailure can be thrown even when Dio doesn't throw (e.g., a 200 response
+      // with an "error" envelope). Preserve it rather than wrapping as "unexpected".
+      if (throwOnError) rethrow;
+      return ApiResponse.error(
+        statusCode: failure.statusCode,
+        message: failure.message,
+        code: failure.code,
+        traceId: failure.traceId,
+        errors: failure.validationErrors,
+      );
     } on DioException catch (e, st) {
       // 5) network / 4xx / 5xx errors ----------------------------------------
-      Log.error('ApiHelper DioException: $e', 'ApiHelper', st);
+      Log.error('ApiHelper DioException: $e', e, st, false, 'ApiHelper');
 
       final failure = ApiFailure.fromDioException(e);
       if (throwOnError) throw failure;
@@ -445,7 +456,7 @@ class ApiHelper {
       );
     } catch (e, st) {
       // 6) anything else (parsing etc.) ---------------------------------------
-      Log.wtf('ApiHelper unexpected error: $e', st);
+      Log.wtf('ApiHelper unexpected error: $e', e, st, false, 'ApiHelper');
       final failure = ApiFailure(
         message: 'Unexpected error: ${e.toString()}',
         statusCode: -3,

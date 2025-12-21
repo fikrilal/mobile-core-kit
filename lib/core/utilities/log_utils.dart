@@ -1,7 +1,6 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import '../configs/app_config.dart';
 import '../configs/build_config.dart';
 
 /// Centralized logging utility for the XXX app.
@@ -95,7 +94,7 @@ class Log {
     final bool shouldLog = BuildConfig.logEnabled;
     final String levelName = _levelNames[level] ?? 'UNKNOWN';
     final String logMessage = '[$levelName] $message';
-    final String logTag = name ?? AppConfig.instance.environment.toUpperCase();
+    final String logTag = name ?? BuildConfig.env.name.toUpperCase();
 
     if (shouldLog) {
       developer.log(logMessage, name: logTag, error: error, stackTrace: stackTrace);
