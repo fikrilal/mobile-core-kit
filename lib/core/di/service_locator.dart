@@ -64,6 +64,7 @@ Future<void> setupLocator() async {
     locator.registerLazySingleton<AppStartupController>(
       () => AppStartupController(
         appLaunch: locator<AppLaunchService>(),
+        connectivity: locator<ConnectivityService>(),
         sessionManager: locator<SessionManager>(),
         getMe: locator<GetMeUseCase>(),
       ),

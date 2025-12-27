@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../app_launch/app_launch_service.dart';
+import '../connectivity/connectivity_service.dart';
+import '../connectivity/network_status.dart';
 import '../../session/session_manager.dart';
 import '../../../features/user/domain/usecase/get_me_usecase.dart';
 import '../../../features/auth/domain/failure/auth_failure.dart';
@@ -11,24 +15,39 @@ enum AppStartupStatus { idle, initializing, ready }
 class AppStartupController extends ChangeNotifier {
   AppStartupController({
     required AppLaunchService appLaunch,
+    required ConnectivityService connectivity,
     required SessionManager sessionManager,
     required GetMeUseCase getMe,
   }) : _appLaunch = appLaunch,
+       _connectivity = connectivity,
        _sessionManager = sessionManager {
     _getMe = getMe;
-    _sessionListener = () => notifyListeners();
+    _sessionListener = () {
+      notifyListeners();
+      _maybeHydrateUser();
+    };
     _sessionManager.sessionNotifier.addListener(_sessionListener);
+
+    _connectivitySub = _connectivity.networkStatusStream.listen((status) {
+      if (status == NetworkStatus.online) {
+        _maybeHydrateUser(force: true);
+      }
+    });
   }
 
   final AppLaunchService _appLaunch;
+  final ConnectivityService _connectivity;
   final SessionManager _sessionManager;
   late final GetMeUseCase _getMe;
   late final VoidCallback _sessionListener;
+  StreamSubscription<NetworkStatus>? _connectivitySub;
 
   AppStartupStatus _status = AppStartupStatus.idle;
   bool? _shouldShowOnboarding;
-  bool _didAttemptHydration = false;
   bool _isHydratingUser = false;
+  DateTime? _lastHydrationAttemptAt;
+
+  static const Duration _hydrationCooldown = Duration(seconds: 15);
 
   AppStartupStatus get status => _status;
   bool get isReady => _status == AppStartupStatus.ready;
@@ -53,7 +72,7 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.ready;
     notifyListeners();
 
-    _maybeHydrateUser();
+    _maybeHydrateUser(force: true);
   }
 
   Future<void> completeOnboarding() async {
@@ -61,15 +80,21 @@ class AppStartupController extends ChangeNotifier {
     _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
     notifyListeners();
 
-    _maybeHydrateUser();
+    _maybeHydrateUser(force: true);
   }
 
-  void _maybeHydrateUser() {
-    if (_didAttemptHydration) return;
+  void _maybeHydrateUser({bool force = false}) {
     if (_shouldShowOnboarding ?? true) return;
     if (!_sessionManager.isAuthPending) return;
+    if (_isHydratingUser) return;
 
-    _didAttemptHydration = true;
+    final now = DateTime.now();
+    if (!force && _lastHydrationAttemptAt != null) {
+      final diff = now.difference(_lastHydrationAttemptAt!);
+      if (diff < _hydrationCooldown) return;
+    }
+
+    _lastHydrationAttemptAt = now;
     _hydrateUser();
   }
 
@@ -117,6 +142,7 @@ class AppStartupController extends ChangeNotifier {
 
   @override
   void dispose() {
+    unawaited(_connectivitySub?.cancel());
     _sessionManager.sessionNotifier.removeListener(_sessionListener);
     super.dispose();
   }

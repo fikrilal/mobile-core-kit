@@ -7,7 +7,7 @@ class EmailAddress {
 
   static Either<ValueFailure, EmailAddress> create(String input) {
     final trimmed = input.trim();
-    final regex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+');
+    final regex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
     if (regex.hasMatch(trimmed)) {
       return right(EmailAddress._(trimmed));
     } else {
