@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../features/auth/domain/entity/refresh_request_entity.dart';
 import '../../features/auth/domain/entity/auth_session_entity.dart';
 import '../../features/auth/domain/entity/auth_tokens_entity.dart';
+import '../../features/auth/domain/failure/auth_failure.dart';
 import '../../features/auth/domain/usecase/refresh_token_usecase.dart';
 import '../events/app_event.dart';
 import '../events/app_event_bus.dart';
@@ -84,15 +85,28 @@ class SessionManager {
 
     return result.match(
       (failure) async {
-        Log.error(
-          'Refresh failed – logging out',
-          Exception('Token refresh failure: $failure'),
-          StackTrace.current,
-          true,
-          'SessionManager',
+        final shouldLogout = failure.maybeWhen(
+          unauthenticated: () => true,
+          orElse: () => false,
         );
-        _events.publish(const SessionExpired(reason: 'refresh_failed'));
-        await logout(reason: 'refresh_failed');
+
+        if (shouldLogout) {
+          Log.error(
+            'Refresh failed – logging out',
+            Exception('Token refresh failure: $failure'),
+            StackTrace.current,
+            true,
+            'SessionManager',
+          );
+          _events.publish(const SessionExpired(reason: 'refresh_failed'));
+          await logout(reason: 'refresh_failed');
+          return false;
+        }
+
+        Log.warning(
+          'Refresh failed (not logging out): ${failure.runtimeType}',
+          name: 'SessionManager',
+        );
         return false;
       },
       (tokens) async {
