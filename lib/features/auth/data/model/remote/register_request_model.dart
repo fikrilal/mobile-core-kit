@@ -8,11 +8,10 @@ part 'register_request_model.g.dart';
 @freezed
 abstract class RegisterRequestModel with _$RegisterRequestModel {
   const factory RegisterRequestModel({
-    required String displayName,
     required String email,
     required String password,
-    required String timezone,
-    required String profileVisibility,
+    required String firstName,
+    required String lastName,
   }) = _RegisterRequestModel;
 
   const RegisterRequestModel._();
@@ -22,11 +21,10 @@ abstract class RegisterRequestModel with _$RegisterRequestModel {
 
   factory RegisterRequestModel.fromEntity(RegisterRequestEntity entity) {
     return RegisterRequestModel(
-      displayName: entity.displayName,
       email: entity.email,
       password: entity.password,
-      timezone: entity.timezone,
-      profileVisibility: entity.profileVisibility,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
     );
   }
 }

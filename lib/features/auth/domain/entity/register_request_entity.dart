@@ -5,10 +5,9 @@ part 'register_request_entity.freezed.dart';
 @freezed
 abstract class RegisterRequestEntity with _$RegisterRequestEntity {
   const factory RegisterRequestEntity({
-    required String displayName,
     required String email,
     required String password,
-    required String timezone,
-    required String profileVisibility,
+    required String firstName,
+    required String lastName,
   }) = _RegisterRequestEntity;
 }

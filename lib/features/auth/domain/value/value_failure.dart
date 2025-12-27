@@ -28,7 +28,7 @@ extension ValueFailureX on ValueFailure {
     missingNumber: (_) => 'Password must include at least one number',
     passwordsDoNotMatch: (_) => 'Passwords do not match',
     empty: (_) => 'This field cannot be empty',
-    shortName: (_) => 'Display name must be at least 2 characters',
-    longName: (_) => 'Display name cannot exceed 50 characters',
+    shortName: (_) => 'Must be at least 2 characters',
+    longName: (_) => 'Cannot exceed 50 characters',
   );
 }

@@ -5,7 +5,8 @@ class AuthEndpoint {
   @Deprecated('Use passwordLogin.')
   static const String login = passwordLogin;
 
-  static const String register = '/auth/register';
+  /// Email/password register.
+  static const String register = '/auth/password/register';
 
   /// Refresh access token using a refresh token.
   static const String refreshToken = '/auth/password/refresh';
