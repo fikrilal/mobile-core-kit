@@ -138,6 +138,6 @@ void main(List<String> argv) {
   }
 
   File(
-    'lib/core/configs/build_config.g.dart',
+    'lib/core/configs/build_config_values.dart',
   ).writeAsStringSync(buffer.toString());
 }

@@ -62,7 +62,7 @@ silenced with `git config core.autocrlf true`.
 ## Security & Config
 
 - Do not commit secrets; tokens flow via `AppConfig.init` and secure storage.
-- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config.g.dart`.
+- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config_values.dart`.
 - Firebase: ensure platform configs are present and FCM background handler remains registered.
 
 ## Agent Preferences (Code Authoring)

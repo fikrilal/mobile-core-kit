@@ -1,5 +1,5 @@
 import 'api_host.dart';
-part 'build_config.g.dart';
+part 'build_config_values.dart';
 
 enum BuildEnv { dev, stage, prod }
 

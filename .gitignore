@@ -33,9 +33,6 @@ migrate_working_dir/
 /build/
 /coverage/
 
-# Generated configuration
-lib/core/configs/build_config.g.dart
-
 # Firebase platform configs (can be regenerated via flutterfire configure)
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
@@ -57,3 +54,4 @@ app.*.map.json
 # Environment configuration
 .env/*.yaml
 !.env/*.example.yaml
+lib/core/configs/build_config_values.dart

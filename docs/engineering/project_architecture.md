@@ -238,7 +238,7 @@ Conventions:
 
 ## 8) Config & Environments
 
-- Environment YAMLs live under `env/`. The generator `tool/gen_config.dart` produces `lib/core/configs/build_config.g.dart`.
+- Environment YAMLs live under `.env/`. The generator `tool/gen_config.dart` produces `lib/core/configs/build_config_values.dart`.
 - `BuildConfig` reads compile‑time env via `--dart-define=ENV=<env>` and exposes URLs, logging flags, and OAuth client IDs.
 - `AppConfig` holds runtime config (e.g., access token) and proxies to `BuildConfig` for hosts and flags.
 

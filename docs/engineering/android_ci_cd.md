@@ -34,7 +34,7 @@ High‑level steps in `android.yml`:
 3. Restore `android/app/google-services.json` from secret (or fail if missing).
 4. Setup Flutter + Java (Temurin 21) and cache pub/Gradle.
 5. Run `flutter pub get`.
-6. Generate `build_config.g.dart` for `prod` via `dart run tool/gen_config.dart --env prod`.
+6. Generate `build_config_values.dart` for `prod` via `dart run tool/gen_config.dart --env prod`.
 7. Run `flutter test`.
 8. Optionally materialize the upload keystore and Play service-account credentials.
 9. Build the prod app bundle:
@@ -175,4 +175,3 @@ manually via the Play Console. After that:
 This pipeline is deliberately conservative: it guarantees a reproducible prod build and an artifact
 on every run, but leaves the final “push to users” step in your hands. Enable the publish step only
 when you’re confident in the process and comfortable with CI owning uploads. 
-
