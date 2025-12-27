@@ -19,13 +19,12 @@ import '../domain/usecase/logout_user_usecase.dart';
 import '../domain/usecase/refresh_token_usecase.dart';
 import '../domain/usecase/register_user_usecase.dart';
 import '../presentation/cubit/login/login_cubit.dart';
+import '../presentation/cubit/register/register_cubit.dart';
 
 class AuthModule {
   static void register(GetIt getIt) {
     // Database table registration
-    AppDatabase.registerOnCreate(
-      (db) async => UserDao(db).createTable(),
-    );
+    AppDatabase.registerOnCreate((db) async => UserDao(db).createTable());
 
     // Data sources
     if (!getIt.isRegistered<AuthRemoteDataSource>()) {
@@ -49,9 +48,7 @@ class AuthModule {
 
     if (!getIt.isRegistered<SessionRepository>()) {
       getIt.registerLazySingleton<SessionRepository>(
-        () => SessionRepositoryImpl(
-          local: getIt<AuthLocalDataSource>(),
-        ),
+        () => SessionRepositoryImpl(local: getIt<AuthLocalDataSource>()),
       );
     }
 
@@ -111,6 +108,16 @@ class AuthModule {
       getIt.registerFactory<LoginCubit>(
         () => LoginCubit(
           getIt<LoginUserUseCase>(),
+          getIt<SessionManager>(),
+          getIt<AnalyticsTracker>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<RegisterCubit>()) {
+      getIt.registerFactory<RegisterCubit>(
+        () => RegisterCubit(
+          getIt<RegisterUserUseCase>(),
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),
