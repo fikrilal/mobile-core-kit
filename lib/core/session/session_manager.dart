@@ -5,6 +5,7 @@ import '../../features/auth/domain/entity/auth_session_entity.dart';
 import '../../features/auth/domain/entity/auth_tokens_entity.dart';
 import '../../features/auth/domain/failure/auth_failure.dart';
 import '../../features/auth/domain/usecase/refresh_token_usecase.dart';
+import '../../features/user/domain/entity/user_entity.dart';
 import '../events/app_event.dart';
 import '../events/app_event_bus.dart';
 import '../utilities/log_utils.dart';
@@ -45,6 +46,7 @@ class SessionManager {
 
   AuthSessionEntity? get session => _currentSession;
   bool get isAuthenticated => _currentSession != null;
+  bool get isAuthPending => _currentSession != null && _currentSession!.user == null;
   Stream<AuthSessionEntity?> get stream => _sessionController.stream;
   String? get accessToken => _currentSession?.tokens.accessToken;
   ValueListenable<AuthSessionEntity?> get sessionNotifier => _sessionNotifier;
@@ -62,6 +64,16 @@ class SessionManager {
       'Login saved. access(~5)=${_mask(session.tokens.accessToken)} refresh(~5)=${_mask(session.tokens.refreshToken)}',
       name: 'SessionManager',
     );
+    _sessionController.add(_currentSession);
+    _sessionNotifier.value = _currentSession;
+  }
+
+  Future<void> setUser(UserEntity user) async {
+    final current = _currentSession;
+    if (current == null) return;
+    final updated = current.copyWith(user: user);
+    await _repository.saveSession(updated);
+    _currentSession = updated;
     _sessionController.add(_currentSession);
     _sessionNotifier.value = _currentSession;
   }

@@ -14,7 +14,11 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthSessionEntity {
 
- AuthTokensEntity get tokens; UserEntity get user;
+ AuthTokensEntity get tokens;/// User can be null when restoring a session from tokens only.
+///
+/// On app start, the app may restore tokens from secure storage and then
+/// hydrate the user via `GET /v1/users/me`.
+ UserEntity? get user;
 /// Create a copy of AuthSessionEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,11 +49,11 @@ abstract mixin class $AuthSessionEntityCopyWith<$Res>  {
   factory $AuthSessionEntityCopyWith(AuthSessionEntity value, $Res Function(AuthSessionEntity) _then) = _$AuthSessionEntityCopyWithImpl;
 @useResult
 $Res call({
- AuthTokensEntity tokens, UserEntity user
+ AuthTokensEntity tokens, UserEntity? user
 });
 
 
-$AuthTokensEntityCopyWith<$Res> get tokens;$UserEntityCopyWith<$Res> get user;
+$AuthTokensEntityCopyWith<$Res> get tokens;$UserEntityCopyWith<$Res>? get user;
 
 }
 /// @nodoc
@@ -62,11 +66,11 @@ class _$AuthSessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of AuthSessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tokens = null,Object? user = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tokens = null,Object? user = freezed,}) {
   return _then(_self.copyWith(
 tokens: null == tokens ? _self.tokens : tokens // ignore: cast_nullable_to_non_nullable
-as AuthTokensEntity,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserEntity,
+as AuthTokensEntity,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserEntity?,
   ));
 }
 /// Create a copy of AuthSessionEntity
@@ -82,9 +86,12 @@ $AuthTokensEntityCopyWith<$Res> get tokens {
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserEntityCopyWith<$Res> get user {
-  
-  return $UserEntityCopyWith<$Res>(_self.user, (value) {
+$UserEntityCopyWith<$Res>? get user {
+    if (_self.user == null) {
+    return null;
+  }
+
+  return $UserEntityCopyWith<$Res>(_self.user!, (value) {
     return _then(_self.copyWith(user: value));
   });
 }
@@ -169,7 +176,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthTokensEntity tokens,  UserEntity user)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthTokensEntity tokens,  UserEntity? user)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthSessionEntity() when $default != null:
 return $default(_that.tokens,_that.user);case _:
@@ -190,7 +197,7 @@ return $default(_that.tokens,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthTokensEntity tokens,  UserEntity user)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthTokensEntity tokens,  UserEntity? user)  $default,) {final _that = this;
 switch (_that) {
 case _AuthSessionEntity():
 return $default(_that.tokens,_that.user);case _:
@@ -210,7 +217,7 @@ return $default(_that.tokens,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthTokensEntity tokens,  UserEntity user)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthTokensEntity tokens,  UserEntity? user)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthSessionEntity() when $default != null:
 return $default(_that.tokens,_that.user);case _:
@@ -225,11 +232,15 @@ return $default(_that.tokens,_that.user);case _:
 
 
 class _AuthSessionEntity implements AuthSessionEntity {
-  const _AuthSessionEntity({required this.tokens, required this.user});
+  const _AuthSessionEntity({required this.tokens, this.user});
   
 
 @override final  AuthTokensEntity tokens;
-@override final  UserEntity user;
+/// User can be null when restoring a session from tokens only.
+///
+/// On app start, the app may restore tokens from secure storage and then
+/// hydrate the user via `GET /v1/users/me`.
+@override final  UserEntity? user;
 
 /// Create a copy of AuthSessionEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -261,11 +272,11 @@ abstract mixin class _$AuthSessionEntityCopyWith<$Res> implements $AuthSessionEn
   factory _$AuthSessionEntityCopyWith(_AuthSessionEntity value, $Res Function(_AuthSessionEntity) _then) = __$AuthSessionEntityCopyWithImpl;
 @override @useResult
 $Res call({
- AuthTokensEntity tokens, UserEntity user
+ AuthTokensEntity tokens, UserEntity? user
 });
 
 
-@override $AuthTokensEntityCopyWith<$Res> get tokens;@override $UserEntityCopyWith<$Res> get user;
+@override $AuthTokensEntityCopyWith<$Res> get tokens;@override $UserEntityCopyWith<$Res>? get user;
 
 }
 /// @nodoc
@@ -278,11 +289,11 @@ class __$AuthSessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of AuthSessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tokens = null,Object? user = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tokens = null,Object? user = freezed,}) {
   return _then(_AuthSessionEntity(
 tokens: null == tokens ? _self.tokens : tokens // ignore: cast_nullable_to_non_nullable
-as AuthTokensEntity,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserEntity,
+as AuthTokensEntity,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserEntity?,
   ));
 }
 
@@ -299,9 +310,12 @@ $AuthTokensEntityCopyWith<$Res> get tokens {
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserEntityCopyWith<$Res> get user {
-  
-  return $UserEntityCopyWith<$Res>(_self.user, (value) {
+$UserEntityCopyWith<$Res>? get user {
+    if (_self.user == null) {
+    return null;
+  }
+
+  return $UserEntityCopyWith<$Res>(_self.user!, (value) {
     return _then(_self.copyWith(user: value));
   });
 }

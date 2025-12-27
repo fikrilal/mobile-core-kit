@@ -16,6 +16,7 @@ import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/user/di/user_module.dart';
+import '../../features/user/domain/usecase/get_me_usecase.dart';
 import '../session/session_manager.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
@@ -64,6 +65,7 @@ Future<void> setupLocator() async {
       () => AppStartupController(
         appLaunch: locator<AppLaunchService>(),
         sessionManager: locator<SessionManager>(),
+        getMe: locator<GetMeUseCase>(),
       ),
     );
   }

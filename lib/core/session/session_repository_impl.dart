@@ -22,7 +22,10 @@ class SessionRepositoryImpl implements SessionRepository {
       refresh: tokens.refreshToken,
       expiresIn: tokens.expiresIn,
     );
-    await _local.cacheUserEntity(session.user);
+    final user = session.user;
+    if (user != null) {
+      await _local.cacheUserEntity(user);
+    }
   }
 
   @override
@@ -33,9 +36,7 @@ class SessionRepositoryImpl implements SessionRepository {
     }
 
     final model = await _local.getCachedUser();
-    if (model == null) return null;
-    final user = model.toEntity();
-    if (user == null) return null;
+    final user = model?.toEntity();
 
     return AuthSessionEntity(
       tokens: AuthTokensEntity(
