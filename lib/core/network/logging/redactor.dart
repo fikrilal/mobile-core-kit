@@ -23,8 +23,25 @@ class Redactor {
     final result = <String, dynamic>{};
     data.forEach((key, value) {
       final lower = key.toLowerCase();
-      if (bodyKeys.contains(lower)) {
-        result[key] = _maskValue(value);
+      final isSensitive =
+          bodyKeys.contains(lower) ||
+          // Catch common variants like accessToken/refreshToken/idToken.
+          //
+          // Note: keep token type visible (e.g., "Bearer") for debugging.
+          (lower.contains('token') &&
+              lower != 'tokentype' &&
+              lower != 'token_type');
+      if (isSensitive) {
+        if (value is Map<String, dynamic>) {
+          result[key] = redactMap(value, bodyKeys: bodyKeys);
+        } else if (value is List) {
+          result[key] = value.map((e) {
+            if (e is Map<String, dynamic>) return redactMap(e, bodyKeys: bodyKeys);
+            return _maskValue(e);
+          }).toList();
+        } else {
+          result[key] = _maskValue(value);
+        }
       } else if (value is Map<String, dynamic>) {
         result[key] = redactMap(value, bodyKeys: bodyKeys);
       } else if (value is List) {
@@ -62,4 +79,3 @@ class Redactor {
     return '${s.substring(0, 3)}***${s.substring(s.length - 3)}';
   }
 }
-

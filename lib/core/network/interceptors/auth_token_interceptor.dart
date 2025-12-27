@@ -69,8 +69,17 @@ class AuthTokenInterceptor extends dio.Interceptor {
           try {
             final dio.Response<dynamic> response = await client.fetch(opts);
             return handler.resolve(response);
+          } on dio.DioException catch (retryErr) {
+            // Surface the *retried request* error (not the original 401).
+            return handler.next(retryErr);
           } catch (e) {
-            return handler.next(err);
+            return handler.next(
+              dio.DioException(
+                requestOptions: opts,
+                error: e,
+                type: dio.DioExceptionType.unknown,
+              ),
+            );
           }
         } else {
           return handler.next(err);
