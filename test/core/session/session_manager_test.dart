@@ -129,7 +129,11 @@ void main() {
 
       final ok = await manager.refreshTokens();
       expect(ok, false);
-      expect(manager.session, initialSession);
+      expect(manager.session, isNotNull);
+      expect(manager.session?.tokens.accessToken, initialSession.tokens.accessToken);
+      expect(manager.session?.tokens.refreshToken, initialSession.tokens.refreshToken);
+      expect(manager.session?.tokens.expiresIn, initialSession.tokens.expiresIn);
+      expect(manager.session?.user, initialSession.user);
 
       verifyNever(() => repo.clearSession());
       expect(emitted.whereType<SessionExpired>(), isEmpty);
@@ -176,13 +180,21 @@ void main() {
 
       final ok = await manager.refreshTokens();
       expect(ok, true);
-      expect(manager.session?.tokens, newTokens);
+      expect(manager.session?.tokens.accessToken, newTokens.accessToken);
+      expect(manager.session?.tokens.refreshToken, newTokens.refreshToken);
+      expect(manager.session?.tokens.tokenType, newTokens.tokenType);
+      expect(manager.session?.tokens.expiresIn, newTokens.expiresIn);
+      expect(manager.session?.tokens.expiresAt, isNotNull);
       expect(manager.session?.user, initialSession.user);
 
       final captured = verify(() => repo.saveSession(captureAny())).captured;
       expect(captured.length, 2); // login + refresh update
       final last = captured.last as AuthSessionEntity;
-      expect(last.tokens, newTokens);
+      expect(last.tokens.accessToken, newTokens.accessToken);
+      expect(last.tokens.refreshToken, newTokens.refreshToken);
+      expect(last.tokens.tokenType, newTokens.tokenType);
+      expect(last.tokens.expiresIn, newTokens.expiresIn);
+      expect(last.tokens.expiresAt, isNotNull);
       expect(last.user, initialSession.user);
 
       events.dispose();

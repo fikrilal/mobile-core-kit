@@ -43,6 +43,7 @@ void main() {
       final session = _MockSessionManager();
       when(() => session.refreshTokens()).thenAnswer((_) async => true);
       when(() => session.accessToken).thenReturn('access_new');
+      when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
 
       final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
       var calls = 0;
@@ -84,4 +85,40 @@ void main() {
       expect(calls, 2);
     },
   );
+
+  test('preflight refreshes when access token is expiring soon', () async {
+    final session = _MockSessionManager();
+    var token = 'access_old';
+    when(() => session.accessToken).thenAnswer((_) => token);
+    when(() => session.isAccessTokenExpiringSoon).thenReturn(true);
+    when(() => session.refreshTokens()).thenAnswer((_) async {
+      token = 'access_new';
+      return true;
+    });
+
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+    dio.httpClientAdapter = _FakeAdapter((options) async {
+      expect(options.headers['Authorization'], 'Bearer access_new');
+      return ResponseBody.fromString(
+        jsonEncode({'ok': true}),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    });
+
+    final apiClient = _MockApiClient();
+    when(() => apiClient.dio).thenReturn(dio);
+
+    locator.registerSingleton<SessionManager>(session);
+    locator.registerSingleton<ApiClient>(apiClient);
+
+    dio.interceptors.add(AuthTokenInterceptor());
+
+    final response = await dio.get('/protected');
+    expect(response.statusCode, 200);
+
+    verify(() => session.refreshTokens()).called(1);
+  });
 }

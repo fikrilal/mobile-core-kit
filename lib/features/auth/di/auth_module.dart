@@ -14,6 +14,7 @@ import '../data/repository/auth_repository_impl.dart';
 import '../domain/repository/auth_repository.dart';
 import '../domain/usecase/google_mobile_signin_usecase.dart';
 import '../domain/usecase/login_user_usecase.dart';
+import '../domain/usecase/logout_flow_usecase.dart';
 import '../domain/usecase/logout_user_usecase.dart';
 import '../domain/usecase/refresh_token_usecase.dart';
 import '../domain/usecase/register_user_usecase.dart';
@@ -92,6 +93,15 @@ class AuthModule {
           getIt<SessionRepository>(),
           refreshUsecase: getIt<RefreshTokenUsecase>(),
           events: getIt<AppEventBus>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<LogoutFlowUseCase>()) {
+      getIt.registerFactory<LogoutFlowUseCase>(
+        () => LogoutFlowUseCase(
+          logoutUser: getIt<LogoutUserUseCase>(),
+          sessionManager: getIt<SessionManager>(),
         ),
       );
     }

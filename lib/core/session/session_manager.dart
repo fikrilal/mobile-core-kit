@@ -49,6 +49,14 @@ class SessionManager {
   bool get isAuthPending => _currentSession != null && _currentSession!.user == null;
   Stream<AuthSessionEntity?> get stream => _sessionController.stream;
   String? get accessToken => _currentSession?.tokens.accessToken;
+  DateTime? get accessTokenExpiresAt => _currentSession?.tokens.expiresAt;
+
+  static const Duration _accessTokenExpiryLeeway = Duration(minutes: 1);
+  bool get isAccessTokenExpiringSoon {
+    final expiresAt = accessTokenExpiresAt;
+    if (expiresAt == null) return false;
+    return DateTime.now().isAfter(expiresAt.subtract(_accessTokenExpiryLeeway));
+  }
   ValueListenable<AuthSessionEntity?> get sessionNotifier => _sessionNotifier;
 
   void dispose() {
@@ -57,11 +65,14 @@ class SessionManager {
   }
 
   Future<void> login(AuthSessionEntity session) async {
+    final enriched = session.copyWith(
+      tokens: _withComputedExpiresAt(session.tokens),
+    );
     Log.info('Login: saving session', name: 'SessionManager');
-    await _repository.saveSession(session);
-    _currentSession = session;
+    await _repository.saveSession(enriched);
+    _currentSession = enriched;
     Log.debug(
-      'Login saved. access(~5)=${_mask(session.tokens.accessToken)} refresh(~5)=${_mask(session.tokens.refreshToken)}',
+      'Login saved. access(~5)=${_mask(enriched.tokens.accessToken)} refresh(~5)=${_mask(enriched.tokens.refreshToken)}',
       name: 'SessionManager',
     );
     _sessionController.add(_currentSession);
@@ -81,7 +92,14 @@ class SessionManager {
   AuthSessionEntity _attachTokens(
     AuthSessionEntity session,
     AuthTokensEntity tokens,
-  ) => session.copyWith(tokens: tokens);
+  ) => session.copyWith(tokens: _withComputedExpiresAt(tokens));
+
+  AuthTokensEntity _withComputedExpiresAt(AuthTokensEntity tokens) {
+    if (tokens.expiresAt != null) return tokens;
+    return tokens.copyWith(
+      expiresAt: DateTime.now().add(Duration(seconds: tokens.expiresIn)),
+    );
+  }
 
   Future<bool> refreshTokens() async {
     final current = _currentSession;

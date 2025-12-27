@@ -95,6 +95,7 @@ class AuthRemoteDataSource {
       AuthEndpoint.logout,
       data: requestModel.toJson(),
       host: ApiHost.auth,
+      requiresAuth: false,
       throwOnError: false,
       parser: (_) => const ApiNoData(),
     );

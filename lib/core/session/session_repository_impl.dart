@@ -21,6 +21,7 @@ class SessionRepositoryImpl implements SessionRepository {
       access: tokens.accessToken,
       refresh: tokens.refreshToken,
       expiresIn: tokens.expiresIn,
+      expiresAtMs: tokens.expiresAt?.millisecondsSinceEpoch,
     );
     final user = session.user;
     if (user != null) {
@@ -44,6 +45,9 @@ class SessionRepositoryImpl implements SessionRepository {
         refreshToken: tokens.refresh!,
         tokenType: 'Bearer',
         expiresIn: tokens.expiresIn!,
+        expiresAt: tokens.expiresAtMs == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(tokens.expiresAtMs!),
       ),
       user: user,
     );

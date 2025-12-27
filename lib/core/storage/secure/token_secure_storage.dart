@@ -4,6 +4,7 @@ class TokenSecureStorage {
   static const _kAccess = 'access_token';
   static const _kRefresh = 'refresh_token';
   static const _kExpiry = 'expires_in';
+  static const _kExpiresAtMs = 'expires_at_ms';
 
   final FlutterSecureStorage _storage;
 
@@ -14,23 +15,38 @@ class TokenSecureStorage {
     required String access,
     required String refresh,
     required int expiresIn,
+    int? expiresAtMs,
   }) async {
     await _storage.write(key: _kAccess, value: access);
     await _storage.write(key: _kRefresh, value: refresh);
     await _storage.write(key: _kExpiry, value: expiresIn.toString());
+    if (expiresAtMs == null) {
+      await _storage.delete(key: _kExpiresAtMs);
+    } else {
+      await _storage.write(key: _kExpiresAtMs, value: expiresAtMs.toString());
+    }
   }
 
-  Future<({String? access, String? refresh, int? expiresIn})> read() async {
+  Future<({String? access, String? refresh, int? expiresIn, int? expiresAtMs})>
+  read() async {
     final access = await _storage.read(key: _kAccess);
     final refresh = await _storage.read(key: _kRefresh);
     final expStr = await _storage.read(key: _kExpiry);
     final expiry = expStr == null ? null : int.tryParse(expStr);
-    return (access: access, refresh: refresh, expiresIn: expiry);
+    final expiresAtStr = await _storage.read(key: _kExpiresAtMs);
+    final expiresAtMs = expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+    return (
+      access: access,
+      refresh: refresh,
+      expiresIn: expiry,
+      expiresAtMs: expiresAtMs,
+    );
   }
 
   Future<void> clear() async {
     await _storage.delete(key: _kAccess);
     await _storage.delete(key: _kRefresh);
     await _storage.delete(key: _kExpiry);
+    await _storage.delete(key: _kExpiresAtMs);
   }
 }

@@ -14,7 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthTokensEntity {
 
- String get accessToken; String get refreshToken; String get tokenType; int get expiresIn;
+ String get accessToken; String get refreshToken; String get tokenType; int get expiresIn;/// When the access token is expected to expire.
+///
+/// This is computed client-side using `expiresIn` at the time tokens are
+/// received/persisted. It can be null for legacy/restored sessions that
+/// were persisted before this field existed.
+ DateTime? get expiresAt;
 /// Create a copy of AuthTokensEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +30,16 @@ $AuthTokensEntityCopyWith<AuthTokensEntity> get copyWith => _$AuthTokensEntityCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthTokensEntity&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.tokenType, tokenType) || other.tokenType == tokenType)&&(identical(other.expiresIn, expiresIn) || other.expiresIn == expiresIn));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthTokensEntity&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.tokenType, tokenType) || other.tokenType == tokenType)&&(identical(other.expiresIn, expiresIn) || other.expiresIn == expiresIn)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,tokenType,expiresIn);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,tokenType,expiresIn,expiresAt);
 
 @override
 String toString() {
-  return 'AuthTokensEntity(accessToken: $accessToken, refreshToken: $refreshToken, tokenType: $tokenType, expiresIn: $expiresIn)';
+  return 'AuthTokensEntity(accessToken: $accessToken, refreshToken: $refreshToken, tokenType: $tokenType, expiresIn: $expiresIn, expiresAt: $expiresAt)';
 }
 
 
@@ -45,7 +50,7 @@ abstract mixin class $AuthTokensEntityCopyWith<$Res>  {
   factory $AuthTokensEntityCopyWith(AuthTokensEntity value, $Res Function(AuthTokensEntity) _then) = _$AuthTokensEntityCopyWithImpl;
 @useResult
 $Res call({
- String accessToken, String refreshToken, String tokenType, int expiresIn
+ String accessToken, String refreshToken, String tokenType, int expiresIn, DateTime? expiresAt
 });
 
 
@@ -62,13 +67,14 @@ class _$AuthTokensEntityCopyWithImpl<$Res>
 
 /// Create a copy of AuthTokensEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,Object? tokenType = null,Object? expiresIn = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,Object? tokenType = null,Object? expiresIn = null,Object? expiresAt = freezed,}) {
   return _then(_self.copyWith(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,tokenType: null == tokenType ? _self.tokenType : tokenType // ignore: cast_nullable_to_non_nullable
 as String,expiresIn: null == expiresIn ? _self.expiresIn : expiresIn // ignore: cast_nullable_to_non_nullable
-as int,
+as int,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -153,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn,  DateTime? expiresAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthTokensEntity() when $default != null:
-return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn,_that.expiresAt);case _:
   return orElse();
 
 }
@@ -174,10 +180,10 @@ return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expir
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn,  DateTime? expiresAt)  $default,) {final _that = this;
 switch (_that) {
 case _AuthTokensEntity():
-return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn,_that.expiresAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +200,10 @@ return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expir
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken,  String tokenType,  int expiresIn,  DateTime? expiresAt)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthTokensEntity() when $default != null:
-return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expiresIn,_that.expiresAt);case _:
   return null;
 
 }
@@ -209,13 +215,19 @@ return $default(_that.accessToken,_that.refreshToken,_that.tokenType,_that.expir
 
 
 class _AuthTokensEntity implements AuthTokensEntity {
-  const _AuthTokensEntity({required this.accessToken, required this.refreshToken, required this.tokenType, required this.expiresIn});
+  const _AuthTokensEntity({required this.accessToken, required this.refreshToken, required this.tokenType, required this.expiresIn, this.expiresAt});
   
 
 @override final  String accessToken;
 @override final  String refreshToken;
 @override final  String tokenType;
 @override final  int expiresIn;
+/// When the access token is expected to expire.
+///
+/// This is computed client-side using `expiresIn` at the time tokens are
+/// received/persisted. It can be null for legacy/restored sessions that
+/// were persisted before this field existed.
+@override final  DateTime? expiresAt;
 
 /// Create a copy of AuthTokensEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +239,16 @@ _$AuthTokensEntityCopyWith<_AuthTokensEntity> get copyWith => __$AuthTokensEntit
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthTokensEntity&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.tokenType, tokenType) || other.tokenType == tokenType)&&(identical(other.expiresIn, expiresIn) || other.expiresIn == expiresIn));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthTokensEntity&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.tokenType, tokenType) || other.tokenType == tokenType)&&(identical(other.expiresIn, expiresIn) || other.expiresIn == expiresIn)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,tokenType,expiresIn);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,tokenType,expiresIn,expiresAt);
 
 @override
 String toString() {
-  return 'AuthTokensEntity(accessToken: $accessToken, refreshToken: $refreshToken, tokenType: $tokenType, expiresIn: $expiresIn)';
+  return 'AuthTokensEntity(accessToken: $accessToken, refreshToken: $refreshToken, tokenType: $tokenType, expiresIn: $expiresIn, expiresAt: $expiresAt)';
 }
 
 
@@ -247,7 +259,7 @@ abstract mixin class _$AuthTokensEntityCopyWith<$Res> implements $AuthTokensEnti
   factory _$AuthTokensEntityCopyWith(_AuthTokensEntity value, $Res Function(_AuthTokensEntity) _then) = __$AuthTokensEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String accessToken, String refreshToken, String tokenType, int expiresIn
+ String accessToken, String refreshToken, String tokenType, int expiresIn, DateTime? expiresAt
 });
 
 
@@ -264,13 +276,14 @@ class __$AuthTokensEntityCopyWithImpl<$Res>
 
 /// Create a copy of AuthTokensEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? tokenType = null,Object? expiresIn = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? tokenType = null,Object? expiresIn = null,Object? expiresAt = freezed,}) {
   return _then(_AuthTokensEntity(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,tokenType: null == tokenType ? _self.tokenType : tokenType // ignore: cast_nullable_to_non_nullable
 as String,expiresIn: null == expiresIn ? _self.expiresIn : expiresIn // ignore: cast_nullable_to_non_nullable
-as int,
+as int,expiresAt: freezed == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

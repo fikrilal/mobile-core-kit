@@ -23,14 +23,45 @@ class AuthTokenInterceptor extends dio.Interceptor {
   void onRequest(
     dio.RequestOptions options,
     dio.RequestInterceptorHandler handler,
-  ) {
+  ) async {
     if (_requiresAuth(options)) {
+      if (options.extra['retried'] != true && _session.isAccessTokenExpiringSoon) {
+        try {
+          await _refreshOnce();
+        } catch (_) {
+          // Best-effort preflight refresh; fall back to existing token.
+        }
+      }
+
       final token = _session.accessToken;
       if (token != null && token.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $token';
       }
     }
     handler.next(options);
+  }
+
+  Future<bool> _refreshOnce() async {
+    // Ensure single refresh in flight for both preflight and 401 refresh paths.
+    if (_refreshCompleter != null) {
+      return _refreshCompleter!.future;
+    }
+
+    _refreshCompleter = Completer<bool>();
+    try {
+      final ok = await _session.refreshTokens();
+      if (!(_refreshCompleter!.isCompleted)) {
+        _refreshCompleter!.complete(ok);
+      }
+    } catch (_) {
+      if (!(_refreshCompleter!.isCompleted)) {
+        _refreshCompleter!.complete(false);
+      }
+    }
+
+    final result = await _refreshCompleter!.future;
+    _refreshCompleter = null;
+    return result;
   }
 
   @override
@@ -44,21 +75,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
         _requiresAuth(err.requestOptions) &&
         err.requestOptions.extra['retried'] != true) {
       try {
-        // ensure single refresh in flight
-        if (_refreshCompleter == null) {
-          _refreshCompleter = Completer<bool>();
-          try {
-            final ok = await _session.refreshTokens();
-            _refreshCompleter!.complete(ok);
-          } catch (e) {
-            // propagate failure to all awaiters
-            if (!(_refreshCompleter!.isCompleted)) {
-              _refreshCompleter!.complete(false);
-            }
-          }
-        }
-        final refreshResult = await _refreshCompleter!.future;
-        _refreshCompleter = null;
+        final refreshResult = await _refreshOnce();
 
         if (refreshResult) {
           // clone original request with new token
