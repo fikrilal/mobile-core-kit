@@ -9,7 +9,18 @@ class TokenSecureStorage {
   final FlutterSecureStorage _storage;
 
   const TokenSecureStorage([FlutterSecureStorage? storage])
-    : _storage = storage ?? const FlutterSecureStorage();
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(
+              resetOnError: true,
+              migrateOnAlgorithmChange: true,
+            ),
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.unlocked_this_device,
+              synchronizable: false,
+            ),
+          );
 
   Future<void> save({
     required String access,
@@ -34,7 +45,9 @@ class TokenSecureStorage {
     final expStr = await _storage.read(key: _kExpiry);
     final expiry = expStr == null ? null : int.tryParse(expStr);
     final expiresAtStr = await _storage.read(key: _kExpiresAtMs);
-    final expiresAtMs = expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+    final expiresAtMs = expiresAtStr == null
+        ? null
+        : int.tryParse(expiresAtStr);
     return (
       access: access,
       refresh: refresh,

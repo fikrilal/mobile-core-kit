@@ -107,12 +107,9 @@ void main() {
       expect(mapAuthFailure(failure), const AuthFailure.serverError());
     });
 
-    test('maps unexpected status to unexpected(message) (fallback)', () {
+    test('maps unexpected status to unexpected() (fallback)', () {
       final failure = ApiFailure(message: 'weird', statusCode: 418);
-      expect(
-        mapAuthFailure(failure),
-        const AuthFailure.unexpected(message: 'weird'),
-      );
+      expect(mapAuthFailure(failure), const AuthFailure.unexpected());
     });
   });
 
@@ -150,4 +147,3 @@ void main() {
     });
   });
 }
-

@@ -45,7 +45,7 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       if ((failure.statusCode ?? 0) >= 500) {
         return const AuthFailure.serverError();
       }
-      return AuthFailure.unexpected(message: failure.message);
+      return const AuthFailure.unexpected();
   }
 }
 
@@ -83,6 +83,6 @@ AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
       if ((failure.statusCode ?? 0) >= 500) {
         return const AuthFailure.serverError();
       }
-      return AuthFailure.unexpected(message: failure.message);
+      return const AuthFailure.unexpected();
   }
 }
