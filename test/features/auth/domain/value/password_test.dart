@@ -3,12 +3,12 @@ import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
 
 void main() {
   group('Password', () {
-    test('trims and accepts password with min length', () {
+    test('accepts password with min length and preserves whitespace', () {
       final result = Password.create(' stringstring ');
       expect(result.isRight(), true);
       result.match(
         (_) => fail('Expected Right'),
-        (value) => expect(value.value, 'stringstring'),
+        (value) => expect(value.value, ' stringstring '),
       );
     });
 
@@ -22,4 +22,3 @@ void main() {
     });
   });
 }
-

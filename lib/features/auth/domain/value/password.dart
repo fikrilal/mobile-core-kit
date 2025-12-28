@@ -6,14 +6,13 @@ class Password {
   const Password._(this.value);
 
   static Either<ValueFailure, Password> create(String input) {
-    final trimmed = input.trim();
-    if (trimmed.isEmpty) {
+    if (input.trim().isEmpty) {
       return left(ValueFailure.empty(input));
     }
-    if (trimmed.length < 8) {
+    if (input.length < 8) {
       return left(ValueFailure.shortPassword(input));
     }
-    return right(Password._(trimmed));
+    return right(Password._(input));
   }
 
   @override

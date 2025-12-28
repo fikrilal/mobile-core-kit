@@ -51,7 +51,8 @@ void main() {
       verifyNever(() => repo.login(any()));
     });
 
-    test('normalizes email/password before calling repo', () async {
+    test('normalizes email but preserves password before calling repo',
+        () async {
       final repo = _MockAuthRepository();
       const session = AuthSessionEntity(
         tokens: AuthTokensEntity(
@@ -78,7 +79,7 @@ void main() {
       expect(captured.length, 1);
       final request = captured.single as LoginRequestEntity;
       expect(request.email, 'user@example.com');
-      expect(request.password, 'password');
+      expect(request.password, ' password ');
     });
 
     test('returns email-only validation failure when password is valid', () async {
@@ -110,4 +111,3 @@ void main() {
     });
   });
 }
-

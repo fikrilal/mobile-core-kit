@@ -6,10 +6,9 @@ class LoginPassword {
   const LoginPassword._(this.value);
 
   static Either<ValueFailure, LoginPassword> create(String input) {
-    final trimmed = input.trim();
-    if (trimmed.isEmpty) {
+    if (input.trim().isEmpty) {
       return left(ValueFailure.empty(input));
     }
-    return right(LoginPassword._(trimmed));
+    return right(LoginPassword._(input));
   }
 }

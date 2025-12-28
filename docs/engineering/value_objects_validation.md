@@ -10,11 +10,13 @@ Examples in this repo:
 
 - `EmailAddress` — format check
 - `LoginPassword` — sign-in rule (non-empty)
-- `Password` — sign-up rule (≥ 8 + lowercase + uppercase + digit)
+- `Password` — sign-up rule (≥ 8 characters)
 - `ConfirmPassword` — matches original password
 - `DisplayName` — name length bounds
 
 All VOs return `Either<ValueFailure, VO>` from `create(...)`. `ValueFailure` maps to localized, user‑friendly messages.
+
+Password note: this template preserves the password string as entered (no trimming), but treats whitespace-only input as empty.
 
 ## Why Use VOs?
 

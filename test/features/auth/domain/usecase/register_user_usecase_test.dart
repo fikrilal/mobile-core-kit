@@ -111,10 +111,9 @@ void main() {
       expect(captured.length, 1);
       final request = captured.single as RegisterRequestEntity;
       expect(request.email, 'user@example.com');
-      expect(request.password, 'stringstring');
+      expect(request.password, ' stringstring ');
       expect(request.firstName, 'John');
       expect(request.lastName, 'Doe');
     });
   });
 }
-

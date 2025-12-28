@@ -26,6 +26,9 @@ class SessionRepositoryImpl implements SessionRepository {
     final user = session.user;
     if (user != null) {
       await _local.cacheUserEntity(user);
+    } else {
+      // Prevent stale profile data if a tokens-only session is persisted.
+      await _local.clearAll();
     }
   }
 
