@@ -16,6 +16,18 @@ import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 This folder may contain multiple loading indicators. Keep this doc updated as
 new components are added.
 
+### AppLoadingOverlay
+
+Blocking, modal-style overlay loader for full-screen / surface-level loading.
+
+```dart
+AppLoadingOverlay(
+  isLoading: state.isLoading,
+  message: 'Verifying…',
+  child: YourScreenBody(),
+)
+```
+
 ### AppDotWave
 
 Small, inline dot-wave loader (good for numeric/value placeholders).
