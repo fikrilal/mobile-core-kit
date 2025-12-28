@@ -9,19 +9,17 @@ class ConfirmPassword {
     String originalPassword,
     String confirmPassword,
   ) {
-    final trimmed = confirmPassword.trim();
-
     // check if empty
-    if (trimmed.isEmpty) {
+    if (confirmPassword.trim().isEmpty) {
       return left(ValueFailure.empty(confirmPassword));
     }
 
     // check if passwords match
-    if (trimmed != originalPassword) {
+    if (confirmPassword != originalPassword) {
       return left(ValueFailure.passwordsDoNotMatch(confirmPassword));
     }
 
-    return right(ConfirmPassword._(trimmed));
+    return right(ConfirmPassword._(confirmPassword));
   }
 
   @override

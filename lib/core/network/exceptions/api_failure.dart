@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../api/api_response.dart';
+import '../../validation/validation_error.dart';
 
 class ApiFailure implements Exception {
   final String message;
@@ -20,6 +21,8 @@ class ApiFailure implements Exception {
     return ApiFailure(
       message: response.message ?? 'Unknown error',
       statusCode: response.statusCode,
+      code: response.code,
+      traceId: response.traceId,
       validationErrors: response.errors,
     );
   }

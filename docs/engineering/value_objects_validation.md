@@ -9,12 +9,14 @@ In Domain‑Driven Design, a Value Object is an immutable, validated wrapper aro
 Examples in this repo:
 
 - `EmailAddress` — format check
-- `Password` — rule (≥ 8 + lowercase + uppercase + digit)
+- `LoginPassword` — sign-in rule (non-empty)
+- `Password` — sign-up rule (≥ 8 characters)
 - `ConfirmPassword` — matches original password
 - `DisplayName` — name length bounds
-- `Username` — length + format
 
 All VOs return `Either<ValueFailure, VO>` from `create(...)`. `ValueFailure` maps to localized, user‑friendly messages.
+
+Password note: this template preserves the password string as entered (no trimming), but treats whitespace-only input as empty.
 
 ## Why Use VOs?
 
@@ -56,7 +58,8 @@ Pros:
 
 ### Option B — Bubble Validation Failures from Use Case
 
-- Use cases return a `validation` failure (e.g., `AuthFailure.validation(List<ValidationError>)`).
+- Use cases return a `validation` failure (e.g., `AuthFailure.validation(List<ValidationError>)`),
+  where `ValidationError` is a neutral type from `lib/core/validation/validation_error.dart`.
 - Presentation maps failures → field errors.
 
 Pros: reduces direct VO usage in presentation; Cons: extra mapping logic and tighter coupling of failure shapes.
@@ -65,27 +68,31 @@ Pros: reduces direct VO usage in presentation; Cons: extra mapping logic and tig
 
 - Domain VOs: `lib/features/auth/domain/value/*`
 - Localized messages: `ValueFailureX.userMessage`
-- Real‑time validation with Bloc: login, register, username, forgot/reset password, update password Blocs.
+- Real‑time validation with Cubit/Bloc: `lib/features/auth/presentation/cubit/login/login_cubit.dart`
 - Submit‑time: use cases may serve as final gate (re‑validate with VOs) and repositories pass through server validation messages.
 
 ## Code Snippets
 
-Field‑level validation in a Bloc handler (example):
+Field‑level validation in a Cubit handler (example):
 
 ```dart
-void _onEmailChanged(EmailChanged e, Emitter<State> emit) {
-  final res = EmailAddress.create(e.email);
-  emit(state.copyWith(email: e.email, emailError: res.fold((f) => f.userMessage, (_) => null)));
+void emailChanged(String input) {
+  final res = EmailAddress.create(input);
+  emit(state.copyWith(
+    email: input,
+    emailError: res.fold((f) => f.userMessage, (_) => null),
+  ));
 }
 ```
 
 Wiring to a TextField:
 
 ```dart
-TextFieldComponent(
-  controller: emailController,
-  errorText: context.select((LoginBloc b) => b.state.emailError),
-  onChanged: (v) => context.read<LoginBloc>().add(EmailChanged(v)),
+AppTextField(
+  fieldType: FieldType.email,
+  labelText: 'Email',
+  errorText: context.select((LoginCubit c) => c.state.emailError),
+  onChanged: context.read<LoginCubit>().emailChanged,
 )
 ```
 
@@ -93,14 +100,20 @@ Submit‑time in a use case (final gate):
 
 ```dart
 final email = EmailAddress.create(input.email);
-final password = Password.create(input.password);
-final failures = <ValueFailure>[];
-email.fold(failures.add, (_) {});
-password.fold(failures.add, (_) {});
-if (failures.isNotEmpty) {
-  return left(AuthFailure.validation(failures.map((f) => ValidationError(field: 'email/password', message: f.userMessage)).toList()));
-}
-return _repository.login(LoginRequestEntity(email: email.getRight().toNullable()!.value, password: password.getRight().toNullable()!.value));
+final password = LoginPassword.create(input.password);
+
+final errors = <ValidationError>[];
+email.fold(
+  (f) => errors.add(ValidationError(field: 'email', message: f.userMessage, code: 'invalid_email')),
+  (_) {},
+);
+password.fold(
+  (f) => errors.add(ValidationError(field: 'password', message: f.userMessage, code: 'required')),
+  (_) {},
+);
+
+if (errors.isNotEmpty) return left(AuthFailure.validation(errors));
+return _repository.login(input);
 ```
 
 ## Do & Don’t

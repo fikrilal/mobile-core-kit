@@ -9,9 +9,10 @@ import '../model/remote/login_request_model.dart';
 import '../model/remote/refresh_request_model.dart';
 import '../model/remote/register_request_model.dart';
 import '../model/remote/auth_session_model.dart';
-import '../../../../../core/network/exceptions/api_failure.dart';
+import '../../../../../core/network/api/api_response_either.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../../domain/entity/register_request_entity.dart';
+import '../error/auth_failure_mapper.dart';
 import '../model/remote/google_mobile_request_model.dart';
 import '../../../../core/utilities/log_utils.dart';
 
@@ -28,10 +29,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final apiResponse = await _remote.register(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      return right(model.toEntity());
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Register failed.')
+          .mapLeft(mapAuthFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Register user unexpected error',
@@ -52,18 +53,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final apiResponse = await _remote.login(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      return right(model.toEntity());
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Login failed.')
+          .mapLeft(mapAuthFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
-      Log.error(
-        'Login user unexpected error',
-        e,
-        st,
-        true,
-        'AuthRepository',
-      );
+      Log.error('Login user unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
     }
   }
@@ -75,22 +70,10 @@ class AuthRepositoryImpl implements AuthRepository {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.refreshToken(apiRequest);
-      final model = apiResponse.data!;
-      if (model.accessToken == null ||
-          model.refreshToken == null ||
-          model.expiresIn == null) {
-        return left(const AuthFailure.unexpected());
-      }
-      return right(
-        AuthTokensEntity(
-          accessToken: model.accessToken!,
-          refreshToken: model.refreshToken!,
-          tokenType: 'Bearer',
-          expiresIn: model.expiresIn!,
-        ),
-      );
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      return apiResponse
+          .toEitherWithFallback('Token refresh failed.')
+          .mapLeft(mapAuthFailure)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Refresh token unexpected error',
@@ -110,52 +93,14 @@ class AuthRepositoryImpl implements AuthRepository {
     final apiRequest = RefreshRequestModel.fromEntity(request);
     try {
       final apiResponse = await _remote.logout(apiRequest);
-      return right(apiResponse.message);
-    } on ApiFailure catch (f) {
-      return left(_mapApiFailure(f));
+      final message = apiResponse.message;
+      return apiResponse
+          .toEitherWithFallback('Logout failed.')
+          .mapLeft(mapAuthFailure)
+          .map((_) => message);
     } catch (e, st) {
-      Log.error(
-        'Logout unexpected error',
-        e,
-        st,
-        true,
-        'AuthRepository',
-      );
+      Log.error('Logout unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
-    }
-  }
-
-  AuthFailure _mapApiFailure(ApiFailure f) {
-    switch (f.statusCode) {
-      case 401:
-        return const AuthFailure.invalidCredentials();
-      case 429:
-        return const AuthFailure.tooManyRequests();
-      case 500:
-        return const AuthFailure.serverError();
-      case 409:
-        final msg = f.message.toLowerCase();
-        if (msg.contains('email')) return const AuthFailure.emailTaken();
-        if (msg.contains('username')) return const AuthFailure.usernameTaken();
-
-        return const AuthFailure.usernameTaken();
-      case 422:
-      case 400:
-        final hasValidationErrors = (f.validationErrors ?? []).isNotEmpty;
-        if (!hasValidationErrors) {
-          final msg = f.message.toLowerCase();
-          if (msg.contains('already') && msg.contains('email')) {
-            return const AuthFailure.emailTaken();
-          }
-          if (msg.contains('already') && msg.contains('username')) {
-            return const AuthFailure.usernameTaken();
-          }
-        }
-        return AuthFailure.validation(f.validationErrors ?? []);
-      case -1:
-        return const AuthFailure.network();
-      default:
-        return const AuthFailure.unexpected();
     }
   }
 
@@ -170,22 +115,10 @@ class AuthRepositoryImpl implements AuthRepository {
         name: 'AuthRepository',
       );
       final apiResponse = await _remote.googleMobileSignIn(apiRequest);
-      final AuthSessionModel model = apiResponse.data!;
-      final session = model.toEntity();
-      Log.info(
-        'Google mobile exchange success; token lengths (access=${session.tokens.accessToken.length}, refresh=${session.tokens.refreshToken.length})',
-        name: 'AuthRepository',
-      );
-      return right(session);
-    } on ApiFailure catch (f) {
-      Log.error(
-        'Google mobile exchange failed',
-        f,
-        StackTrace.current,
-        true,
-        'AuthRepository',
-      );
-      return left(_mapApiFailureForGoogle(f));
+      return apiResponse
+          .toEitherWithFallback('Google sign-in failed.')
+          .mapLeft(mapAuthFailureForGoogle)
+          .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
         'Unexpected error during Google mobile exchange',
@@ -195,25 +128,6 @@ class AuthRepositoryImpl implements AuthRepository {
         'AuthRepository',
       );
       return left(const AuthFailure.unexpected());
-    }
-  }
-
-  AuthFailure _mapApiFailureForGoogle(ApiFailure f) {
-    switch (f.statusCode) {
-      case 401:
-        // Unauthorized exchange (e.g., invalid/expired ID token)
-        return const AuthFailure.invalidCredentials();
-      case 400:
-        // Invalid/missing token, audience/issuer mismatch, expired token
-        return AuthFailure.validation(f.validationErrors ?? []);
-      case 429:
-        return const AuthFailure.tooManyRequests();
-      case 500:
-        return const AuthFailure.serverError();
-      case -1:
-        return const AuthFailure.network();
-      default:
-        return const AuthFailure.unexpected();
     }
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
 import 'package:mobile_core_kit/core/theme/responsive/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 import '../cubit/login/login_cubit.dart';
 import '../cubit/login/login_state.dart';
@@ -15,19 +17,13 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText.titleMedium('Sign In'),
-      ),
+      appBar: AppBar(title: const AppText.titleMedium('Sign In')),
       body: BlocListener<LoginCubit, LoginState>(
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
           if (state.status == LoginStatus.failure &&
               state.errorMessage != null) {
             AppSnackBar.showError(context, message: state.errorMessage!);
-          }
-
-          if (state.status == LoginStatus.success) {
-            // TODO: Navigate to main shell route, e.g. context.go('/main');
           }
         },
         child: const _SignInForm(),
@@ -71,6 +67,16 @@ class _SignInForm extends StatelessWidget {
                 onPressed: state.canSubmit
                     ? () => context.read<LoginCubit>().submit()
                     : null,
+              ),
+              const SizedBox(height: AppSpacing.space12),
+              TextButton(
+                onPressed: state.isSubmitting
+                    ? null
+                    : () => context.go(AuthRoutes.register),
+                child: const AppText.bodyMedium(
+                  'Don’t have an account? Create one',
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           );

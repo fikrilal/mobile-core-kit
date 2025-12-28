@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import '../../features/auth/domain/entity/refresh_request_entity.dart';
 import '../../features/auth/domain/entity/auth_session_entity.dart';
 import '../../features/auth/domain/entity/auth_tokens_entity.dart';
+import '../../features/auth/domain/failure/auth_failure.dart';
 import '../../features/auth/domain/usecase/refresh_token_usecase.dart';
+import '../../features/user/domain/entity/user_entity.dart';
 import '../events/app_event.dart';
 import '../events/app_event_bus.dart';
 import '../utilities/log_utils.dart';
@@ -44,8 +46,17 @@ class SessionManager {
 
   AuthSessionEntity? get session => _currentSession;
   bool get isAuthenticated => _currentSession != null;
+  bool get isAuthPending => _currentSession != null && _currentSession!.user == null;
   Stream<AuthSessionEntity?> get stream => _sessionController.stream;
   String? get accessToken => _currentSession?.tokens.accessToken;
+  DateTime? get accessTokenExpiresAt => _currentSession?.tokens.expiresAt;
+
+  static const Duration _accessTokenExpiryLeeway = Duration(minutes: 1);
+  bool get isAccessTokenExpiringSoon {
+    final expiresAt = accessTokenExpiresAt;
+    if (expiresAt == null) return false;
+    return DateTime.now().isAfter(expiresAt.subtract(_accessTokenExpiryLeeway));
+  }
   ValueListenable<AuthSessionEntity?> get sessionNotifier => _sessionNotifier;
 
   void dispose() {
@@ -54,13 +65,26 @@ class SessionManager {
   }
 
   Future<void> login(AuthSessionEntity session) async {
+    final enriched = session.copyWith(
+      tokens: _withComputedExpiresAt(session.tokens),
+    );
     Log.info('Login: saving session', name: 'SessionManager');
-    await _repository.saveSession(session);
-    _currentSession = session;
+    await _repository.saveSession(enriched);
+    _currentSession = enriched;
     Log.debug(
-      'Login saved. access(~5)=${_mask(session.tokens.accessToken)} refresh(~5)=${_mask(session.tokens.refreshToken)}',
+      'Login saved. access(~5)=${_mask(enriched.tokens.accessToken)} refresh(~5)=${_mask(enriched.tokens.refreshToken)}',
       name: 'SessionManager',
     );
+    _sessionController.add(_currentSession);
+    _sessionNotifier.value = _currentSession;
+  }
+
+  Future<void> setUser(UserEntity user) async {
+    final current = _currentSession;
+    if (current == null) return;
+    final updated = current.copyWith(user: user);
+    await _repository.saveSession(updated);
+    _currentSession = updated;
     _sessionController.add(_currentSession);
     _sessionNotifier.value = _currentSession;
   }
@@ -68,7 +92,14 @@ class SessionManager {
   AuthSessionEntity _attachTokens(
     AuthSessionEntity session,
     AuthTokensEntity tokens,
-  ) => session.copyWith(tokens: tokens);
+  ) => session.copyWith(tokens: _withComputedExpiresAt(tokens));
+
+  AuthTokensEntity _withComputedExpiresAt(AuthTokensEntity tokens) {
+    if (tokens.expiresAt != null) return tokens;
+    return tokens.copyWith(
+      expiresAt: DateTime.now().add(Duration(seconds: tokens.expiresIn)),
+    );
+  }
 
   Future<bool> refreshTokens() async {
     final current = _currentSession;
@@ -84,15 +115,28 @@ class SessionManager {
 
     return result.match(
       (failure) async {
-        Log.error(
-          'Refresh failed – logging out',
-          Exception('Token refresh failure: $failure'),
-          StackTrace.current,
-          true,
-          'SessionManager',
+        final shouldLogout = failure.maybeWhen(
+          unauthenticated: () => true,
+          orElse: () => false,
         );
-        _events.publish(const SessionExpired(reason: 'refresh_failed'));
-        await logout(reason: 'refresh_failed');
+
+        if (shouldLogout) {
+          Log.error(
+            'Refresh failed – logging out',
+            Exception('Token refresh failure: $failure'),
+            StackTrace.current,
+            true,
+            'SessionManager',
+          );
+          _events.publish(const SessionExpired(reason: 'refresh_failed'));
+          await logout(reason: 'refresh_failed');
+          return false;
+        }
+
+        Log.warning(
+          'Refresh failed (not logging out): ${failure.runtimeType}',
+          name: 'SessionManager',
+        );
         return false;
       },
       (tokens) async {

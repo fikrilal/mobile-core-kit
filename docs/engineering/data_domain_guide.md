@@ -198,6 +198,8 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
 - Repositories turn `ApiResponse<T>` into `Either` with `toEitherWithFallback()`, then map to
   feature failure.
 - Keep user messages in failure types via `userMessage` extensions.
+- Prefer mapping by backend `code` first, and fall back to HTTP status codes for resilience.
+  See `docs/engineering/api/api_error_handling_contract.md`.
 
 ## DI Guidelines
 

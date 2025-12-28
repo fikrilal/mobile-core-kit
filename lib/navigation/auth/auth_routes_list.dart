@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/di/service_locator.dart';
 import '../../features/auth/presentation/cubit/login/login_cubit.dart';
+import '../../features/auth/presentation/cubit/register/register_cubit.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import 'auth_routes.dart';
 
@@ -13,6 +15,13 @@ final List<GoRoute> authRoutes = [
     builder: (context, state) => BlocProvider<LoginCubit>(
       create: (_) => locator<LoginCubit>(),
       child: const SignInPage(),
+    ),
+  ),
+  GoRoute(
+    path: AuthRoutes.register,
+    builder: (context, state) => BlocProvider<RegisterCubit>(
+      create: (_) => locator<RegisterCubit>(),
+      child: const RegisterPage(),
     ),
   ),
 ];

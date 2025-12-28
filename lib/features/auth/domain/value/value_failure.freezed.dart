@@ -86,19 +86,12 @@ extension ValueFailurePatterns on ValueFailure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( InvalidEmail value)?  invalidEmail,TResult Function( ShortPassword value)?  shortPassword,TResult Function( MissingLowercase value)?  missingLowercase,TResult Function( MissingUppercase value)?  missingUppercase,TResult Function( MissingNumber value)?  missingNumber,TResult Function( InvalidUsername value)?  invalidUsername,TResult Function( ShortUsername value)?  shortUsername,TResult Function( LongUsername value)?  longUsername,TResult Function( InvalidUsernameFormat value)?  invalidUsernameFormat,TResult Function( PasswordsDoNotMatch value)?  passwordsDoNotMatch,TResult Function( Empty value)?  empty,TResult Function( ShortName value)?  shortName,TResult Function( LongName value)?  longName,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( InvalidEmail value)?  invalidEmail,TResult Function( ShortPassword value)?  shortPassword,TResult Function( PasswordsDoNotMatch value)?  passwordsDoNotMatch,TResult Function( Empty value)?  empty,TResult Function( ShortName value)?  shortName,TResult Function( LongName value)?  longName,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case InvalidEmail() when invalidEmail != null:
 return invalidEmail(_that);case ShortPassword() when shortPassword != null:
-return shortPassword(_that);case MissingLowercase() when missingLowercase != null:
-return missingLowercase(_that);case MissingUppercase() when missingUppercase != null:
-return missingUppercase(_that);case MissingNumber() when missingNumber != null:
-return missingNumber(_that);case InvalidUsername() when invalidUsername != null:
-return invalidUsername(_that);case ShortUsername() when shortUsername != null:
-return shortUsername(_that);case LongUsername() when longUsername != null:
-return longUsername(_that);case InvalidUsernameFormat() when invalidUsernameFormat != null:
-return invalidUsernameFormat(_that);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
+return shortPassword(_that);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
 return passwordsDoNotMatch(_that);case Empty() when empty != null:
 return empty(_that);case ShortName() when shortName != null:
 return shortName(_that);case LongName() when longName != null:
@@ -120,19 +113,12 @@ return longName(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( InvalidEmail value)  invalidEmail,required TResult Function( ShortPassword value)  shortPassword,required TResult Function( MissingLowercase value)  missingLowercase,required TResult Function( MissingUppercase value)  missingUppercase,required TResult Function( MissingNumber value)  missingNumber,required TResult Function( InvalidUsername value)  invalidUsername,required TResult Function( ShortUsername value)  shortUsername,required TResult Function( LongUsername value)  longUsername,required TResult Function( InvalidUsernameFormat value)  invalidUsernameFormat,required TResult Function( PasswordsDoNotMatch value)  passwordsDoNotMatch,required TResult Function( Empty value)  empty,required TResult Function( ShortName value)  shortName,required TResult Function( LongName value)  longName,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( InvalidEmail value)  invalidEmail,required TResult Function( ShortPassword value)  shortPassword,required TResult Function( PasswordsDoNotMatch value)  passwordsDoNotMatch,required TResult Function( Empty value)  empty,required TResult Function( ShortName value)  shortName,required TResult Function( LongName value)  longName,}){
 final _that = this;
 switch (_that) {
 case InvalidEmail():
 return invalidEmail(_that);case ShortPassword():
-return shortPassword(_that);case MissingLowercase():
-return missingLowercase(_that);case MissingUppercase():
-return missingUppercase(_that);case MissingNumber():
-return missingNumber(_that);case InvalidUsername():
-return invalidUsername(_that);case ShortUsername():
-return shortUsername(_that);case LongUsername():
-return longUsername(_that);case InvalidUsernameFormat():
-return invalidUsernameFormat(_that);case PasswordsDoNotMatch():
+return shortPassword(_that);case PasswordsDoNotMatch():
 return passwordsDoNotMatch(_that);case Empty():
 return empty(_that);case ShortName():
 return shortName(_that);case LongName():
@@ -150,19 +136,12 @@ return longName(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( InvalidEmail value)?  invalidEmail,TResult? Function( ShortPassword value)?  shortPassword,TResult? Function( MissingLowercase value)?  missingLowercase,TResult? Function( MissingUppercase value)?  missingUppercase,TResult? Function( MissingNumber value)?  missingNumber,TResult? Function( InvalidUsername value)?  invalidUsername,TResult? Function( ShortUsername value)?  shortUsername,TResult? Function( LongUsername value)?  longUsername,TResult? Function( InvalidUsernameFormat value)?  invalidUsernameFormat,TResult? Function( PasswordsDoNotMatch value)?  passwordsDoNotMatch,TResult? Function( Empty value)?  empty,TResult? Function( ShortName value)?  shortName,TResult? Function( LongName value)?  longName,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( InvalidEmail value)?  invalidEmail,TResult? Function( ShortPassword value)?  shortPassword,TResult? Function( PasswordsDoNotMatch value)?  passwordsDoNotMatch,TResult? Function( Empty value)?  empty,TResult? Function( ShortName value)?  shortName,TResult? Function( LongName value)?  longName,}){
 final _that = this;
 switch (_that) {
 case InvalidEmail() when invalidEmail != null:
 return invalidEmail(_that);case ShortPassword() when shortPassword != null:
-return shortPassword(_that);case MissingLowercase() when missingLowercase != null:
-return missingLowercase(_that);case MissingUppercase() when missingUppercase != null:
-return missingUppercase(_that);case MissingNumber() when missingNumber != null:
-return missingNumber(_that);case InvalidUsername() when invalidUsername != null:
-return invalidUsername(_that);case ShortUsername() when shortUsername != null:
-return shortUsername(_that);case LongUsername() when longUsername != null:
-return longUsername(_that);case InvalidUsernameFormat() when invalidUsernameFormat != null:
-return invalidUsernameFormat(_that);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
+return shortPassword(_that);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
 return passwordsDoNotMatch(_that);case Empty() when empty != null:
 return empty(_that);case ShortName() when shortName != null:
 return shortName(_that);case LongName() when longName != null:
@@ -183,18 +162,11 @@ return longName(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String failedValue)?  invalidEmail,TResult Function( String failedValue)?  shortPassword,TResult Function( String failedValue)?  missingLowercase,TResult Function( String failedValue)?  missingUppercase,TResult Function( String failedValue)?  missingNumber,TResult Function( String failedValue)?  invalidUsername,TResult Function( String failedValue)?  shortUsername,TResult Function( String failedValue)?  longUsername,TResult Function( String failedValue)?  invalidUsernameFormat,TResult Function( String failedValue)?  passwordsDoNotMatch,TResult Function( String failedValue)?  empty,TResult Function( String failedValue)?  shortName,TResult Function( String failedValue)?  longName,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String failedValue)?  invalidEmail,TResult Function( String failedValue)?  shortPassword,TResult Function( String failedValue)?  passwordsDoNotMatch,TResult Function( String failedValue)?  empty,TResult Function( String failedValue)?  shortName,TResult Function( String failedValue)?  longName,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case InvalidEmail() when invalidEmail != null:
 return invalidEmail(_that.failedValue);case ShortPassword() when shortPassword != null:
-return shortPassword(_that.failedValue);case MissingLowercase() when missingLowercase != null:
-return missingLowercase(_that.failedValue);case MissingUppercase() when missingUppercase != null:
-return missingUppercase(_that.failedValue);case MissingNumber() when missingNumber != null:
-return missingNumber(_that.failedValue);case InvalidUsername() when invalidUsername != null:
-return invalidUsername(_that.failedValue);case ShortUsername() when shortUsername != null:
-return shortUsername(_that.failedValue);case LongUsername() when longUsername != null:
-return longUsername(_that.failedValue);case InvalidUsernameFormat() when invalidUsernameFormat != null:
-return invalidUsernameFormat(_that.failedValue);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
+return shortPassword(_that.failedValue);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
 return passwordsDoNotMatch(_that.failedValue);case Empty() when empty != null:
 return empty(_that.failedValue);case ShortName() when shortName != null:
 return shortName(_that.failedValue);case LongName() when longName != null:
@@ -216,18 +188,11 @@ return longName(_that.failedValue);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String failedValue)  invalidEmail,required TResult Function( String failedValue)  shortPassword,required TResult Function( String failedValue)  missingLowercase,required TResult Function( String failedValue)  missingUppercase,required TResult Function( String failedValue)  missingNumber,required TResult Function( String failedValue)  invalidUsername,required TResult Function( String failedValue)  shortUsername,required TResult Function( String failedValue)  longUsername,required TResult Function( String failedValue)  invalidUsernameFormat,required TResult Function( String failedValue)  passwordsDoNotMatch,required TResult Function( String failedValue)  empty,required TResult Function( String failedValue)  shortName,required TResult Function( String failedValue)  longName,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String failedValue)  invalidEmail,required TResult Function( String failedValue)  shortPassword,required TResult Function( String failedValue)  passwordsDoNotMatch,required TResult Function( String failedValue)  empty,required TResult Function( String failedValue)  shortName,required TResult Function( String failedValue)  longName,}) {final _that = this;
 switch (_that) {
 case InvalidEmail():
 return invalidEmail(_that.failedValue);case ShortPassword():
-return shortPassword(_that.failedValue);case MissingLowercase():
-return missingLowercase(_that.failedValue);case MissingUppercase():
-return missingUppercase(_that.failedValue);case MissingNumber():
-return missingNumber(_that.failedValue);case InvalidUsername():
-return invalidUsername(_that.failedValue);case ShortUsername():
-return shortUsername(_that.failedValue);case LongUsername():
-return longUsername(_that.failedValue);case InvalidUsernameFormat():
-return invalidUsernameFormat(_that.failedValue);case PasswordsDoNotMatch():
+return shortPassword(_that.failedValue);case PasswordsDoNotMatch():
 return passwordsDoNotMatch(_that.failedValue);case Empty():
 return empty(_that.failedValue);case ShortName():
 return shortName(_that.failedValue);case LongName():
@@ -245,18 +210,11 @@ return longName(_that.failedValue);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String failedValue)?  invalidEmail,TResult? Function( String failedValue)?  shortPassword,TResult? Function( String failedValue)?  missingLowercase,TResult? Function( String failedValue)?  missingUppercase,TResult? Function( String failedValue)?  missingNumber,TResult? Function( String failedValue)?  invalidUsername,TResult? Function( String failedValue)?  shortUsername,TResult? Function( String failedValue)?  longUsername,TResult? Function( String failedValue)?  invalidUsernameFormat,TResult? Function( String failedValue)?  passwordsDoNotMatch,TResult? Function( String failedValue)?  empty,TResult? Function( String failedValue)?  shortName,TResult? Function( String failedValue)?  longName,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String failedValue)?  invalidEmail,TResult? Function( String failedValue)?  shortPassword,TResult? Function( String failedValue)?  passwordsDoNotMatch,TResult? Function( String failedValue)?  empty,TResult? Function( String failedValue)?  shortName,TResult? Function( String failedValue)?  longName,}) {final _that = this;
 switch (_that) {
 case InvalidEmail() when invalidEmail != null:
 return invalidEmail(_that.failedValue);case ShortPassword() when shortPassword != null:
-return shortPassword(_that.failedValue);case MissingLowercase() when missingLowercase != null:
-return missingLowercase(_that.failedValue);case MissingUppercase() when missingUppercase != null:
-return missingUppercase(_that.failedValue);case MissingNumber() when missingNumber != null:
-return missingNumber(_that.failedValue);case InvalidUsername() when invalidUsername != null:
-return invalidUsername(_that.failedValue);case ShortUsername() when shortUsername != null:
-return shortUsername(_that.failedValue);case LongUsername() when longUsername != null:
-return longUsername(_that.failedValue);case InvalidUsernameFormat() when invalidUsernameFormat != null:
-return invalidUsernameFormat(_that.failedValue);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
+return shortPassword(_that.failedValue);case PasswordsDoNotMatch() when passwordsDoNotMatch != null:
 return passwordsDoNotMatch(_that.failedValue);case Empty() when empty != null:
 return empty(_that.failedValue);case ShortName() when shortName != null:
 return shortName(_that.failedValue);case LongName() when longName != null:
@@ -392,468 +350,6 @@ class _$ShortPasswordCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
   return _then(ShortPassword(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class MissingLowercase implements ValueFailure {
-  const MissingLowercase(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$MissingLowercaseCopyWith<MissingLowercase> get copyWith => _$MissingLowercaseCopyWithImpl<MissingLowercase>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MissingLowercase&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.missingLowercase(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $MissingLowercaseCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $MissingLowercaseCopyWith(MissingLowercase value, $Res Function(MissingLowercase) _then) = _$MissingLowercaseCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$MissingLowercaseCopyWithImpl<$Res>
-    implements $MissingLowercaseCopyWith<$Res> {
-  _$MissingLowercaseCopyWithImpl(this._self, this._then);
-
-  final MissingLowercase _self;
-  final $Res Function(MissingLowercase) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(MissingLowercase(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class MissingUppercase implements ValueFailure {
-  const MissingUppercase(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$MissingUppercaseCopyWith<MissingUppercase> get copyWith => _$MissingUppercaseCopyWithImpl<MissingUppercase>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MissingUppercase&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.missingUppercase(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $MissingUppercaseCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $MissingUppercaseCopyWith(MissingUppercase value, $Res Function(MissingUppercase) _then) = _$MissingUppercaseCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$MissingUppercaseCopyWithImpl<$Res>
-    implements $MissingUppercaseCopyWith<$Res> {
-  _$MissingUppercaseCopyWithImpl(this._self, this._then);
-
-  final MissingUppercase _self;
-  final $Res Function(MissingUppercase) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(MissingUppercase(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class MissingNumber implements ValueFailure {
-  const MissingNumber(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$MissingNumberCopyWith<MissingNumber> get copyWith => _$MissingNumberCopyWithImpl<MissingNumber>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MissingNumber&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.missingNumber(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $MissingNumberCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $MissingNumberCopyWith(MissingNumber value, $Res Function(MissingNumber) _then) = _$MissingNumberCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$MissingNumberCopyWithImpl<$Res>
-    implements $MissingNumberCopyWith<$Res> {
-  _$MissingNumberCopyWithImpl(this._self, this._then);
-
-  final MissingNumber _self;
-  final $Res Function(MissingNumber) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(MissingNumber(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class InvalidUsername implements ValueFailure {
-  const InvalidUsername(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$InvalidUsernameCopyWith<InvalidUsername> get copyWith => _$InvalidUsernameCopyWithImpl<InvalidUsername>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvalidUsername&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.invalidUsername(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $InvalidUsernameCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $InvalidUsernameCopyWith(InvalidUsername value, $Res Function(InvalidUsername) _then) = _$InvalidUsernameCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$InvalidUsernameCopyWithImpl<$Res>
-    implements $InvalidUsernameCopyWith<$Res> {
-  _$InvalidUsernameCopyWithImpl(this._self, this._then);
-
-  final InvalidUsername _self;
-  final $Res Function(InvalidUsername) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(InvalidUsername(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class ShortUsername implements ValueFailure {
-  const ShortUsername(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ShortUsernameCopyWith<ShortUsername> get copyWith => _$ShortUsernameCopyWithImpl<ShortUsername>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShortUsername&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.shortUsername(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ShortUsernameCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $ShortUsernameCopyWith(ShortUsername value, $Res Function(ShortUsername) _then) = _$ShortUsernameCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$ShortUsernameCopyWithImpl<$Res>
-    implements $ShortUsernameCopyWith<$Res> {
-  _$ShortUsernameCopyWithImpl(this._self, this._then);
-
-  final ShortUsername _self;
-  final $Res Function(ShortUsername) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(ShortUsername(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class LongUsername implements ValueFailure {
-  const LongUsername(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$LongUsernameCopyWith<LongUsername> get copyWith => _$LongUsernameCopyWithImpl<LongUsername>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LongUsername&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.longUsername(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $LongUsernameCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $LongUsernameCopyWith(LongUsername value, $Res Function(LongUsername) _then) = _$LongUsernameCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$LongUsernameCopyWithImpl<$Res>
-    implements $LongUsernameCopyWith<$Res> {
-  _$LongUsernameCopyWithImpl(this._self, this._then);
-
-  final LongUsername _self;
-  final $Res Function(LongUsername) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(LongUsername(
-null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class InvalidUsernameFormat implements ValueFailure {
-  const InvalidUsernameFormat(this.failedValue);
-  
-
-@override final  String failedValue;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$InvalidUsernameFormatCopyWith<InvalidUsernameFormat> get copyWith => _$InvalidUsernameFormatCopyWithImpl<InvalidUsernameFormat>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvalidUsernameFormat&&(identical(other.failedValue, failedValue) || other.failedValue == failedValue));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,failedValue);
-
-@override
-String toString() {
-  return 'ValueFailure.invalidUsernameFormat(failedValue: $failedValue)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $InvalidUsernameFormatCopyWith<$Res> implements $ValueFailureCopyWith<$Res> {
-  factory $InvalidUsernameFormatCopyWith(InvalidUsernameFormat value, $Res Function(InvalidUsernameFormat) _then) = _$InvalidUsernameFormatCopyWithImpl;
-@override @useResult
-$Res call({
- String failedValue
-});
-
-
-
-
-}
-/// @nodoc
-class _$InvalidUsernameFormatCopyWithImpl<$Res>
-    implements $InvalidUsernameFormatCopyWith<$Res> {
-  _$InvalidUsernameFormatCopyWithImpl(this._self, this._then);
-
-  final InvalidUsernameFormat _self;
-  final $Res Function(InvalidUsernameFormat) _then;
-
-/// Create a copy of ValueFailure
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? failedValue = null,}) {
-  return _then(InvalidUsernameFormat(
 null == failedValue ? _self.failedValue : failedValue // ignore: cast_nullable_to_non_nullable
 as String,
   ));

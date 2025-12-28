@@ -25,6 +25,10 @@
 - Indentation: 2 spaces; file names `snake_case.dart`.
 - Widgets/classes: `PascalCase`; methods/fields: `camelCase`.
 - Use Freezed for immutable models and JSON (keep `part '*.g.dart'` lines in sync via build_runner).
+- Aim for industry-grade code: SOLID, DRY, and clean, readable implementations.
+  - Keep responsibilities small and cohesive.
+  - Avoid duplication; prefer shared utilities/components when it improves clarity.
+  - Keep public APIs minimal and consistent; avoid “god” services and over-abstracted layers.
 
 ## Testing Guidelines
 
@@ -58,7 +62,7 @@ silenced with `git config core.autocrlf true`.
 ## Security & Config
 
 - Do not commit secrets; tokens flow via `AppConfig.init` and secure storage.
-- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config.g.dart`.
+- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config_values.dart`.
 - Firebase: ensure platform configs are present and FCM background handler remains registered.
 
 ## Agent Preferences (Code Authoring)
@@ -118,10 +122,13 @@ silenced with `git config core.autocrlf true`.
 - Prefer using `fvm` for Flutter/Dart commands as pinned in `.fvmrc`. If you don’t use FVM, replace
   `fvm flutter` with `flutter` and `fvm dart` with `dart`.
 - When working inside WSL, run Flutter/Dart via the Windows toolchain to avoid CRLF shim issues. The
-  SDK is at: `C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin`.
-    - Example: `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin\\flutter.bat analyze`
-    - Example:
-      `cmd.exe /C C:\\Users\\fikrilal\\fvm\\versions\\3.38.4\\bin\\dart.bat run build_runner build --delete-conflicting-outputs`
+  SDK is typically at: `D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin` (adjust if your install differs).
+    - Prefer repo-pinned SDK to avoid machine-specific paths:
+      - `cmd.exe /C "cd /d D:\\Development\\_CORE\\mobile-core-kit && .fvm\\flutter_sdk\\bin\\flutter.bat analyze"`
+      - `cmd.exe /C "cd /d D:\\Development\\_CORE\\mobile-core-kit && .fvm\\flutter_sdk\\bin\\dart.bat run build_runner build --delete-conflicting-outputs"`
+    - Or use your global FVM SDK directly:
+      - `cmd.exe /C D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin\\flutter.bat analyze`
+      - `cmd.exe /C D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin\\dart.bat run build_runner build --delete-conflicting-outputs`
 - Always run lint/analyze after making changes to catch errors early:
     - `fvm flutter analyze` (or the WSL/Windows command shown above)
 - If analyze/lint or other commands fail due to environment or permission constraints, do not force

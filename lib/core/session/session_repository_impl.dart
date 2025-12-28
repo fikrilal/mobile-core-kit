@@ -21,8 +21,15 @@ class SessionRepositoryImpl implements SessionRepository {
       access: tokens.accessToken,
       refresh: tokens.refreshToken,
       expiresIn: tokens.expiresIn,
+      expiresAtMs: tokens.expiresAt?.millisecondsSinceEpoch,
     );
-    await _local.cacheUserEntity(session.user);
+    final user = session.user;
+    if (user != null) {
+      await _local.cacheUserEntity(user);
+    } else {
+      // Prevent stale profile data if a tokens-only session is persisted.
+      await _local.clearAll();
+    }
   }
 
   @override
@@ -33,9 +40,7 @@ class SessionRepositoryImpl implements SessionRepository {
     }
 
     final model = await _local.getCachedUser();
-    if (model == null) return null;
-    final user = model.toEntity();
-    if (user == null) return null;
+    final user = model?.toEntity();
 
     return AuthSessionEntity(
       tokens: AuthTokensEntity(
@@ -43,6 +48,9 @@ class SessionRepositoryImpl implements SessionRepository {
         refreshToken: tokens.refresh!,
         tokenType: 'Bearer',
         expiresIn: tokens.expiresIn!,
+        expiresAt: tokens.expiresAtMs == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(tokens.expiresAtMs!),
       ),
       user: user,
     );

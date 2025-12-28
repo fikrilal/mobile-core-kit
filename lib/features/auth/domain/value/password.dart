@@ -6,21 +6,12 @@ class Password {
   const Password._(this.value);
 
   static Either<ValueFailure, Password> create(String input) {
+    if (input.trim().isEmpty) {
+      return left(ValueFailure.empty(input));
+    }
     if (input.length < 8) {
       return left(ValueFailure.shortPassword(input));
     }
-
-    // Specific checks for clearer messages
-    if (!RegExp(r'[a-z]').hasMatch(input)) {
-      return left(ValueFailure.missingLowercase(input));
-    }
-    if (!RegExp(r'[A-Z]').hasMatch(input)) {
-      return left(ValueFailure.missingUppercase(input));
-    }
-    if (!RegExp(r'\d').hasMatch(input)) {
-      return left(ValueFailure.missingNumber(input));
-    }
-
     return right(Password._(input));
   }
 

@@ -6,8 +6,8 @@ import '../../../../../core/network/endpoints/auth_endpoint.dart';
 import '../../../../../core/utilities/log_utils.dart';
 import '../../model/remote/login_request_model.dart';
 import '../../model/remote/auth_session_model.dart';
+import '../../model/remote/auth_tokens_model.dart';
 import '../../model/remote/refresh_request_model.dart';
-import '../../model/remote/refresh_response_model.dart';
 import '../../model/remote/register_request_model.dart';
 import '../../model/remote/google_mobile_request_model.dart';
 
@@ -27,10 +27,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('User registration successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'User registration failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -44,27 +50,39 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('User login successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'User login failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
-  Future<ApiResponse<RefreshResponseModel>> refreshToken(
+  Future<ApiResponse<AuthTokensModel>> refreshToken(
     RefreshRequestModel requestModel,
   ) async {
     Log.info('Refreshing token', name: _tag);
 
-    final response = await _apiHelper.post<RefreshResponseModel>(
+    final response = await _apiHelper.post<AuthTokensModel>(
       AuthEndpoint.refreshToken,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
-      parser: RefreshResponseModel.fromJson,
+      throwOnError: false,
+      parser: AuthTokensModel.fromJson,
     );
 
-    Log.info('Token refreshed successfully', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Token refresh failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -77,9 +95,17 @@ class AuthRemoteDataSource {
       AuthEndpoint.logout,
       data: requestModel.toJson(),
       host: ApiHost.auth,
+      requiresAuth: false,
+      throwOnError: false,
+      parser: (_) => const ApiNoData(),
     );
 
-    Log.info('Logout request completed', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Logout failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 
@@ -94,10 +120,16 @@ class AuthRemoteDataSource {
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
+      throwOnError: false,
       parser: AuthSessionModel.fromJson,
     );
 
-    Log.info('Google mobile sign-in successful', name: _tag);
+    if (response.isError) {
+      Log.warning(
+        'Google mobile sign-in failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
     return response;
   }
 }

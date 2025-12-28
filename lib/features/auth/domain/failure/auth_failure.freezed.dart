@@ -55,13 +55,14 @@ extension AuthFailurePatterns on AuthFailure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _NetworkFailure value)?  network,TResult Function( _EmailTakenFailure value)?  emailTaken,TResult Function( _UsernameTakenFailure value)?  usernameTaken,TResult Function( _ValidationFailure value)?  validation,TResult Function( _InvalidCredentials value)?  invalidCredentials,TResult Function( _RateLimited value)?  tooManyRequests,TResult Function( _ServerError value)?  serverError,TResult Function( _UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _NetworkFailure value)?  network,TResult Function( _UnauthenticatedFailure value)?  unauthenticated,TResult Function( _EmailTakenFailure value)?  emailTaken,TResult Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult Function( _ValidationFailure value)?  validation,TResult Function( _InvalidCredentials value)?  invalidCredentials,TResult Function( _RateLimited value)?  tooManyRequests,TResult Function( _ServerError value)?  serverError,TResult Function( _UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
-return network(_that);case _EmailTakenFailure() when emailTaken != null:
-return emailTaken(_that);case _UsernameTakenFailure() when usernameTaken != null:
-return usernameTaken(_that);case _ValidationFailure() when validation != null:
+return network(_that);case _UnauthenticatedFailure() when unauthenticated != null:
+return unauthenticated(_that);case _EmailTakenFailure() when emailTaken != null:
+return emailTaken(_that);case _EmailNotVerifiedFailure() when emailNotVerified != null:
+return emailNotVerified(_that);case _ValidationFailure() when validation != null:
 return validation(_that);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials(_that);case _RateLimited() when tooManyRequests != null:
 return tooManyRequests(_that);case _ServerError() when serverError != null:
@@ -84,13 +85,14 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _NetworkFailure value)  network,required TResult Function( _EmailTakenFailure value)  emailTaken,required TResult Function( _UsernameTakenFailure value)  usernameTaken,required TResult Function( _ValidationFailure value)  validation,required TResult Function( _InvalidCredentials value)  invalidCredentials,required TResult Function( _RateLimited value)  tooManyRequests,required TResult Function( _ServerError value)  serverError,required TResult Function( _UnexpectedFailure value)  unexpected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _NetworkFailure value)  network,required TResult Function( _UnauthenticatedFailure value)  unauthenticated,required TResult Function( _EmailTakenFailure value)  emailTaken,required TResult Function( _EmailNotVerifiedFailure value)  emailNotVerified,required TResult Function( _ValidationFailure value)  validation,required TResult Function( _InvalidCredentials value)  invalidCredentials,required TResult Function( _RateLimited value)  tooManyRequests,required TResult Function( _ServerError value)  serverError,required TResult Function( _UnexpectedFailure value)  unexpected,}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure():
-return network(_that);case _EmailTakenFailure():
-return emailTaken(_that);case _UsernameTakenFailure():
-return usernameTaken(_that);case _ValidationFailure():
+return network(_that);case _UnauthenticatedFailure():
+return unauthenticated(_that);case _EmailTakenFailure():
+return emailTaken(_that);case _EmailNotVerifiedFailure():
+return emailNotVerified(_that);case _ValidationFailure():
 return validation(_that);case _InvalidCredentials():
 return invalidCredentials(_that);case _RateLimited():
 return tooManyRequests(_that);case _ServerError():
@@ -109,13 +111,14 @@ return unexpected(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _NetworkFailure value)?  network,TResult? Function( _EmailTakenFailure value)?  emailTaken,TResult? Function( _UsernameTakenFailure value)?  usernameTaken,TResult? Function( _ValidationFailure value)?  validation,TResult? Function( _InvalidCredentials value)?  invalidCredentials,TResult? Function( _RateLimited value)?  tooManyRequests,TResult? Function( _ServerError value)?  serverError,TResult? Function( _UnexpectedFailure value)?  unexpected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _NetworkFailure value)?  network,TResult? Function( _UnauthenticatedFailure value)?  unauthenticated,TResult? Function( _EmailTakenFailure value)?  emailTaken,TResult? Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult? Function( _ValidationFailure value)?  validation,TResult? Function( _InvalidCredentials value)?  invalidCredentials,TResult? Function( _RateLimited value)?  tooManyRequests,TResult? Function( _ServerError value)?  serverError,TResult? Function( _UnexpectedFailure value)?  unexpected,}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
-return network(_that);case _EmailTakenFailure() when emailTaken != null:
-return emailTaken(_that);case _UsernameTakenFailure() when usernameTaken != null:
-return usernameTaken(_that);case _ValidationFailure() when validation != null:
+return network(_that);case _UnauthenticatedFailure() when unauthenticated != null:
+return unauthenticated(_that);case _EmailTakenFailure() when emailTaken != null:
+return emailTaken(_that);case _EmailNotVerifiedFailure() when emailNotVerified != null:
+return emailNotVerified(_that);case _ValidationFailure() when validation != null:
 return validation(_that);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials(_that);case _RateLimited() when tooManyRequests != null:
 return tooManyRequests(_that);case _ServerError() when serverError != null:
@@ -137,12 +140,13 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  emailTaken,TResult Function()?  usernameTaken,TResult Function( List<ValidationError> errors)?  validation,TResult Function()?  invalidCredentials,TResult Function()?  tooManyRequests,TResult Function( String? message)?  serverError,TResult Function( String? message)?  unexpected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  unauthenticated,TResult Function()?  emailTaken,TResult Function()?  emailNotVerified,TResult Function( List<ValidationError> errors)?  validation,TResult Function()?  invalidCredentials,TResult Function()?  tooManyRequests,TResult Function( String? message)?  serverError,TResult Function( String? message)?  unexpected,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
-return network();case _EmailTakenFailure() when emailTaken != null:
-return emailTaken();case _UsernameTakenFailure() when usernameTaken != null:
-return usernameTaken();case _ValidationFailure() when validation != null:
+return network();case _UnauthenticatedFailure() when unauthenticated != null:
+return unauthenticated();case _EmailTakenFailure() when emailTaken != null:
+return emailTaken();case _EmailNotVerifiedFailure() when emailNotVerified != null:
+return emailNotVerified();case _ValidationFailure() when validation != null:
 return validation(_that.errors);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials();case _RateLimited() when tooManyRequests != null:
 return tooManyRequests();case _ServerError() when serverError != null:
@@ -165,12 +169,13 @@ return unexpected(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  emailTaken,required TResult Function()  usernameTaken,required TResult Function( List<ValidationError> errors)  validation,required TResult Function()  invalidCredentials,required TResult Function()  tooManyRequests,required TResult Function( String? message)  serverError,required TResult Function( String? message)  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  unauthenticated,required TResult Function()  emailTaken,required TResult Function()  emailNotVerified,required TResult Function( List<ValidationError> errors)  validation,required TResult Function()  invalidCredentials,required TResult Function()  tooManyRequests,required TResult Function( String? message)  serverError,required TResult Function( String? message)  unexpected,}) {final _that = this;
 switch (_that) {
 case _NetworkFailure():
-return network();case _EmailTakenFailure():
-return emailTaken();case _UsernameTakenFailure():
-return usernameTaken();case _ValidationFailure():
+return network();case _UnauthenticatedFailure():
+return unauthenticated();case _EmailTakenFailure():
+return emailTaken();case _EmailNotVerifiedFailure():
+return emailNotVerified();case _ValidationFailure():
 return validation(_that.errors);case _InvalidCredentials():
 return invalidCredentials();case _RateLimited():
 return tooManyRequests();case _ServerError():
@@ -189,12 +194,13 @@ return unexpected(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  emailTaken,TResult? Function()?  usernameTaken,TResult? Function( List<ValidationError> errors)?  validation,TResult? Function()?  invalidCredentials,TResult? Function()?  tooManyRequests,TResult? Function( String? message)?  serverError,TResult? Function( String? message)?  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  unauthenticated,TResult? Function()?  emailTaken,TResult? Function()?  emailNotVerified,TResult? Function( List<ValidationError> errors)?  validation,TResult? Function()?  invalidCredentials,TResult? Function()?  tooManyRequests,TResult? Function( String? message)?  serverError,TResult? Function( String? message)?  unexpected,}) {final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
-return network();case _EmailTakenFailure() when emailTaken != null:
-return emailTaken();case _UsernameTakenFailure() when usernameTaken != null:
-return usernameTaken();case _ValidationFailure() when validation != null:
+return network();case _UnauthenticatedFailure() when unauthenticated != null:
+return unauthenticated();case _EmailTakenFailure() when emailTaken != null:
+return emailTaken();case _EmailNotVerifiedFailure() when emailNotVerified != null:
+return emailNotVerified();case _ValidationFailure() when validation != null:
 return validation(_that.errors);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials();case _RateLimited() when tooManyRequests != null:
 return tooManyRequests();case _ServerError() when serverError != null:
@@ -242,6 +248,38 @@ String toString() {
 /// @nodoc
 
 
+class _UnauthenticatedFailure implements AuthFailure {
+  const _UnauthenticatedFailure();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnauthenticatedFailure);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthFailure.unauthenticated()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _EmailTakenFailure implements AuthFailure {
   const _EmailTakenFailure();
   
@@ -274,8 +312,8 @@ String toString() {
 /// @nodoc
 
 
-class _UsernameTakenFailure implements AuthFailure {
-  const _UsernameTakenFailure();
+class _EmailNotVerifiedFailure implements AuthFailure {
+  const _EmailNotVerifiedFailure();
   
 
 
@@ -285,7 +323,7 @@ class _UsernameTakenFailure implements AuthFailure {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsernameTakenFailure);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailNotVerifiedFailure);
 }
 
 
@@ -294,7 +332,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'AuthFailure.usernameTaken()';
+  return 'AuthFailure.emailNotVerified()';
 }
 
 

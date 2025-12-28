@@ -66,7 +66,7 @@ analyticsEnabledDefault: true        # default collection state
 analyticsDebugLoggingEnabled: true   # verbose logging in dev/staging
 ```
 
-`tool/gen_config.dart` bakes these into `build_config.g.dart`. At runtime,
+`tool/gen_config.dart` bakes these into `build_config_values.dart`. At runtime,
 `AnalyticsServiceImpl` reads them via `BuildConfig`:
 
 - `analyticsEnabledDefault` → initial `_analyticsEnabled` state.
