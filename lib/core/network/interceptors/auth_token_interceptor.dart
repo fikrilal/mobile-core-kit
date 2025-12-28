@@ -11,6 +11,8 @@ class AuthTokenInterceptor extends dio.Interceptor {
   SessionManager get _session => getIt<SessionManager>();
   Completer<bool>? _refreshCompleter;
   static const String _requiresAuthKey = 'requiresAuth';
+  static const String _allowAuthRetryKey = 'allowAuthRetry';
+  static const Set<String> _defaultRetryMethods = {'GET', 'HEAD'};
 
   bool _requiresAuth(dio.RequestOptions options) {
     final value = options.extra[_requiresAuthKey];
@@ -19,13 +21,23 @@ class AuthTokenInterceptor extends dio.Interceptor {
     return true;
   }
 
+  bool _allowAuthRetry(dio.RequestOptions options) {
+    final method = options.method.toUpperCase();
+    if (_defaultRetryMethods.contains(method)) return true;
+
+    final value = options.extra[_allowAuthRetryKey];
+    if (value is bool) return value;
+    return false;
+  }
+
   @override
   void onRequest(
     dio.RequestOptions options,
     dio.RequestInterceptorHandler handler,
   ) async {
     if (_requiresAuth(options)) {
-      if (options.extra['retried'] != true && _session.isAccessTokenExpiringSoon) {
+      if (options.extra['retried'] != true &&
+          _session.isAccessTokenExpiringSoon) {
         try {
           await _refreshOnce();
         } catch (_) {
@@ -73,7 +85,8 @@ class AuthTokenInterceptor extends dio.Interceptor {
 
     if (statusCode == 401 &&
         _requiresAuth(err.requestOptions) &&
-        err.requestOptions.extra['retried'] != true) {
+        err.requestOptions.extra['retried'] != true &&
+        _allowAuthRetry(err.requestOptions)) {
       try {
         final refreshResult = await _refreshOnce();
 

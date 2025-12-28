@@ -28,6 +28,17 @@ class _FakeAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
+class _RecordingErrorInterceptor extends Interceptor {
+  _RecordingErrorInterceptor(this._onError);
+  final void Function(DioException err) _onError;
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    _onError(err);
+    handler.next(err);
+  }
+}
+
 void main() {
   setUp(() async {
     await locator.reset();
@@ -121,4 +132,126 @@ void main() {
 
     verify(() => session.refreshTokens()).called(1);
   });
+
+  test('does not refresh/retry POST on 401 by default', () async {
+    final session = _MockSessionManager();
+    when(() => session.accessToken).thenReturn('access_old');
+    when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
+
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+    var calls = 0;
+    dio.httpClientAdapter = _FakeAdapter((options) async {
+      calls += 1;
+      return ResponseBody.fromString(
+        jsonEncode({'message': 'Unauthorized'}),
+        401,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    });
+
+    final apiClient = _MockApiClient();
+    when(() => apiClient.dio).thenReturn(dio);
+
+    locator.registerSingleton<SessionManager>(session);
+    locator.registerSingleton<ApiClient>(apiClient);
+
+    dio.interceptors.add(AuthTokenInterceptor());
+
+    await expectLater(
+      dio.post('/protected', data: {'x': 1}),
+      throwsA(
+        isA<DioException>().having(
+          (e) => e.response?.statusCode,
+          'statusCode',
+          401,
+        ),
+      ),
+    );
+
+    verifyNever(() => session.refreshTokens());
+    expect(calls, 1);
+  });
+
+  test('retries POST on 401 when allowAuthRetry is true', () async {
+    final session = _MockSessionManager();
+    when(() => session.refreshTokens()).thenAnswer((_) async => true);
+    when(() => session.accessToken).thenReturn('access_new');
+    when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
+
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+    var calls = 0;
+    dio.httpClientAdapter = _FakeAdapter((options) async {
+      calls += 1;
+      final statusCode = calls == 1 ? 401 : 200;
+      return ResponseBody.fromString(
+        jsonEncode({'ok': true}),
+        statusCode,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    });
+
+    final apiClient = _MockApiClient();
+    when(() => apiClient.dio).thenReturn(dio);
+
+    locator.registerSingleton<SessionManager>(session);
+    locator.registerSingleton<ApiClient>(apiClient);
+
+    dio.interceptors.add(AuthTokenInterceptor());
+
+    final response = await dio.post(
+      '/protected',
+      data: {'x': 1},
+      options: Options(extra: {'allowAuthRetry': true}),
+    );
+
+    expect(response.statusCode, 200);
+    verify(() => session.refreshTokens()).called(1);
+    expect(calls, 2);
+  });
+
+  test(
+    'does not propagate recovered 401 to later error interceptors',
+    () async {
+      final session = _MockSessionManager();
+      when(() => session.refreshTokens()).thenAnswer((_) async => true);
+      when(() => session.accessToken).thenReturn('access_new');
+      when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
+
+      final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+      var calls = 0;
+      dio.httpClientAdapter = _FakeAdapter((options) async {
+        calls += 1;
+        final statusCode = calls == 1 ? 401 : 200;
+        return ResponseBody.fromString(
+          jsonEncode({'ok': true}),
+          statusCode,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        );
+      });
+
+      final apiClient = _MockApiClient();
+      when(() => apiClient.dio).thenReturn(dio);
+
+      locator.registerSingleton<SessionManager>(session);
+      locator.registerSingleton<ApiClient>(apiClient);
+
+      var errorCalls = 0;
+      dio.interceptors.add(AuthTokenInterceptor());
+      dio.interceptors.add(
+        _RecordingErrorInterceptor((err) {
+          if (err.response?.statusCode == 401) errorCalls += 1;
+        }),
+      );
+
+      final response = await dio.get('/protected');
+      expect(response.statusCode, 200);
+      expect(errorCalls, 0);
+    },
+  );
 }

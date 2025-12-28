@@ -35,14 +35,15 @@ class ApiClient {
     // Order matters:
     // 1) BaseUrlInterceptor - sets correct host URL
     // 2) HeaderInterceptor - adds common headers
-    // 3) AuthTokenInterceptor - attaches auth token and handles refresh
-    // 4) LoggingInterceptor - logs final request/response (if enabled)
+    // 3) AuthTokenInterceptor - attaches auth token and handles refresh/retry
+    // 4) LoggingInterceptor - logs request/response (if enabled)
     // 5) ErrorInterceptor - handles and transforms errors
     _dio.interceptors.addAll([
       BaseUrlInterceptor(),
       _headerInterceptor,
       AuthTokenInterceptor(),
-      if (NetworkLogConfig.instance.mode != NetLogMode.off) LoggingInterceptor(),
+      if (NetworkLogConfig.instance.mode != NetLogMode.off)
+        LoggingInterceptor(),
       ErrorInterceptor(),
     ]);
   }
