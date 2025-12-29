@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'core/di/service_locator.dart';
+import 'core/services/app_startup/app_startup_controller.dart';
 import 'core/theme/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'core/services/navigation/navigation_service.dart';
+import 'core/widgets/loading/loading.dart';
 import 'core/widgets/listener/app_event_listener.dart';
 import 'navigation/app_router.dart';
 
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigation = locator<NavigationService>();
+    final startup = locator<AppStartupController>();
     return AppEventListener(
       child: MaterialApp.router(
         title: 'Mobile Core Kit',
@@ -23,6 +26,14 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.light,
         routerConfig: _router,
         scaffoldMessengerKey: navigation.scaffoldMessengerKey,
+        builder: (context, child) => AppStartupGate(
+          listenable: startup,
+          isReady: () => startup.isReady,
+          overlayBuilder: (_) => const AppStartupOverlay(
+            title: 'Mobile Core Kit',
+          ),
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
     );
   }

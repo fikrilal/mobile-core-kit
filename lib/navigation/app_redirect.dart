@@ -16,13 +16,12 @@ String? appRedirect(
   final location = state.matchedLocation;
   final zone = _routeZone(location);
 
-  if (!startup.isReady) {
-    return zone == _RouteZone.splash ? null : AppRoutes.splash;
-  }
+  // Do not force navigation during startup (use a UI gate/overlay instead).
+  if (!startup.isReady) return null;
 
   final shouldShowOnboarding = startup.shouldShowOnboarding ?? false;
 
-  if (zone == _RouteZone.splash) {
+  if (zone == _RouteZone.root) {
     if (shouldShowOnboarding) return OnboardingRoutes.onboarding;
     return startup.isAuthenticated ? AppRoutes.home : AuthRoutes.signIn;
   }
@@ -42,10 +41,10 @@ String? appRedirect(
   return null;
 }
 
-enum _RouteZone { splash, onboarding, auth, other }
+enum _RouteZone { root, onboarding, auth, other }
 
 _RouteZone _routeZone(String location) {
-  if (location == AppRoutes.splash) return _RouteZone.splash;
+  if (location == AppRoutes.root) return _RouteZone.root;
   if (location == OnboardingRoutes.onboarding) return _RouteZone.onboarding;
   if (location.startsWith('/auth')) return _RouteZone.auth;
   return _RouteZone.other;

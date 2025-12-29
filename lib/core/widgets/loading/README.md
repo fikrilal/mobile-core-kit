@@ -38,6 +38,26 @@ AppDotWave(
 )
 ```
 
+### AppStartupGate
+
+App-level startup gate that blocks interaction until startup is ready.
+
+This is the preferred approach over an in-app “/splash” route: render the real
+router tree immediately, and show a short-lived full-screen overlay only when
+startup work takes long enough to be noticeable.
+
+```dart
+MaterialApp.router(
+  routerConfig: router,
+  builder: (context, child) => AppStartupGate(
+    listenable: startupController,
+    isReady: () => startupController.isReady,
+    overlayBuilder: (_) => const AppStartupOverlay(title: 'My App'),
+    child: child ?? const SizedBox.shrink(),
+  ),
+)
+```
+
 ## Performance notes
 
 - Prefer a single loading indicator per surface; avoid placing many animated loaders in large lists.
