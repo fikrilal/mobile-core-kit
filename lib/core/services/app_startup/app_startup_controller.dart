@@ -67,6 +67,22 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.initializing;
     notifyListeners();
 
+    // Load any persisted session before deciding initial routing.
+    //
+    // This ensures `isAuthenticated`/`isAuthPending` reflect real state (e.g.
+    // secure storage + local DB) before the router redirect runs post-startup.
+    try {
+      await _sessionManager.init();
+    } catch (e, st) {
+      Log.error(
+        'Failed to load persisted session. Continuing as signed-out.',
+        e,
+        st,
+        false,
+        'AppStartupController',
+      );
+    }
+
     try {
       _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
     } catch (e, st) {

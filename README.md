@@ -86,7 +86,7 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
 Each main file:
 
 - Initializes Firebase using `firebase_options.dart`.
-- Initializes `AppConfig` and DI via `setupLocator()`.
+- Initializes `AppConfig`, registers DI via `registerLocator()`, and bootstraps async services after the first frame via `bootstrapLocator()`.
 - Configures Crashlytics to collect only in production.
 
 See `docs/engineering/firebase_setup.md` for full details, including how to point the template at a different Firebase project.

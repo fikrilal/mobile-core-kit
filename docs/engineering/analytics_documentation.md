@@ -30,10 +30,11 @@ feature code should interact with it.
 The intended flow:
 
 1. `main_{flavor}.dart` initializes Firebase with `firebase_options.dart`.
-2. `setupLocator()` registers and initializes `IAnalyticsService`.
-3. `createRouter()` attaches `AnalyticsRouteObserver`, which uses
+2. `registerLocator()` registers `IAnalyticsService` (and other dependencies) before `runApp()`.
+3. `bootstrapLocator()` initializes `IAnalyticsService` after the first frame (best effort).
+4. `createRouter()` attaches `AnalyticsRouteObserver`, which uses
    `AnalyticsTracker` to track screens.
-4. Feature code calls `AnalyticsTracker` for business-level events
+5. Feature code calls `AnalyticsTracker` for business-level events
    (login, button clicks, searches, etc.).
 
 ## File Layout

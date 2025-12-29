@@ -31,9 +31,16 @@ Future<void> main() async {
 
       await initializeDateFormatting('en_US', '');
 
-      await setupLocator();
+      // Register dependencies synchronously, then render the first Flutter frame
+      // as soon as possible (reduces time spent on the native launch screen).
+      registerLocator();
 
       runApp(MyApp());
+
+      // Defer heavy initialization work until after the first frame.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(bootstrapLocator());
+      });
     },
     (error, stack) async {
       await FirebaseCrashlytics.instance

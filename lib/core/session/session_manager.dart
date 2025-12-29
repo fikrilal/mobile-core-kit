@@ -27,21 +27,36 @@ class SessionManager {
       ValueNotifier<AuthSessionEntity?>(null);
   final AppEventBus _events;
   AuthSessionEntity? _currentSession;
+  Future<void>? _initFuture;
 
-  Future<void> init() async {
-    _currentSession = await _repository.loadSession();
-    Log.debug(
-      'Session init: session loaded=${_currentSession != null}',
-      name: 'SessionManager',
-    );
-    if (_currentSession != null) {
+  Future<void> init() {
+    final existing = _initFuture;
+    if (existing != null) return existing;
+
+    final future = _initInternal();
+    _initFuture = future;
+    return future;
+  }
+
+  Future<void> _initInternal() async {
+    try {
+      _currentSession = await _repository.loadSession();
       Log.debug(
-        'Loaded access(~5)=${_mask(_currentSession!.tokens.accessToken)} refresh(~5)=${_mask(_currentSession!.tokens.refreshToken)}',
+        'Session init: session loaded=${_currentSession != null}',
         name: 'SessionManager',
       );
+      if (_currentSession != null) {
+        Log.debug(
+          'Loaded access(~5)=${_mask(_currentSession!.tokens.accessToken)} refresh(~5)=${_mask(_currentSession!.tokens.refreshToken)}',
+          name: 'SessionManager',
+        );
+      }
+      _sessionController.add(_currentSession);
+      _sessionNotifier.value = _currentSession;
+    } catch (e) {
+      _initFuture = null;
+      rethrow;
     }
-    _sessionController.add(_currentSession);
-    _sessionNotifier.value = _currentSession;
   }
 
   AuthSessionEntity? get session => _currentSession;

@@ -14,6 +14,7 @@ import '../services/app_startup/app_startup_controller.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
+import '../utilities/log_utils.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/user/di/user_module.dart';
 import '../../features/user/domain/usecase/get_me_usecase.dart';
@@ -25,22 +26,13 @@ final GetIt locator = GetIt.instance;
 /// Shorthand getter for the service locator.
 GetIt get getIt => locator;
 
-/// Registers all application-wide dependencies using a modular approach.
+Completer<void>? _bootstrapCompleter;
+
+/// Registers all application-wide dependencies (sync, no IO).
 ///
-/// This function is intentionally minimal in the boilerplate. It wires
-/// core-level services and is the place where feature modules should be
-/// registered in real projects.
-///
-/// Call this **once** before `runApp()` in every entry point:
-///
-/// ```dart
-/// Future<void> main() async {
-///   WidgetsFlutterBinding.ensureInitialized();
-///   await setupLocator();
-///   runApp(const MyApp());
-/// }
-/// ```
-Future<void> setupLocator() async {
+/// Keep this function fast because it is expected to run **before** `runApp()`.
+/// All heavy initialization work should go into [bootstrapLocator].
+void registerLocator() {
   // Core services
   if (!locator.isRegistered<NavigationService>()) {
     locator.registerLazySingleton<NavigationService>(() => NavigationService());
@@ -102,21 +94,62 @@ Future<void> setupLocator() async {
   // Feature modules
   AuthModule.register(locator);
   UserModule.register(locator);
+}
 
-  // Initialize analytics
-  await locator<IAnalyticsService>().initialize();
+/// Initializes dependencies that require async work (disk, platform channels).
+///
+/// This is safe to call multiple times; initialization runs once per process.
+Future<void> bootstrapLocator() {
+  final existing = _bootstrapCompleter;
+  if (existing != null) return existing.future;
 
-  // Initialize connectivity listener
-  await locator<ConnectivityService>().initialize();
+  final completer = Completer<void>();
+  _bootstrapCompleter = completer;
 
-  // Initialize session manager (load any existing session)
-  await locator<SessionManager>().init();
+  () async {
+    try {
+      registerLocator();
 
-  // Kick off startup gating checks (onboarding/auth) without blocking app start.
-  unawaited(locator<AppStartupController>().initialize());
+      // Run the startup gate first so the router can make correct initial
+      // decisions as early as possible (session + onboarding).
+      try {
+        await locator<AppStartupController>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize startup controller', e, st, false, 'DI');
+      }
+
+      // Optional initializations: failures should not block the app from starting.
+      try {
+        await locator<IAnalyticsService>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize analytics', e, st, false, 'DI');
+      }
+
+      try {
+        await locator<ConnectivityService>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize connectivity', e, st, false, 'DI');
+      }
+    } catch (e, st) {
+      Log.error('Failed to bootstrap dependencies', e, st, true, 'DI');
+    } finally {
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    }
+  }();
+
+  return completer.future;
+}
+
+/// Convenience wrapper for apps that still want a single entry point.
+Future<void> setupLocator() async {
+  registerLocator();
+  await bootstrapLocator();
 }
 
 /// Resets the service locator (useful for testing).
 Future<void> resetLocator() async {
+  _bootstrapCompleter = null;
   await locator.reset();
 }
