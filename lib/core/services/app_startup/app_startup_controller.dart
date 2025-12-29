@@ -67,7 +67,20 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.initializing;
     notifyListeners();
 
-    _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
+    try {
+      _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
+    } catch (e, st) {
+      // Fail open: if we cannot read persisted onboarding state, default to
+      // showing onboarding instead of blocking app startup forever.
+      _shouldShowOnboarding = true;
+      Log.error(
+        'Failed to read onboarding state. Defaulting to show onboarding.',
+        e,
+        st,
+        true,
+        'AppStartupController',
+      );
+    }
 
     _status = AppStartupStatus.ready;
     notifyListeners();

@@ -147,7 +147,7 @@ class _AppStartupGateState extends State<AppStartupGate> {
     if (_isReady) return;
     if (_mountedOverlay) return;
 
-    _showTimer?.cancel();
+    if (_showTimer?.isActive ?? false) return;
     _showTimer = Timer(widget.showDelay, () {
       if (!mounted) return;
       if (_isReady) return;
@@ -194,9 +194,16 @@ class _AppStartupGateState extends State<AppStartupGate> {
     if (!_mountedOverlay) return;
 
     _hideTimer?.cancel();
-    setState(() {
-      _opaqueOverlay = false;
-    });
+    // If we're already fading out, avoid restarting the unmount timer.
+    // Otherwise, repeated notifications from a noisy listenable can keep the
+    // overlay mounted (and still blocking input) longer than intended.
+    if (_unmountTimer?.isActive ?? false) return;
+
+    if (_opaqueOverlay) {
+      setState(() {
+        _opaqueOverlay = false;
+      });
+    }
 
     _unmountTimer?.cancel();
     if (widget.fadeDuration == Duration.zero) {
@@ -308,4 +315,3 @@ class AppStartupOverlay extends StatelessWidget {
     );
   }
 }
-
