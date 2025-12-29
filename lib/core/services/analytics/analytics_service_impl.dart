@@ -11,10 +11,10 @@ import 'analytics_service.dart';
 /// [IAnalyticsService] or using a higher-level tracker facade.
 class AnalyticsServiceImpl implements IAnalyticsService {
   AnalyticsServiceImpl({FirebaseAnalytics? analytics, bool? initialEnabled})
-    : _analytics = analytics ?? FirebaseAnalytics.instance,
+    : _analytics = analytics,
       _analyticsEnabled = initialEnabled ?? BuildConfig.analyticsEnabledDefault;
 
-  final FirebaseAnalytics _analytics;
+  FirebaseAnalytics? _analytics;
   bool _isInitialized = false;
   bool _analyticsEnabled;
   static const String _tag = 'AnalyticsServiceImpl';
@@ -27,9 +27,12 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     if (_isInitialized) return;
 
     try {
-      await _analytics.setAnalyticsCollectionEnabled(_analyticsEnabled);
+      final analytics = _analytics ?? FirebaseAnalytics.instance;
+      _analytics = analytics;
 
-      await _analytics.setUserProperty(
+      await analytics.setAnalyticsCollectionEnabled(_analyticsEnabled);
+
+      await analytics.setUserProperty(
         name: AnalyticsParams.appEnvironment,
         value: BuildConfig.env.name,
       );
@@ -58,11 +61,14 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     }
 
     try {
+      final analytics = _analytics;
+      if (analytics == null) return;
+
       if (_debugLoggingEnabled) {
         Log.debug('Analytics event: $name | $parameters', name: _tag);
       }
 
-      await _analytics.logEvent(name: name, parameters: parameters?.cast<String, Object>());
+      await analytics.logEvent(name: name, parameters: parameters?.cast<String, Object>());
     } catch (e, st) {
       Log.error('Failed to log event $name', e, st, false, _tag);
     }
@@ -98,11 +104,14 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     }
 
     try {
+      final analytics = _analytics;
+      if (analytics == null) return;
+
       if (_debugLoggingEnabled) {
         Log.debug('Setting analytics user ID: $userId', name: _tag);
       }
 
-      await _analytics.setUserId(id: userId);
+      await analytics.setUserId(id: userId);
     } catch (e, st) {
       Log.error('Failed to set user ID', e, st, false, _tag);
     }
@@ -115,10 +124,13 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     }
 
     try {
+      final analytics = _analytics;
+      if (analytics == null) return;
+
       if (_debugLoggingEnabled) {
         Log.debug('Clearing analytics user id & properties', name: _tag);
       }
-      await _analytics.setUserId(id: null);
+      await analytics.setUserId(id: null);
       // Note: we don't clear all user properties here; projects can decide
       // which properties to reset on logout.
     } catch (e, st) {
@@ -141,11 +153,14 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     }
 
     try {
+      final analytics = _analytics;
+      if (analytics == null) return;
+
       if (_debugLoggingEnabled) {
         Log.debug('Setting analytics user property: $name = $value', name: _tag);
       }
 
-      await _analytics.setUserProperty(name: name, value: value);
+      await analytics.setUserProperty(name: name, value: value);
     } catch (e, st) {
       Log.error('Failed to set user property $name', e, st, false, _tag);
     }
@@ -155,7 +170,16 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     try {
       _analyticsEnabled = enabled;
-      await _analytics.setAnalyticsCollectionEnabled(enabled);
+      final analytics = _analytics;
+      if (analytics == null) {
+        Log.info(
+          'Analytics collection ${enabled ? 'enabled' : 'disabled'} (pending init)',
+          name: _tag,
+        );
+        return;
+      }
+
+      await analytics.setAnalyticsCollectionEnabled(enabled);
       Log.info('Analytics collection ${enabled ? 'enabled' : 'disabled'}', name: _tag);
     } catch (e, st) {
       Log.error('Failed to set analytics collection enabled', e, st, false, _tag);

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../app_launch/app_launch_service.dart';
 import '../connectivity/connectivity_service.dart';
 import '../connectivity/network_status.dart';
+import '../startup_metrics/startup_metrics.dart';
 import '../../session/session_manager.dart';
 import '../../../features/user/domain/usecase/get_me_usecase.dart';
 import '../../../features/auth/domain/failure/auth_failure.dart';
@@ -67,9 +68,39 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.initializing;
     notifyListeners();
 
-    _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
+    // Load any persisted session before deciding initial routing.
+    //
+    // This ensures `isAuthenticated`/`isAuthPending` reflect real state (e.g.
+    // secure storage + local DB) before the router redirect runs post-startup.
+    try {
+      await _sessionManager.init();
+    } catch (e, st) {
+      Log.error(
+        'Failed to load persisted session. Continuing as signed-out.',
+        e,
+        st,
+        false,
+        'AppStartupController',
+      );
+    }
+
+    try {
+      _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
+    } catch (e, st) {
+      // Fail open: if we cannot read persisted onboarding state, default to
+      // showing onboarding instead of blocking app startup forever.
+      _shouldShowOnboarding = true;
+      Log.error(
+        'Failed to read onboarding state. Defaulting to show onboarding.',
+        e,
+        st,
+        true,
+        'AppStartupController',
+      );
+    }
 
     _status = AppStartupStatus.ready;
+    StartupMetrics.instance.mark(StartupMilestone.startupReady);
     notifyListeners();
 
     _maybeHydrateUser(force: true);

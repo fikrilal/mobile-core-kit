@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../core/di/service_locator.dart';
 import '../core/services/navigation/navigation_service.dart';
@@ -6,7 +7,6 @@ import '../core/services/analytics/analytics_tracker.dart';
 import '../core/services/app_startup/app_startup_controller.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
-import '../features/splash/presentation/pages/splash_page.dart';
 import 'app_redirect.dart';
 import 'app_routes.dart';
 import 'auth/auth_routes_list.dart';
@@ -25,7 +25,7 @@ GoRouter createRouter() {
   return GoRouter(
     navigatorKey: navigation.rootNavigatorKey,
     debugLogDiagnostics: true,
-    initialLocation: AppRoutes.splash,
+    initialLocation: AppRoutes.root,
     observers: [
       AnalyticsRouteObserver(analyticsTracker),
     ],
@@ -33,9 +33,9 @@ GoRouter createRouter() {
     redirect: (context, state) => appRedirect(state, startup),
     routes: [
       GoRoute(
-        path: AppRoutes.splash,
-        name: 'splash',
-        builder: (context, state) => const SplashPage(),
+        path: AppRoutes.root,
+        name: 'root',
+        builder: (context, state) => const SizedBox.shrink(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

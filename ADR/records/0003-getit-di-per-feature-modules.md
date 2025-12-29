@@ -33,13 +33,13 @@ Chosen option: **GetIt (`locator`) with per‑feature DI modules**, because it p
 
 Pattern:
 
-* Core DI lives in `setupLocator()` and registers shared services.
+* Core DI lives in `registerLocator()` (registrations) and `bootstrapLocator()` (async initialization).
 * Each feature has `lib/features/<feature>/di/<feature>_module.dart` that registers:
   - datasources (`registerLazySingleton`),
   - repositories (`registerLazySingleton`),
   - use cases (`registerFactory`),
   - Bloc/Cubits (`registerFactory`).
-* Features are composed into the app in `setupLocator()` by calling their `register()` methods.
+* Features are composed into the app in `registerLocator()` by calling their `register()` methods.
 
 ### Consequences
 
@@ -53,6 +53,5 @@ Pattern:
 Confirmed when:
 
 * New features add a `<feature>_module.dart` and register dependencies there.
-* `setupLocator()` only composes modules and core services (no feature wiring inline).
+* `registerLocator()` only composes modules and core services (no feature wiring inline).
 * Tests can replace dependencies via `locator.registerSingleton` / `resetLocator()`.
-

@@ -1,6 +1,11 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import '../../firebase_options.dart';
 import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
 import '../services/connectivity/connectivity_service.dart';
@@ -11,9 +16,14 @@ import '../services/analytics/analytics_tracker.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
+import '../services/early_errors/crashlytics_error_reporter.dart';
+import '../services/early_errors/early_error_buffer.dart';
+import '../services/startup_metrics/startup_metrics.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
+import '../configs/build_config.dart';
+import '../utilities/log_utils.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/user/di/user_module.dart';
 import '../../features/user/domain/usecase/get_me_usecase.dart';
@@ -25,22 +35,13 @@ final GetIt locator = GetIt.instance;
 /// Shorthand getter for the service locator.
 GetIt get getIt => locator;
 
-/// Registers all application-wide dependencies using a modular approach.
+Completer<void>? _bootstrapCompleter;
+
+/// Registers all application-wide dependencies (sync, no IO).
 ///
-/// This function is intentionally minimal in the boilerplate. It wires
-/// core-level services and is the place where feature modules should be
-/// registered in real projects.
-///
-/// Call this **once** before `runApp()` in every entry point:
-///
-/// ```dart
-/// Future<void> main() async {
-///   WidgetsFlutterBinding.ensureInitialized();
-///   await setupLocator();
-///   runApp(const MyApp());
-/// }
-/// ```
-Future<void> setupLocator() async {
+/// Keep this function fast because it is expected to run **before** `runApp()`.
+/// All heavy initialization work should go into [bootstrapLocator].
+void registerLocator() {
   // Core services
   if (!locator.isRegistered<NavigationService>()) {
     locator.registerLazySingleton<NavigationService>(() => NavigationService());
@@ -102,21 +103,113 @@ Future<void> setupLocator() async {
   // Feature modules
   AuthModule.register(locator);
   UserModule.register(locator);
+}
 
-  // Initialize analytics
-  await locator<IAnalyticsService>().initialize();
+/// Initializes dependencies that require async work (disk, platform channels).
+///
+/// This is safe to call multiple times; initialization runs once per process.
+Future<void> bootstrapLocator() {
+  final existing = _bootstrapCompleter;
+  if (existing != null) return existing.future;
 
-  // Initialize connectivity listener
-  await locator<ConnectivityService>().initialize();
+  final completer = Completer<void>();
+  _bootstrapCompleter = completer;
+  StartupMetrics.instance.mark(StartupMilestone.bootstrapStart);
 
-  // Initialize session manager (load any existing session)
-  await locator<SessionManager>().init();
+  () async {
+    try {
+      registerLocator();
 
-  // Kick off startup gating checks (onboarding/auth) without blocking app start.
-  unawaited(locator<AppStartupController>().initialize());
+      // Run the startup gate first so the router can make correct initial
+      // decisions as early as possible (session + onboarding).
+      try {
+        await locator<AppStartupController>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize startup controller', e, st, false, 'DI');
+      }
+
+      // Defer platform-heavy initialization until after first Flutter frame.
+      // This reduces time spent on the native launch screen at the cost of
+      // slightly delayed Firebase/Crashlytics availability.
+      await _initializeFirebaseCrashlyticsAndIntl();
+
+      // Optional initializations: failures should not block the app from starting.
+      try {
+        await locator<IAnalyticsService>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize analytics', e, st, false, 'DI');
+      }
+
+      try {
+        await locator<ConnectivityService>().initialize();
+      } catch (e, st) {
+        Log.error('Failed to initialize connectivity', e, st, false, 'DI');
+      }
+    } catch (e, st) {
+      Log.error('Failed to bootstrap dependencies', e, st, true, 'DI');
+    } finally {
+      StartupMetrics.instance.mark(StartupMilestone.bootstrapComplete);
+      StartupMetrics.instance.logSummary();
+      // Report startup timings once analytics is available (best-effort).
+      try {
+        unawaited(
+          StartupMetrics.instance.reportToAnalytics(locator<IAnalyticsService>()),
+        );
+      } catch (e, st) {
+        Log.error('Failed to report startup metrics', e, st, false, 'DI');
+      }
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    }
+  }();
+
+  return completer.future;
+}
+
+Future<void> _initializeFirebaseCrashlyticsAndIntl() async {
+  final metrics = StartupMetrics.instance;
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    metrics.mark(StartupMilestone.firebaseInitialized);
+  } catch (e, st) {
+    Log.error('Failed to initialize Firebase', e, st, false, 'DI');
+  }
+
+  // Crashlytics depends on Firebase being initialized.
+  try {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+      BuildConfig.env == BuildEnv.prod,
+    );
+
+    await EarlyErrorBuffer.instance.activate(
+      CrashlyticsErrorReporter(FirebaseCrashlytics.instance),
+    );
+
+    metrics.mark(StartupMilestone.crashlyticsConfigured);
+  } catch (e, st) {
+    Log.error('Failed to configure Crashlytics', e, st, false, 'DI');
+  }
+
+  try {
+    await initializeDateFormatting('en_US', '');
+    metrics.mark(StartupMilestone.intlInitialized);
+  } catch (e, st) {
+    Log.error('Failed to initialize Intl date formatting', e, st, false, 'DI');
+  }
+}
+
+/// Convenience wrapper for apps that still want a single entry point.
+Future<void> setupLocator() async {
+  registerLocator();
+  await bootstrapLocator();
 }
 
 /// Resets the service locator (useful for testing).
 Future<void> resetLocator() async {
+  _bootstrapCompleter = null;
   await locator.reset();
 }

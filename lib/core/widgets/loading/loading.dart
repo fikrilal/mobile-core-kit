@@ -4,4 +4,5 @@
 // SDK symbols to keep imports explicit in feature code.
 
 export 'app_dot_wave.dart' show AppDotWave;
-
+export 'app_loading_overlay.dart' show AppLoadingOverlay;
+export 'app_startup_gate.dart' show AppStartupGate, AppStartupOverlay;
