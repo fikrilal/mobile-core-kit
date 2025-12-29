@@ -9,7 +9,7 @@ class MotionDurations {
 
   /// Delay before showing the app startup gate overlay.
   ///
-  /// Used by: `_AppStartupGate` in `lib/app.dart`.
+  /// Used by: `AppStartupGate` in `lib/core/widgets/loading/app_startup_gate.dart`.
   ///
   /// Why: avoids a "flash" on fast startups by only showing the overlay if
   /// startup is still not ready after this delay.
@@ -17,7 +17,7 @@ class MotionDurations {
 
   /// Minimum time the startup gate overlay stays visible once shown.
   ///
-  /// Used by: `_AppStartupGate` in `lib/app.dart`.
+  /// Used by: `AppStartupGate` in `lib/core/widgets/loading/app_startup_gate.dart`.
   ///
   /// Why: prevents a quick show/hide blink if startup becomes ready right after
   /// the overlay appears.
@@ -25,9 +25,8 @@ class MotionDurations {
 
   /// Fade duration for the startup gate overlay.
   ///
-  /// Used by: `_AppStartupGate` in `lib/app.dart`.
+  /// Used by: `AppStartupGate` in `lib/core/widgets/loading/app_startup_gate.dart`.
   ///
   /// Why: smooth transition to/from the overlay.
   static const Duration startupGateFadeDuration = Duration(milliseconds: 180);
 }
-
