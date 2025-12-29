@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../../firebase_options.dart';
@@ -17,6 +16,8 @@ import '../services/analytics/analytics_tracker.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
+import '../services/early_errors/crashlytics_error_reporter.dart';
+import '../services/early_errors/early_error_buffer.dart';
 import '../services/startup_metrics/startup_metrics.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
@@ -184,14 +185,9 @@ Future<void> _initializeFirebaseCrashlyticsAndIntl() async {
       BuildConfig.env == BuildEnv.prod,
     );
 
-    FlutterError.onError = (details) {
-      FlutterError.presentError(details);
-      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-    };
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return kReleaseMode;
-    };
+    await EarlyErrorBuffer.instance.activate(
+      CrashlyticsErrorReporter(FirebaseCrashlytics.instance),
+    );
 
     metrics.mark(StartupMilestone.crashlyticsConfigured);
   } catch (e, st) {

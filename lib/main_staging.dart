@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 import 'core/configs/app_config.dart';
 import 'core/di/service_locator.dart';
+import 'core/services/early_errors/early_error_buffer.dart';
 import 'core/services/startup_metrics/startup_metrics.dart';
 import 'core/utilities/log_utils.dart';
 
@@ -11,6 +12,7 @@ Future<void> main() async {
     () async {
       final startupMetrics = StartupMetrics.instance..start();
       WidgetsFlutterBinding.ensureInitialized();
+      EarlyErrorBuffer.instance.install();
       startupMetrics
         ..mark(StartupMilestone.flutterBindingInitialized)
         ..attachFirstFrameTimingsListener();
@@ -33,7 +35,13 @@ Future<void> main() async {
       });
     },
     (error, stack) {
-      Log.wtf('Uncaught zone error', error, stack, true, 'Zone');
+      EarlyErrorBuffer.instance.recordError(
+        error,
+        stack,
+        reason: 'Uncaught zone error',
+        fatal: true,
+      );
+      Log.wtf('Uncaught zone error', error, stack, false, 'Zone');
     },
   );
 }
