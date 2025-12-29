@@ -1,6 +1,12 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter/foundation.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import '../../firebase_options.dart';
 import '../services/navigation/navigation_service.dart';
 import '../events/app_event_bus.dart';
 import '../services/connectivity/connectivity_service.dart';
@@ -15,6 +21,7 @@ import '../services/startup_metrics/startup_metrics.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
+import '../configs/build_config.dart';
 import '../utilities/log_utils.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/user/di/user_module.dart';
@@ -120,6 +127,11 @@ Future<void> bootstrapLocator() {
         Log.error('Failed to initialize startup controller', e, st, false, 'DI');
       }
 
+      // Defer platform-heavy initialization until after first Flutter frame.
+      // This reduces time spent on the native launch screen at the cost of
+      // slightly delayed Firebase/Crashlytics availability.
+      await _initializeFirebaseCrashlyticsAndIntl();
+
       // Optional initializations: failures should not block the app from starting.
       try {
         await locator<IAnalyticsService>().initialize();
@@ -152,6 +164,46 @@ Future<void> bootstrapLocator() {
   }();
 
   return completer.future;
+}
+
+Future<void> _initializeFirebaseCrashlyticsAndIntl() async {
+  final metrics = StartupMetrics.instance;
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    metrics.mark(StartupMilestone.firebaseInitialized);
+  } catch (e, st) {
+    Log.error('Failed to initialize Firebase', e, st, false, 'DI');
+  }
+
+  // Crashlytics depends on Firebase being initialized.
+  try {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+      BuildConfig.env == BuildEnv.prod,
+    );
+
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return kReleaseMode;
+    };
+
+    metrics.mark(StartupMilestone.crashlyticsConfigured);
+  } catch (e, st) {
+    Log.error('Failed to configure Crashlytics', e, st, false, 'DI');
+  }
+
+  try {
+    await initializeDateFormatting('en_US', '');
+    metrics.mark(StartupMilestone.intlInitialized);
+  } catch (e, st) {
+    Log.error('Failed to initialize Intl date formatting', e, st, false, 'DI');
+  }
 }
 
 /// Convenience wrapper for apps that still want a single entry point.

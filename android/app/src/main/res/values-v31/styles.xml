@@ -3,7 +3,6 @@
     <!-- Android 12+ uses the platform SplashScreen API. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- System splash (Android 12+) -->
-        <item name="android:postSplashScreenTheme">@style/NormalTheme</item>
         <!-- Activity window background while Flutter is initializing -->
         <item name="android:windowBackground">@drawable/launch_background</item>
         <item name="android:forceDarkAllowed">false</item>
