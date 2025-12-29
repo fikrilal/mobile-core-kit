@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../app_launch/app_launch_service.dart';
 import '../connectivity/connectivity_service.dart';
 import '../connectivity/network_status.dart';
+import '../startup_metrics/startup_metrics.dart';
 import '../../session/session_manager.dart';
 import '../../../features/user/domain/usecase/get_me_usecase.dart';
 import '../../../features/auth/domain/failure/auth_failure.dart';
@@ -99,6 +100,7 @@ class AppStartupController extends ChangeNotifier {
     }
 
     _status = AppStartupStatus.ready;
+    StartupMetrics.instance.mark(StartupMilestone.startupReady);
     notifyListeners();
 
     _maybeHydrateUser(force: true);

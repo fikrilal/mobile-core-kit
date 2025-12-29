@@ -11,6 +11,7 @@ import '../services/analytics/analytics_tracker.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
+import '../services/startup_metrics/startup_metrics.dart';
 import '../network/api/api_client.dart';
 import '../network/api/api_helper.dart';
 import '../network/logging/network_log_config.dart';
@@ -105,6 +106,7 @@ Future<void> bootstrapLocator() {
 
   final completer = Completer<void>();
   _bootstrapCompleter = completer;
+  StartupMetrics.instance.mark(StartupMilestone.bootstrapStart);
 
   () async {
     try {
@@ -133,6 +135,16 @@ Future<void> bootstrapLocator() {
     } catch (e, st) {
       Log.error('Failed to bootstrap dependencies', e, st, true, 'DI');
     } finally {
+      StartupMetrics.instance.mark(StartupMilestone.bootstrapComplete);
+      StartupMetrics.instance.logSummary();
+      // Report startup timings once analytics is available (best-effort).
+      try {
+        unawaited(
+          StartupMetrics.instance.reportToAnalytics(locator<IAnalyticsService>()),
+        );
+      } catch (e, st) {
+        Log.error('Failed to report startup metrics', e, st, false, 'DI');
+      }
       if (!completer.isCompleted) {
         completer.complete();
       }

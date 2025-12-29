@@ -1,0 +1,176 @@
+# Splash & Startup Gating — Current vs Industry Best Practices
+
+This document describes how “splash” works in this repo today, why the current approach can feel non‑standard in production apps, and a recommended industry-aligned approach (native launch screen + optional in-app startup gate overlay).
+
+Scope: **splash/startup UX only**. Deep linking implications are mentioned only as a side-effect; the deep link solution is a separate discussion.
+
+---
+
+## Terms (what “splash” can mean)
+
+### 1) Native launch screen (recommended primary splash)
+
+- **Android**: Activity theme window background (e.g., `LaunchTheme` → `@drawable/launch_background`).
+- **iOS**: `LaunchScreen.storyboard`.
+
+This is shown from process start until Flutter renders its **first frame**. It should be **static** and **fast**.
+
+Files in this repo:
+- Android: `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/styles.xml`, `android/app/src/main/res/drawable/launch_background.xml`
+- iOS: `ios/Runner/Base.lproj/LaunchScreen.storyboard`, `ios/Runner/Info.plist`
+
+### 2) In-app splash screen route (common anti-pattern)
+
+A dedicated Flutter route/page (e.g. `/splash`) that is shown after the native launch screen is removed.
+
+### 3) Startup overlay / startup gate (industry common when gating is required)
+
+A **full-screen overlay widget** displayed *above* the app’s routed UI while startup work finishes. It is **not a route**.
+
+Typical implementation: `MaterialApp.router(builder: ...)` wraps the router `child` in a `Stack` and conditionally renders a blocking overlay while startup is not ready.
+
+---
+
+## Current implementation in this repo (today)
+
+### What the user sees
+
+1) **Native launch screen** appears briefly while Flutter starts.
+2) Flutter renders the real app UI (router root).
+3) If startup gating isn’t ready fast enough, a **startup overlay gate** appears briefly to prevent interaction.
+4) When startup gating completes, GoRouter redirects to onboarding/auth/home as needed.
+
+### Where this is implemented
+
+- Router starts at `/`:
+  - `lib/navigation/app_router.dart` sets `initialLocation: AppRoutes.root` and registers a `GoRoute` for it.
+  - `lib/navigation/app_routes.dart` defines `AppRoutes.root = '/'`.
+- Startup gating:
+  - `lib/core/services/app_startup/app_startup_controller.dart` is a `ChangeNotifier` used as `refreshListenable` in GoRouter.
+    - It loads persisted auth session (secure storage + local DB) and reads the onboarding flag before reporting `isReady`.
+  - `lib/navigation/app_redirect.dart` routes to onboarding/auth/home based on onboarding and auth state (and does **not** force a splash route during startup).
+  - `lib/core/di/service_locator.dart` runs `AppStartupController.initialize()` during `bootstrapLocator()` (which is triggered after the first Flutter frame from `main_*.dart`).
+- Startup overlay gate:
+  - `lib/app.dart` wraps `MaterialApp.router` with `AppStartupGate` (`lib/core/widgets/loading/app_startup_gate.dart`), which shows a full-screen overlay only if startup isn’t ready after a short delay (to avoid flicker).
+
+### Startup performance note (native launch screen time)
+
+The native launch screen stays visible until Flutter draws the **first frame**. Anything awaited before `runApp()` increases native launch-screen time.
+
+In this repo, the entry points call `registerLocator()` before `runApp()` (sync only), then `bootstrapLocator()` after the first frame to reduce time spent on the native launch screen.
+
+### Native launch screen status (today)
+
+- Android launch background is the default white `layer-list` with no branded image:
+  - `android/app/src/main/res/drawable/launch_background.xml`
+- iOS has the standard Flutter template LaunchScreen setup:
+  - `ios/Runner/Base.lproj/LaunchScreen.storyboard`
+
+---
+
+## Tradeoffs of an in-app splash route (why we avoid it)
+
+The following issues apply when using an **in-app splash route** (what many teams try first).
+
+### 1) “Double splash” perception
+
+Users see **native launch screen → Flutter splash page**. In production apps, this often feels like the app is showing two startup screens, which can make startup feel slower even if time-to-interactive is unchanged.
+
+### 2) Splash is a navigable route (extra complexity)
+
+Because `/splash` is a real route:
+- It can show up in analytics as a screen view.
+- It participates in back stack semantics (depending on navigation patterns).
+- Redirect logic must ensure the app doesn’t get “stuck” or loop.
+
+### 3) Harder to keep deep links and startup gating compatible
+
+With a splash route, when `startup.isReady == false`, redirect logic often forces navigation to the splash route. If the app is opened from a deep link during startup, the original intent can be overridden unless you explicitly preserve/restore it.
+
+(Deep link handling is a separate topic, but this is an important side-effect of route-based splash.)
+
+### 4) UI consistency burden
+
+If the native splash isn’t branded (or differs from the Flutter splash), users may see a jarring transition between two different visuals.
+
+---
+
+## Industry-aligned approach (recommended)
+
+### Default: Native splash → app root (no in-app splash route)
+
+If you do **not** have startup work that must block the user from seeing the app UI, the simplest best practice is:
+
+- Keep a branded native launch screen.
+- Start Flutter directly on the real app UI (router root).
+- Perform non-critical initialization lazily (after the first frame / in background).
+  - In this repo: `registerLocator()` runs before `runApp()`, and `bootstrapLocator()` runs after the first frame (`lib/main_dev.dart`, `lib/main_staging.dart`, `lib/main_prod.dart`).
+
+### When gating is required: Native splash → app root + startup overlay gate
+
+If you **must** complete work before allowing the user to interact (examples: DB migrations, encrypted storage unlock, mandatory remote config, forced upgrade check), keep the router as the real root, and gate with a full-screen overlay:
+
+- The router still resolves the *correct* screen tree.
+- The overlay blocks interaction and shows a consistent boot UI until ready.
+- Once ready, remove the overlay (no route transitions required for “splash”).
+
+Conceptual structure (pseudo-code):
+
+```dart
+MaterialApp.router(
+  routerConfig: router,
+  builder: (context, child) {
+    return Stack(
+      children: [
+        child ?? const SizedBox.shrink(),
+        if (!startup.isReady) const StartupGateOverlay(),
+      ],
+    );
+  },
+)
+```
+
+---
+
+## Recommended direction for this repo (to align with best practice)
+
+### 1) Treat the native launch screen as the only “splash”
+
+Make the Android/iOS launch screens branded and consistent. This avoids double-splash UX and gives the fastest perceived startup.
+
+### 2) Use an optional startup gate overlay (not a route)
+
+Use a startup overlay only when there is a real gating requirement.
+
+In this repo, the current “startup” checks are lightweight:
+- Onboarding flag is `SharedPreferences` (`AppLaunchServiceImpl` in `lib/core/services/app_launch/app_launch_service_impl.dart`).
+- Auth session restore is local IO (secure storage + local DB) via `SessionManager.init()` (`lib/core/session/session_manager.dart`).
+- Auth hydration (`GetMeUseCase`) is already best-effort and should generally **not** block showing onboarding/auth/home UI.
+
+So the industry-aligned default is: **no Flutter splash route** (use native + optional overlay gate only when needed).
+
+---
+
+## Decision checklist (helps pick the right solution)
+
+Use **native-only splash** (no Flutter gate) when:
+- Startup work is minimal and not required before UI.
+- You can safely show onboarding/auth/home immediately.
+
+Add a **startup overlay gate** when:
+- There is mandatory work before the user can proceed, and it can take noticeable time.
+- You need to show progress, retry, offline messaging, or a forced-upgrade screen.
+
+Avoid a **splash route** when:
+- It exists primarily as a placeholder or to “buy time” for startup.
+- You want to keep deep link routing clean and avoid redirect side effects.
+
+---
+
+## Open questions (to finalize the target behavior)
+
+1) Do we have any **mandatory** startup work that can exceed ~200–300ms on cold start?
+2) Should the “startup gate” (if any) show:
+   - a static brand mark only, or
+   - progress state, offline state, retry, forced upgrade?
+3) Should analytics ignore the startup screen entirely (common), or track it as a screen view?
