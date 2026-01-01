@@ -19,9 +19,13 @@ class AppStartupController extends ChangeNotifier {
     required ConnectivityService connectivity,
     required SessionManager sessionManager,
     required GetMeUseCase getMe,
+    Duration sessionInitTimeout = const Duration(seconds: 5),
+    Duration onboardingReadTimeout = const Duration(seconds: 2),
   }) : _appLaunch = appLaunch,
        _connectivity = connectivity,
-       _sessionManager = sessionManager {
+       _sessionManager = sessionManager,
+       _sessionInitTimeout = sessionInitTimeout,
+       _onboardingReadTimeout = onboardingReadTimeout {
     _getMe = getMe;
     _sessionListener = () {
       notifyListeners();
@@ -40,6 +44,8 @@ class AppStartupController extends ChangeNotifier {
   final ConnectivityService _connectivity;
   final SessionManager _sessionManager;
   late final GetMeUseCase _getMe;
+  final Duration _sessionInitTimeout;
+  final Duration _onboardingReadTimeout;
   late final VoidCallback _sessionListener;
   StreamSubscription<NetworkStatus>? _connectivitySub;
 
@@ -73,7 +79,15 @@ class AppStartupController extends ChangeNotifier {
     // This ensures `isAuthenticated`/`isAuthPending` reflect real state (e.g.
     // secure storage + local DB) before the router redirect runs post-startup.
     try {
-      await _sessionManager.init();
+      await _sessionManager.init().timeout(_sessionInitTimeout);
+    } on TimeoutException catch (e, st) {
+      Log.error(
+        'Timed out loading persisted session after $_sessionInitTimeout. Continuing as signed-out.',
+        e,
+        st,
+        false,
+        'AppStartupController',
+      );
     } catch (e, st) {
       Log.error(
         'Failed to load persisted session. Continuing as signed-out.',
@@ -85,7 +99,19 @@ class AppStartupController extends ChangeNotifier {
     }
 
     try {
-      _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding();
+      _shouldShowOnboarding =
+          await _appLaunch.shouldShowOnboarding().timeout(_onboardingReadTimeout);
+    } on TimeoutException catch (e, st) {
+      // Fail open: if we cannot read persisted onboarding state, default to
+      // showing onboarding instead of blocking app startup forever.
+      _shouldShowOnboarding = true;
+      Log.error(
+        'Timed out reading onboarding state after $_onboardingReadTimeout. Defaulting to show onboarding.',
+        e,
+        st,
+        true,
+        'AppStartupController',
+      );
     } catch (e, st) {
       // Fail open: if we cannot read persisted onboarding state, default to
       // showing onboarding instead of blocking app startup forever.
