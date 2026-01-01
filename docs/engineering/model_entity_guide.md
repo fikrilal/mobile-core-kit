@@ -1,41 +1,82 @@
-# Model & Entity Guide — Freezed + json_serializable
+# Model & Entity Guide
 
-This codebase standardizes how you define **domain entities** and **data models** using
-`freezed` and `json_serializable`. New code should follow these patterns to stay consistent.
+This guide defines how this repository writes:
+- domain entities
+- remote models
+- local models
+- request models
+- model/entity mapping helpers
 
----
+Use this document when the question is:
+- how should this type be written?
 
-## 1. Libraries & Codegen
+Use `docs/engineering/data_domain_guide.md` when the question is:
+- where should this code live, and who should own the behavior?
+
+## 1. Core Rules
+
+### Entities
+
+Entities are domain-facing types.
+
+They should be:
+- UI-agnostic
+- framework-light or pure Dart
+- meaningful in business terms
+- stable enough to be consumed by use cases and presentation
+
+They should not be:
+- raw API payload mirrors
+- database row mirrors
+- JSON/SQL serialization containers
+
+### Models
+
+Models are data-facing types.
+
+They should represent:
+- remote payloads
+- request DTOs
+- local cache/database rows
+
+They may know about:
+- JSON
+- map serialization
+- backend field naming
+- database row shape
+
+They should not leak into presentation as the feature contract.
+
+## 2. Libraries & Codegen
 
 We use:
+- `freezed_annotation`
+- `freezed`
+- `json_annotation`
+- `json_serializable`
+- `build_runner`
 
-- `freezed_annotation` for immutable value types and copyWith, equality, etc.
-- `freezed` (dev) as the generator.
-- `json_annotation` for JSON annotations.
-- `json_serializable` (dev) to generate `fromJson` / `toJson` where appropriate.
-- `build_runner` as the codegen runner.
-
-Generated files are **committed**:
-
+Generated files are committed:
 - `*.freezed.dart`
 - `*.g.dart`
 
-Whenever you change a Freezed or JSON‑annotated type, run:
+When a Freezed or JSON-annotated type changes, run:
 
 ```bash
 fvm dart run build_runner build --delete-conflicting-outputs
 ```
 
----
+## 3. Domain Entities
 
-## 2. Domain Entities (lib/features/<feature>/domain/entity)
+Location:
+- `lib/features/<feature>/domain/entity/`
+- or `lib/core/domain/.../entity/` for shared kernel entities
 
-Domain entities are:
-
-- Freezed classes.
-- UI‑agnostic.
-- Do **not** depend on Dio/HTTP, database, or Flutter widgets.
-- Usually **do not** have JSON methods (only data layer models do).
+Typical rules:
+- prefer Freezed when immutability/equality matter
+- avoid JSON helpers here
+- keep field names business-meaningful
+- do not import Dio, sqflite, or widget code
 
 Pattern:
 
@@ -47,252 +88,240 @@ part 'user_entity.freezed.dart';
 @freezed
 abstract class UserEntity with _$UserEntity {
   const factory UserEntity({
-    String? id,
-    String? email,
-    String? displayName,
-    bool? emailVerified,
-    String? createdAt,
-    String? avatarUrl,
-    String? accessToken,
-    String? refreshToken,
-    int? expiresIn,
+    required String id,
+    required String email,
+    required bool emailVerified,
+    required List<String> roles,
+    required UserProfileEntity profile,
   }) = _UserEntity;
 }
 ```
 
-Rules:
+## 4. Remote Response Models
 
-- Put entities under `lib/features/<feature>/domain/entity/`.
-- Prefer Freezed for anything that benefits from immutability + equality.
-- Do **not** add `fromJson` / `toJson` here; that lives in data models.
+Location:
+- `lib/features/<feature>/data/model/remote/`
+- some shared remote models live in `lib/core/infra/network/model/remote/` when multiple features need them and feature-to-feature imports would be wrong
 
----
-
-## 3. Remote Models (lib/features/<feature>/data/model/remote)
-
-Remote models (DTOs) represent API payloads:
-
-- Freezed + json_serializable.
-- Contain `fromJson` (and generated `toJson`).
-- Own the mapping to/from domain entities via extensions or helpers.
+Typical rules:
+- use Freezed + json_serializable
+- include both `part '*.freezed.dart'` and `part '*.g.dart'`
+- expose `fromJson`
+- keep model-owned structural `toEntity()` close to the model when the mapping is straightforward
 
 Pattern:
 
 ```dart
-import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../domain/entity/user_entity.dart';
-
-part 'user_model.freezed.dart';
-part 'user_model.g.dart';
-
 @freezed
-abstract class UserModel with _$UserModel {
-  const factory UserModel({
-    String? id,
-    String? email,
-    String? displayName,
-    bool? emailVerified,
-    String? createdAt,
-    String? avatarUrl,
-    String? accessToken,
-    String? refreshToken,
-    int? expiresIn,
-  }) = _UserModel;
+abstract class UserResponseModel with _$UserResponseModel {
+  const factory UserResponseModel({
+    required String id,
+    required String email,
+    required bool emailVerified,
+    required UserProfileResponseModel profile,
+  }) = _UserResponseModel;
 
-  const UserModel._();
+  const UserResponseModel._();
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
-
-  factory UserModel.fromEntity(UserEntity entity) => UserModel(
-        id: entity.id,
-        email: entity.email,
-        displayName: entity.displayName,
-        emailVerified: entity.emailVerified,
-        createdAt: entity.createdAt,
-        avatarUrl: entity.avatarUrl,
-        accessToken: entity.accessToken,
-        refreshToken: entity.refreshToken,
-        expiresIn: entity.expiresIn,
-      );
-}
-
-extension UserModelX on UserModel {
-  UserEntity toEntity() => UserEntity(
-        id: id,
-        email: email,
-        displayName: displayName,
-        emailVerified: emailVerified,
-        createdAt: createdAt,
-        avatarUrl: avatarUrl,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        expiresIn: expiresIn,
-      );
-}
-```
-
-Usage with `ApiHelper`:
-
-```dart
-final response = await _apiHelper.post<UserModel>(
-  AuthEndpoint.login,
-  data: requestModel.toJson(),
-  host: ApiHost.auth,
-  parser: UserModel.fromJson,
-);
-
-final user = response.data!.toEntity();
-```
-
-Rules:
-
-- Place under `lib/features/<feature>/data/model/remote/`.
-- Always include both `part 'x.freezed.dart';` and `part 'x.g.dart';`.
-- Use `factory X.fromJson(...) => _$XFromJson(json);` (let json_serializable generate it).
-- Keep model→entity mapping close to the model (extension or helper).
-
----
-
-## 4. Local Models (lib/features/<feature>/data/model/local)
-
-Local models represent database or cache rows:
-
-- Also Freezed.
-- May or may not use json_serializable (often we just use `fromMap` / `toMap`).
-
-Pattern:
-
-```dart
-import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../domain/entity/user_entity.dart';
-
-part 'cached_user_local_model.freezed.dart';
-
-@freezed
-abstract class UserLocalModel with _$UserLocalModel {
-  static const tableName = 'users';
-  static const createTableQuery =
-      'CREATE TABLE users ('
-      'id TEXT PRIMARY KEY,'
-      'email TEXT,'
-      'displayName TEXT,'
-      'emailVerified INTEGER,'
-      'createdAt TEXT,'
-      'avatarUrl TEXT'
-      ');';
-
-  const factory UserLocalModel({
-    String? id,
-    String? email,
-    String? displayName,
-    bool? emailVerified,
-    String? createdAt,
-    String? avatarUrl,
-  }) = _UserLocalModel;
-
-  const UserLocalModel._();
-
-  factory UserLocalModel.fromMap(Map<String, dynamic> m) => UserLocalModel(
-        id: m['id'] as String?,
-        email: m['email'] as String?,
-        displayName: m['displayName'] as String?,
-        emailVerified: m['emailVerified'] == null
-            ? null
-            : (m['emailVerified'] as int) == 1,
-        createdAt: m['createdAt'] as String?,
-        avatarUrl: m['avatarUrl'] as String?,
-      );
-
-  Map<String, dynamic> toMap() => {
-        'id': id,
-        'email': email,
-        'displayName': displayName,
-        'emailVerified':
-            emailVerified == null ? null : (emailVerified! ? 1 : 0),
-        'createdAt': createdAt,
-        'avatarUrl': avatarUrl,
-      };
+  factory UserResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$UserResponseModelFromJson(json);
 
   UserEntity toEntity() => UserEntity(
-        id: id,
-        email: email,
-        displayName: displayName,
-        emailVerified: emailVerified,
-        createdAt: createdAt,
-        avatarUrl: avatarUrl,
-      );
-}
-
-extension UserEntityLocalX on UserEntity {
-  UserLocalModel toLocalModel() => UserLocalModel(
-        id: id,
-        email: email,
-        displayName: displayName,
-        emailVerified: emailVerified,
-        createdAt: createdAt,
-        avatarUrl: avatarUrl,
-      );
+    id: id,
+    email: email,
+    emailVerified: emailVerified,
+    profile: profile.toEntity(),
+  );
 }
 ```
 
-Rules:
+### When a remote model may live in `core`
 
-- Keep DB specifics (table names, SQL) in local models or DAOs.
-- Map local models ↔ domain entities here, not in repositories.
+Only do this when the type is truly shared and architecture boundaries require it.
 
----
+Example:
+- a current-user payload model may live in a shared location when runtime and
+  multiple features need it, and feature-to-feature imports would be wrong
+
+This should stay an exception, not the default.
 
 ## 5. Request Models
 
-Request DTOs (what you send to APIs) also live in `data/model/remote` and follow the same pattern:
+Request DTOs also live in `data/model/remote/`.
+
+Use them when the backend payload shape matters.
+
+Typical rules:
+- mirror the backend payload exactly
+- use `toJson()` for request bodies
+- use `fromEntity(...)` only when it improves clarity and the domain request shape differs from the wire shape
+- add `@JsonSerializable(includeIfNull: false)` when omitted vs null fields matter for the backend contract
+
+Pattern:
 
 ```dart
 @freezed
-abstract class LoginRequestModel with _$LoginRequestModel {
-  const factory LoginRequestModel({
-    required String email,
-    required String password,
-  }) = _LoginRequestModel;
+abstract class UpdateProfileRequestModel with _$UpdateProfileRequestModel {
+  @JsonSerializable(includeIfNull: false, explicitToJson: true)
+  const factory UpdateProfileRequestModel({
+    required UpdateProfileBodyModel profile,
+  }) = _UpdateProfileRequestModel;
 
-  const LoginRequestModel._();
+  const UpdateProfileRequestModel._();
 
-  factory LoginRequestModel.fromJson(Map<String, dynamic> json) =>
-      _$LoginRequestModelFromJson(json);
-
-  factory LoginRequestModel.fromEntity(LoginRequestEntity entity) =>
-      LoginRequestModel(email: entity.email, password: entity.password);
+  factory UpdateProfileRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$UpdateProfileRequestModelFromJson(json);
 }
 ```
 
-These then call `toJson()` directly when passing `data` into `ApiHelper`.
+Guideline:
+- if omitted fields and `null` have different backend meaning, document that in the model file
 
----
+## 6. Local Models
 
-## 6. When to Write Custom fromJson
+Location:
+- `lib/features/<feature>/data/model/local/`
 
-Default: let `json_serializable` generate `fromJson` and `toJson`.
+Use local models for:
+- sqflite rows
+- cached payload snapshots
+- serialized local-only state
 
-Only write a custom `fromJson` when:
+Typical rules:
+- Freezed is fine when it improves readability/equality
+- `fromMap` / `toMap` is often enough
+- keep table/column/storage specifics close to the local model or DAO
+- keep `toEntity()` and `fromEntity()` near the model when the mapping is straightforward
 
-- The payload shape is non‑standard (e.g., variant keys, nested envelopes), **and**
-- You cannot adapt it easily with annotations alone.
+Pattern:
 
-Even then, keep the model Freezed and still use `json_serializable` for `toJson` where possible.
+```dart
+@freezed
+abstract class CachedUserLocalModel with _$CachedUserLocalModel {
+  const factory CachedUserLocalModel({
+    String? id,
+    String? email,
+  }) = _CachedUserLocalModel;
 
----
+  const CachedUserLocalModel._();
 
-## 7. Quick Checklist for New Code
+  factory CachedUserLocalModel.fromMap(Map<String, dynamic> map) =>
+      CachedUserLocalModel(
+        id: map['id'] as String?,
+        email: map['email'] as String?,
+      );
 
-When adding a new entity/model:
+  Map<String, dynamic> toMap() => {'id': id, 'email': email};
 
-1. **Domain entity** → `lib/features/<feature>/domain/entity/`  
-   - Freezed, no JSON, business‑meaningful fields.
-2. **Remote model** → `lib/features/<feature>/data/model/remote/`  
-   - Freezed + json_serializable, `fromJson`, `toJson`, `toEntity`/`fromEntity`.
-3. **Local model** → `lib/features/<feature>/data/model/local/`  
-   - Freezed, `fromMap` / `toMap`, `toEntity`/`fromEntity`.
-4. Run codegen:
-   - `fvm dart run build_runner build --delete-conflicting-outputs`.
-5. Use `ApiHelper` with `parser: Model.fromJson` for remote calls.
+  UserEntity? toEntity() {
+    if (id == null || id!.isEmpty || email == null || email!.isEmpty) {
+      return null;
+    }
+    return UserEntity(id: id!, email: email!);
+  }
+}
+```
 
+Real implementations often persist more fields than the shortened example above.
+That is fine. The important rule is to keep storage-shape concerns local and
+return `null` when the row is too incomplete to become a valid domain object.
+
+## 7. Mapping Rules
+
+### Preferred default
+
+Keep simple structural mapping close to the model.
+
+Examples:
+- `UserResponseModel.toEntity()`
+- `CachedUserLocalModel.toEntity()`
+- `UserEntity.toLocalModel()`
+
+### When not to keep mapping only on the model
+
+Use a repository-local helper when the mapping needs:
+- multiple models combined into one entity
+- paginated metadata interpretation
+- endpoint-specific derived state
+- repository-only orchestration context
+
+Rule:
+- one model -> one entity = model-owned mapping
+- many models/meta -> one result = repository-owned mapping
+
+## 8. Naming Conventions
+
+Use names that expose role clearly:
+- domain: `*_entity.dart`
+- remote model: `*_model.dart`
+- local model: `*_local_model.dart`
+- request model: `*_request_model.dart`
+
+Avoid ambiguous names like:
+- `UserData`
+- `UserDtoModelEntity`
+- `Payload`
+
+## 9. Nullability And Optionality
+
+Be explicit about what null means.
+
+Questions to answer when writing a model:
+- is the field optional because the backend omits it?
+- is it nullable because null is a meaningful value?
+- should omitted fields be excluded from `toJson()`?
+
+For request models, this matters a lot.
+The current profile patch models already document this clearly in code comments.
+
+## 10. When To Write Custom `fromJson`
+
+Default:
+- let `json_serializable` generate `fromJson` and `toJson`
+
+Write custom parsing only when:
+- the payload shape is irregular
+- annotations are not enough
+- a small adapter object would be more confusing than a focused custom parser
+
+Even then:
+- keep the model itself readable
+- keep custom parsing localized
+
+## 11. Anti-Patterns
+
+Do not:
+- add `fromJson` / `toJson` to domain entities by default
+- make repositories own all structural field-by-field mapping when the model can own it
+- leak raw API response shapes into presentation
+- use model names as if they were domain contracts
+- create separate mapper files for every model/entity conversion when an extension on the model is enough
+
+## 12. Quick Checklist
+
+When adding a new type:
+
+1. Is this a business-facing type?
+- make it an entity or value object in `domain/`
+
+2. Is this an API payload or request body?
+- make it a remote model in `data/model/remote/`
+
+3. Is this a cache/database row?
+- make it a local model in `data/model/local/`
+
+4. Is the mapping one model to one entity?
+- keep `toEntity()` near the model
+
+5. Does omitted vs null matter to the backend?
+- configure JSON serialization explicitly
+
+6. Did Freezed/JSON types change?
+- run build_runner
+
+## 13. Related Docs
+
+- `docs/engineering/data_domain_guide.md`
+- `docs/engineering/project_architecture.md`
+- `docs/engineering/validation_architecture.md`
+- `lib/core/domain/README.md`

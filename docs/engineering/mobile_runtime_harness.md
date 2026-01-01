@@ -1,125 +1,140 @@
-# Mobile Runtime Harness (Agent Workflow)
+# Mobile Runtime Harness
 
-This document defines how to collect machine-checkable runtime evidence for mobile changes.
+This document explains how to collect machine-checkable runtime evidence for mobile changes.
 
-It is designed to close the "agent can write code but cannot reliably verify behavior on device" gap.
+Use this document when the question is:
+- how do I prove a mobile/runtime change on a device or emulator?
+- what evidence is expected for medium/high-risk behavior?
 
-## Objectives
+Use `docs/engineering/agent_pr_loop.md` for the overall PR delivery loop.
 
-1. Make runtime validation deterministic and repeatable.
-2. Produce artifacts suitable for PR review.
-3. Keep the workflow compatible with both local CLI and mobile MCP interaction.
+## Purpose
+
+The runtime harness closes the gap between:
+- code that passes static checks
+- behavior that is actually proven on device
+
+It is most useful when static analysis and tests are not enough to prove correctness.
+
+## When Runtime Evidence Is Expected
+
+Collect runtime evidence for changes such as:
+- medium/high-risk mobile UI behavior
+- startup/navigation/deep-link flows
+- auth/session/runtime orchestration
+- push/permissions/device integrations
+- bugs that require a real device or emulator to reproduce confidently
 
 ## Preconditions
 
-1. A device/emulator is online (`adb devices` or mobile MCP device list).
-2. Environment config is available for selected flavor:
-- for `dev` and `staging`, `tool/agent/mobile_evidence_check.sh` can bootstrap from `.env/<env>.example.yaml`
-- for `prod`, `.env/prod.yaml` must exist and be non-empty
-3. Firebase Android config is present for selected flavor:
-- one of the `google-services.json` locations checked by the harness must exist (for example `android/app/google-services.json`)
-- you can stage it automatically for local runs with `--google-services-json <path>`
-- if missing, preflight fails with a short actionable summary and pointer to `docs/engineering/firebase_setup.md`
+1. A device or emulator is available.
+2. The selected environment config exists or can be bootstrapped.
+3. Required platform config exists for the selected flavor.
 
-## Two-Lane Model
+If Firebase or similar platform configuration is missing, fail early with an actionable message instead of continuing blindly.
 
-## Lane A: Deterministic CLI Evidence (required baseline)
+## Two Evidence Lanes
 
-Use this for every medium/high UI or runtime-impacting PR.
+### Lane A: Deterministic CLI evidence
 
-1. Ensure a device/emulator is running.
-2. Run:
+Use this as the default runtime-evidence path.
+
+Primary helper:
 
 ```bash
 tool/agent/mobile_evidence_check.sh --device <device-id> --flavor dev
 ```
 
-If your Firebase file is stored outside this repository:
+Example with explicit platform config:
 
 ```bash
-tool/agent/mobile_evidence_check.sh --device <device-id> --flavor dev --google-services-json /secure/path/google-services.json
+tool/agent/mobile_evidence_check.sh \
+  --device <device-id> \
+  --flavor dev \
+  --google-services-json /secure/path/google-services.json
 ```
 
-3. Attach artifacts from:
+Optional single-target run:
+
+```bash
+tool/agent/mobile_evidence_check.sh \
+  --device <device-id> \
+  --target integration_test/auth_happy_path_test.dart
+```
+
+Expected artifacts typically include:
 - `_artifacts/mobile/<timestamp>/summary.md`
 - `_artifacts/mobile/<timestamp>/logs/*.log`
 
-Notes:
-- You can target a single test:
+### Lane B: Interactive validation
 
-```bash
-tool/agent/mobile_evidence_check.sh --device <device-id> --target integration_test/auth_happy_path_test.dart
-```
-
-## Lane B: Interactive MCP Validation (optional but recommended)
-
-Use mobile MCP when the agent needs interactive verification/debugging beyond scripted integration tests.
+Use this when deterministic tests are not enough and the agent needs to inspect or drive the UI interactively.
 
 Typical loop:
-1. Enumerate devices.
-2. Launch app.
-3. Inspect UI state (screenshot / view hierarchy).
-4. Interact with controls.
-5. Capture after-state screenshots.
-6. Include evidence links/paths in PR.
+1. enumerate devices
+2. launch app
+3. inspect UI state
+4. interact with controls
+5. capture after-state evidence
+6. attach evidence paths to the PR
 
-This lane is best for:
+Use this lane for:
 - layout regressions
-- interaction-only issues not covered by current integration tests
-- flaky or context-sensitive bug reproduction
+- interaction bugs not covered by integration tests
+- flaky/context-sensitive runtime behavior
 
-## Live Flutter Log Bridge (agent-readable)
+## Live Log Capture
 
-Use this when the agent needs continuous runtime logs during an interactive loop.
+Use the log bridge when continuous runtime logs help debug or prove behavior.
 
-Start a session (attach to existing app logs):
+Examples:
 
 ```bash
 tool/agent/flutter_log_stream.sh start --session emulator --mode logs --device emulator-5554
 ```
 
-Start a session that launches the app and streams runtime output:
-
 ```bash
-tool/agent/flutter_log_stream.sh start --session dev-run --mode run --device emulator-5554 --flavor dev --target lib/main_dev.dart
+tool/agent/flutter_log_stream.sh start \
+  --session dev-run \
+  --mode run \
+  --device emulator-5554 \
+  --flavor dev \
+  --target lib/main_dev.dart
 ```
-
-Read current logs:
 
 ```bash
 tool/agent/flutter_log_stream.sh tail --session emulator --lines 200
 ```
-
-Inspect status and stop:
 
 ```bash
 tool/agent/flutter_log_stream.sh status --session emulator
 tool/agent/flutter_log_stream.sh stop --session emulator
 ```
 
-Artifacts are written under:
+Typical artifacts:
 - `_artifacts/runtime_logs/<session>/stream.log`
 - `_artifacts/runtime_logs/<session>/metadata.env`
 
-This is intentionally file-backed so any agent with terminal + file access (or an MCP wrapper around shell commands) can poll logs without keeping a single interactive terminal session alive.
+## Minimum Evidence To Attach
 
-## PR Evidence Requirements (for UI/runtime changes)
+For runtime-sensitive PRs, attach at least:
+1. device/emulator ID
+2. flavor
+3. executed target(s)
+4. artifact path(s)
+5. relevant log lines or screenshots when they help prove behavior
 
-At minimum, include:
-1. device ID + flavor
-2. test targets executed
-3. summary artifact path
-4. relevant log snippets (startup metric, traceId, or error lines)
+## Failure -> Harness Upgrade Rule
 
-## Failure Handling
+If runtime evidence repeatedly fails for the same reason, improve the harness instead of relying on repeated manual work.
 
-If runtime evidence repeatedly fails for the same reason (2+ times), promote that class of failure into harness tooling:
-- add or refine integration tests
-- add stronger log/metric assertions
-- add new script checks
-- update this workflow doc
+Typical upgrades:
+- add or strengthen integration tests
+- add better assertions to the evidence script
+- improve logging/metrics exposure
+- update this document with the stable workflow
 
-## Session Status (Current)
+## Related Docs
 
-1. Mobile MCP connectivity is healthy (`emulator-5554` discoverable and queryable).
-2. CLI lane preflight now auto-generates `build_config_values.dart` and validates Google Services config before running integration tests.
+- `docs/engineering/agent_pr_loop.md`
+- `docs/engineering/guardrails.md`

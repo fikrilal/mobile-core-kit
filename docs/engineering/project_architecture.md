@@ -21,7 +21,7 @@ Important: We use Bloc/Cubit only in presentation. No GetX.
 
 ## 2) Top‑Level Layout
 
-Reflects the current repository shape.
+Recommended template shape.
 
 ```
 lib/
@@ -99,15 +99,18 @@ lib/
 
 ### Session & Current User (Template Standard)
 
-This template separates responsibilities explicitly:
+Keep session/runtime concerns separate from feature workflows:
 
-- **Session contracts** live in `lib/core/domain/session/` (entities + ports like `SessionRepository`, `TokenRefresher`, `SessionFailure`, `CachedUserStore`, `SessionDriver`).
-- **Session orchestration** lives in `lib/core/runtime/session/` (`SessionManager`, `SessionRepositoryImpl`).
-- **User identity (“me”)** is exposed to UI via `lib/core/runtime/user_context/` (`UserContextService`).
-- **Auth feature** owns login/refresh/logout flows and provides the `TokenRefresher` adapter via DI.
-- **Account feature** owns current-user support (`GET /me` + cached-user persistence in sqflite) and provides:
-  - `CurrentUserFetcher` implementation (interface in `lib/core/domain/user/current_user_fetcher.dart`)
-  - `CachedUserStore` implementation (interface in `lib/core/domain/session/cached_user_store.dart`)
+- **Session contracts** live in `lib/core/domain/session/`
+  - examples: a session repository contract, a token refresher port, a session failure type, a cached-user store contract
+- **Session orchestration** lives in `lib/core/runtime/session/`
+  - examples: a session manager/coordinator and its runtime-facing repository implementation
+- **Current-user identity** is exposed to UI via `lib/core/runtime/user_context/`
+  - examples: a current-user context service or notifier
+- **Feature-owned auth flows** provide the `TokenRefresher` implementation through DI
+- **Feature-owned current-user support** provides:
+  - a `CurrentUserFetcher` implementation
+  - a `CachedUserStore` implementation when runtime/session needs persisted user identity
 
 Usage guide: `docs/template/current_user.md`
 
@@ -115,7 +118,7 @@ Usage guide: `docs/template/current_user.md`
 
 - data/
   - datasource/
-    - remote/: API calls via ApiHelper (typed parsers, list/paginated helpers).
+    - remote/: API calls via the project's HTTP helper abstractions.
     - local/: sqflite DAOs, shared_prefs, caches if applicable.
   - model/: DTOs and JSON serialization; Freezed/JSON generated code.
   - mapper/: DTO ↔ entity mappers, query parameter mappers, pagination mappers.
@@ -206,14 +209,16 @@ Guiding rule:
 - keep principles universal
 - do not force folder symmetry
 
-Examples in this repository:
+Examples of when each shape fits:
 
-- `features/auth` uses presentation-first subfeatures because the auth
-  workflows are numerous, but the shared auth data/domain surface remains
-  cohesive.
-- `features/account` uses stronger slice separation because profile, security,
-  and account-deletion concerns are more independent and interface with the
-  current-user kernel differently.
+- presentation-first subfeatures:
+  - one cohesive bounded context
+  - many screens/cubits/routes
+  - shared data/domain surface still makes sense
+- full vertical subfeatures:
+  - slices own materially different endpoints or persistence
+  - slices have different use cases or failure mapping
+  - slices evolve at different speeds or under different ownership
 
 If a feature feels "big", ask two questions before splitting:
 
@@ -235,10 +240,10 @@ Contains entity/, value/, failure/, repository/ (interfaces), and usecase/.
 - Repository interfaces describe operations in domain terms.
 - Use cases encode business rules and return `Either<Failure, T>`.
 
-Examples in repo for reference:
-- Repository interface: `lib/features/<feature>/domain/repository/...`
-- Use case: `lib/features/<feature>/domain/usecase/...`
-- Failure type: `lib/features/<feature>/domain/failure/...`
+Common examples:
+- repository interface
+- use case
+- failure type
 
 Naming conventions:
 - Use case names are verbs (e.g., GetTrendingBooks, CreateItem, UpdateProfile).
@@ -262,20 +267,23 @@ Contains datasource/ (remote/local), model/ (DTOs), mapper/, and repository/ (im
 
 - DTOs map to/from domain entities — never leak DTOs outside the data layer.
 - Repositories glue data sources and translate infrastructure errors to domain Failures.
-- Network stack uses `ApiClient` (Dio + interceptors) and `ApiHelper` helpers for one/list/paginated requests; endpoints are centralized under `core/network/endpoints`.
+- Network stack uses an HTTP client plus helper abstractions for one/list/paginated requests; keep endpoints centralized under a dedicated endpoints module.
 
-Examples in repo for reference:
-- Remote datasource: `lib/features/<feature>/data/datasource/remote/...`
-- Repository impl: `lib/features/<feature>/data/repository/...`
-- API plumbing: `lib/core/infra/network/api/api_client.dart`, `lib/core/infra/network/api/api_helper.dart`
+Typical pattern:
+- remote datasource under `data/datasource/remote/`
+- repository implementation under `data/repository/`
+- API plumbing under `core/infra/network/`
 
 Mapping & error policy:
-- Map DTOs to domain entities in repository implementations or dedicated mappers.
+- Map DTOs to domain entities in model-owned helpers or repository-local helpers.
 - Translate transport/HTTP errors to domain Failures (keep user‑facing messages consistent).
-- Keep API endpoint strings centralized under `core/network/endpoints`.
-- For cursor‑paginated endpoints, prefer `ApiHelper.getPaginated` / `ApiHelper.postPaginated` and
-  return typed `ApiPaginatedResult<T>` (`nextCursor`, `limit`, `additionalMeta`) from datasources.
+- Keep API endpoint strings centralized under a dedicated endpoints module.
+- For cursor‑paginated endpoints, prefer typed pagination helpers and
+  return a typed paginated result from datasources.
   Feature domain can model pagination using `cursor`/`limit` Param VOs.
+
+For the detailed datasource/repository rules, see:
+- `docs/engineering/data_domain_guide.md`
 
 ---
 
@@ -310,13 +318,13 @@ Folder rules and conventions:
 
 Modularized DI keeps boundaries explicit and wiring minimal.
 
-- Global setup: `lib/core/di/service_locator.dart` composes registrar steps in this order:
+- Global setup should compose registration in a stable order:
   core foundation → core platform → core infra → core runtime → feature modules → app orchestrators.
-- Core DI is split across registrars under `lib/core/di/registrars/` (no single `core_module.dart`).
+- Prefer splitting core DI across focused registrars instead of one large `core_module.dart`.
 - Feature modules: `lib/features/<feature>/di/*_module.dart` register datasources, repositories, use cases, and Bloc/Cubit factories.
 - Startup boot flow:
-  - `registerLocator()` runs before `runApp()`.
-  - `bootstrapLocator()` runs post-first-frame (`lib/core/di/app_bootstrap.dart`) for heavier initialization stages.
+  - registration before `runApp()`
+  - heavier initialization in a later bootstrap stage when needed
 - Route‑time providers: create Bloc/Cubit instances inside route builders via `BlocProvider`/`MultiBlocProvider` and dispatch initial intents there.
 - Service locator usage is restricted to composition roots (DI + navigation + app entrypoints). Presentation code should receive dependencies via providers/constructors.
 
@@ -370,7 +378,7 @@ Notes:
 - Presentation: use `bloc_test` to assert intent → state sequences and one‑shot effects; keep widget tests for key screens.
 
 Paths:
-- Place tests under `test/<feature>/<slice>/...` mirroring `lib/` paths.
+- Place tests under `test/` mirroring `lib/` paths.
 - Name files `*_test.dart`; keep unit tests fast and focused on the smallest unit.
 
 ---

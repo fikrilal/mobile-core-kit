@@ -38,8 +38,28 @@ List exact commands and outcomes.
 
 ```bash
 # example
-tool/agent/pr_ready_check.sh --env dev
+dart run tool/verify.dart --env dev
 ```
+
+Additional targeted checks when relevant:
+
+```bash
+# examples
+# fvm flutter analyze
+# dart run custom_lint
+# fvm flutter test
+# dart run tool/verify_codegen.dart
+```
+
+## Runtime Evidence
+
+Required when the change is medium/high-risk and behavior cannot be proven sufficiently by static checks alone.
+
+- Device/emulator:
+- Flavor:
+- Executed target(s):
+- Artifact path(s):
+- Notes:
 
 ## Risks And Mitigations
 
