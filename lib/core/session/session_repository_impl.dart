@@ -1,6 +1,7 @@
 import '../../features/auth/data/datasource/local/auth_local_datasource.dart';
 import '../../features/auth/domain/entity/auth_session_entity.dart';
 import '../../features/auth/domain/entity/auth_tokens_entity.dart';
+import '../../features/user/domain/entity/user_entity.dart';
 import '../storage/secure/token_secure_storage.dart';
 import 'session_repository.dart';
 
@@ -39,9 +40,6 @@ class SessionRepositoryImpl implements SessionRepository {
       return null;
     }
 
-    final model = await _local.getCachedUser();
-    final user = model?.toEntity();
-
     return AuthSessionEntity(
       tokens: AuthTokensEntity(
         accessToken: tokens.access!,
@@ -52,8 +50,13 @@ class SessionRepositoryImpl implements SessionRepository {
             ? null
             : DateTime.fromMillisecondsSinceEpoch(tokens.expiresAtMs!),
       ),
-      user: user,
     );
+  }
+
+  @override
+  Future<UserEntity?> loadCachedUser() async {
+    final model = await _local.getCachedUser();
+    return model?.toEntity();
   }
 
   @override

@@ -25,6 +25,10 @@ This document explains **deep linking behavior and extension points** in this te
    - Parser: `test/core/services/deep_link/deep_link_parser_test.dart`
    - Redirect: `test/navigation/app_redirect_test.dart`
 
+5) **(Optional) Add/adjust telemetry**
+   - Telemetry: `lib/core/services/deep_link/deep_link_telemetry.dart`
+   - Event names/params: `lib/core/services/analytics/analytics_events.dart`
+
 ---
 
 ## Terms
@@ -295,3 +299,33 @@ Example: you want to support `https://orymu.com/settings/security` → `/setting
      - resume after prerequisites.
 
 ---
+
+## Telemetry (Optional)
+
+This template includes **PII-safe deep link telemetry** to help debug “link → screen” behavior and measure reliability.
+
+### What it records
+
+Telemetry must remain safe by default:
+- Do **not** log full incoming URLs.
+- Do **not** log query parameter values (only counts/keys).
+- Prefer only `scheme`, `host`, normalized `path`, and a small `reason` string.
+
+Implementation: `lib/core/services/deep_link/deep_link_telemetry.dart`
+
+### Analytics events
+
+Event names and parameter keys live in `lib/core/services/analytics/analytics_events.dart`.
+
+- `deep_link_received` (external only): app received an HTTPS link and it passed allowlist validation
+- `deep_link_rejected` (external only): app received an HTTPS link but rejected it (e.g., not allowlisted)
+- `deep_link_pending_set`: a pending intent was stored (includes `reason` and whether it replaced a prior intent)
+- `deep_link_resumed`: app navigated to a pending intent after prerequisites were satisfied (includes latency)
+- `deep_link_cleared`: pending intent was cleared (e.g., cancel)
+
+### Extension points
+
+- Add new reasons carefully and keep them low-cardinality (strings are used for analytics aggregation).
+- If you add new link formats or query params, update:
+  - parsing allowlist + tests,
+  - telemetry redaction rules (never log query values).

@@ -74,10 +74,7 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.initializing;
     notifyListeners();
 
-    // Load any persisted session before deciding initial routing.
-    //
-    // This ensures `isAuthenticated`/`isAuthPending` reflect real state (e.g.
-    // secure storage + local DB) before the router redirect runs post-startup.
+    // Load persisted session tokens before deciding initial routing.
     try {
       await _sessionManager.init().timeout(_sessionInitTimeout);
     } on TimeoutException catch (e, st) {
@@ -97,6 +94,9 @@ class AppStartupController extends ChangeNotifier {
         'AppStartupController',
       );
     }
+
+    // Best-effort: restore cached user without blocking startup readiness.
+    final restoreCachedUserFuture = _sessionManager.restoreCachedUserIfNeeded();
 
     try {
       _shouldShowOnboarding =
@@ -128,6 +128,20 @@ class AppStartupController extends ChangeNotifier {
     _status = AppStartupStatus.ready;
     StartupMetrics.instance.mark(StartupMilestone.startupReady);
     notifyListeners();
+
+    unawaited(_maybeHydrateUserAfterCachedUserRestore(restoreCachedUserFuture));
+  }
+
+  Future<void> _maybeHydrateUserAfterCachedUserRestore(
+    Future<void> restoreCachedUserFuture,
+  ) async {
+    if (!_sessionManager.isAuthPending) return;
+
+    try {
+      await restoreCachedUserFuture.timeout(const Duration(milliseconds: 250));
+    } catch (_) {
+      // Best-effort: continue with hydration if restoring cached user is slow or fails.
+    }
 
     _maybeHydrateUser(force: true);
   }

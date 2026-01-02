@@ -35,6 +35,7 @@ AppStartupController _startupNotReady() {
   final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
   final sessionManager = _MockSessionManager();
   when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+  when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(false);
 
@@ -71,6 +72,7 @@ Future<AppStartupController> _startup({
   final sessionManager = _MockSessionManager();
   when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
   when(() => sessionManager.init()).thenAnswer((_) async {});
+  when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(isAuthenticated);
 

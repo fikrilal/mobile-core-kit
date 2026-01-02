@@ -35,6 +35,7 @@ void main() {
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.isAuthPending).thenReturn(false);
+        when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
 
         final initCompleter = Completer<void>();
         when(() => sessionManager.init()).thenAnswer((_) => initCompleter.future);
@@ -85,6 +86,7 @@ void main() {
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.isAuthPending).thenReturn(false);
         when(() => sessionManager.init()).thenAnswer((_) async {});
+        when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
 
         final getMe = _MockGetMeUseCase();
 

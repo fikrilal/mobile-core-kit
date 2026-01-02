@@ -1,6 +1,7 @@
 # Splash & Startup Mechanism Review (mobile-core-kit)
 
 Reviewed: 2026-01-01  
+Updated: 2026-01-02  
 Branch/commit: `development` @ `02fd758503b4d92ba735f6ea984b0b6698a785c2`  
 Working tree: clean (`git status` showed no local diffs at review time)
 
@@ -30,6 +31,41 @@ Biggest “enterprise-grade” risks are not architectural, but **edge-case safe
 3) **Deep link side-effects during “not ready”**: `appRedirect()` intentionally returns `null` while not ready. This preserves deep links, but it also means protected pages could build before auth/onboarding are known (and the gate is only mounted after a delay).
 
 None of these require big re-architecture, but they do benefit from a few targeted hardening/perf changes (recommended list below).
+
+---
+
+## Status Update (Post-review)
+
+P0 items from this review have been implemented:
+
+1) **Readiness timeouts + fail-open**
+   - `AppStartupController.initialize()` now applies timeouts to:
+     - `SessionManager.init()` (timeout → continue as signed-out)
+     - `AppLaunchService.shouldShowOnboarding()` (timeout → default to show onboarding)
+   - Tests cover both timeout cases:
+     - `test/core/services/app_startup/app_startup_controller_test.dart`
+
+2) **Deep link + not-ready policy**
+   - Router redirect now captures protected locations during startup, routes to `/`, then resumes after prerequisites:
+     - `lib/navigation/app_redirect.dart`
+   - Deep linking policy is documented for template consumers:
+     - `docs/template/deep_linking.md`
+   - Decision background remains in ADR:
+     - `ADR/records/0007-intent-based-deep-linking.md`
+
+P1+ items below are still valid as follow-ups if startup metrics show they matter on target devices.
+
+Additional items implemented since the original review:
+
+1) **P1.4 Avoid SQLite work on the readiness-critical path**
+   - Session restore during readiness now loads **tokens only** (no SQLite), then restores cached user best-effort in the background:
+     - `lib/core/session/session_repository_impl.dart`
+     - `lib/core/session/session_manager.dart`
+     - `lib/core/services/app_startup/app_startup_controller.dart`
+
+2) **P1.5 Disable GoRouter diagnostics outside debug**
+   - `debugLogDiagnostics` is now gated to `kDebugMode`:
+     - `lib/navigation/app_router.dart`
 
 ---
 
@@ -298,4 +334,3 @@ Only do this if complexity grows; current size is acceptable and not over-engine
 - DI bootstrap: `lib/core/di/service_locator.dart`
 - Session restore: `lib/core/session/session_manager.dart`, `lib/core/session/session_repository_impl.dart`, `lib/core/storage/secure/token_secure_storage.dart`, `lib/core/database/app_database.dart`
 - Early error buffering: `lib/core/services/early_errors/early_error_buffer.dart`
-
