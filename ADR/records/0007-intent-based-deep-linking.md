@@ -47,6 +47,7 @@ Specific policy decisions:
 - Pending intent is **persisted with a TTL (1 hour)** so it can survive process death during prerequisite flows.
 - **Last intent wins** when multiple intents arrive.
 - External link support includes **HTTPS** (universal/app links) for `orymu.com`, mapped to an allowlisted set of in-app destinations.
+- If the user explicitly cancels onboarding/auth while an intent is pending, the pending intent is **cleared (memory + persistence)** and **not** auto-resumed later.
 - Protected destinations must **not render** until:
   - `startup.isReady == true`, and
   - onboarding rules are satisfied, and

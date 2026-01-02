@@ -70,7 +70,7 @@ This can be implemented as an immediate (invisible) input barrier, while the vis
 - A pending intent is cleared only when:
   - navigation to the resolved location has been triggered, or
   - it is explicitly discarded (invalid/expired), or
-  - the user cancels the prerequisite flow (product decision).
+  - the user explicitly cancels the prerequisite flow.
 
 ### Defaults (this repo)
 
@@ -235,6 +235,13 @@ This reduces confusion and increases trust.
      - universal/app links,
      - custom scheme,
      - push notification routing.
+   - This repo uses `app_links` and a `DeepLinkListener` to listen for:
+     - the initial cold-start link,
+     - subsequent links while the app is running.
+   - Platform setup (HTTPS `orymu.com`):
+     - Android: disable Flutter deep linking (`flutter_deeplinking_enabled=false`), add an `intent-filter` (with `android:autoVerify="true"`) and host `/.well-known/assetlinks.json`.
+     - iOS: disable Flutter deep linking (`FlutterDeepLinkingEnabled=false`), enable Associated Domains (`applinks:orymu.com`) and host `/.well-known/apple-app-site-association`.
+     - Keep `DeepLinkParser` allowlists in sync with what the app claims to handle.
 
 3) **Phase 3: Deferred resume**
    - Ensure “resume after onboarding/login” is airtight.
@@ -242,6 +249,11 @@ This reduces confusion and increases trust.
 
 ---
 
-## Open Questions (Confirm Before Building)
+## Product Rules (Confirmed)
 
-1) What is the desired behavior if the user cancels login/onboarding while a deep link is pending?
+1) **Cancel behavior (auth/onboarding)**
+   - If a deep link is pending and the user explicitly cancels a prerequisite flow:
+     - clear the pending intent (memory + persistence),
+     - do **not** auto-resume it later,
+     - require a *new* deep link to try again.
+   - “Explicit cancel” includes **system back/exit** on the login screen (and equivalent back/close gestures on onboarding/auth).

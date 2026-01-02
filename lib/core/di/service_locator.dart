@@ -16,7 +16,10 @@ import '../services/analytics/analytics_tracker.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
+import '../services/deep_link/app_links_deep_link_source.dart';
 import '../services/deep_link/deep_link_parser.dart';
+import '../services/deep_link/deep_link_listener.dart';
+import '../services/deep_link/deep_link_source.dart';
 import '../services/deep_link/pending_deep_link_controller.dart';
 import '../services/deep_link/pending_deep_link_store.dart';
 import '../services/early_errors/crashlytics_error_reporter.dart';
@@ -68,6 +71,10 @@ void registerLocator() {
     locator.registerLazySingleton<DeepLinkParser>(() => DeepLinkParser());
   }
 
+  if (!locator.isRegistered<DeepLinkSource>()) {
+    locator.registerLazySingleton<DeepLinkSource>(() => AppLinksDeepLinkSource());
+  }
+
   if (!locator.isRegistered<PendingDeepLinkStore>()) {
     locator.registerLazySingleton<PendingDeepLinkStore>(
       () => PendingDeepLinkStore(),
@@ -78,6 +85,17 @@ void registerLocator() {
     locator.registerLazySingleton<PendingDeepLinkController>(
       () => PendingDeepLinkController(
         store: locator<PendingDeepLinkStore>(),
+        parser: locator<DeepLinkParser>(),
+      ),
+    );
+  }
+
+  if (!locator.isRegistered<DeepLinkListener>()) {
+    locator.registerLazySingleton<DeepLinkListener>(
+      () => DeepLinkListener(
+        source: locator<DeepLinkSource>(),
+        navigation: locator<NavigationService>(),
+        deepLinks: locator<PendingDeepLinkController>(),
         parser: locator<DeepLinkParser>(),
       ),
     );
@@ -148,6 +166,7 @@ Future<void> bootstrapLocator() {
         // Best-effort: load any persisted pending deep link so it can resume
         // after prerequisites (onboarding/login). This must not block startup.
         unawaited(locator<PendingDeepLinkController>().initialize());
+        unawaited(locator<DeepLinkListener>().start());
 
         await locator<AppStartupController>().initialize();
       } catch (e, st) {
