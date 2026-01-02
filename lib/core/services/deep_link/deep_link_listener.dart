@@ -48,18 +48,8 @@ class DeepLinkListener {
   Future<void> _startInternal() async {
     if (kIsWeb) return;
 
-    try {
-      final initial = await _source.getInitialUri();
-      if (initial != null) {
-        await _handleUri(initial, source: 'initial');
-      }
-    } catch (e, st) {
-      Log.warning('Failed to read initial deep link: $e', name: 'DeepLink');
-      Log.error('Deep link initial read error', e, st, false, 'DeepLink');
-    }
-
     _subscription = _source.uriStream.listen(
-      (uri) => unawaited(_handleUri(uri, source: 'stream')),
+      (uri) => unawaited(_handleUri(uri, source: 'app_links')),
       onError: (Object e, StackTrace st) {
         Log.error('Deep link stream error', e, st, false, 'DeepLink');
       },
@@ -77,7 +67,7 @@ class DeepLinkListener {
       if (mapped == null) return;
 
       if (canNavigate) {
-        _navigation.go(rawLocation);
+        _navigation.go(mapped);
         return;
       }
 

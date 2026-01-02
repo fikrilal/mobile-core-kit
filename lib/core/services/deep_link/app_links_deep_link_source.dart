@@ -8,9 +8,5 @@ class AppLinksDeepLinkSource implements DeepLinkSource {
   final AppLinks _appLinks;
 
   @override
-  Future<Uri?> getInitialUri() => _appLinks.getInitialLink();
-
-  @override
   Stream<Uri> get uriStream => _appLinks.uriLinkStream;
 }
-
