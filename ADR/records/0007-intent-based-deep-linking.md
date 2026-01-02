@@ -44,9 +44,9 @@ Chosen option: **Option C (intent-based deep linking)**, augmented with **Option
 
 Specific policy decisions:
 - Deep links are captured as a **pending intent**, not always navigated immediately.
-- Pending intent is **persisted with a TTL** so it can survive process death during prerequisite flows.
+- Pending intent is **persisted with a TTL (1 hour)** so it can survive process death during prerequisite flows.
 - **Last intent wins** when multiple intents arrive.
-- External link support includes **HTTPS** (universal/app links), mapped to an allowlisted set of in-app destinations.
+- External link support includes **HTTPS** (universal/app links) for `orymu.com`, mapped to an allowlisted set of in-app destinations.
 - Protected destinations must **not render** until:
   - `startup.isReady == true`, and
   - onboarding rules are satisfied, and
@@ -101,4 +101,3 @@ This ADR is considered correctly implemented when:
 
 - Deep link architecture and detailed policy: `docs/engineering/deep_link_architecture.md`
 - Related navigation decision: `ADR/records/0004-go-router-navigation-composition.md`
-

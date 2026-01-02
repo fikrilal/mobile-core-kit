@@ -72,6 +72,12 @@ This can be implemented as an immediate (invisible) input barrier, while the vis
   - it is explicitly discarded (invalid/expired), or
   - the user cancels the prerequisite flow (product decision).
 
+### Defaults (this repo)
+
+- Pending intent is **persisted** (so it can survive process death) with a **TTL of 1 hour**.
+- External deep links support **HTTPS** for `orymu.com` only (strict allowlist).
+- Multiple incoming links use **last-intent-wins**.
+
 ---
 
 ## High-Level Architecture
@@ -238,7 +244,4 @@ This reduces confusion and increases trust.
 
 ## Open Questions (Confirm Before Building)
 
-1) Which deep link types do we support first (minimum viable set)?
-2) Do we need to persist pending intents across process death (true deferred deep link), or is in-memory sufficient?
-3) What is the desired behavior if the user cancels login/onboarding while a deep link is pending?
-
+1) What is the desired behavior if the user cancels login/onboarding while a deep link is pending?
