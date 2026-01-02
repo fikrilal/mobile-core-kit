@@ -100,5 +100,5 @@ This ADR is considered correctly implemented when:
 
 ## More Information
 
-- Deep link architecture and detailed policy: `docs/engineering/deep_link_architecture.md`
+- Deep link architecture and detailed policy: `docs/template/deep_linking.md`
 - Related navigation decision: `ADR/records/0004-go-router-navigation-composition.md`

@@ -20,6 +20,7 @@ import '../services/deep_link/app_links_deep_link_source.dart';
 import '../services/deep_link/deep_link_parser.dart';
 import '../services/deep_link/deep_link_listener.dart';
 import '../services/deep_link/deep_link_source.dart';
+import '../services/deep_link/deep_link_telemetry.dart';
 import '../services/deep_link/pending_deep_link_controller.dart';
 import '../services/deep_link/pending_deep_link_store.dart';
 import '../services/early_errors/crashlytics_error_reporter.dart';
@@ -75,6 +76,12 @@ void registerLocator() {
     locator.registerLazySingleton<DeepLinkSource>(() => AppLinksDeepLinkSource());
   }
 
+  if (!locator.isRegistered<DeepLinkTelemetry>()) {
+    locator.registerLazySingleton<DeepLinkTelemetry>(
+      () => DeepLinkTelemetry(analytics: locator<AnalyticsTracker>()),
+    );
+  }
+
   if (!locator.isRegistered<PendingDeepLinkStore>()) {
     locator.registerLazySingleton<PendingDeepLinkStore>(
       () => PendingDeepLinkStore(),
@@ -86,6 +93,7 @@ void registerLocator() {
       () => PendingDeepLinkController(
         store: locator<PendingDeepLinkStore>(),
         parser: locator<DeepLinkParser>(),
+        telemetry: locator<DeepLinkTelemetry>(),
       ),
     );
   }
@@ -97,6 +105,7 @@ void registerLocator() {
         navigation: locator<NavigationService>(),
         deepLinks: locator<PendingDeepLinkController>(),
         parser: locator<DeepLinkParser>(),
+        telemetry: locator<DeepLinkTelemetry>(),
       ),
     );
   }

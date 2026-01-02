@@ -72,7 +72,8 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
 - `lib/navigation/` – GoRouter setup and route lists per feature.
 - `.env/` – YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
 - `tool/` – scripts like `gen_config.dart` for generating `BuildConfig`.
-- `docs/engineering/` – architecture and implementation guides.
+- `docs/engineering/` – core architecture and implementation guides.
+- `docs/template/` – template customization guides (what to change when cloning).
 
 ## Configuration & Flavors
 
@@ -117,4 +118,8 @@ For deeper details on the architecture and patterns used in this template:
 - `docs/engineering/value_objects_validation.md`
 - `docs/engineering/firebase_setup.md`
 
-`AGENTS.md` contains some repo-specific tooling notes (e.g., WSL + FVM commands).***
+Template customization guides:
+
+- `docs/template/deep_linking.md`
+
+`AGENTS.md` contains some repo-specific tooling notes (e.g., WSL + FVM commands).

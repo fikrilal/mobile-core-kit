@@ -38,7 +38,7 @@ class _PendingDeepLinkCancelOnPopState extends State<PendingDeepLinkCancelOnPop>
     if (_isHandlingPop) return;
     _isHandlingPop = true;
 
-    await widget.deepLinks.clear();
+    await widget.deepLinks.clear(reason: 'cancel');
 
     if (!mounted) return;
 

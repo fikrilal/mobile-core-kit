@@ -38,6 +38,7 @@ String? appRedirectUri(
   final location = mappedExternal ?? _locationFromUri(uri);
   final shouldCanonicalizeExternalHttps =
       isExternalHttps && mappedExternal != null && uri.toString() != location;
+  final pendingSource = isExternalHttps ? 'https' : 'router';
   final zone = _routeZone(Uri.parse(location).path);
 
   // Do not force navigation during startup (use a UI gate/overlay instead).
@@ -48,7 +49,11 @@ String? appRedirectUri(
       return null;
     }
 
-    deepLinks.setPendingLocationForRedirect(location, source: 'router');
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'startup_not_ready',
+    );
     return AppRoutes.root;
   }
 
@@ -70,14 +75,22 @@ String? appRedirectUri(
   if (shouldShowOnboarding) {
     if (zone == _RouteZone.onboarding) return null;
 
-    deepLinks.setPendingLocationForRedirect(location, source: 'router');
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'needs_onboarding',
+    );
     return OnboardingRoutes.onboarding;
   }
 
   if (!startup.isAuthenticated) {
     if (zone == _RouteZone.auth) return null;
 
-    deepLinks.setPendingLocationForRedirect(location, source: 'router');
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'needs_auth',
+    );
     return AuthRoutes.signIn;
   }
 

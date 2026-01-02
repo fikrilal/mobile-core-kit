@@ -1,47 +1,58 @@
-# Deep Linking Architecture (Intent-Based, Enterprise-Safe)
+# Deep Linking (Template Guide)
 
-This document defines the deep link approach for this repo with a focus on:
-- enterprise-grade safety (no accidental exposure of protected screens),
-- predictable behavior across cold/warm starts,
-- minimal UX regressions,
+This document explains **deep linking behavior and extension points** in this template:
+- enterprise-grade safety (protected targets do not render before allowed),
+- deterministic cold/warm start behavior,
+- fail-safe parsing (unknown/malicious links don’t crash and don’t open arbitrary screens),
 - minimal complexity (avoid over-engineering).
 
-It is designed to work with the existing startup architecture:
-- `AppStartupController` as the source of truth for `isReady`, onboarding, and auth state.
-- GoRouter redirect (`lib/navigation/app_redirect.dart`) as the central navigation gate.
-- `AppStartupGate` overlay as the UI interaction gate during startup.
+---
+
+## TL;DR (What You Edit When Adding Deep Links)
+
+1) **Allowlist the destination**
+   - Update `lib/core/services/deep_link/deep_link_parser.dart`
+
+2) **Claim the link at the OS level**
+   - Android: `android/app/src/main/AndroidManifest.xml`
+   - iOS: `ios/Runner/Runner.entitlements`
+
+3) **Host verification files**
+   - Android: `https://orymu.com/.well-known/assetlinks.json`
+   - iOS: `https://orymu.com/.well-known/apple-app-site-association`
+
+4) **Add/adjust tests**
+   - Parser: `test/core/services/deep_link/deep_link_parser_test.dart`
+   - Redirect: `test/navigation/app_redirect_test.dart`
 
 ---
 
 ## Terms
 
 - **Deep link**: a URL/URI that opens the app to a specific destination (screen + params).
-- **Intent**: an internal representation of “navigate to X when allowed”.
+- **Pending intent**: an internal representation of “navigate to X when allowed”.
 - **Cold start**: app process not running.
 - **Warm start**: app already running.
 - **Prerequisites**: conditions required before showing a destination (startup ready, onboarding complete, authenticated).
 
 ---
 
-## Decision: Option C (Intent-Based Deep Links)
+## Policy: Intent-Based Deep Links (Deferred Navigation)
 
-We adopt an **intent-based** approach:
-- Deep links are captured as a **pending intent** and are not necessarily navigated immediately.
-- Routing to the final target happens only when prerequisites are satisfied.
+This template uses an **intent-based** approach:
+- Incoming deep links are captured as a **pending intent** (in-memory + persisted with TTL).
+- Navigation to the final target happens only when prerequisites are satisfied.
 
-### Why Option C
+### Why this policy
 
-Option C provides the cleanest long-term behavior for enterprise apps:
-- Supports “resume deep link after onboarding/login” reliably.
-- Prevents protected screens from rendering before auth/onboarding are known.
-- Scales to additional prerequisites later (forced upgrade, remote config, org selection).
+This provides safe, predictable behavior:
+- Resumes the deep link after onboarding/login reliably.
+- Prevents protected targets from rendering before auth/onboarding are known.
+- Scales to additional prerequisites later (forced upgrade, remote config, org selection) without changing link formats.
 
-### Additional safety rule (recommended)
+### Interaction safety
 
-To eliminate startup races, we also enforce:
-- **No user interaction before `startup.isReady`** (Option B’s interaction-blocking concept).
-
-This can be implemented as an immediate (invisible) input barrier, while the visible overlay still respects the `showDelay` to avoid flicker.
+During startup, the app should block user interaction until readiness is known. This prevents edge-case races and makes behavior consistent across cold/warm starts.
 
 ---
 
@@ -122,7 +133,7 @@ This keeps deep link behavior consistent with existing `appRedirect` logic.
 
 ## Redirect Algorithm (Conceptual)
 
-This is the core logic Option C relies on.
+This is the core logic the template relies on.
 
 ### Step 0: classify the current location
 
@@ -163,18 +174,7 @@ When a new deep link arrives while the app is running:
 
 ### Startup interaction safety
 
-Even with Option C (which redirects to `/` while not ready), we still recommend:
-- block interaction immediately while not ready (invisible barrier),
-- show a visible overlay only after a short delay (to avoid flicker).
-
-Reason: it prevents edge cases where something becomes briefly interactive during startup transitions, and it avoids test flakiness.
-
-### “Opening link…” experience (optional)
-
-If a deep link is pending and prerequisites are being satisfied (e.g., user must sign in):
-- show a small message in the auth/onboarding UI: “Continue to requested link after sign-in”.
-
-This reduces confusion and increases trust.
+Block interaction immediately while startup readiness is unknown. If you show a visible splash/overlay, delay visuals slightly to avoid flicker, but keep the input barrier immediate.
 
 ---
 
@@ -223,32 +223,6 @@ This reduces confusion and increases trust.
 
 ---
 
-## Recommended Implementation Phases (Pragmatic)
-
-1) **Phase 1: Internal intent + redirect wiring**
-   - Define `DeepLinkIntent` + allowlist-based parser.
-   - Add `PendingDeepLinkController`.
-   - Integrate with GoRouter redirect with the “not-ready → `/`” rule.
-
-2) **Phase 2: Platform sources**
-   - Add the specific platform deep link sources needed by the product:
-     - universal/app links,
-     - custom scheme,
-     - push notification routing.
-   - This repo uses `app_links` and a `DeepLinkListener` to listen for:
-     - the initial cold-start link,
-     - subsequent links while the app is running.
-   - Platform setup (HTTPS `orymu.com`):
-     - Android: disable Flutter deep linking (`flutter_deeplinking_enabled=false`), add an `intent-filter` (with `android:autoVerify="true"`) and host `/.well-known/assetlinks.json`.
-     - iOS: disable Flutter deep linking (`FlutterDeepLinkingEnabled=false`), enable Associated Domains (`applinks:orymu.com`) and host `/.well-known/apple-app-site-association`.
-     - Keep `DeepLinkParser` allowlists in sync with what the app claims to handle.
-
-3) **Phase 3: Deferred resume**
-   - Ensure “resume after onboarding/login” is airtight.
-   - Add UX messaging and analytics if required.
-
----
-
 ## Product Rules (Confirmed)
 
 1) **Cancel behavior (auth/onboarding)**
@@ -257,3 +231,67 @@ This reduces confusion and increases trust.
      - do **not** auto-resume it later,
      - require a *new* deep link to try again.
    - “Explicit cancel” includes **system back/exit** on the login screen (and equivalent back/close gestures on onboarding/auth).
+
+---
+
+## Where the Code Lives (Template Extension Points)
+
+**Core deep link services**
+- Parser allowlist: `lib/core/services/deep_link/deep_link_parser.dart`
+- Pending intent persistence (TTL): `lib/core/services/deep_link/pending_deep_link_store.dart`
+- Pending intent state + “resume/clear” hooks: `lib/core/services/deep_link/pending_deep_link_controller.dart`
+- Platform listener (app_links): `lib/core/services/deep_link/deep_link_listener.dart`
+
+**Routing**
+- Central gate: `lib/navigation/app_redirect.dart`
+
+**UX cancel behavior**
+- Cancel on back/exit clears pending intent:
+  - Guard widget: `lib/core/widgets/navigation/pending_deep_link_cancel_on_pop.dart`
+  - Applied to routes: `lib/navigation/auth/auth_routes_list.dart`, `lib/navigation/onboarding/onboarding_routes_list.dart`
+
+---
+
+## Adding a New Deep Link Destination (Checklist)
+
+Example: you want to support `https://orymu.com/settings/security` → `/settings/security`.
+
+1) **Add the route**
+   - Add route constant under `lib/navigation/*` (or feature route list).
+   - Register the route in `createRouter()` (or the feature’s route list included there).
+
+2) **Allowlist it (Dart)**
+   - Add the internal path to `DeepLinkParser.allowedPaths` in `lib/core/services/deep_link/deep_link_parser.dart`.
+   - Add/extend unit tests in `test/core/services/deep_link/deep_link_parser_test.dart`.
+
+3) **Claim it (Android)**
+   - Update the App Links `<intent-filter>` in `android/app/src/main/AndroidManifest.xml`:
+     - add a `<data android:scheme="https" android:host="orymu.com" android:pathPrefix="/settings/security" />`
+   - Keep this in sync with the Dart allowlist.
+
+4) **Claim it (iOS)**
+   - Ensure `ios/Runner/Runner.entitlements` includes:
+     - `applinks:orymu.com`
+   - Update the hosted AASA file path allowlist to include `/settings/security`.
+
+5) **Update hosted verification**
+   - Android `assetlinks.json` must include:
+     - the package name(s) you ship,
+     - signing certificate SHA-256 fingerprints,
+     - correct relation targets.
+   - iOS AASA must include:
+     - `appID` = `TeamID.BundleID`,
+     - allowed paths patterns.
+
+6) **Redirect behavior**
+   - No change is usually needed as long as:
+     - the route is allowlisted, and
+     - the app’s prerequisites (startup/onboarding/auth) are correctly represented in `app_redirect.dart`.
+
+7) **Test the redirect rules**
+   - Add/extend tests in `test/navigation/app_redirect_test.dart` to cover:
+     - startup-not-ready capture,
+     - onboarding/auth interception,
+     - resume after prerequisites.
+
+---

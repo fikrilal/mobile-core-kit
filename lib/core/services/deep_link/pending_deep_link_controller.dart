@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'deep_link_intent.dart';
 import 'deep_link_parser.dart';
+import 'deep_link_telemetry.dart';
 import 'pending_deep_link_store.dart';
 
 /// Holds a single "pending deep link" intent and exposes it as a [Listenable]
@@ -18,13 +19,16 @@ class PendingDeepLinkController extends ChangeNotifier {
   PendingDeepLinkController({
     required PendingDeepLinkStore store,
     required DeepLinkParser parser,
+    DeepLinkTelemetry? telemetry,
     DateTime Function()? now,
   }) : _store = store,
        _parser = parser,
+       _telemetry = telemetry,
        _now = now ?? DateTime.now;
 
   final PendingDeepLinkStore _store;
   final DeepLinkParser _parser;
+  final DeepLinkTelemetry? _telemetry;
   final DateTime Function() _now;
 
   DeepLinkIntent? _pending;
@@ -61,9 +65,11 @@ class PendingDeepLinkController extends ChangeNotifier {
   Future<void> setPendingLocation(
     String location, {
     String? source,
+    String reason = 'set',
   }) async {
     if (!_parser.isAllowedInternalLocation(location)) return;
 
+    final previous = _pending;
     _pending = DeepLinkIntent(
       location: location,
       receivedAt: _now(),
@@ -73,6 +79,12 @@ class PendingDeepLinkController extends ChangeNotifier {
       await _store.save(_pending!);
     } catch (_) {
       // Persistence failure should not prevent in-memory behavior.
+    }
+    final telemetry = _telemetry;
+    if (telemetry != null) {
+      unawaited(
+        telemetry.trackPendingSet(_pending!, reason: reason, previous: previous),
+      );
     }
     notifyListeners();
   }
@@ -84,7 +96,7 @@ class PendingDeepLinkController extends ChangeNotifier {
   }) async {
     final location = _parser.parseExternalUri(uri);
     if (location == null) return;
-    await setPendingLocation(location, source: source);
+    await setPendingLocation(location, source: source, reason: 'external');
   }
 
   /// Sets pending intent during a GoRouter redirect without notifying.
@@ -93,9 +105,12 @@ class PendingDeepLinkController extends ChangeNotifier {
   void setPendingLocationForRedirect(
     String location, {
     String? source,
+    String reason = 'redirect',
   }) {
     if (!_parser.isAllowedInternalLocation(location)) return;
+    if (_pending?.location == location) return;
 
+    final previous = _pending;
     _pending = DeepLinkIntent(
       location: location,
       receivedAt: _now(),
@@ -103,28 +118,51 @@ class PendingDeepLinkController extends ChangeNotifier {
     );
 
     unawaited(_store.save(_pending!));
+    final telemetry = _telemetry;
+    if (telemetry != null) {
+      unawaited(
+        telemetry.trackPendingSet(_pending!, reason: reason, previous: previous),
+      );
+    }
+  }
+
+  /// Consumes the pending intent during a GoRouter redirect (no notify).
+  ///
+  /// Clears persistence best-effort. Returns the consumed intent, or null.
+  DeepLinkIntent? consumePendingIntentForRedirect() {
+    final intent = _pending;
+    if (intent == null) return null;
+
+    _pending = null;
+    unawaited(_store.clear());
+    final telemetry = _telemetry;
+    if (telemetry != null) {
+      unawaited(telemetry.trackResumed(intent));
+    }
+    return intent;
   }
 
   /// Consumes the pending location during a GoRouter redirect (no notify).
   ///
   /// Clears persistence best-effort. Returns the consumed location, or null.
   String? consumePendingLocationForRedirect() {
-    final location = _pending?.location;
-    if (location == null) return null;
-
-    _pending = null;
-    unawaited(_store.clear());
-    return location;
+    return consumePendingIntentForRedirect()?.location;
   }
 
-  Future<void> clear() async {
+  Future<void> clear({String reason = 'clear'}) async {
+    final previous = _pending;
     _pending = null;
     try {
       await _store.clear();
     } catch (_) {
       // Best-effort.
     }
+    if (previous != null) {
+      final telemetry = _telemetry;
+      if (telemetry != null) {
+        unawaited(telemetry.trackCleared(previous, reason: reason));
+      }
+    }
     notifyListeners();
   }
 }
-
