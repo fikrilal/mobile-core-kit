@@ -49,7 +49,9 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   @override
   Future<void> logEvent(String name, {Map<String, Object?>? parameters}) async {
     if (!_isInitialized) {
-      Log.warning('Analytics not initialized, skipping event: $name', name: _tag);
+      if (_debugLoggingEnabled) {
+        Log.warning('Analytics not initialized, skipping event: $name', name: _tag);
+      }
       return;
     }
 
@@ -92,7 +94,9 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   @override
   Future<void> setUserId(String userId) async {
     if (!_isInitialized) {
-      Log.warning('Analytics not initialized, skipping setUserId', name: _tag);
+      if (_debugLoggingEnabled) {
+        Log.warning('Analytics not initialized, skipping setUserId', name: _tag);
+      }
       return;
     }
 
@@ -141,7 +145,9 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   @override
   Future<void> setUserProperty(String name, String value) async {
     if (!_isInitialized) {
-      Log.warning('Analytics not initialized, skipping setUserProperty', name: _tag);
+      if (_debugLoggingEnabled) {
+        Log.warning('Analytics not initialized, skipping setUserProperty', name: _tag);
+      }
       return;
     }
 

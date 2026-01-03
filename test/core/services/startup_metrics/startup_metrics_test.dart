@@ -41,6 +41,14 @@ void main() {
           const Duration(milliseconds: 200),
         )
         ..setMarkForTesting(
+          StartupMilestone.secureStorageReadStart,
+          const Duration(milliseconds: 220),
+        )
+        ..setMarkForTesting(
+          StartupMilestone.secureStorageReadComplete,
+          const Duration(milliseconds: 260),
+        )
+        ..setMarkForTesting(
           StartupMilestone.startupReady,
           const Duration(milliseconds: 350),
         )
@@ -59,6 +67,7 @@ void main() {
       expect(params[AnalyticsParams.startupTtffMs], 180);
       expect(params[AnalyticsParams.startupReadyMs], 350);
       expect(params[AnalyticsParams.startupBootstrapMs], 250);
+      expect(params[AnalyticsParams.startupSecureStorageReadMs], 40);
 
       expect(params[AnalyticsParams.startupFirebaseInitMs], 50);
       expect(params[AnalyticsParams.startupCrashlyticsMs], 20);
@@ -81,4 +90,3 @@ void main() {
     });
   });
 }
-

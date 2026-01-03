@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/di/service_locator.dart';
+import '../../core/services/deep_link/pending_deep_link_controller.dart';
+import '../../core/widgets/navigation/pending_deep_link_cancel_on_pop.dart';
 import '../../features/auth/presentation/cubit/login/login_cubit.dart';
 import '../../features/auth/presentation/cubit/register/register_cubit.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
@@ -12,16 +14,23 @@ import 'auth_routes.dart';
 final List<GoRoute> authRoutes = [
   GoRoute(
     path: AuthRoutes.signIn,
-    builder: (context, state) => BlocProvider<LoginCubit>(
-      create: (_) => locator<LoginCubit>(),
-      child: const SignInPage(),
+    builder: (context, state) => PendingDeepLinkCancelOnPop(
+      deepLinks: locator<PendingDeepLinkController>(),
+      child: BlocProvider<LoginCubit>(
+        create: (_) => locator<LoginCubit>(),
+        child: const SignInPage(),
+      ),
     ),
   ),
   GoRoute(
     path: AuthRoutes.register,
-    builder: (context, state) => BlocProvider<RegisterCubit>(
-      create: (_) => locator<RegisterCubit>(),
-      child: const RegisterPage(),
+    builder: (context, state) => PendingDeepLinkCancelOnPop(
+      deepLinks: locator<PendingDeepLinkController>(),
+      clearWhenCanPop: false,
+      child: BlocProvider<RegisterCubit>(
+        create: (_) => locator<RegisterCubit>(),
+        child: const RegisterPage(),
+      ),
     ),
   ),
 ];

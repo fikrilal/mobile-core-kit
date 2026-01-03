@@ -71,4 +71,93 @@ class AnalyticsTracker {
       parameters: mergedParams,
     );
   }
+
+  Future<void> trackDeepLinkReceived({
+    required String source,
+    required String scheme,
+    required String host,
+    required String path,
+    int? queryKeyCount,
+  }) {
+    return _analyticsService.logEvent(
+      AnalyticsEvents.deepLinkReceived,
+      parameters: {
+        AnalyticsParams.deepLinkSource: source,
+        AnalyticsParams.deepLinkScheme: scheme,
+        AnalyticsParams.deepLinkHost: host,
+        AnalyticsParams.deepLinkPath: path,
+        if (queryKeyCount != null)
+          AnalyticsParams.deepLinkQueryKeyCount: queryKeyCount,
+      },
+    );
+  }
+
+  Future<void> trackDeepLinkRejected({
+    required String source,
+    required String scheme,
+    required String host,
+    required String path,
+    required String reason,
+    int? queryKeyCount,
+  }) {
+    return _analyticsService.logEvent(
+      AnalyticsEvents.deepLinkRejected,
+      parameters: {
+        AnalyticsParams.deepLinkSource: source,
+        AnalyticsParams.deepLinkScheme: scheme,
+        AnalyticsParams.deepLinkHost: host,
+        AnalyticsParams.deepLinkPath: path,
+        AnalyticsParams.deepLinkReason: reason,
+        if (queryKeyCount != null)
+          AnalyticsParams.deepLinkQueryKeyCount: queryKeyCount,
+      },
+    );
+  }
+
+  Future<void> trackDeepLinkPendingSet({
+    required String source,
+    required String path,
+    required String reason,
+    bool wasReplaced = false,
+  }) {
+    return _analyticsService.logEvent(
+      AnalyticsEvents.deepLinkPendingSet,
+      parameters: {
+        AnalyticsParams.deepLinkSource: source,
+        AnalyticsParams.deepLinkPath: path,
+        AnalyticsParams.deepLinkReason: reason,
+        AnalyticsParams.deepLinkWasReplaced: wasReplaced ? 1 : 0,
+      },
+    );
+  }
+
+  Future<void> trackDeepLinkResumed({
+    required String source,
+    required String path,
+    required int latencyMs,
+  }) {
+    return _analyticsService.logEvent(
+      AnalyticsEvents.deepLinkResumed,
+      parameters: {
+        AnalyticsParams.deepLinkSource: source,
+        AnalyticsParams.deepLinkPath: path,
+        AnalyticsParams.deepLinkLatencyMs: latencyMs,
+      },
+    );
+  }
+
+  Future<void> trackDeepLinkCleared({
+    required String source,
+    required String path,
+    required String reason,
+  }) {
+    return _analyticsService.logEvent(
+      AnalyticsEvents.deepLinkCleared,
+      parameters: {
+        AnalyticsParams.deepLinkSource: source,
+        AnalyticsParams.deepLinkPath: path,
+        AnalyticsParams.deepLinkReason: reason,
+      },
+    );
+  }
 }

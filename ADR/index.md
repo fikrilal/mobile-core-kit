@@ -8,9 +8,9 @@ Baseline ADRs (apply to `mobile-core-kit` adopters):
 - `records/0004-go-router-navigation-composition.md` — GoRouter with per‑feature route lists (accepted, 2025‑12‑12)
 - `records/0005-dio-api-helper-networking.md` — Dio networking via ApiClient + ApiHelper + interceptors (accepted, 2025‑12‑12)
 - `records/0006-env-yaml-build-config-flavors.md` — Environment YAML + BuildConfig generator (accepted, 2025‑12‑12)
+- `records/0007-intent-based-deep-linking.md` — Intent‑based deep linking (Option C) with safe startup gating (accepted, 2026‑01‑02)
 
 Examples (downstream reference only):
 
 - `examples/0001-multi-app-monorepo-architecture.md` — Multi‑app monorepo architecture (proposed, downstream example)
 - `examples/0002-navigation-contracts-for-shared-features.md` — Navigation contracts for shared features (accepted, downstream example)
-

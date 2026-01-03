@@ -16,6 +16,13 @@ import '../services/analytics/analytics_tracker.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
+import '../services/deep_link/app_links_deep_link_source.dart';
+import '../services/deep_link/deep_link_parser.dart';
+import '../services/deep_link/deep_link_listener.dart';
+import '../services/deep_link/deep_link_source.dart';
+import '../services/deep_link/deep_link_telemetry.dart';
+import '../services/deep_link/pending_deep_link_controller.dart';
+import '../services/deep_link/pending_deep_link_store.dart';
 import '../services/early_errors/crashlytics_error_reporter.dart';
 import '../services/early_errors/early_error_buffer.dart';
 import '../services/startup_metrics/startup_metrics.dart';
@@ -48,12 +55,16 @@ void registerLocator() {
   }
 
   if (!locator.isRegistered<AppEventBus>()) {
-    locator.registerLazySingleton<AppEventBus>(() => AppEventBus());
+    locator.registerLazySingleton<AppEventBus>(
+      () => AppEventBus(),
+      dispose: (bus) => bus.dispose(),
+    );
   }
 
   if (!locator.isRegistered<ConnectivityService>()) {
     locator.registerLazySingleton<ConnectivityService>(
       () => ConnectivityServiceImpl(),
+      dispose: (service) => service.dispose(),
     );
   }
 
@@ -61,14 +72,47 @@ void registerLocator() {
     locator.registerLazySingleton<AppLaunchService>(() => AppLaunchServiceImpl());
   }
 
-  if (!locator.isRegistered<AppStartupController>()) {
-    locator.registerLazySingleton<AppStartupController>(
-      () => AppStartupController(
-        appLaunch: locator<AppLaunchService>(),
-        connectivity: locator<ConnectivityService>(),
-        sessionManager: locator<SessionManager>(),
-        getMe: locator<GetMeUseCase>(),
+  if (!locator.isRegistered<DeepLinkParser>()) {
+    locator.registerLazySingleton<DeepLinkParser>(() => DeepLinkParser());
+  }
+
+  if (!locator.isRegistered<DeepLinkSource>()) {
+    locator.registerLazySingleton<DeepLinkSource>(() => AppLinksDeepLinkSource());
+  }
+
+  if (!locator.isRegistered<DeepLinkTelemetry>()) {
+    locator.registerLazySingleton<DeepLinkTelemetry>(
+      () => DeepLinkTelemetry(analytics: locator<AnalyticsTracker>()),
+    );
+  }
+
+  if (!locator.isRegistered<PendingDeepLinkStore>()) {
+    locator.registerLazySingleton<PendingDeepLinkStore>(
+      () => PendingDeepLinkStore(),
+    );
+  }
+
+  if (!locator.isRegistered<PendingDeepLinkController>()) {
+    locator.registerLazySingleton<PendingDeepLinkController>(
+      () => PendingDeepLinkController(
+        store: locator<PendingDeepLinkStore>(),
+        parser: locator<DeepLinkParser>(),
+        telemetry: locator<DeepLinkTelemetry>(),
       ),
+      dispose: (controller) => controller.dispose(),
+    );
+  }
+
+  if (!locator.isRegistered<DeepLinkListener>()) {
+    locator.registerLazySingleton<DeepLinkListener>(
+      () => DeepLinkListener(
+        source: locator<DeepLinkSource>(),
+        navigation: locator<NavigationService>(),
+        deepLinks: locator<PendingDeepLinkController>(),
+        parser: locator<DeepLinkParser>(),
+        telemetry: locator<DeepLinkTelemetry>(),
+      ),
+      dispose: (listener) => listener.stop(),
     );
   }
 
@@ -103,6 +147,19 @@ void registerLocator() {
   // Feature modules
   AuthModule.register(locator);
   UserModule.register(locator);
+
+  // App orchestrators (depend on feature modules)
+  if (!locator.isRegistered<AppStartupController>()) {
+    locator.registerLazySingleton<AppStartupController>(
+      () => AppStartupController(
+        appLaunch: locator<AppLaunchService>(),
+        connectivity: locator<ConnectivityService>(),
+        sessionManager: locator<SessionManager>(),
+        getMe: locator<GetMeUseCase>(),
+      ),
+      dispose: (controller) => controller.dispose(),
+    );
+  }
 }
 
 /// Initializes dependencies that require async work (disk, platform channels).
@@ -123,6 +180,11 @@ Future<void> bootstrapLocator() {
       // Run the startup gate first so the router can make correct initial
       // decisions as early as possible (session + onboarding).
       try {
+        // Best-effort: load any persisted pending deep link so it can resume
+        // after prerequisites (onboarding/login). This must not block startup.
+        unawaited(locator<PendingDeepLinkController>().initialize());
+        unawaited(locator<DeepLinkListener>().start());
+
         await locator<AppStartupController>().initialize();
       } catch (e, st) {
         Log.error('Failed to initialize startup controller', e, st, false, 'DI');

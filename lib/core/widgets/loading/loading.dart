@@ -5,4 +5,5 @@
 
 export 'app_dot_wave.dart' show AppDotWave;
 export 'app_loading_overlay.dart' show AppLoadingOverlay;
-export 'app_startup_gate.dart' show AppStartupGate, AppStartupOverlay;
+export 'app_startup_gate.dart'
+    show AppStartupBackdrop, AppStartupGate, AppStartupOverlay;

@@ -16,6 +16,8 @@ enum StartupMilestone {
   firstFrame,
   firstFrameTimingsCaptured,
   bootstrapStart,
+  secureStorageReadStart,
+  secureStorageReadComplete,
   startupReady,
   bootstrapComplete,
 }
@@ -32,6 +34,8 @@ extension on StartupMilestone {
     StartupMilestone.firstFrame => 'first_frame',
     StartupMilestone.firstFrameTimingsCaptured => 'first_frame_timings',
     StartupMilestone.bootstrapStart => 'bootstrap_start',
+    StartupMilestone.secureStorageReadStart => 'secure_storage_start',
+    StartupMilestone.secureStorageReadComplete => 'secure_storage_complete',
     StartupMilestone.startupReady => 'startup_ready',
     StartupMilestone.bootstrapComplete => 'bootstrap_complete',
   };
@@ -124,10 +128,15 @@ class StartupMetrics {
       StartupMilestone.bootstrapStart,
       StartupMilestone.bootstrapComplete,
     );
+    final secureStorageReadMs = _msBetween(
+      StartupMilestone.secureStorageReadStart,
+      StartupMilestone.secureStorageReadComplete,
+    );
 
     Log.info(
       'Startup metrics: preRunApp=${_fmtMs(preRunAppMs)} ttff=${_fmtMs(ttffMs)} '
       'ready=${_fmtMs(readyMs)} bootstrap=${_fmtMs(bootstrapMs)} '
+      'secureStore=${_fmtMs(secureStorageReadMs)} '
       'firstFrame(build=${_fmtMs(_firstFrameBuild?.inMilliseconds)} '
       'raster=${_fmtMs(_firstFrameRaster?.inMilliseconds)})',
       name: 'StartupMetrics',
@@ -178,6 +187,10 @@ class StartupMetrics {
       StartupMilestone.bootstrapStart,
       StartupMilestone.bootstrapComplete,
     );
+    final secureStorageReadMs = _msBetween(
+      StartupMilestone.secureStorageReadStart,
+      StartupMilestone.secureStorageReadComplete,
+    );
 
     final firebaseInitMs = _msBetween(
       StartupMilestone.flutterBindingInitialized,
@@ -198,6 +211,9 @@ class StartupMetrics {
     if (ttffMs != null) params[AnalyticsParams.startupTtffMs] = ttffMs;
     if (readyMs != null) params[AnalyticsParams.startupReadyMs] = readyMs;
     if (bootstrapMs != null) params[AnalyticsParams.startupBootstrapMs] = bootstrapMs;
+    if (secureStorageReadMs != null) {
+      params[AnalyticsParams.startupSecureStorageReadMs] = secureStorageReadMs;
+    }
 
     if (firebaseInitMs != null) {
       params[AnalyticsParams.startupFirebaseInitMs] = firebaseInitMs;
@@ -268,4 +284,3 @@ class StartupMetrics {
     _firstFrameRaster = raster;
   }
 }
-

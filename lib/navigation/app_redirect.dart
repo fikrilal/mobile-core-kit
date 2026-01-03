@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/services/app_startup/app_startup_controller.dart';
+import '../core/services/deep_link/deep_link_parser.dart';
+import '../core/services/deep_link/pending_deep_link_controller.dart';
 import 'app_routes.dart';
 import 'auth/auth_routes.dart';
 import 'onboarding/onboarding_routes.dart';
@@ -12,41 +15,116 @@ import 'onboarding/onboarding_routes.dart';
 String? appRedirect(
   GoRouterState state,
   AppStartupController startup,
+  PendingDeepLinkController deepLinks,
+  DeepLinkParser deepLinkParser,
 ) {
-  final location = state.matchedLocation;
-  final zone = _routeZone(location);
+  return appRedirectUri(state.uri, startup, deepLinks, deepLinkParser);
+}
+
+@visibleForTesting
+String? appRedirectUri(
+  Uri uri,
+  AppStartupController startup,
+  PendingDeepLinkController deepLinks,
+  DeepLinkParser deepLinkParser,
+) {
+  final isExternalHttps = uri.hasScheme && uri.scheme == 'https';
+  final mappedExternal =
+      isExternalHttps ? deepLinkParser.parseExternalUri(uri) : null;
+
+  // Fail safe: reject non-allowlisted HTTPS links.
+  if (isExternalHttps && mappedExternal == null) return AppRoutes.root;
+
+  final location = mappedExternal ?? _locationFromUri(uri);
+  final shouldCanonicalizeExternalHttps =
+      isExternalHttps && mappedExternal != null && uri.toString() != location;
+  final pendingSource = isExternalHttps ? 'https' : 'router';
+  final zone = _routeZone(Uri.parse(location).path);
 
   // Do not force navigation during startup (use a UI gate/overlay instead).
-  if (!startup.isReady) return null;
+  if (!startup.isReady) {
+    if (zone == _RouteZone.root ||
+        zone == _RouteZone.onboarding ||
+        zone == _RouteZone.auth) {
+      return null;
+    }
+
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'startup_not_ready',
+    );
+    return AppRoutes.root;
+  }
 
   final shouldShowOnboarding = startup.shouldShowOnboarding ?? false;
 
   if (zone == _RouteZone.root) {
     if (shouldShowOnboarding) return OnboardingRoutes.onboarding;
-    return startup.isAuthenticated ? AppRoutes.home : AuthRoutes.signIn;
+
+    if (!startup.isAuthenticated) {
+      return AuthRoutes.signIn;
+    }
+
+    final pending = deepLinks.consumePendingLocationForRedirect();
+    if (pending != null) return pending;
+
+    return AppRoutes.home;
   }
 
   if (shouldShowOnboarding) {
-    return zone == _RouteZone.onboarding ? null : OnboardingRoutes.onboarding;
+    if (zone == _RouteZone.onboarding) return null;
+
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'needs_onboarding',
+    );
+    return OnboardingRoutes.onboarding;
   }
 
   if (!startup.isAuthenticated) {
-    return zone == _RouteZone.auth ? null : AuthRoutes.signIn;
+    if (zone == _RouteZone.auth) return null;
+
+    deepLinks.setPendingLocationForRedirect(
+      location,
+      source: pendingSource,
+      reason: 'needs_auth',
+    );
+    return AuthRoutes.signIn;
   }
 
   if (zone == _RouteZone.auth || zone == _RouteZone.onboarding) {
+    final pending = deepLinks.consumePendingLocationForRedirect();
+    if (pending != null) return pending;
+
     return AppRoutes.home;
   }
+
+  if (shouldCanonicalizeExternalHttps) return location;
 
   return null;
 }
 
 enum _RouteZone { root, onboarding, auth, other }
 
-_RouteZone _routeZone(String location) {
-  if (location == AppRoutes.root) return _RouteZone.root;
-  if (location == OnboardingRoutes.onboarding) return _RouteZone.onboarding;
-  if (location.startsWith('/auth')) return _RouteZone.auth;
+_RouteZone _routeZone(String path) {
+  if (path == AppRoutes.root) return _RouteZone.root;
+  if (path == OnboardingRoutes.onboarding) return _RouteZone.onboarding;
+  if (path.startsWith('/auth')) return _RouteZone.auth;
   return _RouteZone.other;
 }
 
+String _locationFromUri(Uri uri) {
+  final path = _normalizePath(uri.path);
+  final query = uri.query;
+  if (query.isEmpty) return path;
+  return '$path?$query';
+}
+
+String _normalizePath(String path) {
+  if (path.isEmpty) return AppRoutes.root;
+  if (path == AppRoutes.root) return AppRoutes.root;
+  if (path.endsWith('/')) return path.substring(0, path.length - 1);
+  return path;
+}

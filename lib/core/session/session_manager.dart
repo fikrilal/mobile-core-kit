@@ -28,6 +28,7 @@ class SessionManager {
   final AppEventBus _events;
   AuthSessionEntity? _currentSession;
   Future<void>? _initFuture;
+  Future<void>? _restoreCachedUserFuture;
 
   Future<void> init() {
     final existing = _initFuture;
@@ -47,12 +48,15 @@ class SessionManager {
       );
       if (_currentSession != null) {
         Log.debug(
-          'Loaded access(~5)=${_mask(_currentSession!.tokens.accessToken)} refresh(~5)=${_mask(_currentSession!.tokens.refreshToken)}',
+          'Session init: user cached=${_currentSession!.user != null}',
           name: 'SessionManager',
         );
       }
-      _sessionController.add(_currentSession);
-      _sessionNotifier.value = _currentSession;
+      _emit(_currentSession);
+
+      // Best-effort: restore cached user *after* tokens are available without
+      // blocking startup readiness.
+      unawaited(restoreCachedUserIfNeeded());
     } catch (e) {
       _initFuture = null;
       rethrow;
@@ -79,6 +83,45 @@ class SessionManager {
     _sessionNotifier.dispose();
   }
 
+  Future<void> restoreCachedUserIfNeeded() {
+    final existing = _restoreCachedUserFuture;
+    if (existing != null) return existing;
+
+    final current = _currentSession;
+    if (current == null) return Future.value();
+    if (current.user != null) return Future.value();
+
+    final accessTokenAtStart = current.tokens.accessToken;
+
+    final future = () async {
+      try {
+        final cachedUser = await _repository.loadCachedUser();
+        if (cachedUser == null) return;
+
+        final latest = _currentSession;
+        if (latest == null) return;
+        if (latest.user != null) return;
+        if (latest.tokens.accessToken != accessTokenAtStart) return;
+
+        _currentSession = latest.copyWith(user: cachedUser);
+        _emit(_currentSession);
+      } catch (e, st) {
+        Log.error(
+          'Failed to restore cached user',
+          e,
+          st,
+          true,
+          'SessionManager',
+        );
+      } finally {
+        _restoreCachedUserFuture = null;
+      }
+    }();
+
+    _restoreCachedUserFuture = future;
+    return future;
+  }
+
   Future<void> login(AuthSessionEntity session) async {
     final enriched = session.copyWith(
       tokens: _withComputedExpiresAt(session.tokens),
@@ -87,11 +130,10 @@ class SessionManager {
     await _repository.saveSession(enriched);
     _currentSession = enriched;
     Log.debug(
-      'Login saved. access(~5)=${_mask(enriched.tokens.accessToken)} refresh(~5)=${_mask(enriched.tokens.refreshToken)}',
+      'Login saved. user cached=${enriched.user != null}',
       name: 'SessionManager',
     );
-    _sessionController.add(_currentSession);
-    _sessionNotifier.value = _currentSession;
+    _emit(_currentSession);
   }
 
   Future<void> setUser(UserEntity user) async {
@@ -100,8 +142,7 @@ class SessionManager {
     final updated = current.copyWith(user: user);
     await _repository.saveSession(updated);
     _currentSession = updated;
-    _sessionController.add(_currentSession);
-    _sessionNotifier.value = _currentSession;
+    _emit(_currentSession);
   }
 
   AuthSessionEntity _attachTokens(
@@ -120,10 +161,6 @@ class SessionManager {
     final current = _currentSession;
     if (current == null) return false;
     Log.debug('Refreshing tokens…', name: 'SessionManager');
-    Log.debug(
-      'Using refresh(~5)=${_mask(current.tokens.refreshToken)}',
-      name: 'SessionManager',
-    );
     final result = await _refreshTokenUsecase(
       RefreshRequestEntity(refreshToken: current.tokens.refreshToken),
     );
@@ -156,15 +193,14 @@ class SessionManager {
       },
       (tokens) async {
         Log.debug(
-          'Refresh success. New access(~5)=${_mask(tokens.accessToken)} refresh(~5)=${_mask(tokens.refreshToken)}',
+          'Refresh success. Tokens updated.',
           name: 'SessionManager',
         );
         final updated = _attachTokens(current, tokens);
         await _repository.saveSession(updated);
         Log.debug('Session persisted after refresh', name: 'SessionManager');
         _currentSession = updated;
-        _sessionController.add(_currentSession);
-        _sessionNotifier.value = _currentSession;
+        _emit(_currentSession);
         return true;
       },
     );
@@ -174,15 +210,12 @@ class SessionManager {
     Log.info('Logout: clearing session', name: 'SessionManager');
     await _repository.clearSession();
     _currentSession = null;
-    _sessionController.add(_currentSession);
-    _sessionNotifier.value = _currentSession;
+    _emit(_currentSession);
     _events.publish(SessionCleared(reason: reason));
   }
 
-  String _mask(String? token) {
-    if (token == null || token.isEmpty) return 'null';
-    final len = token.length;
-    final start = token.substring(0, len >= 5 ? 5 : len);
-    return '$start…($len)';
+  void _emit(AuthSessionEntity? session) {
+    _sessionController.add(session);
+    _sessionNotifier.value = session;
   }
 }
