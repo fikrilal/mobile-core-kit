@@ -2,6 +2,7 @@ import '../../features/auth/data/datasource/local/auth_local_datasource.dart';
 import '../../features/auth/domain/entity/auth_session_entity.dart';
 import '../../features/auth/domain/entity/auth_tokens_entity.dart';
 import '../../features/user/domain/entity/user_entity.dart';
+import '../services/startup_metrics/startup_metrics.dart';
 import '../storage/secure/token_secure_storage.dart';
 import 'session_repository.dart';
 
@@ -35,7 +36,9 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<AuthSessionEntity?> loadSession() async {
+    StartupMetrics.instance.mark(StartupMilestone.secureStorageReadStart);
     final tokens = await _secure.read();
+    StartupMetrics.instance.mark(StartupMilestone.secureStorageReadComplete);
     if (tokens.access == null || tokens.refresh == null || tokens.expiresIn == null) {
       return null;
     }

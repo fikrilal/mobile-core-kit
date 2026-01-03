@@ -256,14 +256,14 @@ Only do this if complexity grows; current size is acceptable and not over-engine
 
 ### P0 — Hardening (prevents rare but high-impact failures)
 
-1) Add **timeouts + fail-open behavior** for readiness-critical awaits
+1) [DONE] Add **timeouts + fail-open behavior** for readiness-critical awaits
    - Apply timeouts to:
      - `SessionManager.init()`
      - `AppLaunchService.shouldShowOnboarding()`
    - On timeout: treat as signed-out and/or “show onboarding”, then mark startup ready.
    - This prevents “stuck behind gate forever” scenarios caused by plugin hangs.
 
-2) Decide and document the **deep link + not-ready policy**
+2) [DONE] Decide and document the **deep link + not-ready policy**
    - Option A (current): preserve deep links, accept that pages may build while startup is unknown; require feature pages to be resilient (no eager auth-required calls before readiness).
    - Option B: still preserve deep links but **block interactions immediately** (mount a transparent barrier immediately, fade visuals after delay).
    - Option C (more complex): capture intended deep link and temporarily route to `/` until ready, then restore.
@@ -271,30 +271,30 @@ Only do this if complexity grows; current size is acceptable and not over-engine
 
 ### P1 — Performance (reduces “time to correct route”)
 
-3) Reduce secure storage channel round-trips
+3) [TODO] Reduce secure storage channel round-trips
    - Consider reading tokens in **one call** (e.g., `readAll`) or storing a single serialized payload.
    - Goal: reduce variability and keep `startup_ready_ms` consistently < `AppStartupGate.showDelay`.
 
-4) Avoid SQLite work on the critical readiness path (if possible)
+4) [DONE] Avoid SQLite work on the critical readiness path (if possible)
    - Routing decisions only need “has tokens?” + onboarding flag.
    - Consider restoring tokens first (fast), mark startup ready, then load cached user/hydrate in background.
    - This reduces startup gate duration and also reduces startup jank risk.
 
-5) Disable GoRouter diagnostics outside debug
+5) [DONE] Disable GoRouter diagnostics outside debug
    - `debugLogDiagnostics: true` should typically be `kDebugMode` (or equivalent) to avoid noisy logging/perf overhead in release.
 
 ### P2 — Maintainability & test robustness
 
-6) Provide GetIt disposal hooks for services with resources
+6) [TODO] Provide GetIt disposal hooks for services with resources
    - Register with `dispose:` where appropriate (not everything needs it).
    - This improves test isolation and prevents leaked listeners/subscriptions during `resetLocator()`.
 
-7) Tighten token logging policy
+7) [TODO] Tighten token logging policy
    - Remove/limit masked token logs even in non-prod, or guard them behind a dedicated “dangerous logging” flag.
 
 ### P3 — UX polish (nice-to-have)
 
-8) Avoid “blank root” visuals during gating
+8) [TODO] Avoid “blank root” visuals during gating
    - `/` currently renders `SizedBox.shrink()`. If `startup_ready_ms` exceeds 200ms, users may briefly see a blank frame before the gate appears.
    - Consider making the root route paint a background matching the startup overlay (or matching native splash) so transitions are seamless.
 
