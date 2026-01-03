@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ shows `windowSplashScreenAnimatedIcon` via the platform SplashScreen API.
+  Keep the starting window background as a plain background to avoid "double-logo"
+  (pre-Android 12 `@drawable/splash` would otherwise render behind the system icon).
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap android:gravity="fill" android:src="@drawable/background"/>
+    </item>
+</layer-list>
+

@@ -73,6 +73,7 @@ dev_dependencies:
   freezed: ^3.2.3
   json_serializable: ^6.11.2
   flutter_native_splash: 2.4.7
+  image: ^4.7.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -123,5 +124,5 @@ flutter_native_splash:
   web: false
   android_12:
     color: "#FFFFFF"
-    image: assets/logos/app/logo-icon-mono-black.png
+    image: assets/logos/app/logo-icon-mono-black-android12.png
     icon_background_color: "#FFFFFF"
