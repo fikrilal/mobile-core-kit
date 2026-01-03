@@ -40,20 +40,38 @@ class TokenSecureStorage {
 
   Future<({String? access, String? refresh, int? expiresIn, int? expiresAtMs})>
   read() async {
-    final access = await _storage.read(key: _kAccess);
-    final refresh = await _storage.read(key: _kRefresh);
-    final expStr = await _storage.read(key: _kExpiry);
-    final expiry = expStr == null ? null : int.tryParse(expStr);
-    final expiresAtStr = await _storage.read(key: _kExpiresAtMs);
-    final expiresAtMs = expiresAtStr == null
-        ? null
-        : int.tryParse(expiresAtStr);
-    return (
-      access: access,
-      refresh: refresh,
-      expiresIn: expiry,
-      expiresAtMs: expiresAtMs,
-    );
+    try {
+      final all = await _storage.readAll();
+      final access = all[_kAccess];
+      final refresh = all[_kRefresh];
+      final expStr = all[_kExpiry];
+      final expiry = expStr == null ? null : int.tryParse(expStr);
+      final expiresAtStr = all[_kExpiresAtMs];
+      final expiresAtMs =
+          expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+      return (
+        access: access,
+        refresh: refresh,
+        expiresIn: expiry,
+        expiresAtMs: expiresAtMs,
+      );
+    } catch (_) {
+      // Best-effort fallback: on any plugin/readAll failure, retry via
+      // per-key reads to avoid failing startup session restoration.
+      final access = await _storage.read(key: _kAccess);
+      final refresh = await _storage.read(key: _kRefresh);
+      final expStr = await _storage.read(key: _kExpiry);
+      final expiry = expStr == null ? null : int.tryParse(expStr);
+      final expiresAtStr = await _storage.read(key: _kExpiresAtMs);
+      final expiresAtMs =
+          expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+      return (
+        access: access,
+        refresh: refresh,
+        expiresIn: expiry,
+        expiresAtMs: expiresAtMs,
+      );
+    }
   }
 
   Future<void> clear() async {

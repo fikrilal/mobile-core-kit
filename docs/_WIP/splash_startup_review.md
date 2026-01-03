@@ -271,7 +271,7 @@ Only do this if complexity grows; current size is acceptable and not over-engine
 
 ### P1 — Performance (reduces “time to correct route”)
 
-3) [TODO] Reduce secure storage channel round-trips
+3) [DONE] Reduce secure storage channel round-trips
    - Consider reading tokens in **one call** (e.g., `readAll`) or storing a single serialized payload.
    - Goal: reduce variability and keep `startup_ready_ms` consistently < `AppStartupGate.showDelay`.
 
