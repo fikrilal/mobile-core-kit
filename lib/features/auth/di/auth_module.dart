@@ -91,6 +91,7 @@ class AuthModule {
           refreshUsecase: getIt<RefreshTokenUsecase>(),
           events: getIt<AppEventBus>(),
         ),
+        dispose: (manager) => manager.dispose(),
       );
     }
 

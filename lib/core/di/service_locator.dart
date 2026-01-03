@@ -55,12 +55,16 @@ void registerLocator() {
   }
 
   if (!locator.isRegistered<AppEventBus>()) {
-    locator.registerLazySingleton<AppEventBus>(() => AppEventBus());
+    locator.registerLazySingleton<AppEventBus>(
+      () => AppEventBus(),
+      dispose: (bus) => bus.dispose(),
+    );
   }
 
   if (!locator.isRegistered<ConnectivityService>()) {
     locator.registerLazySingleton<ConnectivityService>(
       () => ConnectivityServiceImpl(),
+      dispose: (service) => service.dispose(),
     );
   }
 
@@ -95,6 +99,7 @@ void registerLocator() {
         parser: locator<DeepLinkParser>(),
         telemetry: locator<DeepLinkTelemetry>(),
       ),
+      dispose: (controller) => controller.dispose(),
     );
   }
 
@@ -107,17 +112,7 @@ void registerLocator() {
         parser: locator<DeepLinkParser>(),
         telemetry: locator<DeepLinkTelemetry>(),
       ),
-    );
-  }
-
-  if (!locator.isRegistered<AppStartupController>()) {
-    locator.registerLazySingleton<AppStartupController>(
-      () => AppStartupController(
-        appLaunch: locator<AppLaunchService>(),
-        connectivity: locator<ConnectivityService>(),
-        sessionManager: locator<SessionManager>(),
-        getMe: locator<GetMeUseCase>(),
-      ),
+      dispose: (listener) => listener.stop(),
     );
   }
 
@@ -152,6 +147,19 @@ void registerLocator() {
   // Feature modules
   AuthModule.register(locator);
   UserModule.register(locator);
+
+  // App orchestrators (depend on feature modules)
+  if (!locator.isRegistered<AppStartupController>()) {
+    locator.registerLazySingleton<AppStartupController>(
+      () => AppStartupController(
+        appLaunch: locator<AppLaunchService>(),
+        connectivity: locator<ConnectivityService>(),
+        sessionManager: locator<SessionManager>(),
+        getMe: locator<GetMeUseCase>(),
+      ),
+      dispose: (controller) => controller.dispose(),
+    );
+  }
 }
 
 /// Initializes dependencies that require async work (disk, platform channels).

@@ -285,11 +285,11 @@ Only do this if complexity grows; current size is acceptable and not over-engine
 
 ### P2 — Maintainability & test robustness
 
-6) [TODO] Provide GetIt disposal hooks for services with resources
+6) [DONE] Provide GetIt disposal hooks for services with resources
    - Register with `dispose:` where appropriate (not everything needs it).
    - This improves test isolation and prevents leaked listeners/subscriptions during `resetLocator()`.
 
-7) [TODO] Tighten token logging policy
+7) [DONE] Tighten token logging policy
    - Remove/limit masked token logs even in non-prod, or guard them behind a dedicated “dangerous logging” flag.
 
 ### P3 — UX polish (nice-to-have)

@@ -48,7 +48,7 @@ class SessionManager {
       );
       if (_currentSession != null) {
         Log.debug(
-          'Loaded access(~5)=${_mask(_currentSession!.tokens.accessToken)} refresh(~5)=${_mask(_currentSession!.tokens.refreshToken)}',
+          'Session init: user cached=${_currentSession!.user != null}',
           name: 'SessionManager',
         );
       }
@@ -130,7 +130,7 @@ class SessionManager {
     await _repository.saveSession(enriched);
     _currentSession = enriched;
     Log.debug(
-      'Login saved. access(~5)=${_mask(enriched.tokens.accessToken)} refresh(~5)=${_mask(enriched.tokens.refreshToken)}',
+      'Login saved. user cached=${enriched.user != null}',
       name: 'SessionManager',
     );
     _emit(_currentSession);
@@ -161,10 +161,6 @@ class SessionManager {
     final current = _currentSession;
     if (current == null) return false;
     Log.debug('Refreshing tokens…', name: 'SessionManager');
-    Log.debug(
-      'Using refresh(~5)=${_mask(current.tokens.refreshToken)}',
-      name: 'SessionManager',
-    );
     final result = await _refreshTokenUsecase(
       RefreshRequestEntity(refreshToken: current.tokens.refreshToken),
     );
@@ -197,7 +193,7 @@ class SessionManager {
       },
       (tokens) async {
         Log.debug(
-          'Refresh success. New access(~5)=${_mask(tokens.accessToken)} refresh(~5)=${_mask(tokens.refreshToken)}',
+          'Refresh success. Tokens updated.',
           name: 'SessionManager',
         );
         final updated = _attachTokens(current, tokens);
@@ -221,12 +217,5 @@ class SessionManager {
   void _emit(AuthSessionEntity? session) {
     _sessionController.add(session);
     _sessionNotifier.value = session;
-  }
-
-  String _mask(String? token) {
-    if (token == null || token.isEmpty) return 'null';
-    final len = token.length;
-    final start = token.substring(0, len >= 5 ? 5 : len);
-    return '$start…($len)';
   }
 }
