@@ -9,3 +9,4 @@ This folder contains **“what to change”** guides for teams cloning this repo
 
 - Deep linking: `docs/template/deep_linking.md`
 - Startup & splash: `docs/template/startup_splash.md`
+- Fonts: `docs/template/fonts.md`
