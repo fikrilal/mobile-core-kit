@@ -32,6 +32,7 @@ class AppStartupGate extends StatefulWidget {
     required this.isReady,
     required this.child,
     this.overlayBuilder,
+    this.backdropBuilder,
     this.showDelay = MotionDurations.startupGateShowDelay,
     this.minVisible = MotionDurations.startupGateMinVisible,
     this.fadeDuration = MotionDurations.startupGateFadeDuration,
@@ -52,6 +53,14 @@ class AppStartupGate extends StatefulWidget {
   /// Builder for the full-screen overlay. Defaults to [AppStartupOverlay].
   final WidgetBuilder? overlayBuilder;
 
+  /// Builder for the immediate full-screen backdrop shown while startup is not
+  /// ready. Defaults to [AppStartupBackdrop].
+  ///
+  /// This is mounted immediately (no delay) to avoid blank frames between the
+  /// native splash and the delayed overlay. Interaction is blocked by the gate
+  /// itself.
+  final WidgetBuilder? backdropBuilder;
+
   /// How long to wait before showing the overlay (prevents flicker on fast starts).
   final Duration showDelay;
 
@@ -61,10 +70,10 @@ class AppStartupGate extends StatefulWidget {
   /// Fade duration when showing/hiding the overlay.
   final Duration fadeDuration;
 
-  /// When true, blocks back navigation while the overlay is visible.
+  /// When true, blocks back navigation while the gate is blocking UI.
   final bool blockBackButton;
 
-  /// When true, disables tickers under [child] while the overlay is visible.
+  /// When true, disables tickers under [child] while the gate is blocking UI.
   final bool disableChildTickers;
 
   @override
@@ -73,6 +82,7 @@ class AppStartupGate extends StatefulWidget {
 
 class _AppStartupGateState extends State<AppStartupGate> {
   DateTime? _becameVisibleAt;
+  bool _mountedBackdrop = false;
   bool _mountedOverlay = false;
   bool _opaqueOverlay = false;
 
@@ -114,6 +124,7 @@ class _AppStartupGateState extends State<AppStartupGate> {
     _hideTimer?.cancel();
     _unmountTimer?.cancel();
     _becameVisibleAt = null;
+    _mountedBackdrop = false;
     _mountedOverlay = false;
     _opaqueOverlay = false;
   }
@@ -122,6 +133,11 @@ class _AppStartupGateState extends State<AppStartupGate> {
     if (!mounted) return;
 
     if (_isReady) {
+      if (_mountedBackdrop) {
+        setState(() {
+          _mountedBackdrop = false;
+        });
+      }
       _scheduleHideIfNeeded();
       return;
     }
@@ -129,6 +145,12 @@ class _AppStartupGateState extends State<AppStartupGate> {
     // If we're in the middle of fading out, keep the overlay alive.
     _hideTimer?.cancel();
     _unmountTimer?.cancel();
+
+    if (!_mountedBackdrop) {
+      setState(() {
+        _mountedBackdrop = true;
+      });
+    }
 
     if (_mountedOverlay) {
       if (!_opaqueOverlay) {
@@ -226,9 +248,27 @@ class _AppStartupGateState extends State<AppStartupGate> {
   @override
   Widget build(BuildContext context) {
     final effectiveChild =
-        widget.disableChildTickers && _mountedOverlay
+        widget.disableChildTickers && (_mountedBackdrop || _mountedOverlay)
             ? TickerMode(enabled: false, child: widget.child)
             : widget.child;
+
+    final backdrop = _mountedBackdrop
+        ? Positioned.fill(
+            child:
+                (widget.backdropBuilder ?? (_) => const AppStartupBackdrop())(
+                  context,
+                ),
+          )
+        : null;
+
+    final barrier = (_mountedBackdrop || _mountedOverlay)
+        ? const Positioned.fill(
+            child: ModalBarrier(
+              dismissible: false,
+              color: Colors.transparent,
+            ),
+          )
+        : null;
 
     final overlay = _mountedOverlay
         ? Positioned.fill(
@@ -247,15 +287,31 @@ class _AppStartupGateState extends State<AppStartupGate> {
       fit: StackFit.expand,
       children: [
         effectiveChild,
+        if (backdrop != null) backdrop,
+        if (barrier != null) barrier,
         if (overlay != null) overlay,
       ],
     );
 
-    if (!widget.blockBackButton || !_mountedOverlay) {
+    if (!widget.blockBackButton || (!_mountedBackdrop && !_mountedOverlay)) {
       return stack;
     }
 
     return PopScope(canPop: false, child: stack);
+  }
+}
+
+/// Immediate backdrop shown by [AppStartupGate] while startup is not ready.
+class AppStartupBackdrop extends StatelessWidget {
+  const AppStartupBackdrop({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return ColoredBox(
+      color: scheme.surface,
+    );
   }
 }
 

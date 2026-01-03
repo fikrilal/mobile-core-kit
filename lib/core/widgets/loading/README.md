@@ -46,6 +46,10 @@ This is the preferred approach over an in-app “/splash” route: render the re
 router tree immediately, and show a short-lived full-screen overlay only when
 startup work takes long enough to be noticeable.
 
+To avoid “blank frames” and prevent premature interaction, the gate mounts an
+immediate full-screen backdrop while startup is not ready. The spinner/branding
+overlay is still delayed by `showDelay` to avoid flicker on fast startups.
+
 ```dart
 MaterialApp.router(
   routerConfig: router,
