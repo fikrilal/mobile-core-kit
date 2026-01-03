@@ -17,7 +17,7 @@ class TypographySystem {
   TypographySystem._();
 
   /// The font family used by the typography system
-  static const String fontFamily = 'Manrope';
+  static const String fontFamily = 'InterTight';
 
   /// Apply the typography system to a theme without requiring BuildContext.
   ///

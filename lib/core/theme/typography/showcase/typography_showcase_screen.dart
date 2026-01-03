@@ -82,7 +82,7 @@ class TypographyShowcaseScreen extends StatelessWidget {
                 child: Text(
                   'The quick brown fox jumps over the lazy dog',
                   style: TextStyle(
-                    fontFamily: 'Manrope',
+                    fontFamily: 'InterTight',
                     fontSize: 16,
                     fontWeight: weight.$2,
                   ),

@@ -22,7 +22,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
@@ -38,7 +38,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
@@ -54,7 +54,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
@@ -71,7 +71,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
@@ -87,7 +87,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
@@ -103,7 +103,7 @@ class ResponsiveTextStyles {
     );
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
@@ -117,7 +117,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.titleLarge, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
@@ -130,7 +130,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.titleMedium, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
@@ -143,7 +143,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.titleSmall, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
@@ -157,7 +157,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.bodyLarge, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
@@ -170,7 +170,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.bodyMedium, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
@@ -183,7 +183,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.bodySmall, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
@@ -197,7 +197,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.labelLarge, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,
@@ -210,7 +210,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.labelMedium, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,
@@ -223,7 +223,7 @@ class ResponsiveTextStyles {
     final size = TypeScale.getResponsiveSize(TypeScale.labelSmall, breakpoint);
 
     return TextStyle(
-      fontFamily: 'Manrope',
+      fontFamily: 'InterTight',
       fontSize: size,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,

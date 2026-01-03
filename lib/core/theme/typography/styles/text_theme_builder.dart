@@ -51,7 +51,7 @@ class TextThemeBuilder {
     return TextTheme(
       // Display styles
       displayLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.displayLarge,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -59,7 +59,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       displayMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.displayMedium,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -67,7 +67,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       displaySmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.displaySmall,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -77,7 +77,7 @@ class TextThemeBuilder {
 
       // Headline styles
       headlineLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.headlineLarge,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -85,7 +85,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       headlineMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.headlineMedium,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -93,7 +93,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       headlineSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.headlineSmall,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -103,7 +103,7 @@ class TextThemeBuilder {
 
       // Title styles
       titleLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.titleLarge,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -111,7 +111,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       titleMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.titleMedium,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -119,7 +119,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       titleSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.titleSmall,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -129,7 +129,7 @@ class TextThemeBuilder {
 
       // Body styles
       bodyLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.bodyLarge,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -137,7 +137,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       bodyMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.bodyMedium,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -145,7 +145,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       bodySmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.bodySmall,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -155,7 +155,7 @@ class TextThemeBuilder {
 
       // Label styles
       labelLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.labelLarge,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,
@@ -163,7 +163,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       labelMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.labelMedium,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,
@@ -171,7 +171,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       labelSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: 'InterTight',
         fontSize: TypeScale.labelSmall,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,
