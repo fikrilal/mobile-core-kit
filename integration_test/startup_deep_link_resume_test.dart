@@ -1,0 +1,272 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:go_router/go_router.dart';
+import 'package:integration_test/integration_test.dart';
+
+import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
+import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
+import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/navigation/app_redirect.dart';
+import 'package:mobile_core_kit/navigation/app_routes.dart';
+import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
+import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(
+    'startup gate preserves deep link and resumes after onboarding + auth',
+    (tester) async {
+      final appLaunch = _FakeAppLaunchService();
+      final connectivity = _FakeConnectivityService();
+      final sessionRepo = _InMemorySessionRepository();
+      final authRepo = _FakeAuthRepository();
+      final userRepo = _FakeUserRepository();
+
+      final refreshUsecase = RefreshTokenUsecase(authRepo);
+      final events = AppEventBus();
+      final sessionManager = SessionManager(
+        sessionRepo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      final getMe = GetMeUseCase(userRepo);
+      final startup = AppStartupController(
+        appLaunch: appLaunch,
+        connectivity: connectivity,
+        sessionManager: sessionManager,
+        getMe: getMe,
+        sessionInitTimeout: const Duration(milliseconds: 50),
+        onboardingReadTimeout: const Duration(milliseconds: 50),
+      );
+
+      final deepLinkStore = PendingDeepLinkStore();
+      await deepLinkStore.clear();
+      final deepLinks = PendingDeepLinkController(
+        store: deepLinkStore,
+        parser: DeepLinkParser(),
+      );
+
+      final router = GoRouter(
+        initialLocation: AppRoutes.root,
+        refreshListenable: Listenable.merge([startup, deepLinks]),
+        redirect: (context, state) => appRedirectUri(
+          state.uri,
+          startup,
+          deepLinks,
+          DeepLinkParser(),
+        ),
+        routes: [
+          GoRoute(
+            path: AppRoutes.root,
+            builder: (context, state) => const _MarkerPage('ROOT'),
+          ),
+          GoRoute(
+            path: AppRoutes.home,
+            builder: (context, state) => const _MarkerPage('HOME'),
+          ),
+          GoRoute(
+            path: AppRoutes.profile,
+            builder: (context, state) => const _MarkerPage('PROFILE'),
+          ),
+          GoRoute(
+            path: OnboardingRoutes.onboarding,
+            builder: (context, state) => const _MarkerPage('ONBOARDING'),
+          ),
+          GoRoute(
+            path: AuthRoutes.signIn,
+            builder: (context, state) => const _MarkerPage('SIGN_IN'),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => AppStartupGate(
+            listenable: startup,
+            isReady: () => startup.isReady,
+            child: child ?? const SizedBox.shrink(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('ROOT'), findsOneWidget);
+      expect(find.byType(ModalBarrier), findsAtLeastNWidgets(1));
+
+      router.go('https://orymu.com/profile');
+      await tester.pumpAndSettle();
+
+      expect(find.text('ROOT'), findsOneWidget);
+      expect(deepLinks.pendingLocation, AppRoutes.profile);
+
+      await startup.initialize();
+      await tester.pumpAndSettle();
+
+      expect(find.text('ONBOARDING'), findsOneWidget);
+      expect(deepLinks.pendingLocation, AppRoutes.profile);
+
+      await startup.completeOnboarding();
+      await tester.pumpAndSettle();
+
+      expect(find.text('SIGN_IN'), findsOneWidget);
+      expect(deepLinks.pendingLocation, AppRoutes.profile);
+
+      await sessionManager.login(
+        AuthSessionEntity(
+          tokens: const AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 3600,
+          ),
+          user: const UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            firstName: 'Test',
+            lastName: 'User',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('PROFILE'), findsOneWidget);
+      expect(deepLinks.pendingLocation, isNull);
+    },
+  );
+}
+
+class _MarkerPage extends StatelessWidget {
+  const _MarkerPage(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: Center(child: Text(label)));
+  }
+}
+
+class _FakeAppLaunchService implements AppLaunchService {
+  bool _seen = false;
+
+  @override
+  Future<void> markOnboardingSeen() async {
+    _seen = true;
+  }
+
+  @override
+  Future<bool> shouldShowOnboarding() async => !_seen;
+}
+
+class _FakeConnectivityService implements ConnectivityService {
+  final _controller = StreamController<NetworkStatus>.broadcast();
+
+  @override
+  NetworkStatus get currentStatus => NetworkStatus.online;
+
+  @override
+  bool get isConnected => true;
+
+  @override
+  Stream<NetworkStatus> get networkStatusStream => _controller.stream;
+
+  @override
+  Future<void> checkConnectivity() async {}
+
+  @override
+  Future<void> dispose() async {
+    await _controller.close();
+  }
+
+  @override
+  Future<void> initialize() async {
+    _controller.add(NetworkStatus.online);
+  }
+}
+
+class _InMemorySessionRepository implements SessionRepository {
+  AuthSessionEntity? _session;
+
+  @override
+  Future<void> clearSession() async {
+    _session = null;
+  }
+
+  @override
+  Future<AuthSessionEntity?> loadSession() async => _session;
+
+  @override
+  Future<UserEntity?> loadCachedUser() async => _session?.user;
+
+  @override
+  Future<void> saveSession(AuthSessionEntity session) async {
+    _session = session;
+  }
+}
+
+class _FakeAuthRepository implements AuthRepository {
+  @override
+  Future<Either<AuthFailure, AuthSessionEntity>> googleMobileSignIn({
+    required String idToken,
+  }) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, AuthSessionEntity>> login(
+    LoginRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, String?>> logout(RefreshRequestEntity request) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, AuthTokensEntity>> refreshToken(
+    RefreshRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, AuthSessionEntity>> register(
+    RegisterRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+}
+
+class _FakeUserRepository implements UserRepository {
+  @override
+  Future<Either<AuthFailure, UserEntity>> getMe() async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+}
