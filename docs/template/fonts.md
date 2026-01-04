@@ -5,7 +5,9 @@ This template ships with a bundled custom font so teams can clone it and keep ty
 ## Current Setup
 
 - Font family: `InterTight`
-- Assets: `assets/fonts/InterTight-*.ttf`
+- Assets (variable fonts):
+  - `assets/fonts/InterTight-VariableFont_wght.ttf` (upright)
+  - `assets/fonts/InterTight-Italic-VariableFont_wght.ttf` (italic)
 - License: `assets/fonts/OFL.txt` (SIL Open Font License)
 - Registration: `pubspec.yaml` → `flutter: fonts:`
 - Default selection:
@@ -29,12 +31,11 @@ This template ships with a bundled custom font so teams can clone it and keep ty
 
 ## Sizing / Performance Notes
 
-- Bundling many separate weights increases app size. If you don’t need all weights, remove unused files and delete their entries in `pubspec.yaml`.
-- Variable fonts can reduce the number of files (and size) significantly, but you still need to validate weight rendering across Android/iOS.
+- Variable fonts keep size smaller and simplify maintenance (two files instead of many).
+- If you prefer static fonts, you can ship per-weight TTFs instead; just update `pubspec.yaml` and keep only the weights you use.
 
 ## Licensing Checklist
 
 - Keep the font license text in-repo under `assets/fonts/` (example: `assets/fonts/OFL.txt`).
 - If you replace the font, replace the license file too.
 - If your legal process requires it, also mention font licensing in your product’s `LICENSE`/about screen documentation.
-

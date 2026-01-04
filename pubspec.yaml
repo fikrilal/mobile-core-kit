@@ -118,50 +118,8 @@ flutter:
   fonts:
     - family: InterTight
       fonts:
-        - asset: assets/fonts/InterTight-Thin.ttf
-          weight: 100
-        - asset: assets/fonts/InterTight-ThinItalic.ttf
-          weight: 100
-          style: italic
-        - asset: assets/fonts/InterTight-ExtraLight.ttf
-          weight: 200
-        - asset: assets/fonts/InterTight-ExtraLightItalic.ttf
-          weight: 200
-          style: italic
-        - asset: assets/fonts/InterTight-Light.ttf
-          weight: 300
-        - asset: assets/fonts/InterTight-LightItalic.ttf
-          weight: 300
-          style: italic
-        - asset: assets/fonts/InterTight-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/InterTight-Italic.ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/InterTight-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/InterTight-MediumItalic.ttf
-          weight: 500
-          style: italic
-        - asset: assets/fonts/InterTight-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/InterTight-SemiBoldItalic.ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/InterTight-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/InterTight-BoldItalic.ttf
-          weight: 700
-          style: italic
-        - asset: assets/fonts/InterTight-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/InterTight-ExtraBoldItalic.ttf
-          weight: 800
-          style: italic
-        - asset: assets/fonts/InterTight-Black.ttf
-          weight: 900
-        - asset: assets/fonts/InterTight-BlackItalic.ttf
-          weight: 900
+        - asset: assets/fonts/InterTight-VariableFont_wght.ttf
+        - asset: assets/fonts/InterTight-Italic-VariableFont_wght.ttf
           style: italic
 
 flutter_native_splash:

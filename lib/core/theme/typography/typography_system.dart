@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tokens/type_metrics.dart';
+import 'tokens/typefaces.dart';
 import 'styles/text_theme_builder.dart';
 
 /// Main entry point to the typography system.
@@ -17,7 +18,7 @@ class TypographySystem {
   TypographySystem._();
 
   /// The font family used by the typography system
-  static const String fontFamily = 'InterTight';
+  static const String fontFamily = Typefaces.primary;
 
   /// Apply the typography system to a theme without requiring BuildContext.
   ///

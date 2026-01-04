@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/text.dart';
 import '../tokens/type_weights.dart';
+import '../tokens/typefaces.dart';
 import '../../responsive/screen_utils.dart';
 
 /// A comprehensive showcase screen for testing all typography styles and font weights.
@@ -56,13 +57,10 @@ class TypographyShowcaseScreen extends StatelessWidget {
 
   Widget _buildFontWeightsSection() {
     final weights = [
-      ('Extra Light (200)', TypeWeights.extraLight),
-      ('Light (300)', TypeWeights.light),
       ('Regular (400)', TypeWeights.regular),
       ('Medium (500)', TypeWeights.medium),
       ('Semi Bold (600)', TypeWeights.semiBold),
       ('Bold (700)', TypeWeights.bold),
-      ('Extra Bold (800)', TypeWeights.extraBold),
     ];
 
     return Column(
@@ -82,7 +80,7 @@ class TypographyShowcaseScreen extends StatelessWidget {
                 child: Text(
                   'The quick brown fox jumps over the lazy dog',
                   style: TextStyle(
-                    fontFamily: 'InterTight',
+                    fontFamily: Typefaces.primary,
                     fontSize: 16,
                     fontWeight: weight.$2,
                   ),
