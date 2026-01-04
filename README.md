@@ -7,7 +7,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 > Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/firebase_setup.md`).
 
-> Status: **work in progress**. A lot of boilerplate (additional features, widgets, and docs) is still being ported from other projects. The current target for a “baseline complete” template is **end of December**.
+> Status: actively maintained. This template evolves over time; treat it as a starting point and adjust it to your product’s needs.
 
 - Flavor-aware configuration (`dev`, `staging`, `prod`) via `.env/*.yaml` + `BuildConfig`.
 - Network layer (Dio, interceptors, API helpers, connectivity checks, logging).
@@ -58,6 +58,20 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
    ```bash
    fvm flutter test
    ```
+
+### Verify (one command)
+
+Run all checks (config generation + analyze + tests + format check):
+
+```bash
+dart run tool/verify.dart --env dev
+```
+
+If you work inside WSL, run the repo-pinned Windows toolchain:
+
+```bash
+cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\dart.bat run tool\verify.dart --env dev"
+```
 
 ## Project Structure
 

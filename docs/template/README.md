@@ -11,3 +11,4 @@ This folder contains **“what to change”** guides for teams cloning this repo
 - Startup & splash: `docs/template/startup_splash.md`
 - Fonts: `docs/template/fonts.md`
 - Rename & rebrand: `docs/template/rename_rebrand.md`
+- Env config: `docs/template/env_config.md`

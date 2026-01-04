@@ -16,15 +16,14 @@ This checklist tracks remaining work to make `mobile-core-kit` a safe, enterpris
 
 ## P1 — Developer Experience / Maintainability
 
-- [ ] Add a single “verify” command/script
-  - [ ] Runs: `flutter pub get`, `dart run tool/gen_config.dart --env <env>`, `flutter analyze`, `flutter test`, `dart format --set-exit-if-changed .`
-  - [ ] Document it in `README.md`.
-- [ ] Document `.env/*.yaml` schema in template docs
-  - [ ] List keys, types, defaults, and what code consumes each value.
-  - [ ] Clarify which values are safe to commit vs must be secret.
-- [ ] Clean remaining placeholders / dated messaging
-  - [ ] Replace “XXX app” phrasing in logging/docs.
-  - [ ] Reword `README.md` “work in progress” section to be timeless (avoid date-based milestones).
+- [x] Add a single “verify” command/script
+  - [x] Add `tool/verify.dart` (config generation + analyze + tests + format check).
+  - [x] Document it in `README.md`.
+- [x] Document `.env/*.yaml` schema in template docs
+  - [x] Add `docs/template/env_config.md`.
+- [x] Clean remaining placeholders / dated messaging
+  - [x] Replace “XXX app” phrasing in `lib/core/utilities/log_utils.dart`.
+  - [x] Reword `README.md` status line to be timeless.
 
 ## P2 — Enterprise Polish
 
