@@ -5,6 +5,8 @@ Reusable, opinionated boilerplate for Flutter mobile apps with core services, ne
 
 This repo is meant to be cloned and customized as a **starting point** for production apps. It hosts the shared “mobile core” (networking, auth, theming, analytics, config, etc.) that you can reuse across multiple Flutter projects instead of re‑building the same foundations every time.
 
+> Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/firebase_setup.md`).
+
 > Status: **work in progress**. A lot of boilerplate (additional features, widgets, and docs) is still being ported from other projects. The current target for a “baseline complete” template is **end of December**.
 
 - Flavor-aware configuration (`dev`, `staging`, `prod`) via `.env/*.yaml` + `BuildConfig`.

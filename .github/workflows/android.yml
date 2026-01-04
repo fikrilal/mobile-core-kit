@@ -1,12 +1,11 @@
 name: Android CI & Release (template)
 
 # NOTE: This workflow is shipped as a template only.
-# It is configured to run *only* when manually triggered from the Actions tab.
-# If you want automatic runs on push (e.g., to main), uncomment the `push:` block below.
 on:
-  # push:
-  #   branches:
-  #     - main
+  pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -93,6 +92,9 @@ jobs:
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
 
+      - name: Flutter analyze
+        run: flutter analyze
+
       - name: Run unit tests
         run: flutter test
 
@@ -113,9 +115,11 @@ jobs:
           PLAY_STORE_JSON: ${{ secrets.PLAY_STORE_JSON }}
 
       - name: Build app bundle (prod)
+        if: ${{ github.event_name != 'pull_request' }}
         run: flutter build appbundle --release --flavor prod -t lib/main_prod.dart --dart-define=ENV=prod
 
       - name: Upload app bundle artifact
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: appbundle-prod-release

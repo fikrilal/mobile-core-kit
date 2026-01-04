@@ -8,6 +8,15 @@ This template is **Firebase‑ready** but not tied to a permanent project. This 
 The goal is: you can prove Crashlytics / Messaging etc. work once, and every future app can
 re‑point the template to its own Firebase project with a few commands.
 
+## Important (template demo Firebase)
+
+This repo currently includes Firebase configuration (`lib/firebase_options.dart` and
+`android/app/google-services.json`) for a **demo Firebase project used only for this template**.
+
+- This is not production configuration.
+- When you clone this repo for a real app, you should run `flutterfire configure` and replace these
+  files so your app points to your own Firebase project.
+
 ---
 
 ## 1. Prerequisites
@@ -28,10 +37,10 @@ Make sure `flutterfire` is on your PATH (or call it via `dart pub global run flu
 
 Android flavors are defined in `android/app/build.gradle.kts`:
 
-- Application IDs (example mapping in this template):
-  - `dev`     → `dev.fikril.mobile.corekit.dev`
-  - `staging` → `dev.fikril.mobile.corekit.staging`
-  - `prod`    → `dev.fikril.mobile.corekit`
+- Application IDs (recommended mapping):
+  - `dev`     → `com.yourcompany.yourapp.dev`
+  - `staging` → `com.yourcompany.yourapp.staging`
+  - `prod`    → `com.yourcompany.yourapp`
 
 For **minimal setup**, you can start by wiring only the `dev` flavor. Real apps can later configure
 `staging` and `prod` as separate Firebase apps if needed.
@@ -53,7 +62,7 @@ Later apps will repeat the same steps with their own projects.
 ### 3.2 Configure Android (dev flavor)
 
 1. In Firebase Console, add an **Android app** with:
-   - Package name: `dev.fikril.mobile.corekit.dev`
+   - Package name: `com.yourcompany.yourapp.dev`
    - App nickname: e.g. `corekit_dev`
 2. Download the generated `google-services.json` and place it at:
    - `android/app/google-services.json` (the default spot works with flavors).
@@ -74,7 +83,7 @@ If you want to skip the prompts, you can use the explicit form:
 ```bash
 flutterfire configure \
   --project <your-firebase-project-id> \
-  --android-package-name dev.fikril.mobile.corekit.dev
+  --android-package-name com.yourcompany.yourapp.dev
 ```
 
 Both do the same thing; the flags just make the command non‑interactive.
