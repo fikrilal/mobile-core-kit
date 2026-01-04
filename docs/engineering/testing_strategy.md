@@ -118,6 +118,26 @@ Keep integration tests deterministic: no real network calls, and no reliance on 
 
 ---
 
+## 6. E2E/UI Tests (`integration_test/`)
+
+This template includes a small E2E/UI suite under `integration_test/` (device/emulator required).
+
+### Run on Android (recommended)
+
+- List devices: `flutter devices`
+- Run a single test (recommended):  
+  `flutter test -d emulator-5554 --flavor dev integration_test/auth_happy_path_test.dart`
+
+### WSL + Windows toolchain (recommended when developing in WSL)
+
+Use the repo-pinned SDK to avoid CRLF shim issues:
+
+`cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\flutter.bat test -d emulator-5554 --flavor dev integration_test/auth_happy_path_test.dart"`
+
+Notes:
+- `--flavor dev` is required because this project uses Android product flavors (`app-dev-debug.apk`, etc.).
+- If installs fail with “insufficient storage”, wipe/create a larger emulator image or uninstall other apps from the emulator to free `/data` space.
+
 ## 6. Test Utilities & Fixtures
 
 Create `test/support/` with:
@@ -299,4 +319,3 @@ Suggested contents for `test/support/`:
 | `log_observer.dart`        | Optional hook to assert logging behavior.    |
 
 Add new helpers here as the suite grows so every feature reuses the same tooling.
-

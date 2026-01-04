@@ -36,6 +36,22 @@ import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  Future<void> pumpUntilText(
+    WidgetTester tester,
+    String text, {
+    Duration step = const Duration(milliseconds: 50),
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    final stopwatch = Stopwatch()..start();
+    while (stopwatch.elapsed < timeout) {
+      await tester.pump(step);
+      if (find.text(text).evaluate().isNotEmpty) {
+        return;
+      }
+    }
+    fail('Timed out waiting for text: $text');
+  }
+
   testWidgets(
     'startup gate preserves deep link and resumes after onboarding + auth',
     (tester) async {
@@ -119,19 +135,19 @@ void main() {
       expect(find.byType(ModalBarrier), findsAtLeastNWidgets(1));
 
       router.go('https://orymu.com/profile');
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(find.text('ROOT'), findsOneWidget);
       expect(deepLinks.pendingLocation, AppRoutes.profile);
 
       await startup.initialize();
-      await tester.pumpAndSettle();
+      await pumpUntilText(tester, 'ONBOARDING');
 
       expect(find.text('ONBOARDING'), findsOneWidget);
       expect(deepLinks.pendingLocation, AppRoutes.profile);
 
       await startup.completeOnboarding();
-      await tester.pumpAndSettle();
+      await pumpUntilText(tester, 'SIGN_IN');
 
       expect(find.text('SIGN_IN'), findsOneWidget);
       expect(deepLinks.pendingLocation, AppRoutes.profile);
@@ -152,7 +168,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpUntilText(tester, 'PROFILE');
 
       expect(find.text('PROFILE'), findsOneWidget);
       expect(deepLinks.pendingLocation, isNull);
