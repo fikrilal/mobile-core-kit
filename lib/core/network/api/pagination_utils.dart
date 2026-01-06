@@ -1,35 +1,21 @@
 import 'api_paginated_result.dart';
 
-/// Offset-oriented domain pagination view built from typed PaginationMeta.
-class DomainOffsetPagination {
-  const DomainOffsetPagination({
-    required this.total,
+/// Cursor-oriented domain pagination view.
+class DomainCursorPagination {
+  const DomainCursorPagination({
+    required this.nextCursor,
     required this.limit,
-    required this.offset,
-    required this.hasNext,
-    required this.hasPrev,
   });
 
-  final int total;
-  final int limit;
-  final int offset;
-  final bool hasNext;
-  final bool hasPrev;
+  final String? nextCursor;
+  final int? limit;
 
-  factory DomainOffsetPagination.fromMeta(PaginationMeta meta) =>
-      DomainOffsetPagination(
-        total: meta.total,
-        limit: meta.limit,
-        offset: meta.offset,
-        hasNext: meta.hasNext,
-        hasPrev: meta.hasPrev,
-      );
+  bool get hasNext => (nextCursor ?? '').isNotEmpty;
 }
 
 extension ApiPaginatedResultX<T> on ApiPaginatedResult<T> {
-  /// Converts typed PaginationMeta into a domain offset-based view.
-  DomainOffsetPagination toDomainOffsetPagination() =>
-      DomainOffsetPagination.fromMeta(pagination);
+  DomainCursorPagination toDomainCursorPagination() =>
+      DomainCursorPagination(nextCursor: nextCursor, limit: limit);
 }
 
 /// Convenience container representing a paginated domain result.
@@ -41,19 +27,19 @@ class PaginatedDomain<E, X> {
   });
 
   final List<E> items;
-  final DomainOffsetPagination pagination;
+  final DomainCursorPagination pagination;
   final X? extra; // Feature-specific metadata mapped from additionalMeta
 }
 
 /// Maps an ApiPaginatedResult to a domain-friendly structure with items,
-/// offset-based pagination, and optional feature-specific extra data.
+/// cursor-based pagination, and optional feature-specific extra data.
 PaginatedDomain<E, X> mapPaginatedResult<T, E, X>({
   required ApiPaginatedResult<T> result,
   required E Function(T) itemMapper,
   X Function(Map<String, dynamic>? additionalMeta)? extraMapper,
 }) {
   final items = result.items.map(itemMapper).toList(growable: false);
-  final pagination = result.toDomainOffsetPagination();
+  final pagination = result.toDomainCursorPagination();
   final extra = extraMapper?.call(result.additionalMeta);
   return PaginatedDomain<E, X>(
     items: items,
@@ -61,4 +47,3 @@ PaginatedDomain<E, X> mapPaginatedResult<T, E, X>({
     extra: extra,
   );
 }
-

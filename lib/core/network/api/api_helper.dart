@@ -126,13 +126,22 @@ class ApiHelper {
       );
     }
 
-    final paginationJson =
-        (listResp.meta?['pagination'] as Map<String, dynamic>? ?? {});
+    final meta = listResp.meta;
+    final nextCursor = meta?['nextCursor'] as String?;
+    final limit = (meta?['limit'] as num?)?.toInt();
+    final additionalMeta = meta == null
+        ? null
+        : (Map<String, dynamic>.from(meta)
+          ..remove('nextCursor')
+          ..remove('limit'));
 
     final paginated = ApiPaginatedResult<R>(
-      items: listResp.data ?? [],
-      pagination: PaginationMeta.fromJson(paginationJson),
-      additionalMeta: listResp.meta?..remove('pagination'),
+      items: listResp.data ?? const [],
+      nextCursor: nextCursor,
+      limit: limit,
+      additionalMeta: additionalMeta == null || additionalMeta.isEmpty
+          ? null
+          : additionalMeta,
     );
 
     return ApiResponse<ApiPaginatedResult<R>>.success(
@@ -196,13 +205,22 @@ class ApiHelper {
       );
     }
 
-    final paginationJson =
-        (listResp.meta?['pagination'] as Map<String, dynamic>? ?? {});
+    final meta = listResp.meta;
+    final nextCursor = meta?['nextCursor'] as String?;
+    final limit = (meta?['limit'] as num?)?.toInt();
+    final additionalMeta = meta == null
+        ? null
+        : (Map<String, dynamic>.from(meta)
+          ..remove('nextCursor')
+          ..remove('limit'));
 
     final paginated = ApiPaginatedResult<R>(
-      items: listResp.data ?? [],
-      pagination: PaginationMeta.fromJson(paginationJson),
-      additionalMeta: listResp.meta?..remove('pagination'),
+      items: listResp.data ?? const [],
+      nextCursor: nextCursor,
+      limit: limit,
+      additionalMeta: additionalMeta == null || additionalMeta.isEmpty
+          ? null
+          : additionalMeta,
     );
 
     return ApiResponse<ApiPaginatedResult<R>>.success(
@@ -499,59 +517,53 @@ class ApiHelper {
     T Function(dynamic)? parser,
   ) {
     final int statusCode = response.statusCode ?? -1;
+    final String? traceId = response.headers.value('x-request-id');
 
     // Handle 204 NO CONTENT ---------------------------------------------------
     if (statusCode == 204) {
       if (T == ApiNoData) {
         return ApiResponse<T>.success(
           data: const ApiNoData() as T,
+          traceId: traceId,
           statusCode: statusCode,
         );
       }
-      return ApiResponse<T>.success(data: null as T, statusCode: statusCode);
-    }
-
-    final raw = response.data;
-
-    // Use ApiResponse.fromJson only when the backend returns the standard
-    // envelope: { status: "success" | "error", data?, message?, meta?, errors? }.
-    //
-    // Important: don't treat arbitrary payloads that happen to have a `status`
-    // key (e.g. RFC7807 uses `status: 401`) as our envelope.
-    if (raw is Map &&
-        raw['status'] is String &&
-        (raw['status'] == 'success' || raw['status'] == 'error')) {
-      final T Function(dynamic) effectiveParser =
-          parser ?? (dynamic d) => d as T;
-
-      return ApiResponse<T>.fromJson(
-        raw as Map<String, dynamic>,
-        dataParser: effectiveParser,
+      return ApiResponse<T>.success(
+        data: null as T,
+        traceId: traceId,
         statusCode: statusCode,
       );
     }
 
-    // Fallback for primitive / custom bodies ---------------------------------
-    return _parseData<T>(raw, parser, statusCode);
+    final raw = response.data;
+
+    // Backend standard envelope: { data, meta? }
+    return _parseData<T>(raw, parser, statusCode, traceId);
   }
 
   ApiResponse<T> _parseData<T>(
     dynamic rawData,
     T Function(dynamic)? parser,
     int statusCode,
+    String? traceId,
   ) {
     try {
       if (parser == null && T == ApiNoData) {
         return ApiResponse<T>.success(
           data: const ApiNoData() as T,
+          traceId: traceId,
           statusCode: statusCode,
         );
       }
 
-      final dynamic effectiveRaw =
-          (rawData is Map && rawData.containsKey('data') && rawData['data'] != null)
-              ? rawData['data']
-              : rawData;
+      final Map<String, dynamic>? meta =
+          (rawData is Map && rawData['meta'] is Map)
+          ? Map<String, dynamic>.from(rawData['meta'] as Map)
+          : null;
+
+      final dynamic effectiveRaw = (rawData is Map && rawData.containsKey('data'))
+          ? rawData['data']
+          : rawData;
 
       T parsed;
 
@@ -562,10 +574,16 @@ class ApiHelper {
         parsed = effectiveRaw as T;
       }
 
-      return ApiResponse<T>.success(data: parsed, statusCode: statusCode);
+      return ApiResponse<T>.success(
+        data: parsed,
+        meta: meta,
+        traceId: traceId,
+        statusCode: statusCode,
+      );
     } catch (e) {
       return ApiResponse<T>.error(
         message: 'Failed to parse response: $e',
+        traceId: traceId,
         statusCode: statusCode,
       );
     }
