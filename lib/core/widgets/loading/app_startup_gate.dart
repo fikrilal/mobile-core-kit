@@ -346,23 +346,38 @@ class AppStartupOverlay extends StatelessWidget {
                 color: Colors.transparent,
               ),
             ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.space24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (title != null && title!.isNotEmpty) ...[
-                      AppText.titleLarge(
-                        title!,
-                        color: scheme.onSurface,
-                        textAlign: TextAlign.center,
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.space24),
+                    physics: const ClampingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                      const SizedBox(height: AppSpacing.space16),
-                    ],
-                    AppDotWave(color: scheme.primary),
-                  ],
-                ),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (title != null && title!.isNotEmpty) ...[
+                              Material(
+                                type: MaterialType.transparency,
+                                child: AppText.titleLarge(
+                                  title!,
+                                  color: scheme.onSurface,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.space16),
+                            ],
+                            AppDotWave(color: scheme.primary),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

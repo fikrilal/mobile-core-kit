@@ -104,8 +104,21 @@ Update policies in `lib/navigation/app_redirect.dart`:
 - what should be accessible before readiness (`/`, onboarding, auth routes)
 - how protected locations are captured/resumed
 
+## Android 12+ (Logo Cropping / Dark “Box” Behind Icon)
+
+Android 12+ uses the platform SplashScreen API and renders
+`android:windowSplashScreenAnimatedIcon` (`@drawable/android12splash`).
+
+Common pitfalls:
+
+- **Logo looks cropped:** the Android 12 icon is treated like an app icon (safe area/masking).
+  Use a dedicated padded asset for `flutter_native_splash.android_12.image`.
+- **Dark box behind the icon:** pre-Android 12 `launch_background.xml` often includes a centered
+  `@drawable/splash`. On Android 12+, this can render behind the system icon and look like a dark
+  square. The template includes `drawable-v31/launch_background.xml` without the centered logo to
+  avoid “double-logo” rendering.
+
 ## Tests & Verification
 
 - Startup safety: `test/core/services/app_startup/app_startup_controller_test.dart`
 - Gate behavior: `test/core/widgets/loading/app_startup_gate_test.dart`
-

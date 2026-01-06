@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../tokens/type_scale.dart';
 import '../tokens/type_weights.dart';
 import '../tokens/type_metrics.dart';
+import '../tokens/typefaces.dart';
 // No BuildContext dependency for static theme construction
 
 /// Builds complete responsive TextTheme objects for use with Flutter's theming system.
@@ -51,7 +52,7 @@ class TextThemeBuilder {
     return TextTheme(
       // Display styles
       displayLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.displayLarge,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -59,7 +60,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       displayMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.displayMedium,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -67,7 +68,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       displaySmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.displaySmall,
         fontWeight: TypeWeights.displayWeight,
         height: TypeMetrics.displayLineHeight,
@@ -77,7 +78,7 @@ class TextThemeBuilder {
 
       // Headline styles
       headlineLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.headlineLarge,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -85,7 +86,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       headlineMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.headlineMedium,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -93,7 +94,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       headlineSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.headlineSmall,
         fontWeight: TypeWeights.headlineWeight,
         height: TypeMetrics.headlineLineHeight,
@@ -103,7 +104,7 @@ class TextThemeBuilder {
 
       // Title styles
       titleLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.titleLarge,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -111,7 +112,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       titleMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.titleMedium,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -119,7 +120,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       titleSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.titleSmall,
         fontWeight: TypeWeights.titleWeight,
         height: TypeMetrics.titleLineHeight,
@@ -129,7 +130,7 @@ class TextThemeBuilder {
 
       // Body styles
       bodyLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.bodyLarge,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -137,7 +138,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       bodyMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.bodyMedium,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -145,7 +146,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       bodySmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.bodySmall,
         fontWeight: TypeWeights.bodyWeight,
         height: TypeMetrics.bodyLineHeight,
@@ -155,7 +156,7 @@ class TextThemeBuilder {
 
       // Label styles
       labelLarge: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.labelLarge,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,
@@ -163,7 +164,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       labelMedium: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.labelMedium,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,
@@ -171,7 +172,7 @@ class TextThemeBuilder {
         color: textColor,
       ),
       labelSmall: TextStyle(
-        fontFamily: 'Manrope',
+        fontFamily: Typefaces.primary,
         fontSize: TypeScale.labelSmall,
         fontWeight: TypeWeights.labelWeight,
         height: TypeMetrics.labelLineHeight,

@@ -31,7 +31,7 @@ class AppTheme {
     final baseTheme = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      fontFamily: fontFamily ?? 'Manrope',
+      fontFamily: fontFamily ?? TypographySystem.fontFamily,
     );
     return TypographySystem.applyTypography(baseTheme);
   }

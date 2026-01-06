@@ -12,6 +12,18 @@ void main() {
     );
   }
 
+  Widget wrapSized(Widget child, {required Size size, required TextScaler textScaler}) {
+    return MaterialApp(
+      theme: AppTheme.light(),
+      home: MediaQuery(
+        data: MediaQueryData(size: size, textScaler: textScaler),
+        child: Scaffold(
+          body: SizedBox(width: size.width, height: size.height, child: child),
+        ),
+      ),
+    );
+  }
+
   testWidgets('blocks interaction immediately while not ready', (tester) async {
     final ready = ValueNotifier<bool>(false);
     var tapCount = 0;
@@ -124,5 +136,17 @@ void main() {
     expect(tapCount, 1);
     ready.dispose();
   });
-}
 
+  testWidgets('startup overlay does not overflow on small screens', (tester) async {
+    await tester.pumpWidget(
+      wrapSized(
+        const AppStartupOverlay(title: 'Mobile Core Kit'),
+        size: const Size(200, 120),
+        textScaler: const TextScaler.linear(3.0),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+  });
+}

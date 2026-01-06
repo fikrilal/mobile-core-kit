@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../configs/build_config.dart';
 
-/// Centralized logging utility for the XXX app.
+/// Centralized logging utility for the app.
 ///
 /// This class provides a unified logging mechanism across all environments,
 /// with optional integration to Firebase Crashlytics for error reporting.

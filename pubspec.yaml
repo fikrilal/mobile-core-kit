@@ -60,6 +60,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -73,6 +75,7 @@ dev_dependencies:
   freezed: ^3.2.3
   json_serializable: ^6.11.2
   flutter_native_splash: 2.4.7
+  image: ^4.7.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -114,6 +117,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: InterTight
+      fonts:
+        - asset: assets/fonts/InterTight-VariableFont_wght.ttf
+        - asset: assets/fonts/InterTight-Italic-VariableFont_wght.ttf
+          style: italic
 
 flutter_native_splash:
   color: "#FFFFFF"
@@ -123,5 +132,5 @@ flutter_native_splash:
   web: false
   android_12:
     color: "#FFFFFF"
-    image: assets/logos/app/logo-icon-mono-black.png
+    image: assets/logos/app/logo-icon-mono-black-android12.png
     icon_background_color: "#FFFFFF"

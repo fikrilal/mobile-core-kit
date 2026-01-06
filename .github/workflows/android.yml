@@ -1,12 +1,11 @@
 name: Android CI & Release (template)
 
 # NOTE: This workflow is shipped as a template only.
-# It is configured to run *only* when manually triggered from the Actions tab.
-# If you want automatic runs on push (e.g., to main), uncomment the `push:` block below.
 on:
-  # push:
-  #   branches:
-  #     - main
+  pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -93,6 +92,9 @@ jobs:
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
 
+      - name: Flutter analyze
+        run: flutter analyze
+
       - name: Run unit tests
         run: flutter test
 
@@ -113,9 +115,11 @@ jobs:
           PLAY_STORE_JSON: ${{ secrets.PLAY_STORE_JSON }}
 
       - name: Build app bundle (prod)
+        if: ${{ github.event_name != 'pull_request' }}
         run: flutter build appbundle --release --flavor prod -t lib/main_prod.dart --dart-define=ENV=prod
 
       - name: Upload app bundle artifact
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: appbundle-prod-release
@@ -136,3 +140,66 @@ jobs:
       #   env:
       #     DART_DEFINES: RU5WPXByb2Q= # base64 for ENV=prod
       #   run: ./gradlew :app:publishProdReleaseBundle -Ptarget=lib/main_prod.dart -Pdart-defines=$DART_DEFINES --release-status $PLAY_RELEASE_STATUS
+
+  ios-build-test:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore env YAML configs
+        run: |
+          restore_env() {
+            local content="$1"
+            local destination="$2"
+            if [[ -z "$content" ]]; then
+              echo "Secret for $destination not provided; keeping repo copy."
+              return
+            fi
+            mkdir -p "$(dirname "$destination")"
+            printf '%s\n' "$content" > "$destination"
+            echo "Wrote $destination from secret."
+          }
+
+          restore_env "$ENV_DEV_YAML" .env/dev.yaml
+          restore_env "$ENV_STAGING_YAML" .env/staging.yaml
+          restore_env "$ENV_PROD_YAML" .env/prod.yaml
+        env:
+          ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
+          ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
+          ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+
+      - name: Restore GoogleService-Info.plist (optional)
+        run: |
+          if [[ -n "$GOOGLE_SERVICE_INFO_PLIST" ]]; then
+            printf '%s\n' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist
+            echo "Wrote ios/Runner/GoogleService-Info.plist from secret."
+          elif [[ -f ios/Runner/GoogleService-Info.plist ]]; then
+            echo "Using committed ios/Runner/GoogleService-Info.plist"
+          else
+            echo "GoogleService-Info.plist not provided; continuing (Firebase features may be disabled)."
+          fi
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Generate build config (prod env)
+        run: dart run tool/gen_config.dart --env prod
+
+      - name: Flutter analyze
+        run: flutter analyze
+
+      - name: Run unit tests
+        run: flutter test
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign -t lib/main_prod.dart --dart-define=ENV=prod

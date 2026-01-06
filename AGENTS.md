@@ -100,6 +100,11 @@ silenced with `git config core.autocrlf true`.
     - Fetch latest package docs/changelogs as needed. If internet access is restricted or fails,
       pause and ask the user for network access instead of forcing execution.
     - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
+- Record architectural changes with ADRs:
+    - Use `ADR/records/` for **template-level** architectural decisions (cross-cutting patterns, new core services, navigation/auth/deep-link strategy, DI conventions, etc.).
+    - Create a new ADR by copying `ADR/template/adr-template.md` to `ADR/records/00xx-short-title.md` (next number).
+    - ADRs are historical: do not rewrite old ADRs; if a decision changes, add a new ADR and mark the old one as superseded.
+    - Link the ADR from the relevant docs (typically under `docs/engineering/` or `docs/template/`) so adopters know the rationale.
 - Follow the engineering guides under `docs/engineering/` for architecture and implementation details:
     - `docs/engineering/project_architecture.md` — Clean Architecture + vertical slices, DI,
       navigation.
