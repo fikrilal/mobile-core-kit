@@ -65,6 +65,10 @@ AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
         return const AuthFailure.emailNotVerified();
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.invalidCredentials();
+      case ApiErrorCodes.forbidden:
+      case ApiErrorCodes.conflict:
+      case ApiErrorCodes.internal:
+        return AuthFailure.unexpected(message: failure.message);
       case ApiErrorCodes.rateLimited:
         return const AuthFailure.tooManyRequests();
     }
@@ -73,6 +77,9 @@ AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
   switch (failure.statusCode) {
     case 401:
       return const AuthFailure.invalidCredentials();
+    case 403:
+    case 409:
+      return AuthFailure.unexpected(message: failure.message);
     case 400:
       return AuthFailure.validation(failure.validationErrors ?? const []);
     case 429:

@@ -155,6 +155,7 @@ class RegisterCubit extends Cubit<RegisterState> {
   void _handleFailure(AuthFailure failure) {
     failure.map(
       network: (_) => _emitError(failure.userMessage),
+      cancelled: (_) => _emitError(failure.userMessage),
       unauthenticated: (_) => _emitError(failure.userMessage),
       emailTaken: (_) {
         emit(

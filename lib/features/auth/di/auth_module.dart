@@ -9,10 +9,11 @@ import '../../../core/session/session_repository_impl.dart';
 import '../../../core/services/analytics/analytics_tracker.dart';
 import '../data/datasource/local/dao/user_dao.dart';
 import '../data/datasource/local/auth_local_datasource.dart';
+import '../data/datasource/federated/google_firebase_auth_datasource.dart';
 import '../data/datasource/remote/auth_remote_datasource.dart';
 import '../data/repository/auth_repository_impl.dart';
 import '../domain/repository/auth_repository.dart';
-import '../domain/usecase/google_mobile_signin_usecase.dart';
+import '../domain/usecase/google_sign_in_usecase.dart';
 import '../domain/usecase/login_user_usecase.dart';
 import '../domain/usecase/logout_flow_usecase.dart';
 import '../domain/usecase/logout_user_usecase.dart';
@@ -39,10 +40,19 @@ class AuthModule {
       );
     }
 
+    if (!getIt.isRegistered<GoogleFirebaseAuthDataSource>()) {
+      getIt.registerLazySingleton<GoogleFirebaseAuthDataSource>(
+        () => GoogleFirebaseAuthDataSource(),
+      );
+    }
+
     // Repositories
     if (!getIt.isRegistered<AuthRepository>()) {
       getIt.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+        () => AuthRepositoryImpl(
+          getIt<AuthRemoteDataSource>(),
+          getIt<GoogleFirebaseAuthDataSource>(),
+        ),
       );
     }
 
@@ -77,9 +87,9 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<GoogleMobileSignInUseCase>()) {
-      getIt.registerFactory<GoogleMobileSignInUseCase>(
-        () => GoogleMobileSignInUseCase(getIt<AuthRepository>()),
+    if (!getIt.isRegistered<GoogleSignInUseCase>()) {
+      getIt.registerFactory<GoogleSignInUseCase>(
+        () => GoogleSignInUseCase(getIt<AuthRepository>()),
       );
     }
 
@@ -109,6 +119,7 @@ class AuthModule {
       getIt.registerFactory<LoginCubit>(
         () => LoginCubit(
           getIt<LoginUserUseCase>(),
+          getIt<GoogleSignInUseCase>(),
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),

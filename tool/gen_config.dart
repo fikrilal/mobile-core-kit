@@ -110,15 +110,6 @@ void main(List<String> argv) {
       ..writeln(
         'const bool _${env}AnalyticsDebugLoggingEnabled = ${boolLiteralForKey(map, 'analyticsDebugLoggingEnabled', defaultValue: false)};',
       )
-      ..writeln(
-        "const String _${env}GoogleWebClientId = ${stringLiteral(map, 'googleWebClientId')};",
-      )
-      ..writeln(
-        "const String _${env}GoogleIosClientId = ${stringLiteral(map, 'googleIosClientId')};",
-      )
-      ..writeln(
-        "const String _${env}GoogleAndroidClientId = ${stringLiteral(map, 'googleAndroidClientId')};",
-      )
       // Network logging config
       ..writeln(
         "const String _${env}NetLogMode = ${stringLiteral(map, 'netLogMode')};",

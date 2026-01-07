@@ -45,25 +45,6 @@ class BuildConfig {
     BuildEnv.prod => _prodAnalyticsDebugLoggingEnabled,
   };
 
-  /// Google OAuth Client IDs for mobile sign-in
-  static String get googleWebClientId => switch (env) {
-    BuildEnv.dev => _devGoogleWebClientId,
-    BuildEnv.stage => _stagingGoogleWebClientId,
-    BuildEnv.prod => _prodGoogleWebClientId,
-  };
-
-  static String get googleIosClientId => switch (env) {
-    BuildEnv.dev => _devGoogleIosClientId,
-    BuildEnv.stage => _stagingGoogleIosClientId,
-    BuildEnv.prod => _prodGoogleIosClientId,
-  };
-
-  static String get googleAndroidClientId => switch (env) {
-    BuildEnv.dev => _devGoogleAndroidClientId,
-    BuildEnv.stage => _stagingGoogleAndroidClientId,
-    BuildEnv.prod => _prodGoogleAndroidClientId,
-  };
-
   // ---------------- Network Logging Config ----------------
 
   /// Network log mode: off, summary, smallBodies, full

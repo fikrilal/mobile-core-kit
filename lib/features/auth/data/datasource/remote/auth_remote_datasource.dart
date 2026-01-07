@@ -9,7 +9,7 @@ import '../../model/remote/auth_session_model.dart';
 import '../../model/remote/auth_tokens_model.dart';
 import '../../model/remote/refresh_request_model.dart';
 import '../../model/remote/register_request_model.dart';
-import '../../model/remote/google_mobile_request_model.dart';
+import '../../model/remote/google_sign_in_request_model.dart';
 
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._apiHelper);
@@ -109,14 +109,14 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthSessionModel>> googleMobileSignIn(
-    GoogleMobileRequestModel requestModel,
+  Future<ApiResponse<AuthSessionModel>> googleSignIn(
+    GoogleSignInRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
-    Log.info('Google mobile sign-in (idToken.length=$len)', name: _tag);
+    Log.info('Google sign-in (Firebase ID token length=$len)', name: _tag);
 
     final response = await _apiHelper.post<AuthSessionModel>(
-      AuthEndpoint.googleMobile,
+      AuthEndpoint.google,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,

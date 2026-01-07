@@ -27,6 +27,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_enti
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
@@ -77,6 +78,7 @@ void main() {
     await startup.initialize();
 
     final loginUseCase = LoginUserUseCase(authRepo);
+    final googleUseCase = GoogleSignInUseCase(authRepo);
 
     final router = GoRouter(
       initialLocation: AppRoutes.root,
@@ -99,7 +101,8 @@ void main() {
         GoRoute(
           path: AuthRoutes.signIn,
           builder: (context, state) => BlocProvider<LoginCubit>(
-            create: (_) => LoginCubit(loginUseCase, sessionManager, analytics),
+            create:
+                (_) => LoginCubit(loginUseCase, googleUseCase, sessionManager, analytics),
             child: const SignInPage(),
           ),
         ),
@@ -248,9 +251,7 @@ class _InMemorySessionRepository implements SessionRepository {
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleMobileSignIn({
-    required String idToken,
-  }) async {
+  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
@@ -302,4 +303,3 @@ class _FakeUserRepository implements UserRepository {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 }
-

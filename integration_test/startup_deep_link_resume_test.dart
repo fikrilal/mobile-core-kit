@@ -247,9 +247,7 @@ class _InMemorySessionRepository implements SessionRepository {
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleMobileSignIn({
-    required String idToken,
-  }) async {
+  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 

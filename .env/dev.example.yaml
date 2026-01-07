@@ -2,9 +2,6 @@ core: https://dev-core.example.com/api
 auth: https://dev-auth.example.com/api
 profile: https://dev-profile.example.com/api
 enableLogging: true
-googleAndroidClientId: "YOUR_DEV_ANDROID_CLIENT_ID"
-googleWebClientId: "YOUR_DEV_WEB_CLIENT_ID"
-googleIosClientId: "YOUR_DEV_IOS_CLIENT_ID"
 reminderExperiment: false
 
 # Network logging (console-only)
@@ -13,4 +10,3 @@ netLogBodyLimitBytes: 8192
 netLogLargeThresholdBytes: 65536
 netLogSlowMs: 800
 netLogRedact: true
-

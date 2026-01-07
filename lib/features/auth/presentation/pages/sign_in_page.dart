@@ -61,12 +61,23 @@ class _SignInForm extends StatelessWidget {
               AppButton.primary(
                 text: 'Sign In',
                 isExpanded: true,
-                isLoading: state.isSubmitting,
+                isLoading: state.isSubmittingEmailPassword,
                 isDisabled: !state.canSubmit,
                 semanticLabel: 'Sign in to your account',
                 onPressed: state.canSubmit
                     ? () => context.read<LoginCubit>().submit()
                     : null,
+              ),
+              const SizedBox(height: AppSpacing.space12),
+              AppButton.outline(
+                text: 'Continue with Google',
+                isExpanded: true,
+                isLoading: state.isSubmittingGoogle,
+                isDisabled: state.isSubmitting,
+                semanticLabel: 'Continue with Google',
+                onPressed: state.isSubmitting
+                    ? null
+                    : () => context.read<LoginCubit>().signInWithGoogle(),
               ),
               const SizedBox(height: AppSpacing.space12),
               TextButton(
