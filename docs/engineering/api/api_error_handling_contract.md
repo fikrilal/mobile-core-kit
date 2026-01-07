@@ -14,36 +14,7 @@ implementation details to the UI.
 
 ## 2) Supported Error Shapes
 
-This template supports two shapes:
-
-1) **Envelope errors** (our “standard” JSON response wrapper)
-2) **RFC7807 Problem Details** (`application/problem+json`)
-
-### 2.1 Envelope error (preferred for app JSON APIs)
-
-**Response**
-
-```json
-{
-  "status": "error",
-  "code": "VALIDATION_FAILED",
-  "traceId": "332e36c9-45f7-4dcb-a9df-194d0ec8d838",
-  "message": "Validation failed",
-  "errors": [
-    { "field": "email", "code": "invalid_email", "message": "Invalid email" },
-    { "field": "password", "code": "required", "message": "Password is required" }
-  ],
-  "meta": { "requestId": "req_123" }
-}
-```
-
-Notes:
-- `status` must be a **string**: `"success"` or `"error"`.
-- `code` is a **stable machine code**. This is the main mapping key.
-- `traceId` should be stable per request and safe to share with support.
-- `errors[]` is optional; use it for field validation only.
-
-### 2.2 RFC7807 Problem Details error
+This template expects **RFC7807 Problem Details** (`application/problem+json`) for errors.
 
 This is commonly returned by API gateways, middleware, or frameworks.
 
@@ -66,10 +37,7 @@ Notes:
 
 ## 3) Validation Errors
 
-Validation can be represented either:
-
-- As an envelope error (`status: "error"`) with `code: "VALIDATION_FAILED"`, or
-- As RFC7807 with an additional `errors[]` array.
+Validation is represented as RFC7807 with an optional `errors[]` array for field-level details.
 
 **Validation error item contract**
 
@@ -131,4 +99,3 @@ Maintain a versioned catalog (OpenAPI preferred), containing:
 - `RATE_LIMITED`
 
 These codes should be kept stable because frontend mapping depends on them.
-
