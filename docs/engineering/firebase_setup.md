@@ -95,8 +95,8 @@ Both do the same thing; the flags just make the command non‑interactive.
 
 ### 3.4 Wire entrypoints to `firebase_options.dart`
 
-After running `flutterfire configure`, you can optionally simplify the main files to use the
-generated options:
+This template initializes Firebase in `bootstrapLocator()` (`lib/core/di/service_locator.dart`)
+using the generated options:
 
 ```dart
 import 'firebase_options.dart';
@@ -106,9 +106,8 @@ await Firebase.initializeApp(
 );
 ```
 
-Currently the template calls `Firebase.initializeApp()` without options and guards failures. Once
-you have `firebase_options.dart` generated, you can switch to the explicit options pattern above if
-you prefer.
+In other words, you typically **do not** need to touch `main_{env}.dart` for Firebase initialization
+unless your app requires multi-app initialization or non-default naming.
 
 ---
 

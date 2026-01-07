@@ -13,3 +13,4 @@ This folder contains **“what to change”** guides for teams cloning this repo
 - Rename & rebrand: `docs/template/rename_rebrand.md`
 - Env config: `docs/template/env_config.md`
 - Networking + backend contract: `docs/template/networking_backend_contract.md`
+- Google Sign-In: `docs/template/google_sign_in.md`

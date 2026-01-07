@@ -93,8 +93,8 @@ cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\d
 
 ## Configuration & Flavors
 
-- `.env/<env>.yaml` holds environment-specific values like API hosts, logging, analytics flags, and OAuth client IDs.
-- `tool/gen_config.dart` reads these files and generates `build_config.g.dart` used by `BuildConfig`.
+- `.env/<env>.yaml` holds environment-specific values like API hosts, logging, and analytics flags.
+- `tool/gen_config.dart` reads these files and generates `lib/core/configs/build_config_values.dart` used by `BuildConfig`.
 - Entry points:
   - `lib/main_dev.dart`
   - `lib/main_staging.dart`
@@ -102,9 +102,9 @@ cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\d
 
 Each main file:
 
-- Initializes Firebase using `firebase_options.dart`.
 - Initializes `AppConfig`, registers DI via `registerLocator()`, and bootstraps async services after the first frame via `bootstrapLocator()`.
-- Configures Crashlytics to collect only in production.
+- During `bootstrapLocator()`, initializes Firebase using `DefaultFirebaseOptions` from `firebase_options.dart`.
+- Configures Crashlytics to collect only in production (best effort).
 
 See `docs/engineering/firebase_setup.md` for full details, including how to point the template at a different Firebase project.
 

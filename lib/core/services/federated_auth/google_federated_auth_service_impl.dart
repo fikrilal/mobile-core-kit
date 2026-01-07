@@ -86,4 +86,3 @@ class GoogleFederatedAuthServiceImpl implements GoogleFederatedAuthService {
     return firebaseIdToken;
   }
 }
-
