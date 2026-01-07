@@ -1,34 +1,53 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile_core_kit/firebase_options.dart';
 
-class GoogleFirebaseAuthDataSource {
-  GoogleFirebaseAuthDataSource({
+import '../../../firebase_options.dart';
+import 'google_federated_auth_service.dart';
+
+class GoogleFederatedAuthServiceImpl implements GoogleFederatedAuthService {
+  GoogleFederatedAuthServiceImpl({
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+  }) : _firebaseAuthOverride = firebaseAuth,
+       _googleSignInOverride = googleSignIn;
 
-  final FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
+  final FirebaseAuth? _firebaseAuthOverride;
+  final GoogleSignIn? _googleSignInOverride;
+
+  late final FirebaseAuth _firebaseAuth =
+      _firebaseAuthOverride ?? FirebaseAuth.instance;
+  late final GoogleSignIn _googleSignIn =
+      _googleSignInOverride ?? GoogleSignIn.instance;
+
+  Future<void>? _firebaseInitFuture;
   Future<void>? _googleInitFuture;
+
+  Future<void> _ensureFirebaseInitialized() {
+    if (Firebase.apps.isNotEmpty) return Future.value();
+
+    final existing = _firebaseInitFuture;
+    if (existing != null) return existing;
+
+    final future = Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).then((_) {});
+    _firebaseInitFuture = future;
+    return future;
+  }
 
   Future<void> _ensureGoogleInitialized() {
     final existing = _googleInitFuture;
     if (existing != null) return existing;
+
     final future = _googleSignIn.initialize();
     _googleInitFuture = future;
     return future;
   }
 
+  @override
   Future<String?> signInAndGetFirebaseIdToken() async {
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    }
-
+    await _ensureFirebaseInitialized();
     await _ensureGoogleInitialized();
 
     final lightweightAttempt = _googleSignIn.attemptLightweightAuthentication();
@@ -44,8 +63,7 @@ class GoogleFirebaseAuthDataSource {
       rethrow;
     }
 
-    final auth = account.authentication;
-    final idToken = auth.idToken;
+    final idToken = account.authentication.idToken;
     if (idToken == null) {
       throw StateError('Google sign-in did not return tokens.');
     }
@@ -68,3 +86,4 @@ class GoogleFirebaseAuthDataSource {
     return firebaseIdToken;
   }
 }
+

@@ -13,6 +13,8 @@ import '../services/connectivity/connectivity_service_impl.dart';
 import '../services/analytics/analytics_service.dart';
 import '../services/analytics/analytics_service_impl.dart';
 import '../services/analytics/analytics_tracker.dart';
+import '../services/federated_auth/google_federated_auth_service.dart';
+import '../services/federated_auth/google_federated_auth_service_impl.dart';
 import '../services/app_launch/app_launch_service.dart';
 import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
@@ -128,6 +130,12 @@ void registerLocator() {
     );
   }
 
+  if (!locator.isRegistered<GoogleFederatedAuthService>()) {
+    locator.registerLazySingleton<GoogleFederatedAuthService>(
+      () => GoogleFederatedAuthServiceImpl(),
+    );
+  }
+
   // Network logging config (must be initialized before ApiClient)
   NetworkLogConfig.initFromBuildConfig();
 
@@ -233,9 +241,11 @@ Future<void> _initializeFirebaseCrashlyticsAndIntl() async {
   final metrics = StartupMetrics.instance;
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
     metrics.mark(StartupMilestone.firebaseInitialized);
   } catch (e, st) {
     Log.error('Failed to initialize Firebase', e, st, false, 'DI');

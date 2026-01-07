@@ -13,13 +13,13 @@ import '../../../../../core/network/api/api_response_either.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../../domain/entity/register_request_entity.dart';
 import '../error/auth_failure_mapper.dart';
-import '../datasource/federated/google_firebase_auth_datasource.dart';
+import '../../../../../core/services/federated_auth/google_federated_auth_service.dart';
 import '../model/remote/google_sign_in_request_model.dart';
 import '../../../../core/utilities/log_utils.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
-  final GoogleFirebaseAuthDataSource _googleAuth;
+  final GoogleFederatedAuthService _googleAuth;
 
   AuthRepositoryImpl(this._remote, this._googleAuth);
 

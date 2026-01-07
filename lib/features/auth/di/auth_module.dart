@@ -7,9 +7,9 @@ import '../../../core/session/session_manager.dart';
 import '../../../core/session/session_repository.dart';
 import '../../../core/session/session_repository_impl.dart';
 import '../../../core/services/analytics/analytics_tracker.dart';
+import '../../../core/services/federated_auth/google_federated_auth_service.dart';
 import '../data/datasource/local/dao/user_dao.dart';
 import '../data/datasource/local/auth_local_datasource.dart';
-import '../data/datasource/federated/google_firebase_auth_datasource.dart';
 import '../data/datasource/remote/auth_remote_datasource.dart';
 import '../data/repository/auth_repository_impl.dart';
 import '../domain/repository/auth_repository.dart';
@@ -40,18 +40,12 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<GoogleFirebaseAuthDataSource>()) {
-      getIt.registerLazySingleton<GoogleFirebaseAuthDataSource>(
-        () => GoogleFirebaseAuthDataSource(),
-      );
-    }
-
     // Repositories
     if (!getIt.isRegistered<AuthRepository>()) {
       getIt.registerLazySingleton<AuthRepository>(
         () => AuthRepositoryImpl(
           getIt<AuthRemoteDataSource>(),
-          getIt<GoogleFirebaseAuthDataSource>(),
+          getIt<GoogleFederatedAuthService>(),
         ),
       );
     }
