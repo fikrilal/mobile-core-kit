@@ -89,19 +89,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, String?>> logout(
-    RefreshRequestEntity request,
-  ) async {
-    final apiRequest = RefreshRequestModel.fromEntity(request);
+  Future<Either<AuthFailure, Unit>> revokeSessions() async {
     try {
-      final apiResponse = await _remote.logout(apiRequest);
-      final message = apiResponse.message;
+      final apiResponse = await _remote.revokeSessions();
       return apiResponse
-          .toEitherWithFallback('Logout failed.')
+          .toEitherWithFallback('Revoke sessions failed.')
           .mapLeft(mapAuthFailure)
-          .map((_) => message);
+          .map((_) => unit);
     } catch (e, st) {
-      Log.error('Logout unexpected error', e, st, true, 'AuthRepository');
+      Log.error('Revoke sessions unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
     }
   }

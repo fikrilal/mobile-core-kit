@@ -1,28 +1,25 @@
 import '../../../../core/session/session_manager.dart';
-import '../entity/refresh_request_entity.dart';
-import 'logout_user_usecase.dart';
+import 'revoke_sessions_usecase.dart';
 
 /// Orchestrates a full logout flow:
-/// 1) best-effort remote logout (revoke refresh token)
+/// 1) best-effort remote session revocation (logout all devices)
 /// 2) always clear local session
 class LogoutFlowUseCase {
   LogoutFlowUseCase({
-    required LogoutUserUseCase logoutUser,
+    required RevokeSessionsUseCase revokeSessions,
     required SessionManager sessionManager,
-  }) : _logoutUser = logoutUser,
+  }) : _revokeSessions = revokeSessions,
        _sessionManager = sessionManager;
 
-  final LogoutUserUseCase _logoutUser;
+  final RevokeSessionsUseCase _revokeSessions;
   final SessionManager _sessionManager;
 
   Future<void> call({String reason = 'manual_logout'}) async {
-    final refreshToken = _sessionManager.session?.tokens.refreshToken;
+    final accessToken = _sessionManager.session?.tokens.accessToken;
 
-    if (refreshToken != null && refreshToken.isNotEmpty) {
+    if (accessToken != null && accessToken.isNotEmpty) {
       try {
-        await _logoutUser(
-          RefreshRequestEntity(refreshToken: refreshToken),
-        );
+        await _revokeSessions();
       } catch (_) {
         // Remote logout is best-effort; local session is always cleared.
       }
@@ -31,4 +28,3 @@ class LogoutFlowUseCase {
     await _sessionManager.logout(reason: reason);
   }
 }
-

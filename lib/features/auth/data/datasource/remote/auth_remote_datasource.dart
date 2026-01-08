@@ -86,23 +86,20 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<ApiNoData>> logout(
-    RefreshRequestModel requestModel,
-  ) async {
-    Log.info('Logging out user', name: _tag);
+  Future<ApiResponse<ApiNoData>> revokeSessions() async {
+    Log.info('Revoking all sessions for current user', name: _tag);
 
     final response = await _apiHelper.post<ApiNoData>(
-      AuthEndpoint.logout,
-      data: requestModel.toJson(),
+      AuthEndpoint.revokeSessions,
       host: ApiHost.auth,
-      requiresAuth: false,
+      requiresAuth: true,
       throwOnError: false,
       parser: (_) => const ApiNoData(),
     );
 
     if (response.isError) {
       Log.warning(
-        'Logout failed (status=${response.statusCode}): ${response.message}',
+        'Revoke sessions failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }

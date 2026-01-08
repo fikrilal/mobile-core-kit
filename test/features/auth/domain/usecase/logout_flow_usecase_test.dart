@@ -4,25 +4,20 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/logout_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/revoke_sessions_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
-class _MockLogoutUserUseCase extends Mock implements LogoutUserUseCase {}
+class _MockRevokeSessionsUseCase extends Mock implements RevokeSessionsUseCase {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(const RefreshRequestEntity(refreshToken: 'refresh'));
-  });
-
   group('LogoutFlowUseCase', () {
     test('calls remote logout (best-effort) then clears local session', () async {
-      final logoutUser = _MockLogoutUserUseCase();
-      when(() => logoutUser(any())).thenAnswer((_) async => right(null));
+      final revokeSessions = _MockRevokeSessionsUseCase();
+      when(() => revokeSessions()).thenAnswer((_) async => right(unit));
 
       final sessionManager = _MockSessionManager();
       when(() => sessionManager.session).thenReturn(
@@ -41,22 +36,22 @@ void main() {
       ).thenAnswer((_) async {});
 
       final usecase = LogoutFlowUseCase(
-        logoutUser: logoutUser,
+        revokeSessions: revokeSessions,
         sessionManager: sessionManager,
       );
 
       await usecase(reason: 'manual_logout');
 
       verifyInOrder([
-        () => logoutUser(const RefreshRequestEntity(refreshToken: 'refresh_123')),
+        () => revokeSessions(),
         () => sessionManager.logout(reason: 'manual_logout'),
       ]);
     });
 
     test('still clears local session when remote logout returns failure', () async {
-      final logoutUser = _MockLogoutUserUseCase();
+      final revokeSessions = _MockRevokeSessionsUseCase();
       when(
-        () => logoutUser(any()),
+        () => revokeSessions(),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
 
       final sessionManager = _MockSessionManager();
@@ -75,7 +70,7 @@ void main() {
       ).thenAnswer((_) async {});
 
       final usecase = LogoutFlowUseCase(
-        logoutUser: logoutUser,
+        revokeSessions: revokeSessions,
         sessionManager: sessionManager,
       );
 
@@ -85,7 +80,7 @@ void main() {
     });
 
     test('skips remote logout when there is no session', () async {
-      final logoutUser = _MockLogoutUserUseCase();
+      final revokeSessions = _MockRevokeSessionsUseCase();
       final sessionManager = _MockSessionManager();
 
       when(() => sessionManager.session).thenReturn(null);
@@ -94,15 +89,14 @@ void main() {
       ).thenAnswer((_) async {});
 
       final usecase = LogoutFlowUseCase(
-        logoutUser: logoutUser,
+        revokeSessions: revokeSessions,
         sessionManager: sessionManager,
       );
 
       await usecase(reason: 'manual_logout');
 
-      verifyNever(() => logoutUser(any()));
+      verifyNever(() => revokeSessions());
       verify(() => sessionManager.logout(reason: 'manual_logout')).called(1);
     });
   });
 }
-

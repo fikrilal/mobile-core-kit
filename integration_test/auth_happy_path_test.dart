@@ -278,8 +278,8 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, String?>> logout(RefreshRequestEntity request) async {
-    return right(null);
+  Future<Either<AuthFailure, Unit>> revokeSessions() async {
+    return right(unit);
   }
 
   @override

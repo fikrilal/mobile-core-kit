@@ -166,7 +166,7 @@ final updateResponse = await _apiHelper.put<UserRemoteModel>(
 
 // Logout (no response body expected)
 final logoutResponse = await _apiHelper.post<void>(
-  '/auth/logout',
+  '/auth/sessions/revoke',
   host: ApiHost.auth,
   // No parser needed for void response
 );

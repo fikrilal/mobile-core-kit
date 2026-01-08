@@ -259,7 +259,7 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, String?>> logout(RefreshRequestEntity request) async {
+  Future<Either<AuthFailure, Unit>> revokeSessions() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 

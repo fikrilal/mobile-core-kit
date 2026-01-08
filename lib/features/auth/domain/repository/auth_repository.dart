@@ -19,7 +19,10 @@ abstract class AuthRepository {
     RefreshRequestEntity request,
   );
 
-  Future<Either<AuthFailure, String?>> logout(RefreshRequestEntity request);
+  /// Revoke all server-side sessions for the current user.
+  ///
+  /// Backend: `POST /v1/auth/sessions/revoke` (204 No Content, requires Bearer access token).
+  Future<Either<AuthFailure, Unit>> revokeSessions();
 
   /// Sign in with Google via Firebase Auth, then exchange the Firebase ID token
   /// with the backend to obtain an app session (access/refresh tokens).

@@ -16,7 +16,7 @@ import '../domain/repository/auth_repository.dart';
 import '../domain/usecase/google_sign_in_usecase.dart';
 import '../domain/usecase/login_user_usecase.dart';
 import '../domain/usecase/logout_flow_usecase.dart';
-import '../domain/usecase/logout_user_usecase.dart';
+import '../domain/usecase/revoke_sessions_usecase.dart';
 import '../domain/usecase/refresh_token_usecase.dart';
 import '../domain/usecase/register_user_usecase.dart';
 import '../presentation/cubit/login/login_cubit.dart';
@@ -69,9 +69,9 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<LogoutUserUseCase>()) {
-      getIt.registerFactory<LogoutUserUseCase>(
-        () => LogoutUserUseCase(getIt<AuthRepository>()),
+    if (!getIt.isRegistered<RevokeSessionsUseCase>()) {
+      getIt.registerFactory<RevokeSessionsUseCase>(
+        () => RevokeSessionsUseCase(getIt<AuthRepository>()),
       );
     }
 
@@ -102,7 +102,7 @@ class AuthModule {
     if (!getIt.isRegistered<LogoutFlowUseCase>()) {
       getIt.registerFactory<LogoutFlowUseCase>(
         () => LogoutFlowUseCase(
-          logoutUser: getIt<LogoutUserUseCase>(),
+          revokeSessions: getIt<RevokeSessionsUseCase>(),
           sessionManager: getIt<SessionManager>(),
         ),
       );
