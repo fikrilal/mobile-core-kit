@@ -14,12 +14,14 @@ class LogoutFlowUseCase {
   final RevokeSessionsUseCase _revokeSessions;
   final SessionManager _sessionManager;
 
+  static const Duration _remoteRevokeTimeout = Duration(seconds: 5);
+
   Future<void> call({String reason = 'manual_logout'}) async {
     final accessToken = _sessionManager.session?.tokens.accessToken;
 
     if (accessToken != null && accessToken.isNotEmpty) {
       try {
-        await _revokeSessions();
+        await _revokeSessions().timeout(_remoteRevokeTimeout);
       } catch (_) {
         // Remote logout is best-effort; local session is always cleared.
       }

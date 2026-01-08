@@ -19,6 +19,7 @@ import '../domain/usecase/logout_flow_usecase.dart';
 import '../domain/usecase/revoke_sessions_usecase.dart';
 import '../domain/usecase/refresh_token_usecase.dart';
 import '../domain/usecase/register_user_usecase.dart';
+import '../presentation/cubit/logout/logout_cubit.dart';
 import '../presentation/cubit/login/login_cubit.dart';
 import '../presentation/cubit/register/register_cubit.dart';
 
@@ -127,6 +128,12 @@ class AuthModule {
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),
+      );
+    }
+
+    if (!getIt.isRegistered<LogoutCubit>()) {
+      getIt.registerFactory<LogoutCubit>(
+        () => LogoutCubit(getIt<LogoutFlowUseCase>()),
       );
     }
   }
