@@ -9,12 +9,15 @@ import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_state.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
 class _MockLoginUserUseCase extends Mock implements LoginUserUseCase {}
+
+class _MockGoogleSignInUseCase extends Mock implements GoogleSignInUseCase {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
@@ -38,11 +41,13 @@ void main() {
 
   group('LoginCubit', () {
     late _MockLoginUserUseCase loginUser;
+    late _MockGoogleSignInUseCase googleSignIn;
     late _MockSessionManager sessionManager;
     late _MockAnalyticsTracker analytics;
 
     setUp(() {
       loginUser = _MockLoginUserUseCase();
+      googleSignIn = _MockGoogleSignInUseCase();
       sessionManager = _MockSessionManager();
       analytics = _MockAnalyticsTracker();
 
@@ -60,7 +65,7 @@ void main() {
     });
 
     test('emits field errors and does not call usecase when invalid', () async {
-      final cubit = LoginCubit(loginUser, sessionManager, analytics);
+      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
@@ -97,7 +102,7 @@ void main() {
       );
       when(() => loginUser(any())).thenAnswer((_) async => right(session));
 
-      final cubit = LoginCubit(loginUser, sessionManager, analytics);
+      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
@@ -108,7 +113,12 @@ void main() {
 
       expect(emitted.length, 4);
       expect(emitted[2].status, LoginStatus.submitting);
+      expect(
+        emitted[2].submittingMethod,
+        LoginSubmitMethod.emailPassword,
+      );
       expect(emitted[3].status, LoginStatus.success);
+      expect(emitted[3].submittingMethod, isNull);
 
       final captured = verify(() => loginUser(captureAny())).captured;
       expect(captured.length, 1);
@@ -129,7 +139,7 @@ void main() {
         () => loginUser(any()),
       ).thenAnswer((_) async => left(const AuthFailure.invalidCredentials()));
 
-      final cubit = LoginCubit(loginUser, sessionManager, analytics);
+      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
@@ -156,4 +166,3 @@ void main() {
     });
   });
 }
-

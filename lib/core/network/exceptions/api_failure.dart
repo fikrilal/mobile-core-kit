@@ -33,7 +33,9 @@ class ApiFailure implements Exception {
     final data = response?.data;
     String message = response?.statusMessage ?? e.message ?? 'Unknown error';
     String? code;
-    String? traceId;
+    String? traceId =
+        response?.headers.value('x-request-id') ??
+        response?.headers.value('X-Request-Id');
 
     List<ValidationError>? validationErrors;
     if (data is Map && data['errors'] is List) {

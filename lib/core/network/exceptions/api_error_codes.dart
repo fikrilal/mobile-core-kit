@@ -11,6 +11,15 @@ class ApiErrorCodes {
   /// Authentication/authorization failure.
   static const String unauthorized = 'UNAUTHORIZED';
 
+  /// Authorization failure.
+  static const String forbidden = 'FORBIDDEN';
+
+  /// Conflict (e.g. duplicate resource).
+  static const String conflict = 'CONFLICT';
+
+  /// Internal server error.
+  static const String internal = 'INTERNAL';
+
   /// Rate-limit exceeded.
   static const String rateLimited = 'RATE_LIMITED';
 }

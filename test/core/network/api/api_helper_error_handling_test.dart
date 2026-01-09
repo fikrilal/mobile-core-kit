@@ -125,28 +125,26 @@ void main() {
       expect(failure.traceId, traceId);
     });
 
-    test('envelope errors carry code/traceId and throw ApiFailure when throwOnError=true', () async {
+    test('throws ApiFailure for RFC7807 errors when throwOnError=true', () async {
       final dio = Dio()
         ..interceptors.add(
           InterceptorsWrapper(
             onRequest: (options, handler) {
-              handler.resolve(
-                Response<dynamic>(
+              handler.reject(
+                DioException(
                   requestOptions: options,
-                  statusCode: 200,
-                  data: <String, dynamic>{
-                    'status': 'error',
-                    'code': 'VALIDATION_FAILED',
-                    'traceId': 'trace-789',
-                    'message': 'Validation failed',
-                    'errors': [
-                      {
-                        'field': 'email',
-                        'code': 'invalid_email',
-                        'message': 'Invalid email',
-                      },
-                    ],
-                  },
+                  response: Response<dynamic>(
+                    requestOptions: options,
+                    statusCode: 422,
+                    data: <String, dynamic>{
+                      'type': 'about:blank',
+                      'title': 'Validation failed',
+                      'status': 422,
+                      'code': 'VALIDATION_FAILED',
+                      'traceId': 'trace-789',
+                    },
+                  ),
+                  type: DioExceptionType.badResponse,
                 ),
               );
             },
@@ -158,8 +156,8 @@ void main() {
         connectivity: _FakeConnectivityService(isConnected: true),
       );
 
-      expect(
-        () => api.getOne<Map<String, dynamic>>(
+      await expectLater(
+        api.getOne<Map<String, dynamic>>(
           '/anything',
           parser: (json) => json,
           checkConnectivity: false,
@@ -174,4 +172,3 @@ void main() {
     });
   });
 }
-

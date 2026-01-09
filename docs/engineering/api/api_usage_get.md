@@ -6,50 +6,41 @@ This guide standardizes how to call GET endpoints via `ApiHelper` and map result
 
 - `getOne<T>` — The endpoint returns a single item under `data` (object envelope).
 - `getList<T>` — The endpoint returns a plain array under `data` and may include non‑pagination `meta`.
-- `getPaginated<T>` — The endpoint returns an array under `data` and `meta.pagination` (page‑ or offset‑based). Prefer this whenever pagination is present.
+- `getPaginated<T>` — The endpoint returns an array under `data` with cursor pagination in `meta.nextCursor` (and optionally `meta.limit`). Prefer this whenever cursor pagination is present.
 
 ## Expected Envelopes
 
 Success — single item (getOne):
 ```json
-{
-  "status": "success",
-  "data": { /* item */ },
-  "message": "optional",
-  "meta": { /* optional */ }
-}
+{ "data": { /* item */ }, "meta": { /* optional */ } }
 ```
 
 Success — list (getList/getPaginated):
 ```json
-{
-  "status": "success",
-  "data": [ { /* item */ } ],
-  "meta": {
-    /* optional extras */
-    "pagination": { /* present only for getPaginated */ }
-  }
-}
+{ "data": [ { /* item */ } ], "meta": { /* optional */ } }
 ```
 
-Error (any):
+Error (any, RFC7807 `application/problem+json`):
 ```json
 {
-  "status": "error",
-  "message": "Human‑readable error",
-  "errors": [ { "field": "...", "message": "...", "code": "..." } ]
+  "type": "about:blank",
+  "title": "Validation failed",
+  "status": 422,
+  "detail": "Optional detail",
+  "code": "VALIDATION_FAILED",
+  "traceId": "req_123"
 }
 ```
 
 Notes
-- `ApiHelper` parses the envelope into `ApiResponse<T>` (`status`, `data`, `message`, `meta`, `errors`, `statusCode`).
-- `getPaginated` transforms the envelope into `ApiResponse<ApiPaginatedResult<T>>` with typed `pagination` and `additionalMeta` (which is `meta` without `pagination`).
+- `ApiHelper` parses the success envelope into `ApiResponse<T>` with `data`, optional `meta`, and `traceId` (from `X-Request-Id`).
+- For HTTP errors, Dio throws; with `throwOnError: false`, `ApiHelper` returns an `ApiResponse.error(...)` synthesized from RFC7807.
+- `getPaginated` transforms cursor meta into `ApiResponse<ApiPaginatedResult<T>>` (`nextCursor`, `limit`, `additionalMeta`).
 
 ## Core Types
 
 - `ApiResponse<T>` — Success/error wrapper used across the Data layer.
-- `ApiPaginatedResult<T>` — Items + `PaginationMeta` + `additionalMeta`.
-- `PaginationMeta` — Supports both page‑ and offset‑based schemas (see `api_pagination_offset_support.md`).
+- `ApiPaginatedResult<T>` — Items + cursor pagination (`nextCursor`, `limit`) + `additionalMeta`.
 - `ApiResponseEitherX.toEitherWithFallback` — Converts ApiResponse → Either<ApiFailure, T>.
 
 ## Pattern — getOne (Single Item)
@@ -86,7 +77,7 @@ extension ReviewSummaryModelX on ReviewSummaryModel {
 
 ## Pattern — getList (Plain Array)
 
-Use when the endpoint returns an array under `data` with no `meta.pagination`.
+Use when the endpoint returns an array under `data` with no cursor pagination (`meta.nextCursor`).
 
 Remote:
 ```dart
@@ -111,11 +102,11 @@ return resp
 
 Notes
 - `ApiResponse.meta` is preserved but not typed; use only when you truly don’t need pagination.
-- If `meta.pagination` exists, migrate to `getPaginated` for typed pagination.
+- If cursor pagination exists (`meta.nextCursor`), migrate to `getPaginated` for typed pagination.
 
 ## Pattern — getPaginated (Typed Pagination)
 
-Prefer this whenever `meta.pagination` exists (page‑ or offset‑based). Example: book reviews list.
+Prefer this whenever cursor pagination exists (`meta.nextCursor`). Example: cursor-based lists.
 
 Remote (VO‑driven):
 ```dart
@@ -139,7 +130,7 @@ return resp
 ```
 
 Pagination helpers
-- `PaginationMetaX.offset` and `result.toDomainOffsetPagination()` avoid recomputing offsets.
+- Use `result.nextCursor` as the cursor for the next request.
 - Use `result.additionalMeta` for feature extras (e.g., `workId`, `filters`).
 
 ## VO‑Driven Queries
@@ -148,7 +139,7 @@ Keep query inputs as domain VOs and provide a small mapper in `data/mapper/` to 
 ```dart
 Map<String, dynamic> bookReviewsQueryToMap(ReviewCommentsQuery q) => {
   'limit': q.limit,
-  'offset': q.offset,
+  'cursor': q.cursor,
   'sortBy': q.sortBy.toJson(),
   'sortOrder': q.sortOrder.toJson(),
   'visibility': q.visibility.toJson(),
@@ -187,8 +178,8 @@ DiscoverFailure _mapApiFailure(ApiFailure f) {
 
 ## Anti‑Patterns
 
-- Reading `resp.meta['pagination']` after `getPaginated` — it’s moved to `result.pagination` and removed from `additionalMeta`.
-- Building pagination maps manually in repositories — rely on typed `PaginationMeta`.
+- Reading cursor pagination from `resp.meta` after `getPaginated` — use `result.nextCursor` / `result.limit`.
+- Building pagination maps manually in repositories — rely on `ApiPaginatedResult` fields.
 - Passing raw query maps from repositories — serialize VO in the datasource (or a `mapper/`).
 - Doing side effects in widget `build` — use `BlocListener` or a single‑subscription effects stream.
 
@@ -202,8 +193,7 @@ DiscoverFailure _mapApiFailure(ApiFailure f) {
 ## See Also
 
 - api_usage_post.md — POST variants and patterns.
-- api_usage_get_paginated.md — Deep dive on typed pagination and offset support.
+- api_usage_get_paginated.md — Deep dive on cursor pagination.
 - data_domain_guide.md — Layer responsibilities and canonical patterns.
 - ui_state_architecture.md — State + effects patterns for presentation.
-- api_pagination_offset_support.md — Offset‑aware pagination details.
-
+- api_pagination_cursor_support.md — Cursor pagination details.

@@ -7,17 +7,19 @@ import '../../../core/session/session_manager.dart';
 import '../../../core/session/session_repository.dart';
 import '../../../core/session/session_repository_impl.dart';
 import '../../../core/services/analytics/analytics_tracker.dart';
+import '../../../core/services/federated_auth/google_federated_auth_service.dart';
 import '../data/datasource/local/dao/user_dao.dart';
 import '../data/datasource/local/auth_local_datasource.dart';
 import '../data/datasource/remote/auth_remote_datasource.dart';
 import '../data/repository/auth_repository_impl.dart';
 import '../domain/repository/auth_repository.dart';
-import '../domain/usecase/google_mobile_signin_usecase.dart';
+import '../domain/usecase/google_sign_in_usecase.dart';
 import '../domain/usecase/login_user_usecase.dart';
 import '../domain/usecase/logout_flow_usecase.dart';
-import '../domain/usecase/logout_user_usecase.dart';
+import '../domain/usecase/revoke_sessions_usecase.dart';
 import '../domain/usecase/refresh_token_usecase.dart';
 import '../domain/usecase/register_user_usecase.dart';
+import '../presentation/cubit/logout/logout_cubit.dart';
 import '../presentation/cubit/login/login_cubit.dart';
 import '../presentation/cubit/register/register_cubit.dart';
 
@@ -42,7 +44,10 @@ class AuthModule {
     // Repositories
     if (!getIt.isRegistered<AuthRepository>()) {
       getIt.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+        () => AuthRepositoryImpl(
+          getIt<AuthRemoteDataSource>(),
+          getIt<GoogleFederatedAuthService>(),
+        ),
       );
     }
 
@@ -65,9 +70,9 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<LogoutUserUseCase>()) {
-      getIt.registerFactory<LogoutUserUseCase>(
-        () => LogoutUserUseCase(getIt<AuthRepository>()),
+    if (!getIt.isRegistered<RevokeSessionsUseCase>()) {
+      getIt.registerFactory<RevokeSessionsUseCase>(
+        () => RevokeSessionsUseCase(getIt<AuthRepository>()),
       );
     }
 
@@ -77,9 +82,9 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<GoogleMobileSignInUseCase>()) {
-      getIt.registerFactory<GoogleMobileSignInUseCase>(
-        () => GoogleMobileSignInUseCase(getIt<AuthRepository>()),
+    if (!getIt.isRegistered<GoogleSignInUseCase>()) {
+      getIt.registerFactory<GoogleSignInUseCase>(
+        () => GoogleSignInUseCase(getIt<AuthRepository>()),
       );
     }
 
@@ -98,7 +103,7 @@ class AuthModule {
     if (!getIt.isRegistered<LogoutFlowUseCase>()) {
       getIt.registerFactory<LogoutFlowUseCase>(
         () => LogoutFlowUseCase(
-          logoutUser: getIt<LogoutUserUseCase>(),
+          revokeSessions: getIt<RevokeSessionsUseCase>(),
           sessionManager: getIt<SessionManager>(),
         ),
       );
@@ -109,6 +114,7 @@ class AuthModule {
       getIt.registerFactory<LoginCubit>(
         () => LoginCubit(
           getIt<LoginUserUseCase>(),
+          getIt<GoogleSignInUseCase>(),
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),
@@ -122,6 +128,12 @@ class AuthModule {
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),
+      );
+    }
+
+    if (!getIt.isRegistered<LogoutCubit>()) {
+      getIt.registerFactory<LogoutCubit>(
+        () => LogoutCubit(getIt<LogoutFlowUseCase>()),
       );
     }
   }

@@ -13,13 +13,15 @@ import '../../../../../core/network/api/api_response_either.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../../domain/entity/register_request_entity.dart';
 import '../error/auth_failure_mapper.dart';
-import '../model/remote/google_mobile_request_model.dart';
+import '../../../../../core/services/federated_auth/google_federated_auth_service.dart';
+import '../model/remote/google_sign_in_request_model.dart';
 import '../../../../core/utilities/log_utils.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
+  final GoogleFederatedAuthService _googleAuth;
 
-  AuthRepositoryImpl(this._remote);
+  AuthRepositoryImpl(this._remote, this._googleAuth);
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> register(
@@ -87,41 +89,39 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, String?>> logout(
-    RefreshRequestEntity request,
-  ) async {
-    final apiRequest = RefreshRequestModel.fromEntity(request);
+  Future<Either<AuthFailure, Unit>> revokeSessions() async {
     try {
-      final apiResponse = await _remote.logout(apiRequest);
-      final message = apiResponse.message;
+      final apiResponse = await _remote.revokeSessions();
       return apiResponse
-          .toEitherWithFallback('Logout failed.')
+          .toEitherWithFallback('Revoke sessions failed.')
           .mapLeft(mapAuthFailure)
-          .map((_) => message);
+          .map((_) => unit);
     } catch (e, st) {
-      Log.error('Logout unexpected error', e, st, true, 'AuthRepository');
+      Log.error('Revoke sessions unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
     }
   }
 
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleMobileSignIn({
-    required String idToken,
-  }) async {
-    final apiRequest = GoogleMobileRequestModel(idToken);
+  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
     try {
+      final idToken = await _googleAuth.signInAndGetFirebaseIdToken();
+      if (idToken == null) return left(const AuthFailure.cancelled());
+
       Log.debug(
-        'Exchanging Google ID token (length=${idToken.length})',
+        'Exchanging Firebase ID token (length=${idToken.length})',
         name: 'AuthRepository',
       );
-      final apiResponse = await _remote.googleMobileSignIn(apiRequest);
+
+      final apiRequest = GoogleSignInRequestModel(idToken);
+      final apiResponse = await _remote.googleSignIn(apiRequest);
       return apiResponse
           .toEitherWithFallback('Google sign-in failed.')
           .mapLeft(mapAuthFailureForGoogle)
           .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
-        'Unexpected error during Google mobile exchange',
+        'Unexpected error during Google sign-in',
         e,
         st,
         true,

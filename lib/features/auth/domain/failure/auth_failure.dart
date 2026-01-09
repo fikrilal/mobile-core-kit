@@ -6,6 +6,8 @@ part 'auth_failure.freezed.dart';
 @freezed
 sealed class AuthFailure with _$AuthFailure {
   const factory AuthFailure.network() = _NetworkFailure;
+  /// User intentionally cancelled a sign-in flow (e.g. dismiss Google account picker).
+  const factory AuthFailure.cancelled() = _CancelledFailure;
   /// Session is missing/expired or the user is not authenticated.
   ///
   /// Use this for protected endpoints that return 401 (e.g. `GET /users/me`),
@@ -26,6 +28,7 @@ extension AuthFailureX on AuthFailure {
   /// Human-readable message for generic snackbars, dialogs, etc.
   String get userMessage => when(
     network: () => 'Please check your internet connection and try again.',
+    cancelled: () => 'Sign-in cancelled.',
     unauthenticated: () => 'Session expired. Please sign in again.',
     emailTaken: () => 'Email already in use.',
     emailNotVerified: () => 'Please verify your email before continuing.',

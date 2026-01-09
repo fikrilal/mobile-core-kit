@@ -9,6 +9,8 @@ enum LoginStatus {
   failure,
 }
 
+enum LoginSubmitMethod { emailPassword, google }
+
 @freezed
 abstract class LoginState with _$LoginState {
   const factory LoginState({
@@ -18,11 +20,18 @@ abstract class LoginState with _$LoginState {
     String? passwordError,
     String? errorMessage,
     @Default(LoginStatus.initial) LoginStatus status,
+    LoginSubmitMethod? submittingMethod,
   }) = _LoginState;
 
   const LoginState._();
 
   bool get isSubmitting => status == LoginStatus.submitting;
+
+  bool get isSubmittingEmailPassword =>
+      isSubmitting && submittingMethod == LoginSubmitMethod.emailPassword;
+
+  bool get isSubmittingGoogle =>
+      isSubmitting && submittingMethod == LoginSubmitMethod.google;
 
   bool get canSubmit =>
       !isSubmitting &&
@@ -33,4 +42,3 @@ abstract class LoginState with _$LoginState {
 
   factory LoginState.initial() => const LoginState();
 }
-

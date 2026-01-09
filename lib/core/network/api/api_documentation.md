@@ -10,8 +10,8 @@
 
 - **Single place** to enforce timeouts, headers, base‑url routing, connectivity checks, and Crashlytics logging.
 - **Explicit contracts** (`getOne`, `getList`, `getPaginated`) remove guess‑work and type‑casts.
-- **Backend aligned** - Matches your Express.js ResponseUtils structure perfectly.
-- **Structured errors** - Field-level validation errors for form handling.
+- **Backend aligned** - Matches a `{ data, meta? }` success envelope and RFC7807 Problem Details errors.
+- **Structured errors** - Preserves `code` + `traceId` for programmatic handling and support/debug workflows.
 
 ---
 
@@ -22,73 +22,51 @@
 | `ApiHelper`             | Thin facade around Dio + interceptors. Provides the 6 public entry points below.                  |
 | `ApiResponse<T>`        | Success / Error wrapper with structured validation errors and metadata.                           |
 | `ValidationError`       | Field-specific error for form validation (field, message, code).                                  |
-| `ApiPaginatedResult<T>` | Strongly‑typed container with boolean pagination flags (hasNext/hasPrev).                         |
-| `PaginationMeta`        | Structured pagination info (page, limit, total, totalPages, hasNext, hasPrev).                    |
+| `ApiPaginatedResult<T>` | Cursor pagination container with `items`, `nextCursor`, `limit`, and optional extra meta.         |
 | `ItemParser<R>`         | `typedef ItemParser<R> = R Function(Map<String,dynamic> json)` – one raw JSON object → one model. |
 
 ---
 
 ## 3. Backend Response Structure
 
-Your API responses follow this consistent envelope:
+This template assumes a **success envelope** and **RFC7807 errors**.
 
-### Success Response
+### 3.1 Success Response (`application/json`)
 
 ```json
 {
-  "status": "success",
   "data": {
     /* your actual data */
   },
-  "message": "Optional success message",
   "meta": {
-    "pagination": {
-      /* for paginated responses */
-    },
-    "requestId": "req_123"
-    /* any additional metadata */
+    /* optional metadata (cursor pagination, etc.) */
   }
 }
 ```
 
-### Error Response
+### 3.2 Error Response (`application/problem+json`)
 
 ```json
 {
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Email is required",
-      "code": "REQUIRED"
-    },
-    {
-      "field": "password",
-      "message": "Password must be at least 8 characters",
-      "code": "MIN_LENGTH"
-    }
-  ]
+  "type": "about:blank",
+  "title": "Validation failed",
+  "status": 422,
+  "detail": "Optional detail",
+  "code": "VALIDATION_FAILED",
+  "traceId": "req_123"
 }
 ```
 
-### Paginated Response
+### 3.3 Cursor-paginated Response
 
 ```json
 {
-  "status": "success",
   "data": [
     /* array of items */
   ],
   "meta": {
-    "pagination": {
-      "page": 1,
-      "limit": 20,
-      "total": 156,
-      "totalPages": 8,
-      "hasNext": true,
-      "hasPrev": false
-    }
+    "nextCursor": "cursor_or_null",
+    "limit": 25
   }
 }
 ```
@@ -188,7 +166,7 @@ final updateResponse = await _apiHelper.put<UserRemoteModel>(
 
 // Logout (no response body expected)
 final logoutResponse = await _apiHelper.post<void>(
-  '/auth/logout',
+  '/auth/sessions/revoke',
   host: ApiHost.auth,
   // No parser needed for void response
 );

@@ -1,15 +1,15 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'google_mobile_request_model.dart';
+part of 'google_sign_in_request_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_GoogleMobileRequestModel _$GoogleMobileRequestModelFromJson(
+_GoogleSignInRequestModel _$GoogleSignInRequestModelFromJson(
   Map<String, dynamic> json,
-) => _GoogleMobileRequestModel(json['idToken'] as String);
+) => _GoogleSignInRequestModel(json['idToken'] as String);
 
-Map<String, dynamic> _$GoogleMobileRequestModelToJson(
-  _GoogleMobileRequestModel instance,
+Map<String, dynamic> _$GoogleSignInRequestModelToJson(
+  _GoogleSignInRequestModel instance,
 ) => <String, dynamic>{'idToken': instance.idToken};

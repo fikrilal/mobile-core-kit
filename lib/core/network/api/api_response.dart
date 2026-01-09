@@ -1,4 +1,3 @@
-import 'no_data.dart';
 import '../../validation/validation_error.dart';
 
 class ApiResponse<T> {
@@ -57,85 +56,9 @@ class ApiResponse<T> {
     statusCode: statusCode,
   );
 
-  factory ApiResponse.loading() => ApiResponse._(status: 'loading');
-
-  // Factory constructor from JSON (matching backend structure)
-  factory ApiResponse.fromJson(
-    Map<String, dynamic> json, {
-    T Function(dynamic)? dataParser,
-    int? statusCode,
-  }) {
-    final status = json['status'] as String;
-    final code = json['code'] as String?;
-    final traceId = json['traceId'] as String?;
-
-    if (status == 'success') {
-      final rawData = json['data'];
-      if (rawData == null) {
-        // Allow success without data only for ApiNoData responses (e.g., logout)
-        if (T == ApiNoData) {
-          return ApiResponse.success(
-            data: const ApiNoData() as T,
-            message: json['message'],
-            code: code,
-            traceId: traceId,
-            meta: json['meta'] as Map<String, dynamic>?,
-            statusCode: statusCode,
-          );
-        }
-        return ApiResponse.error(
-          message: 'No data received in successful response',
-          code: code,
-          traceId: traceId,
-          statusCode: statusCode,
-        );
-      }
-
-      final parsedData = dataParser != null
-          ? dataParser(rawData)
-          : rawData as T?;
-
-      if (parsedData == null) {
-        return ApiResponse.error(
-          message: 'Failed to parse response data',
-          code: code,
-          traceId: traceId,
-          statusCode: statusCode,
-        );
-      }
-
-      return ApiResponse.success(
-        data: parsedData as T,
-        message: json['message'],
-        code: code,
-        traceId: traceId,
-        meta: json['meta'] as Map<String, dynamic>?,
-        statusCode: statusCode,
-      );
-    } else {
-      // Parse validation errors if present
-      List<ValidationError>? validationErrors;
-      if (json['errors'] != null) {
-        validationErrors = (json['errors'] as List)
-            .map((e) => ValidationError.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
-
-      return ApiResponse.error(
-        message: json['message'],
-        code: code,
-        traceId: traceId,
-        errors: validationErrors,
-        meta: json['meta'] as Map<String, dynamic>?,
-        statusCode: statusCode,
-      );
-    }
-  }
-
   // Convenience getters
   bool get isSuccess => status == 'success';
   bool get isError => status == 'error';
-  bool get isLoading => status == 'loading';
 
   // Get first validation error for a specific field
   ValidationError? getFieldError(String field) {

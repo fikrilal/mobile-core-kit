@@ -55,13 +55,6 @@ Used by `BuildConfig.apiUrl(ApiHost.*)`:
 - `analyticsEnabledDefault` (bool) — controls `BuildConfig.analyticsEnabledDefault`
 - `analyticsDebugLoggingEnabled` (bool) — controls `BuildConfig.analyticsDebugLoggingEnabled`
 
-### Google OAuth Client IDs (placeholders by default)
-
-These map to:
-- `googleWebClientId` → `BuildConfig.googleWebClientId`
-- `googleIosClientId` → `BuildConfig.googleIosClientId`
-- `googleAndroidClientId` → `BuildConfig.googleAndroidClientId`
-
 ### Network logging (console-only)
 
 These map to:
@@ -87,4 +80,3 @@ Use the verify script:
 `dart run tool/verify.dart --env dev`
 
 This runs config generation + analyze + tests, and will fail if `.env/<env>.yaml` is missing/empty.
-

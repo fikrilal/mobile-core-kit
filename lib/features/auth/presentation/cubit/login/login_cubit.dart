@@ -10,6 +10,7 @@ import '../../../analytics/auth_analytics_targets.dart';
 import '../../../domain/entity/login_request_entity.dart';
 import '../../../domain/entity/auth_session_entity.dart';
 import '../../../domain/failure/auth_failure.dart';
+import '../../../domain/usecase/google_sign_in_usecase.dart';
 import '../../../domain/usecase/login_user_usecase.dart';
 import '../../../domain/value/email_address.dart';
 import '../../../domain/value/login_password.dart';
@@ -19,11 +20,13 @@ import 'login_state.dart';
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(
     this._loginUser,
+    this._googleSignIn,
     this._sessionManager,
     this._analytics,
   ) : super(LoginState.initial());
 
   final LoginUserUseCase _loginUser;
+  final GoogleSignInUseCase _googleSignIn;
   final SessionManager _sessionManager;
   final AnalyticsTracker _analytics;
 
@@ -106,6 +109,7 @@ class LoginCubit extends Cubit<LoginState> {
     emit(
       state.copyWith(
         status: LoginStatus.submitting,
+        submittingMethod: LoginSubmitMethod.emailPassword,
         errorMessage: null,
       ),
     );
@@ -122,7 +126,52 @@ class LoginCubit extends Cubit<LoginState> {
         _handleFailure(failure);
       },
       (user) async {
-        await _handleSuccess(user);
+        await _handleSuccess(user, method: 'email_password');
+      },
+    );
+  }
+
+  Future<void> signInWithGoogle() async {
+    if (state.isSubmitting) return;
+
+    unawaited(
+      _analytics.trackButtonClick(
+        id: AuthAnalyticsTargets.signInWithGoogle,
+        screen: AuthAnalyticsScreens.signIn,
+      ),
+    );
+
+    emit(
+      state.copyWith(
+        status: LoginStatus.submitting,
+        submittingMethod: LoginSubmitMethod.google,
+        errorMessage: null,
+      ),
+    );
+
+    final result = await _googleSignIn();
+    result.match(
+      (failure) {
+        final isCancelled = failure.maybeWhen(
+          cancelled: () => true,
+          orElse: () => false,
+        );
+
+        if (isCancelled) {
+          emit(
+            state.copyWith(
+              status: LoginStatus.initial,
+              submittingMethod: null,
+              errorMessage: null,
+            ),
+          );
+          return;
+        }
+
+        _handleFailure(failure);
+      },
+      (session) async {
+        await _handleSuccess(session, method: 'google');
       },
     );
   }
@@ -130,6 +179,7 @@ class LoginCubit extends Cubit<LoginState> {
   void _handleFailure(AuthFailure failure) {
     failure.map(
       network: (_) => _emitError(failure.userMessage),
+      cancelled: (_) => _emitError(failure.userMessage),
       unauthenticated: (_) => _emitError(failure.userMessage),
       emailTaken: (_) => _emitError(failure.userMessage),
       emailNotVerified: (_) => _emitError(failure.userMessage),
@@ -161,7 +211,10 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
-  Future<void> _handleSuccess(AuthSessionEntity session) async {
+  Future<void> _handleSuccess(
+    AuthSessionEntity session, {
+    required String method,
+  }) async {
     await _sessionManager.login(session);
 
     /// EXAMPLE: login success event with a generic method label.
@@ -169,7 +222,7 @@ class LoginCubit extends Cubit<LoginState> {
     /// / `setUserProperty` in a privacy-aware place if needed.
     unawaited(
       _analytics.trackLogin(
-        method: 'email_password',
+        method: method,
       ),
     );
 
@@ -177,6 +230,7 @@ class LoginCubit extends Cubit<LoginState> {
       state.copyWith(
         status: LoginStatus.success,
         errorMessage: null,
+        submittingMethod: null,
       ),
     );
   }
@@ -186,6 +240,7 @@ class LoginCubit extends Cubit<LoginState> {
       state.copyWith(
         status: LoginStatus.failure,
         errorMessage: message,
+        submittingMethod: null,
       ),
     );
   }

@@ -4,50 +4,49 @@ This guide standardizes how to call POST endpoints using `ApiHelper` and map res
 
 ## When To Use
 
-- Use `post` for typical JSON POST endpoints that return a single object in the envelope `{ status, data, meta?, message? }`.
+- Use `post` for typical JSON POST endpoints that return a single object in the success envelope `{ data, meta? }`.
 - Use `postFlexible` when the `data` payload can be a Map or List, or when you want to parse the raw `data` dynamically.
-- Use `postPaginated` for POST endpoints that return a list under `data` and `meta.pagination` (e.g., filtered searches that POST a body).
+- Use `postPaginated` for POST endpoints that return a list under `data` and cursor pagination in `meta.nextCursor` (e.g., filtered searches that POST a body).
 
 ## Expected Response Envelope
 
 Success envelope (single item):
 ```json
 {
-  "status": "success",
   "data": { /* typed item */ },
-  "message": "...",
   "meta": { /* optional */ }
 }
 ```
 
-Error envelope:
+Error (RFC7807 `application/problem+json`):
 ```json
 {
-  "status": "error",
-  "message": "Human-readable error",
-  "errors": [
-    { "field": "rating", "message": "Must be 1..5", "code": "range" }
-  ],
-  "meta": { /* optional */ }
+  "type": "about:blank",
+  "title": "Validation failed",
+  "status": 422,
+  "detail": "Optional detail",
+  "code": "VALIDATION_FAILED",
+  "traceId": "req_123"
 }
 ```
 
 Notes:
-- `ApiHelper` parses this envelope into `ApiResponse<T>`; on success it calls your `parser` to produce typed `T`.
+- `ApiHelper` parses the success envelope into `ApiResponse<T>` and preserves `meta`.
+- For HTTP errors, Dio throws; with `throwOnError: false`, `ApiHelper` returns an `ApiResponse.error(...)` synthesized from RFC7807.
 - For paginated POSTs, prefer `postPaginated` which returns `ApiResponse<ApiPaginatedResult<T>>`.
 
 ## Core Types Recap
 
-- `ApiResponse<T>`: status, data, message, meta, errors, statusCode.
+- `ApiResponse<T>`: data, meta, traceId, statusCode (and error fields when `throwOnError: false`).
 - `ApiFailure`: exception used internally/optionally surfaced; includes `statusCode` and `validationErrors`.
 - `ApiResponseEitherX.toEitherWithFallback(...)`: maps `ApiResponse<T>` → `Either<ApiFailure, T>`.
-- `ApiPaginatedResult<T>`: typed list + `PaginationMeta` + `additionalMeta` (meta without `pagination`).
+- `ApiPaginatedResult<T>`: typed list + cursor pagination (`nextCursor`, `limit`) + `additionalMeta` (meta without cursor keys).
 
 ## Choosing the Right Method
 
 - `post<T>`: Standard typed POST. Provide a `parser: (json) => T.fromJson(...)` when `data` is a JSON object.
 - `postFlexible<T>`: When `data` might vary (Map or List), or you want to parse the raw `data` without forcing a Map cast.
-- `postPaginated<T>`: When the POST endpoint returns a list plus pagination inside `meta.pagination`.
+- `postPaginated<T>`: When the POST endpoint returns a list plus cursor pagination inside `meta.nextCursor`.
 
 ## Pattern — Data Layer (VO-driven, typed)
 
@@ -211,7 +210,7 @@ final resp = await _apiHelper.postFlexible<ReviewCommentModel>(
 
 ## POST + Pagination (`postPaginated`)
 
-When a POST returns a list with `meta.pagination`, prefer `postPaginated<T>` to get a typed `ApiPaginatedResult<T>`:
+When a POST returns a list with cursor pagination (`meta.nextCursor`), prefer `postPaginated<T>` to get a typed `ApiPaginatedResult<T>`:
 ```dart
 final resp = await _apiHelper.postPaginated<ItemModel>(
   '/items/search',
@@ -219,8 +218,9 @@ final resp = await _apiHelper.postPaginated<ItemModel>(
   data: criteria.toJson(),
   itemParser: (j) => ItemModel.fromJson(Map<String, dynamic>.from(j)),
 );
-// resp.data!.pagination => PaginationMeta
-// resp.data!.additionalMeta => meta minus pagination
+// resp.data!.nextCursor => cursor for next request (or null)
+// resp.data!.limit => server limit (if provided)
+// resp.data!.additionalMeta => meta minus cursor fields
 ```
 
 ## Validation & Error Handling
@@ -258,13 +258,12 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - Use VO-driven DTOs; keep model→entity mapping in model files.
 - Replace manual error parsing with `toEitherWithFallback()` + failure mapping.
 - Prefer `post` with typed `parser`. Use `postFlexible` only when payloads vary significantly.
-- For lists with pagination, use `postPaginated` and consume `PaginationMeta`.
+- For lists with cursor pagination, use `postPaginated` and consume `nextCursor` / `limit`.
 
 ## See Also
 
 - api_usage_get_paginated.md — Typed pagination usage for GET/POST lists.
-- api_pagination_offset_support.md — Offset-aware pagination details.
+- api_pagination_cursor_support.md — Cursor pagination details.
 - data_domain_guide.md — Layer responsibilities and canonical patterns.
 - ui_state_architecture.md — State + effects patterns for presentation.
 - validation_architecture.md — VO-driven validation and final gate.
-
