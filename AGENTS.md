@@ -127,13 +127,12 @@ silenced with `git config core.autocrlf true`.
 - Prefer using `fvm` for Flutter/Dart commands as pinned in `.fvmrc`. If you don’t use FVM, replace
   `fvm flutter` with `flutter` and `fvm dart` with `dart`.
 - When working inside WSL, run Flutter/Dart via the Windows toolchain to avoid CRLF shim issues. The
-  SDK is typically at: `D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin` (adjust if your install differs).
-    - Prefer repo-pinned SDK to avoid machine-specific paths:
-      - `cmd.exe /C "cd /d D:\\Development\\_CORE\\mobile-core-kit && .fvm\\flutter_sdk\\bin\\flutter.bat analyze"`
-      - `cmd.exe /C "cd /d D:\\Development\\_CORE\\mobile-core-kit && .fvm\\flutter_sdk\\bin\\dart.bat run build_runner build --delete-conflicting-outputs"`
-    - Or use your global FVM SDK directly:
-      - `cmd.exe /C D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin\\flutter.bat analyze`
-      - `cmd.exe /C D:\\DEV\\SDK\\Flutter\\fvm\\versions\\3.38.4\\bin\\dart.bat run build_runner build --delete-conflicting-outputs`
+  toolchain wrappers are provided in `tool/agent/` (recommended):
+    - Flutter: `tool/agent/flutterw` (reads `.fvmrc`, runs Windows `flutter.bat`)
+    - Dart: `tool/agent/dartw` (reads `.fvmrc`, runs Windows `dart.bat`)
+    - Example: `tool/agent/flutterw analyze`
+    - Example: `tool/agent/dartw run build_runner build --delete-conflicting-outputs`
+    - Override defaults via `WIN_FVM_VERSIONS_DIR`, `WIN_FLUTTER_BIN`, `WIN_DART_BIN`.
 - Always run lint/analyze after making changes to catch errors early:
     - `fvm flutter analyze` (or the WSL/Windows command shown above)
 - If analyze/lint or other commands fail due to environment or permission constraints, do not force
