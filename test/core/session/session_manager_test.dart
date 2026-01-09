@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,9 +20,7 @@ class _MockRefreshTokenUsecase extends Mock implements RefreshTokenUsecase {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(
-      const RefreshRequestEntity(refreshToken: 'refresh'),
-    );
+    registerFallbackValue(const RefreshRequestEntity(refreshToken: 'refresh'));
     registerFallbackValue(
       AuthSessionEntity(
         tokens: const AuthTokensEntity(
@@ -43,9 +43,9 @@ void main() {
         when(() => repo.clearSession()).thenAnswer((_) async {});
 
         final refreshUsecase = _MockRefreshTokenUsecase();
-        when(() => refreshUsecase(any())).thenAnswer(
-          (_) async => left(const AuthFailure.unauthenticated()),
-        );
+        when(
+          () => refreshUsecase(any()),
+        ).thenAnswer((_) async => left(const AuthFailure.unauthenticated()));
 
         final events = AppEventBus();
         final emitted = <AppEvent>[];
@@ -101,9 +101,9 @@ void main() {
       when(() => repo.clearSession()).thenAnswer((_) async {});
 
       final refreshUsecase = _MockRefreshTokenUsecase();
-      when(() => refreshUsecase(any())).thenAnswer(
-        (_) async => left(const AuthFailure.network()),
-      );
+      when(
+        () => refreshUsecase(any()),
+      ).thenAnswer((_) async => left(const AuthFailure.network()));
 
       final events = AppEventBus();
       final emitted = <AppEvent>[];
@@ -130,9 +130,18 @@ void main() {
       final ok = await manager.refreshTokens();
       expect(ok, false);
       expect(manager.session, isNotNull);
-      expect(manager.session?.tokens.accessToken, initialSession.tokens.accessToken);
-      expect(manager.session?.tokens.refreshToken, initialSession.tokens.refreshToken);
-      expect(manager.session?.tokens.expiresIn, initialSession.tokens.expiresIn);
+      expect(
+        manager.session?.tokens.accessToken,
+        initialSession.tokens.accessToken,
+      );
+      expect(
+        manager.session?.tokens.refreshToken,
+        initialSession.tokens.refreshToken,
+      );
+      expect(
+        manager.session?.tokens.expiresIn,
+        initialSession.tokens.expiresIn,
+      );
       expect(manager.session?.user, initialSession.user);
 
       verifyNever(() => repo.clearSession());
@@ -155,9 +164,9 @@ void main() {
         tokenType: 'Bearer',
         expiresIn: 900,
       );
-      when(() => refreshUsecase(any())).thenAnswer(
-        (_) async => right(newTokens),
-      );
+      when(
+        () => refreshUsecase(any()),
+      ).thenAnswer((_) async => right(newTokens));
 
       final events = AppEventBus();
       final manager = SessionManager(
@@ -200,5 +209,66 @@ void main() {
       events.dispose();
       manager.dispose();
     });
+
+    test(
+      'does not persist tokens if session is cleared during refresh',
+      () async {
+        final repo = _MockSessionRepository();
+        when(() => repo.saveSession(any())).thenAnswer((_) async {});
+        when(() => repo.clearSession()).thenAnswer((_) async {});
+
+        final refreshCompleter =
+            Completer<Either<AuthFailure, AuthTokensEntity>>();
+        final refreshUsecase = _MockRefreshTokenUsecase();
+        when(
+          () => refreshUsecase(any()),
+        ).thenAnswer((_) => refreshCompleter.future);
+
+        final events = AppEventBus();
+        final manager = SessionManager(
+          repo,
+          refreshUsecase: refreshUsecase,
+          events: events,
+        );
+
+        await manager.login(
+          AuthSessionEntity(
+            tokens: const AuthTokensEntity(
+              accessToken: 'access_old',
+              refreshToken: 'refresh_old',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            user: const UserEntity(id: 'u1', email: 'user@example.com'),
+          ),
+        );
+
+        final refreshFuture = manager.refreshTokens();
+        await Future<void>.delayed(Duration.zero);
+
+        await manager.logout(reason: 'manual_logout');
+
+        refreshCompleter.complete(
+          right(
+            const AuthTokensEntity(
+              accessToken: 'access_new',
+              refreshToken: 'refresh_new',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+          ),
+        );
+
+        final ok = await refreshFuture;
+        expect(ok, false);
+        expect(manager.session, isNull);
+
+        final captured = verify(() => repo.saveSession(captureAny())).captured;
+        expect(captured.length, 1); // login only; refresh must not persist
+
+        events.dispose();
+        manager.dispose();
+      },
+    );
   });
 }

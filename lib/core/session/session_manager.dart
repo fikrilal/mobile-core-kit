@@ -65,7 +65,8 @@ class SessionManager {
 
   AuthSessionEntity? get session => _currentSession;
   bool get isAuthenticated => _currentSession != null;
-  bool get isAuthPending => _currentSession != null && _currentSession!.user == null;
+  bool get isAuthPending =>
+      _currentSession != null && _currentSession!.user == null;
   Stream<AuthSessionEntity?> get stream => _sessionController.stream;
   String? get accessToken => _currentSession?.tokens.accessToken;
   DateTime? get accessTokenExpiresAt => _currentSession?.tokens.expiresAt;
@@ -76,6 +77,7 @@ class SessionManager {
     if (expiresAt == null) return false;
     return DateTime.now().isAfter(expiresAt.subtract(_accessTokenExpiryLeeway));
   }
+
   ValueListenable<AuthSessionEntity?> get sessionNotifier => _sessionNotifier;
 
   void dispose() {
@@ -160,6 +162,7 @@ class SessionManager {
   Future<bool> refreshTokens() async {
     final current = _currentSession;
     if (current == null) return false;
+    final refreshTokenAtStart = current.tokens.refreshToken;
     Log.debug('Refreshing tokens…', name: 'SessionManager');
     final result = await _refreshTokenUsecase(
       RefreshRequestEntity(refreshToken: current.tokens.refreshToken),
@@ -192,11 +195,15 @@ class SessionManager {
         return false;
       },
       (tokens) async {
-        Log.debug(
-          'Refresh success. Tokens updated.',
-          name: 'SessionManager',
-        );
-        final updated = _attachTokens(current, tokens);
+        // Guard against races: if the session was cleared or replaced (e.g. user
+        // logged out or switched accounts) while refresh was in-flight, do not
+        // persist the refreshed tokens.
+        final latest = _currentSession;
+        if (latest == null) return false;
+        if (latest.tokens.refreshToken != refreshTokenAtStart) return false;
+
+        Log.debug('Refresh success. Tokens updated.', name: 'SessionManager');
+        final updated = _attachTokens(latest, tokens);
         await _repository.saveSession(updated);
         Log.debug('Session persisted after refresh', name: 'SessionManager');
         _currentSession = updated;
