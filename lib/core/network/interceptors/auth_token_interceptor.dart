@@ -12,7 +12,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
   Completer<bool>? _refreshCompleter;
   static const String _requiresAuthKey = 'requiresAuth';
   static const String _allowAuthRetryKey = 'allowAuthRetry';
-  static const Set<String> _defaultRetryMethods = {'GET', 'HEAD'};
+  static const String _retriedKey = 'retried';
 
   bool _requiresAuth(dio.RequestOptions options) {
     final value = options.extra[_requiresAuthKey];
@@ -22,12 +22,11 @@ class AuthTokenInterceptor extends dio.Interceptor {
   }
 
   bool _allowAuthRetry(dio.RequestOptions options) {
-    final method = options.method.toUpperCase();
-    if (_defaultRetryMethods.contains(method)) return true;
-
     final value = options.extra[_allowAuthRetryKey];
     if (value is bool) return value;
-    return false;
+    // Backend contract: a 401 is enforced pre-handler (no side effects), so it is
+    // safe to refresh and retry once by default even for writes.
+    return true;
   }
 
   @override
@@ -36,7 +35,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
     dio.RequestInterceptorHandler handler,
   ) async {
     if (_requiresAuth(options)) {
-      if (options.extra['retried'] != true &&
+      if (options.extra[_retriedKey] != true &&
           _session.isAccessTokenExpiringSoon) {
         try {
           await _refreshOnce();
@@ -85,7 +84,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
 
     if (statusCode == 401 &&
         _requiresAuth(err.requestOptions) &&
-        err.requestOptions.extra['retried'] != true &&
+        err.requestOptions.extra[_retriedKey] != true &&
         _allowAuthRetry(err.requestOptions)) {
       try {
         final refreshResult = await _refreshOnce();
@@ -93,7 +92,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
         if (refreshResult) {
           // clone original request with new token
           final dio.RequestOptions opts = err.requestOptions;
-          opts.extra['retried'] = true;
+          opts.extra[_retriedKey] = true;
           opts.headers['Authorization'] = 'Bearer ${_session.accessToken}';
           final dio.Dio client = getIt<ApiClient>().dio;
           try {

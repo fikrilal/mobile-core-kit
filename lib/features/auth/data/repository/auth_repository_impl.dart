@@ -74,7 +74,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final apiResponse = await _remote.refreshToken(apiRequest);
       return apiResponse
           .toEitherWithFallback('Token refresh failed.')
-          .mapLeft(mapAuthFailure)
+          .mapLeft(mapAuthFailureForRefresh)
           .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(

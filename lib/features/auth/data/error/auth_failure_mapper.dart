@@ -19,6 +19,10 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       case AuthErrorCodes.invalidCredentials:
         return const AuthFailure.invalidCredentials();
       case AuthErrorCodes.invalidRefreshToken:
+      case AuthErrorCodes.refreshTokenInvalid:
+      case AuthErrorCodes.refreshTokenExpired:
+      case AuthErrorCodes.refreshTokenReused:
+      case AuthErrorCodes.sessionRevoked:
         return const AuthFailure.unauthenticated();
       case AuthErrorCodes.emailNotVerified:
         return const AuthFailure.emailNotVerified();
@@ -47,6 +51,20 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       }
       return const AuthFailure.unexpected();
   }
+}
+
+/// Mapping for refresh token calls.
+///
+/// Backend contract:
+/// - Refresh tokens rotate only on a successful 200 refresh.
+/// - Refresh reuse detection is strict, so if the client cannot prove whether
+///   the refresh succeeded (e.g., timeout/no response), it must fail closed and
+///   force re-auth to avoid accidental reuse.
+AuthFailure mapAuthFailureForRefresh(ApiFailure failure) {
+  // Unknown outcome: DioException with no response will produce `statusCode == null`.
+  // Treat as session-fatal to avoid retrying a potentially rotated refresh token.
+  if (failure.statusCode == null) return const AuthFailure.unauthenticated();
+  return mapAuthFailure(failure);
 }
 
 /// Mapping for Google token exchange.

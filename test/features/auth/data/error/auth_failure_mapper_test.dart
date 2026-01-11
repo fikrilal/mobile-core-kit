@@ -36,7 +36,7 @@ void main() {
       expect(mapAuthFailure(failure), const AuthFailure.invalidCredentials());
     });
 
-    test('maps INVALID_REFRESH_TOKEN to unauthenticated', () {
+    test('maps legacy INVALID_REFRESH_TOKEN to unauthenticated', () {
       final failure = ApiFailure(
         message: 'Invalid refresh token',
         statusCode: 401,
@@ -44,6 +44,24 @@ void main() {
       );
 
       expect(mapAuthFailure(failure), const AuthFailure.unauthenticated());
+    });
+
+    test('maps AUTH_REFRESH_TOKEN_* codes to unauthenticated', () {
+      const codes = [
+        AuthErrorCodes.refreshTokenInvalid,
+        AuthErrorCodes.refreshTokenExpired,
+        AuthErrorCodes.refreshTokenReused,
+        AuthErrorCodes.sessionRevoked,
+      ];
+
+      for (final code in codes) {
+        final failure = ApiFailure(
+          message: 'Refresh failed',
+          statusCode: 401,
+          code: code,
+        );
+        expect(mapAuthFailure(failure), const AuthFailure.unauthenticated());
+      }
     });
 
     test('maps EMAIL_NOT_VERIFIED to emailNotVerified', () {
@@ -110,6 +128,18 @@ void main() {
     test('maps unexpected status to unexpected() (fallback)', () {
       final failure = ApiFailure(message: 'weird', statusCode: 418);
       expect(mapAuthFailure(failure), const AuthFailure.unexpected());
+    });
+  });
+
+  group('mapAuthFailureForRefresh', () {
+    test('treats null statusCode as unauthenticated (fail closed)', () {
+      final failure = ApiFailure(message: 'timeout/no response');
+      expect(mapAuthFailureForRefresh(failure), const AuthFailure.unauthenticated());
+    });
+
+    test('does not treat offline (-1) as unauthenticated', () {
+      final failure = ApiFailure(message: 'No internet connection', statusCode: -1);
+      expect(mapAuthFailureForRefresh(failure), const AuthFailure.network());
     });
   });
 

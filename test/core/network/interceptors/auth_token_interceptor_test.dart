@@ -133,7 +133,46 @@ void main() {
     verify(() => session.refreshTokens()).called(1);
   });
 
-  test('does not refresh/retry POST on 401 by default', () async {
+  test('retries POST on 401 by default', () async {
+    final session = _MockSessionManager();
+    var token = 'access_old';
+    when(() => session.accessToken).thenAnswer((_) => token);
+    when(() => session.refreshTokens()).thenAnswer((_) async {
+      token = 'access_new';
+      return true;
+    });
+    when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
+
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+    var calls = 0;
+    dio.httpClientAdapter = _FakeAdapter((options) async {
+      calls += 1;
+      final statusCode = calls == 1 ? 401 : 200;
+      return ResponseBody.fromString(
+        jsonEncode({'ok': true}),
+        statusCode,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    });
+
+    final apiClient = _MockApiClient();
+    when(() => apiClient.dio).thenReturn(dio);
+
+    locator.registerSingleton<SessionManager>(session);
+    locator.registerSingleton<ApiClient>(apiClient);
+
+    dio.interceptors.add(AuthTokenInterceptor());
+
+    final response = await dio.post('/protected', data: {'x': 1});
+
+    expect(response.statusCode, 200);
+    verify(() => session.refreshTokens()).called(1);
+    expect(calls, 2);
+  });
+
+  test('does not retry POST on 401 when allowAuthRetry is false', () async {
     final session = _MockSessionManager();
     when(() => session.accessToken).thenReturn('access_old');
     when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
@@ -160,7 +199,11 @@ void main() {
     dio.interceptors.add(AuthTokenInterceptor());
 
     await expectLater(
-      dio.post('/protected', data: {'x': 1}),
+      dio.post(
+        '/protected',
+        data: {'x': 1},
+        options: Options(extra: {'allowAuthRetry': false}),
+      ),
       throwsA(
         isA<DioException>().having(
           (e) => e.response?.statusCode,
@@ -172,45 +215,6 @@ void main() {
 
     verifyNever(() => session.refreshTokens());
     expect(calls, 1);
-  });
-
-  test('retries POST on 401 when allowAuthRetry is true', () async {
-    final session = _MockSessionManager();
-    when(() => session.refreshTokens()).thenAnswer((_) async => true);
-    when(() => session.accessToken).thenReturn('access_new');
-    when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
-
-    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
-    var calls = 0;
-    dio.httpClientAdapter = _FakeAdapter((options) async {
-      calls += 1;
-      final statusCode = calls == 1 ? 401 : 200;
-      return ResponseBody.fromString(
-        jsonEncode({'ok': true}),
-        statusCode,
-        headers: {
-          Headers.contentTypeHeader: [Headers.jsonContentType],
-        },
-      );
-    });
-
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
-
-    final response = await dio.post(
-      '/protected',
-      data: {'x': 1},
-      options: Options(extra: {'allowAuthRetry': true}),
-    );
-
-    expect(response.statusCode, 200);
-    verify(() => session.refreshTokens()).called(1);
-    expect(calls, 2);
   });
 
   test(
