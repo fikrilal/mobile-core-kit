@@ -90,6 +90,10 @@ cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\d
 - `tool/` – scripts like `gen_config.dart` for generating `BuildConfig`.
 - `docs/engineering/` – core architecture and implementation guides.
 - `docs/template/` – template customization guides (what to change when cloning).
+- `docs/contracts/` – cross-team/backend contracts (API/auth semantics, error codes).
+- `docs/explainers/` – deep dives on “how it works” (feature internals, complex flows).
+
+Docs index: `docs/README.md`.
 
 ## Configuration & Flavors
 
