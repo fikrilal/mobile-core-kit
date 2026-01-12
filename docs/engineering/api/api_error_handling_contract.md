@@ -88,14 +88,16 @@ Maintain a versioned catalog (OpenAPI preferred), containing:
 
 `POST /v1/auth/password/login`
 - `VALIDATION_FAILED`
-- `INVALID_CREDENTIALS`
-- `EMAIL_NOT_VERIFIED`
+- `AUTH_INVALID_CREDENTIALS`
+- `AUTH_USER_SUSPENDED`
 - `RATE_LIMITED`
 
-`POST /v1/auth/password/refresh`
+`POST /v1/auth/refresh`
 - `VALIDATION_FAILED`
-- `INVALID_REFRESH_TOKEN`
-- `EMAIL_NOT_VERIFIED`
-- `RATE_LIMITED`
+- `AUTH_REFRESH_TOKEN_INVALID`
+- `AUTH_REFRESH_TOKEN_EXPIRED`
+- `AUTH_REFRESH_TOKEN_REUSED`
+- `AUTH_SESSION_REVOKED`
+- `AUTH_USER_SUSPENDED`
 
 These codes should be kept stable because frontend mapping depends on them.

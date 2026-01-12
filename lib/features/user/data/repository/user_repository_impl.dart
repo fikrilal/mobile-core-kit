@@ -53,6 +53,7 @@ class UserRepositoryImpl implements UserRepository {
       case 500:
         return const AuthFailure.serverError();
       case -1:
+      case -2:
         return const AuthFailure.network();
       default:
         return const AuthFailure.unexpected();

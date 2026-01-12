@@ -17,10 +17,11 @@ when the access token is expired or otherwise rejected.
 - Mobile uses an **access token** for `Authorization: Bearer <token>` and a **refresh token** to mint a new access token.
 - Mobile currently has **two refresh paths**:
   1. **Preflight refresh** (before sending a request) when the token is close to expiry.
-  2. **401 refresh + retry** (after a request fails) for protected requests **across all methods by default**.
+  2. **401 refresh + retry** (after a request fails) for protected requests, with method-based safety rules:
+     - reads (`GET`/`HEAD`) retry after refresh by default
+     - writes (`POST`/`PUT`/`PATCH`/`DELETE`) retry after refresh **only when an `Idempotency-Key` is present**
 - The retry is guarded (`retried=true`) and happens **at most once** per request.
 - For non-replayable requests (streaming/multipart), the call site should opt out via `RequestOptions.extra['allowAuthRetry'] = false`.
-- Idempotency keys are still recommended if we want safe retries for **timeouts/unknown outcomes**, not just the 401 case.
 
 ---
 
@@ -116,15 +117,16 @@ In `AuthTokenInterceptor.onError`:
 
 - If the response is `401` and `requiresAuth == true`, the interceptor *may*
   refresh and then replay the request once (`retried=true` guard).
-- This applies to **all HTTP methods** by default, based on the backend guarantee
-  that `401` happens pre-handler (no side effects).
+- This is gated by a safety rule (reads are retried by default; writes require
+  `Idempotency-Key` to be retried).
 
 ### Retry rules (what gets auto-retried today)
 
 By default, any request with `requiresAuth=true` is eligible for a single
-refresh+retry when it fails with `401`:
+refresh+retry when it fails with `401`, but the retry is gated:
 
-- `GET`, `HEAD`, `POST`, `PATCH`, `PUT`, `DELETE`
+- reads: `GET`, `HEAD`
+- writes: `POST`, `PATCH`, `PUT`, `DELETE` only when `Idempotency-Key` is present
 
 Call sites can opt out (recommended for non-replayable bodies like streaming
 uploads) via:
@@ -135,9 +137,9 @@ Implementation reference:
 
 - `lib/core/network/interceptors/auth_token_interceptor.dart:1`
 
-Important: the kit only retries on **401 after refresh**. It does **not**
-auto-retry write requests on timeouts/unknown outcomes; idempotency keys are
-still required for safe retries in those scenarios.
+Important: the kit only retries on **401 after refresh** (at most once). If you
+want safe retries for write requests on timeouts/unknown outcomes, you need
+idempotency keys (server support + client key reuse).
 
 ---
 
@@ -157,7 +159,8 @@ There are three important cases:
      - token revoked/invalidated server-side (logout all devices, admin revoke)
      - token rotation semantics changed, old access tokens invalidated
    - Current behavior:
-     - Refresh + retry once for protected requests (all methods) by default.
+     - Reads: refresh + retry once by default.
+     - Writes: refresh + retry once only when an `Idempotency-Key` is present.
      - Call sites can opt out with `allowAuthRetry=false` for non-replayable requests.
 
    - Backend confirmed behavior (important):
@@ -221,12 +224,11 @@ telemetry more predictable.
 
 ---
 
-## Backend Work Needed (for safe retries beyond 401)
+## Backend Work Needed (for safe write retries)
 
 If the goal is: “user submits a form once; mobile can safely retry the write if
-the token is rejected”, the backend guarantee that `401` happens pre-handler
-already makes the **401 refresh+retry** case safe. The best-practice solution
-for retries beyond the 401 case (timeouts/unknown outcomes) is **idempotency keys**.
+the token is rejected or the outcome is unknown”, the best-practice solution is
+**idempotency keys**.
 
 ### Option A (recommended): Idempotency-Key for write endpoints
 

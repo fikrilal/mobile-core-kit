@@ -32,7 +32,7 @@ void main() {
 
     dio.interceptors.add(HeaderInterceptor());
 
-    await dio.post('/auth/sessions/revoke');
+    await dio.post('/auth/email/verification/resend');
   });
 
   test('keeps JSON defaults for requests with a body', () async {

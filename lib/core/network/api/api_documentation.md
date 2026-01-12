@@ -164,11 +164,12 @@ final updateResponse = await _apiHelper.put<UserRemoteModel>(
   host: ApiHost.profile,
 );
 
-// Logout (no response body expected)
-final logoutResponse = await _apiHelper.post<void>(
-  '/auth/sessions/revoke',
+// Logout (204 No Content)
+final logoutResponse = await _apiHelper.post<ApiNoData>(
+  '/auth/logout',
   host: ApiHost.auth,
-  // No parser needed for void response
+  requiresAuth: false,
+  data: {'refreshToken': refreshToken},
 );
 ```
 
@@ -198,6 +199,10 @@ if (response.isError) {
     case -1:
       // No internet connection
       showSnackbar('No internet connection');
+      break;
+    case -2:
+      // Timeout (unknown outcome)
+      showSnackbar('Request timed out. Please try again.');
       break;
     default:
       showSnackbar(response.message ?? 'Unknown error');
@@ -271,6 +276,8 @@ class BookRepositoryImpl implements BookRepository {
         throw NotFoundException(response.message ?? 'Books not found');
       case -1:
         throw NoConnectionException(response.message ?? 'No internet connection');
+      case -2:
+        throw TimeoutException(response.message ?? 'Request timed out');
       default:
         throw ServerException(response.message ?? 'Unknown server error');
     }

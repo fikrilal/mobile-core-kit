@@ -26,7 +26,7 @@ void main() {
       );
     });
 
-    test('prefers INVALID_CREDENTIALS code over 401 status fallback', () {
+    test('prefers AUTH_INVALID_CREDENTIALS code over 401 status fallback', () {
       final failure = ApiFailure(
         message: 'Invalid credentials',
         statusCode: 401,
@@ -34,6 +34,26 @@ void main() {
       );
 
       expect(mapAuthFailure(failure), const AuthFailure.invalidCredentials());
+    });
+
+    test('maps legacy INVALID_CREDENTIALS to invalidCredentials', () {
+      final failure = ApiFailure(
+        message: 'Invalid credentials',
+        statusCode: 401,
+        code: AuthErrorCodes.legacyInvalidCredentials,
+      );
+
+      expect(mapAuthFailure(failure), const AuthFailure.invalidCredentials());
+    });
+
+    test('maps AUTH_EMAIL_ALREADY_EXISTS to emailTaken', () {
+      final failure = ApiFailure(
+        message: 'Email already exists',
+        statusCode: 409,
+        code: AuthErrorCodes.emailAlreadyExists,
+      );
+
+      expect(mapAuthFailure(failure), const AuthFailure.emailTaken());
     });
 
     test('maps legacy INVALID_REFRESH_TOKEN to unauthenticated', () {
@@ -101,6 +121,10 @@ void main() {
         mapAuthFailure(ApiFailure(message: 'no', statusCode: -1)),
         const AuthFailure.network(),
       );
+      expect(
+        mapAuthFailure(ApiFailure(message: 'no', statusCode: -2)),
+        const AuthFailure.network(),
+      );
     });
 
     test('maps 400/422 to validation failure with errors (fallback)', () {
@@ -140,6 +164,11 @@ void main() {
     test('does not treat offline (-1) as unauthenticated', () {
       final failure = ApiFailure(message: 'No internet connection', statusCode: -1);
       expect(mapAuthFailureForRefresh(failure), const AuthFailure.network());
+    });
+
+    test('treats timeout (-2) as unauthenticated (unknown outcome)', () {
+      final failure = ApiFailure(message: 'Timeout', statusCode: -2);
+      expect(mapAuthFailureForRefresh(failure), const AuthFailure.unauthenticated());
     });
   });
 

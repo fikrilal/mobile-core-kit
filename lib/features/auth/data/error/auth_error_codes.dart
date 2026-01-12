@@ -6,7 +6,13 @@ class AuthErrorCodes {
   AuthErrorCodes._();
 
   /// Login failed due to invalid email/password.
-  static const String invalidCredentials = 'INVALID_CREDENTIALS';
+  static const String invalidCredentials = 'AUTH_INVALID_CREDENTIALS';
+
+  /// Legacy login failure code (kept for backwards compatibility).
+  static const String legacyInvalidCredentials = 'INVALID_CREDENTIALS';
+
+  /// Email already exists (register).
+  static const String emailAlreadyExists = 'AUTH_EMAIL_ALREADY_EXISTS';
 
   /// Legacy refresh failure code (kept for backwards compatibility).
   static const String invalidRefreshToken = 'INVALID_REFRESH_TOKEN';
@@ -23,6 +29,15 @@ class AuthErrorCodes {
   /// Session has been revoked (e.g., user logged out all devices).
   static const String sessionRevoked = 'AUTH_SESSION_REVOKED';
 
-  /// User exists but must verify email before proceeding.
+  /// User is suspended.
+  static const String userSuspended = 'AUTH_USER_SUSPENDED';
+
+  /// Legacy (non-kit) code used by some backends.
   static const String emailNotVerified = 'EMAIL_NOT_VERIFIED';
+
+  /// OIDC email is not verified (provider).
+  static const String oidcEmailNotVerified = 'AUTH_OIDC_EMAIL_NOT_VERIFIED';
+
+  /// OIDC token invalid/expired.
+  static const String oidcTokenInvalid = 'AUTH_OIDC_TOKEN_INVALID';
 }

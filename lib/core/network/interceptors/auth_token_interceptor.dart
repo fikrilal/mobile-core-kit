@@ -13,6 +13,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
   static const String _requiresAuthKey = 'requiresAuth';
   static const String _allowAuthRetryKey = 'allowAuthRetry';
   static const String _retriedKey = 'retried';
+  static const String _idempotencyKeyHeader = 'idempotency-key';
 
   bool _requiresAuth(dio.RequestOptions options) {
     final value = options.extra[_requiresAuthKey];
@@ -23,10 +24,27 @@ class AuthTokenInterceptor extends dio.Interceptor {
 
   bool _allowAuthRetry(dio.RequestOptions options) {
     final value = options.extra[_allowAuthRetryKey];
-    if (value is bool) return value;
-    // Backend contract: a 401 is enforced pre-handler (no side effects), so it is
-    // safe to refresh and retry once by default even for writes.
-    return true;
+    // Explicit opt-out always wins.
+    if (value is bool && value == false) return false;
+
+    // Default retry policy (aligned with backend-core-kit contract):
+    // - Reads (GET/HEAD) can be retried after refresh.
+    // - Writes (POST/PUT/PATCH/DELETE) must have an Idempotency-Key to be retried.
+    final method = options.method.toUpperCase();
+    if (method == 'GET' || method == 'HEAD') return true;
+
+    return _hasIdempotencyKey(options);
+  }
+
+  bool _hasIdempotencyKey(dio.RequestOptions options) {
+    for (final entry in options.headers.entries) {
+      if (entry.key.toLowerCase() != _idempotencyKeyHeader) continue;
+      final value = entry.value;
+      if (value == null) return false;
+      if (value is String) return value.trim().isNotEmpty;
+      return value.toString().trim().isNotEmpty;
+    }
+    return false;
   }
 
   @override

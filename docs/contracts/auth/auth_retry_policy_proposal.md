@@ -12,9 +12,10 @@ predictable semantics.
 Related background: `docs/contracts/auth/auth_refresh_and_retry_contract.md:1`.
 
 Status (mobile-core-kit): implemented the core policy (single-flight refresh,
-401 refresh+retry for protected requests across all methods, refresh fail-closed
-on unknown outcome). The remaining open item is a more explicit “replayability”
-signal beyond `allowAuthRetry` when dealing with streaming uploads.
+401 refresh+retry for reads by default (writes require `Idempotency-Key`),
+refresh fail-closed on unknown outcome). The remaining open item is a more
+explicit “replayability” signal beyond `allowAuthRetry` when dealing with
+streaming uploads.
 
 ---
 
@@ -82,8 +83,9 @@ For any request with `requiresAuth=true` that receives a `401`:
 2) If refresh succeeds, **retry the original request once** with the new access token.
 3) Set a guard flag (e.g. `retried=true`) to ensure no infinite loops.
 
-Important: this retry applies to **all HTTP methods** (GET/HEAD/POST/PATCH/PUT/DELETE),
-because the backend guarantees `401` happens pre-handler (no side effects).
+Important: backend-core-kit recommends treating write retries as safe only when
+protected by an `Idempotency-Key`. In mobile-core-kit, reads retry after refresh
+by default; writes retry after refresh only when `Idempotency-Key` is present.
 
 ### D) 403 behavior (MUST NOT refresh/retry)
 

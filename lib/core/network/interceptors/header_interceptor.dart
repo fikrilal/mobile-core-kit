@@ -40,7 +40,7 @@ class HeaderInterceptor extends Interceptor {
     // Fastify, for example, returns 400 when `Content-Type: application/json`
     // is present but the body is empty (FST_ERR_CTP_INVALID_JSON_BODY).
     //
-    // For bodyless POST/PUT/PATCH endpoints (e.g. `/auth/sessions/revoke`), we
+    // For bodyless POST/PUT/PATCH endpoints (e.g. `/auth/email/verification/resend`), we
     // omit the header entirely to avoid server-side "empty JSON body" errors.
     //
     // If your backend *requires* `Content-Type` even for empty bodies, remove

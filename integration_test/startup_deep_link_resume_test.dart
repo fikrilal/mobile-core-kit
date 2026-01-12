@@ -20,6 +20,7 @@ import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -259,7 +260,7 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, Unit>> revokeSessions() async {
+  Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
