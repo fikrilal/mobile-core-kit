@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
+import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 
 import '../../../../core/theme/responsive/spacing.dart';
 import '../../../../core/theme/typography/components/text.dart';
@@ -56,6 +57,7 @@ class _ProfileContent extends StatelessWidget {
               },
             ),
             SizedBox(height: AppSpacing.sectionSpacing(context)),
+            AppIconBadge(icon: const Icon(Icons.settings), showDot: true,),
             AppButton(
               text: 'Log out',
               variant: ButtonVariant.danger,
