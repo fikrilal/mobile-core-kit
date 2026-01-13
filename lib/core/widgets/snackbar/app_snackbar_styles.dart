@@ -93,4 +93,3 @@ _AppSnackBarColors _resolveColors(BuildContext context, _AppSnackBarTone tone) {
 
 MediaQueryData _mediaQueryData(BuildContext context) =>
     MediaQueryData.fromView(View.of(context));
-

@@ -158,17 +158,26 @@ void main() {
   group('mapAuthFailureForRefresh', () {
     test('treats null statusCode as unauthenticated (fail closed)', () {
       final failure = ApiFailure(message: 'timeout/no response');
-      expect(mapAuthFailureForRefresh(failure), const AuthFailure.unauthenticated());
+      expect(
+        mapAuthFailureForRefresh(failure),
+        const AuthFailure.unauthenticated(),
+      );
     });
 
     test('does not treat offline (-1) as unauthenticated', () {
-      final failure = ApiFailure(message: 'No internet connection', statusCode: -1);
+      final failure = ApiFailure(
+        message: 'No internet connection',
+        statusCode: -1,
+      );
       expect(mapAuthFailureForRefresh(failure), const AuthFailure.network());
     });
 
     test('treats timeout (-2) as unauthenticated (unknown outcome)', () {
       final failure = ApiFailure(message: 'Timeout', statusCode: -2);
-      expect(mapAuthFailureForRefresh(failure), const AuthFailure.unauthenticated());
+      expect(
+        mapAuthFailureForRefresh(failure),
+        const AuthFailure.unauthenticated(),
+      );
     });
   });
 

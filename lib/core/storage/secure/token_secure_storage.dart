@@ -47,8 +47,9 @@ class TokenSecureStorage {
       final expStr = all[_kExpiry];
       final expiry = expStr == null ? null : int.tryParse(expStr);
       final expiresAtStr = all[_kExpiresAtMs];
-      final expiresAtMs =
-          expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+      final expiresAtMs = expiresAtStr == null
+          ? null
+          : int.tryParse(expiresAtStr);
       return (
         access: access,
         refresh: refresh,
@@ -63,8 +64,9 @@ class TokenSecureStorage {
       final expStr = await _storage.read(key: _kExpiry);
       final expiry = expStr == null ? null : int.tryParse(expStr);
       final expiresAtStr = await _storage.read(key: _kExpiresAtMs);
-      final expiresAtMs =
-          expiresAtStr == null ? null : int.tryParse(expiresAtStr);
+      final expiresAtMs = expiresAtStr == null
+          ? null
+          : int.tryParse(expiresAtStr);
       return (
         access: access,
         refresh: refresh,

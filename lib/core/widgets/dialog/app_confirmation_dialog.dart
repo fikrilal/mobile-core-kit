@@ -161,17 +161,10 @@ class AppConfirmationDialog extends StatelessWidget {
             right: 0,
             child: IconButton(
               onPressed: _canDismiss ? _resolveCloseAction() : null,
-              icon: Icon(
-                Icons.close,
-                size: 22,
-                color: scheme.onSurfaceVariant,
-              ),
+              icon: Icon(Icons.close, size: 22, color: scheme.onSurfaceVariant),
               splashRadius: 20,
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: 36,
-                minHeight: 36,
-              ),
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
           ),
       ],
@@ -288,10 +281,7 @@ class AppConfirmationDialog extends StatelessWidget {
                 ),
                 splashRadius: 20,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 36,
-                  minHeight: 36,
-                ),
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
             ),
         ],
@@ -332,14 +322,16 @@ Future<bool?> showAppConfirmationDialog({
     AppConfirmationDialogVariant.featured => AppSpacing.space24,
   };
 
-  final dialogInsetPadding = insetPadding ??
+  final dialogInsetPadding =
+      insetPadding ??
       switch (variant) {
         AppConfirmationDialogVariant.standard => const EdgeInsets.symmetric(
           horizontal: AppSpacing.space24,
           vertical: AppSpacing.space24,
         ),
-        AppConfirmationDialogVariant.featured =>
-          const EdgeInsets.symmetric(horizontal: AppSpacing.space24),
+        AppConfirmationDialogVariant.featured => const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space24,
+        ),
       };
 
   final theme = Theme.of(context);

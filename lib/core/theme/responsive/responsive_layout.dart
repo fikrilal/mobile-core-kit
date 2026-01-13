@@ -6,13 +6,16 @@ class ResponsiveLayout {
 
   // Device type detection
   static bool isMobile(BuildContext context) =>
-      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) == Breakpoint.mobile;
+      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) ==
+      Breakpoint.mobile;
 
   static bool isTablet(BuildContext context) =>
-      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) == Breakpoint.tablet;
+      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) ==
+      Breakpoint.tablet;
 
   static bool isDesktop(BuildContext context) =>
-      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) == Breakpoint.desktop;
+      Breakpoints.getBreakpoint(MediaQuery.of(context).size.width) ==
+      Breakpoint.desktop;
 
   // Get current device type as enum
   static DeviceType getDeviceType(BuildContext context) {
@@ -41,7 +44,12 @@ class ResponsiveLayout {
   }
 
   // Value selector based on screen size
-  static T value<T>({required BuildContext context, required T mobile, T? tablet, T? desktop}) {
+  static T value<T>({
+    required BuildContext context,
+    required T mobile,
+    T? tablet,
+    T? desktop,
+  }) {
     final deviceType = getDeviceType(context);
 
     switch (deviceType) {

@@ -12,10 +12,8 @@ typedef JsonParser<R> = R Function(Map<String, dynamic> json);
 typedef ItemParser<R> = JsonParser<R>;
 
 class ApiHelper {
-  ApiHelper(
-    this._dio, {
-    ConnectivityService? connectivity,
-  }) : _connectivity = connectivity ?? ConnectivityServiceImpl();
+  ApiHelper(this._dio, {ConnectivityService? connectivity})
+    : _connectivity = connectivity ?? ConnectivityServiceImpl();
 
   final Dio _dio;
   final ConnectivityService _connectivity;
@@ -132,8 +130,8 @@ class ApiHelper {
     final additionalMeta = meta == null
         ? null
         : (Map<String, dynamic>.from(meta)
-          ..remove('nextCursor')
-          ..remove('limit'));
+            ..remove('nextCursor')
+            ..remove('limit'));
 
     final paginated = ApiPaginatedResult<R>(
       items: listResp.data ?? const [],
@@ -211,8 +209,8 @@ class ApiHelper {
     final additionalMeta = meta == null
         ? null
         : (Map<String, dynamic>.from(meta)
-          ..remove('nextCursor')
-          ..remove('limit'));
+            ..remove('nextCursor')
+            ..remove('limit'));
 
     final paginated = ApiPaginatedResult<R>(
       items: listResp.data ?? const [],
@@ -561,7 +559,8 @@ class ApiHelper {
           ? Map<String, dynamic>.from(rawData['meta'] as Map)
           : null;
 
-      final dynamic effectiveRaw = (rawData is Map && rawData.containsKey('data'))
+      final dynamic effectiveRaw =
+          (rawData is Map && rawData.containsKey('data'))
           ? rawData['data']
           : rawData;
 

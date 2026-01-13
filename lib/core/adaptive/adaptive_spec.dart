@@ -70,15 +70,8 @@ class AdaptiveSpec {
       foldable == other.foldable;
 
   @override
-  int get hashCode => Object.hash(
-        layout,
-        insets,
-        text,
-        motion,
-        input,
-        platform,
-        foldable,
-      );
+  int get hashCode =>
+      Object.hash(layout, insets, text, motion, input, platform, foldable);
 }
 
 @immutable
@@ -131,18 +124,18 @@ class LayoutSpec {
 
   @override
   int get hashCode => Object.hash(
-        size,
-        widthClass,
-        heightClass,
-        orientation,
-        density,
-        pagePadding,
-        gutter,
-        minTapTarget,
-        _surfaceTokensHash(surfaceTokens),
-        grid,
-        navigation,
-      );
+    size,
+    widthClass,
+    heightClass,
+    orientation,
+    density,
+    pagePadding,
+    gutter,
+    minTapTarget,
+    _surfaceTokensHash(surfaceTokens),
+    grid,
+    navigation,
+  );
 
   static int _surfaceTokensHash(Map<SurfaceKind, SurfaceTokens> tokens) {
     // `MapEntry` does not implement value equality/hashCode in Dart, so hashing
@@ -199,15 +192,13 @@ class NavigationSpec {
       drawerWidth == other.drawerWidth;
 
   @override
-  int get hashCode => Object.hash(kind, railWidth, extendedRailWidth, drawerWidth);
+  int get hashCode =>
+      Object.hash(kind, railWidth, extendedRailWidth, drawerWidth);
 }
 
 @immutable
 class InsetsSpec {
-  const InsetsSpec({
-    required this.safePadding,
-    required this.viewInsets,
-  });
+  const InsetsSpec({required this.safePadding, required this.viewInsets});
 
   final EdgeInsets safePadding;
   final EdgeInsets viewInsets;
@@ -224,10 +215,7 @@ class InsetsSpec {
 
 @immutable
 class TextSpec {
-  const TextSpec({
-    required this.textScaler,
-    required this.boldText,
-  });
+  const TextSpec({required this.textScaler, required this.boldText});
 
   final TextScaler textScaler;
   final bool boldText;
@@ -258,10 +246,7 @@ class MotionSpec {
 
 @immutable
 class InputSpec {
-  const InputSpec({
-    required this.mode,
-    required this.pointerHoverEnabled,
-  });
+  const InputSpec({required this.mode, required this.pointerHoverEnabled});
 
   final InputMode mode;
   final bool pointerHoverEnabled;

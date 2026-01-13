@@ -24,4 +24,3 @@ class PersonName {
     return right(PersonName._(trimmed));
   }
 }
-

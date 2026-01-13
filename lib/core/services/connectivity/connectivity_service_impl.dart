@@ -14,7 +14,7 @@ class ConnectivityServiceImpl implements ConnectivityService {
   NetworkStatus _currentStatus = NetworkStatus.online;
 
   ConnectivityServiceImpl({Connectivity? connectivity})
-      : _connectivity = connectivity ?? Connectivity();
+    : _connectivity = connectivity ?? Connectivity();
 
   @override
   NetworkStatus get currentStatus => _currentStatus;
@@ -28,8 +28,9 @@ class ConnectivityServiceImpl implements ConnectivityService {
 
   @override
   Future<void> initialize() async {
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
+      _updateConnectionStatus,
+    );
     await checkConnectivity();
   }
 
@@ -60,4 +61,3 @@ class ConnectivityServiceImpl implements ConnectivityService {
     await _networkStatusController.close();
   }
 }
-

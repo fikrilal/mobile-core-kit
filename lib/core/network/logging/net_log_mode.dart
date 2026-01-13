@@ -1,7 +1,1 @@
-enum NetLogMode {
-  off,
-  summary,
-  smallBodies,
-  full,
-}
-
+enum NetLogMode { off, summary, smallBodies, full }

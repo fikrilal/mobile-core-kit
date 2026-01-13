@@ -38,8 +38,9 @@ class AppBottomNavBar extends StatelessWidget {
         for (final item in items)
           NavigationDestination(
             icon: Icon(item.icon),
-            selectedIcon:
-                item.selectedIcon == null ? null : Icon(item.selectedIcon),
+            selectedIcon: item.selectedIcon == null
+                ? null
+                : Icon(item.selectedIcon),
             label: item.label,
             tooltip: item.tooltip,
           ),
@@ -47,4 +48,3 @@ class AppBottomNavBar extends StatelessWidget {
     );
   }
 }
-

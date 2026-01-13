@@ -7,9 +7,8 @@ part 'logout_request_model.g.dart';
 
 @freezed
 abstract class LogoutRequestModel with _$LogoutRequestModel {
-  const factory LogoutRequestModel({
-    required String refreshToken,
-  }) = _LogoutRequestModel;
+  const factory LogoutRequestModel({required String refreshToken}) =
+      _LogoutRequestModel;
 
   const LogoutRequestModel._();
 
@@ -19,4 +18,3 @@ abstract class LogoutRequestModel with _$LogoutRequestModel {
   factory LogoutRequestModel.fromEntity(LogoutRequestEntity e) =>
       LogoutRequestModel(refreshToken: e.refreshToken);
 }
-

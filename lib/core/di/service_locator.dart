@@ -71,7 +71,9 @@ void registerLocator() {
   }
 
   if (!locator.isRegistered<AppLaunchService>()) {
-    locator.registerLazySingleton<AppLaunchService>(() => AppLaunchServiceImpl());
+    locator.registerLazySingleton<AppLaunchService>(
+      () => AppLaunchServiceImpl(),
+    );
   }
 
   if (!locator.isRegistered<DeepLinkParser>()) {
@@ -79,7 +81,9 @@ void registerLocator() {
   }
 
   if (!locator.isRegistered<DeepLinkSource>()) {
-    locator.registerLazySingleton<DeepLinkSource>(() => AppLinksDeepLinkSource());
+    locator.registerLazySingleton<DeepLinkSource>(
+      () => AppLinksDeepLinkSource(),
+    );
   }
 
   if (!locator.isRegistered<DeepLinkTelemetry>()) {
@@ -195,7 +199,13 @@ Future<void> bootstrapLocator() {
 
         await locator<AppStartupController>().initialize();
       } catch (e, st) {
-        Log.error('Failed to initialize startup controller', e, st, false, 'DI');
+        Log.error(
+          'Failed to initialize startup controller',
+          e,
+          st,
+          false,
+          'DI',
+        );
       }
 
       // Defer platform-heavy initialization until after first Flutter frame.
@@ -223,7 +233,9 @@ Future<void> bootstrapLocator() {
       // Report startup timings once analytics is available (best-effort).
       try {
         unawaited(
-          StartupMetrics.instance.reportToAnalytics(locator<IAnalyticsService>()),
+          StartupMetrics.instance.reportToAnalytics(
+            locator<IAnalyticsService>(),
+          ),
         );
       } catch (e, st) {
         Log.error('Failed to report startup metrics', e, st, false, 'DI');

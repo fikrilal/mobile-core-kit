@@ -56,7 +56,11 @@ class FoldableSpec {
       other.hingeAxis == hingeAxis;
 
   @override
-  int get hashCode =>
-      Object.hash(Object.hashAll(displayFeatures), posture, isSpanned, hingeRect, hingeAxis);
+  int get hashCode => Object.hash(
+    Object.hashAll(displayFeatures),
+    posture,
+    isSpanned,
+    hingeRect,
+    hingeAxis,
+  );
 }
-

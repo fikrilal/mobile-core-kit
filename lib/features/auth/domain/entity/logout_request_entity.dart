@@ -4,8 +4,6 @@ part 'logout_request_entity.freezed.dart';
 
 @freezed
 abstract class LogoutRequestEntity with _$LogoutRequestEntity {
-  const factory LogoutRequestEntity({
-    required String refreshToken,
-  }) = _LogoutRequestEntity;
+  const factory LogoutRequestEntity({required String refreshToken}) =
+      _LogoutRequestEntity;
 }
-

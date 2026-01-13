@@ -2,10 +2,7 @@ import 'api_paginated_result.dart';
 
 /// Cursor-oriented domain pagination view.
 class DomainCursorPagination {
-  const DomainCursorPagination({
-    required this.nextCursor,
-    required this.limit,
-  });
+  const DomainCursorPagination({required this.nextCursor, required this.limit});
 
   final String? nextCursor;
   final int? limit;

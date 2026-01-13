@@ -24,8 +24,6 @@ abstract class AuthSessionModel with _$AuthSessionModel {
 }
 
 extension AuthSessionModelX on AuthSessionModel {
-  AuthSessionEntity toEntity() => AuthSessionEntity(
-        tokens: tokens.toEntity(),
-        user: user.toEntity(),
-      );
+  AuthSessionEntity toEntity() =>
+      AuthSessionEntity(tokens: tokens.toEntity(), user: user.toEntity());
 }

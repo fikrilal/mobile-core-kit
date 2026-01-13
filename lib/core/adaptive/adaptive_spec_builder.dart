@@ -29,8 +29,9 @@ class AdaptiveSpecBuilder {
 
     final widthClass = widthClassFor(size.width);
     final heightClass = heightClassFor(size.height);
-    final orientation =
-        size.width >= size.height ? Orientation.landscape : Orientation.portrait;
+    final orientation = size.width >= size.height
+        ? Orientation.landscape
+        : Orientation.portrait;
 
     final input = inputPolicy.derive(media: media, platform: platform);
     final motion = motionPolicy.derive(media: media);
@@ -125,14 +126,19 @@ class AdaptiveSpecBuilder {
   }
 
   static Size _sizeFor(BoxConstraints constraints, MediaQueryData media) {
-    final width =
-        constraints.hasBoundedWidth ? constraints.maxWidth : media.size.width;
-    final height =
-        constraints.hasBoundedHeight ? constraints.maxHeight : media.size.height;
+    final width = constraints.hasBoundedWidth
+        ? constraints.maxWidth
+        : media.size.width;
+    final height = constraints.hasBoundedHeight
+        ? constraints.maxHeight
+        : media.size.height;
     return Size(width.isFinite ? width : 0, height.isFinite ? height : 0);
   }
 
-  static LayoutDensity _densityFor(InputSpec input, WindowWidthClass widthClass) {
+  static LayoutDensity _densityFor(
+    InputSpec input,
+    WindowWidthClass widthClass,
+  ) {
     if (input.mode == InputMode.pointer && _isAtLeastExpanded(widthClass)) {
       return LayoutDensity.compact;
     }
@@ -149,10 +155,12 @@ class AdaptiveSpecBuilder {
   static Map<SurfaceKind, SurfaceTokens> _resolveSurfaceTokens(
     WindowWidthClass widthClass,
   ) {
-    return Map<SurfaceKind, SurfaceTokens>.unmodifiable(<SurfaceKind, SurfaceTokens>{
-      for (final kind in SurfaceKind.values)
-        kind: SurfaceTokenTable.resolve(kind: kind, widthClass: widthClass),
-    });
+    return Map<SurfaceKind, SurfaceTokens>.unmodifiable(
+      <SurfaceKind, SurfaceTokens>{
+        for (final kind in SurfaceKind.values)
+          kind: SurfaceTokenTable.resolve(kind: kind, widthClass: widthClass),
+      },
+    );
   }
 
   static double _gridContentWidth({

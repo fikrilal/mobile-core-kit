@@ -31,8 +31,7 @@ class _ClampedPolicy extends TextScalePolicy {
 
   @override
   TextScaler apply(TextScaler incoming) => incoming.clamp(
-        minScaleFactor: minScaleFactor,
-        maxScaleFactor: maxScaleFactor,
-      );
+    minScaleFactor: minScaleFactor,
+    maxScaleFactor: maxScaleFactor,
+  );
 }
-

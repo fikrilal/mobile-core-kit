@@ -35,15 +35,14 @@ class AppSnackBar {
     Duration duration = const Duration(seconds: 3),
     String? actionLabel,
     VoidCallback? onAction,
-  }) =>
-      _buildSnackBar(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.success,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-      );
+  }) => _buildSnackBar(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.success,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
   static SnackBar error(
     BuildContext context, {
@@ -51,15 +50,14 @@ class AppSnackBar {
     Duration duration = const Duration(seconds: 4),
     String? actionLabel,
     VoidCallback? onAction,
-  }) =>
-      _buildSnackBar(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.error,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-      );
+  }) => _buildSnackBar(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.error,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
   static SnackBar info(
     BuildContext context, {
@@ -67,15 +65,14 @@ class AppSnackBar {
     Duration duration = const Duration(seconds: 3),
     String? actionLabel,
     VoidCallback? onAction,
-  }) =>
-      _buildSnackBar(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.info,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-      );
+  }) => _buildSnackBar(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.info,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
   static SnackBar warning(
     BuildContext context, {
@@ -83,15 +80,14 @@ class AppSnackBar {
     Duration duration = const Duration(seconds: 4),
     String? actionLabel,
     VoidCallback? onAction,
-  }) =>
-      _buildSnackBar(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.warning,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-      );
+  }) => _buildSnackBar(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.warning,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
   /// Shows a snackbar using the app theme, handling top/bottom placement.
   static void showSuccess(
@@ -101,16 +97,15 @@ class AppSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
     AppSnackBarPosition position = AppSnackBarPosition.bottom,
-  }) =>
-      _show(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.success,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        position: position,
-      );
+  }) => _show(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.success,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    position: position,
+  );
 
   static void showError(
     BuildContext context, {
@@ -119,16 +114,15 @@ class AppSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
     AppSnackBarPosition position = AppSnackBarPosition.bottom,
-  }) =>
-      _show(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.error,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        position: position,
-      );
+  }) => _show(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.error,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    position: position,
+  );
 
   static void showInfo(
     BuildContext context, {
@@ -137,16 +131,15 @@ class AppSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
     AppSnackBarPosition position = AppSnackBarPosition.bottom,
-  }) =>
-      _show(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.info,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        position: position,
-      );
+  }) => _show(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.info,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    position: position,
+  );
 
   static void showWarning(
     BuildContext context, {
@@ -155,16 +148,15 @@ class AppSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
     AppSnackBarPosition position = AppSnackBarPosition.bottom,
-  }) =>
-      _show(
-        context,
-        message: message,
-        tone: _AppSnackBarTone.warning,
-        duration: duration,
-        actionLabel: actionLabel,
-        onAction: onAction,
-        position: position,
-      );
+  }) => _show(
+    context,
+    message: message,
+    tone: _AppSnackBarTone.warning,
+    duration: duration,
+    actionLabel: actionLabel,
+    onAction: onAction,
+    position: position,
+  );
 
   static void _show(
     BuildContext context, {
@@ -206,4 +198,3 @@ class AppSnackBar {
 }
 
 enum AppSnackBarPosition { top, bottom }
-

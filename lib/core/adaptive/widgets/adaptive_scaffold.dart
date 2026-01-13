@@ -50,11 +50,21 @@ class AdaptiveScaffold extends StatelessWidget {
 
     return switch (layout.navigation.kind) {
       NavigationKind.bar => _buildNavigationBarScaffold(context, layout),
-      NavigationKind.rail => _buildRailScaffold(context, layout, extended: false),
-      NavigationKind.extendedRail =>
-        _buildRailScaffold(context, layout, extended: true),
+      NavigationKind.rail => _buildRailScaffold(
+        context,
+        layout,
+        extended: false,
+      ),
+      NavigationKind.extendedRail => _buildRailScaffold(
+        context,
+        layout,
+        extended: true,
+      ),
       NavigationKind.modalDrawer => _buildModalDrawerScaffold(context, layout),
-      NavigationKind.standardDrawer => _buildStandardDrawerScaffold(context, layout),
+      NavigationKind.standardDrawer => _buildStandardDrawerScaffold(
+        context,
+        layout,
+      ),
       NavigationKind.none => _buildPlainScaffold(),
     };
   }
@@ -146,10 +156,7 @@ class AdaptiveScaffold extends StatelessWidget {
           SafeArea(
             child: ConstrainedBox(
               constraints: BoxConstraints.tightFor(width: width),
-              child: _buildNavigationDrawer(
-                context,
-                persistent: true,
-              ),
+              child: _buildNavigationDrawer(context, persistent: true),
             ),
           ),
           const VerticalDivider(width: 1),
@@ -202,4 +209,3 @@ class AdaptiveScaffold extends StatelessWidget {
     );
   }
 }
-

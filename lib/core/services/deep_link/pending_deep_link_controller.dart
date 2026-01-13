@@ -83,7 +83,11 @@ class PendingDeepLinkController extends ChangeNotifier {
     final telemetry = _telemetry;
     if (telemetry != null) {
       unawaited(
-        telemetry.trackPendingSet(_pending!, reason: reason, previous: previous),
+        telemetry.trackPendingSet(
+          _pending!,
+          reason: reason,
+          previous: previous,
+        ),
       );
     }
     notifyListeners();
@@ -121,7 +125,11 @@ class PendingDeepLinkController extends ChangeNotifier {
     final telemetry = _telemetry;
     if (telemetry != null) {
       unawaited(
-        telemetry.trackPendingSet(_pending!, reason: reason, previous: previous),
+        telemetry.trackPendingSet(
+          _pending!,
+          reason: reason,
+          previous: previous,
+        ),
       );
     }
   }

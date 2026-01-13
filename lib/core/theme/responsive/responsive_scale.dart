@@ -5,7 +5,8 @@ class ResponsiveScale {
 
   // Base scaling factors (consistent across all components)
   static const double mobileScale = 1.0; // Base scale
-  static const double tabletScale = 1.125; // 12.5% larger (more subtle than 1.1)
+  static const double tabletScale =
+      1.125; // 12.5% larger (more subtle than 1.1)
   static const double desktopScale = 1.25; // 25% larger (more subtle than 1.2)
 
   // Content width strategy: Fluid → Constrained → Fixed

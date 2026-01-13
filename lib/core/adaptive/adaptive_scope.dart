@@ -54,11 +54,7 @@ class AdaptiveScope extends StatelessWidget {
 }
 
 class AdaptiveModel extends InheritedModel<AdaptiveAspect> {
-  const AdaptiveModel({
-    super.key,
-    required this.spec,
-    required super.child,
-  });
+  const AdaptiveModel({super.key, required this.spec, required super.child});
 
   final AdaptiveSpec spec;
 
@@ -72,9 +68,9 @@ class AdaptiveModel extends InheritedModel<AdaptiveAspect> {
   }
 
   static AdaptiveSpec read(BuildContext context) {
-    final widget = context
-        .getElementForInheritedWidgetOfExactType<AdaptiveModel>()
-        ?.widget as AdaptiveModel?;
+    final widget =
+        context.getElementForInheritedWidgetOfExactType<AdaptiveModel>()?.widget
+            as AdaptiveModel?;
     assert(widget != null, 'No AdaptiveScope found in context');
     return widget!.spec;
   }
@@ -118,4 +114,3 @@ class AdaptiveModel extends InheritedModel<AdaptiveAspect> {
     return false;
   }
 }
-

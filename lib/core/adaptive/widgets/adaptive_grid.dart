@@ -11,9 +11,9 @@ class AdaptiveGrid extends StatelessWidget {
     this.padding,
     this.shrinkWrap = false,
     this.physics,
-  })  : assert(columns >= 1, 'columns must be >= 1'),
-        itemCount = children.length,
-        itemBuilder = ((context, index) => children[index]);
+  }) : assert(columns >= 1, 'columns must be >= 1'),
+       itemCount = children.length,
+       itemBuilder = ((context, index) => children[index]);
 
   const AdaptiveGrid.builder({
     super.key,
@@ -24,8 +24,8 @@ class AdaptiveGrid extends StatelessWidget {
     this.padding,
     this.shrinkWrap = false,
     this.physics,
-  })  : assert(columns >= 1, 'columns must be >= 1'),
-        assert(itemCount >= 0, 'itemCount must be >= 0');
+  }) : assert(columns >= 1, 'columns must be >= 1'),
+       assert(itemCount >= 0, 'itemCount must be >= 0');
 
   final int columns;
   final double? gutter;

@@ -23,13 +23,7 @@ class UserRepositoryImpl implements UserRepository {
           .mapLeft(_mapApiFailure)
           .map((m) => m.toEntity());
     } catch (e, st) {
-      Log.error(
-        'GetMe unexpected error',
-        e,
-        st,
-        true,
-        'UserRepository',
-      );
+      Log.error('GetMe unexpected error', e, st, true, 'UserRepository');
       return left(const AuthFailure.unexpected());
     }
   }

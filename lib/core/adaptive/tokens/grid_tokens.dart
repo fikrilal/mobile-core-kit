@@ -39,4 +39,3 @@ class GridTokens {
     return math.max(1, math.min(maxCols, raw));
   }
 }
-

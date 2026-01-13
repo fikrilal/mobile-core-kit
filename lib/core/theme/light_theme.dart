@@ -54,7 +54,9 @@ final ThemeData lightTheme = (() {
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
         minimumSize: const Size(0, AppSizing.buttonHeightMedium),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.space24)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.space24),
+        ),
         elevation: 1,
         shadowColor: Colors.black12,
       ),
@@ -63,7 +65,9 @@ final ThemeData lightTheme = (() {
       style: OutlinedButton.styleFrom(
         foregroundColor: scheme.primary,
         minimumSize: const Size(0, AppSizing.buttonHeightMedium),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.space24)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.space24),
+        ),
         side: BorderSide(color: scheme.primary, width: 1.5),
       ),
     ),
@@ -72,19 +76,31 @@ final ThemeData lightTheme = (() {
       hintStyle: TextStyle(color: scheme.onSurfaceVariant),
       labelStyle: TextStyle(color: scheme.onSurfaceVariant),
       floatingLabelStyle: TextStyle(color: scheme.primary),
-      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: scheme.outlineVariant)),
-      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: scheme.primary, width: 1.5)),
-      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: scheme.error)),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: scheme.outlineVariant),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: scheme.primary, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: scheme.error),
+      ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: BorderSide(color: scheme.error, width: 1.5),
       ),
       disabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color: scheme.onSurface.withValues(alpha: StateOpacities.disabledContainer),
+          color: scheme.onSurface.withValues(
+            alpha: StateOpacities.disabledContainer,
+          ),
         ),
       ),
     ),
-    cardTheme: CardThemeData(elevation: 0, margin: const EdgeInsets.all(0), color: scheme.surface),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      margin: const EdgeInsets.all(0),
+      color: scheme.surface,
+    ),
     chipTheme: ChipThemeData(
       backgroundColor: scheme.surface,
       selectedColor: scheme.primaryContainer,

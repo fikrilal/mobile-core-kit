@@ -84,12 +84,8 @@ void main() {
     final router = GoRouter(
       initialLocation: AppRoutes.root,
       refreshListenable: Listenable.merge([startup, deepLinks]),
-      redirect: (context, state) => appRedirectUri(
-        state.uri,
-        startup,
-        deepLinks,
-        DeepLinkParser(),
-      ),
+      redirect: (context, state) =>
+          appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser()),
       routes: [
         GoRoute(
           path: AppRoutes.root,
@@ -102,8 +98,12 @@ void main() {
         GoRoute(
           path: AuthRoutes.signIn,
           builder: (context, state) => BlocProvider<LoginCubit>(
-            create:
-                (_) => LoginCubit(loginUseCase, googleUseCase, sessionManager, analytics),
+            create: (_) => LoginCubit(
+              loginUseCase,
+              googleUseCase,
+              sessionManager,
+              analytics,
+            ),
             child: const SignInPage(),
           ),
         ),
@@ -186,12 +186,15 @@ class _NoopAnalyticsService implements IAnalyticsService {
   Future<void> setUserId(String userId) async {}
 
   @override
-  Future<void> setUserProperty(String propertyName, String propertyValue) async {}
+  Future<void> setUserProperty(
+    String propertyName,
+    String propertyValue,
+  ) async {}
 }
 
 class _FakeAppLaunchService implements AppLaunchService {
   _FakeAppLaunchService({required bool onboardingSeen})
-      : _onboardingSeen = onboardingSeen;
+    : _onboardingSeen = onboardingSeen;
 
   bool _onboardingSeen;
 

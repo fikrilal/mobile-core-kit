@@ -83,7 +83,8 @@ class AppLoadingOverlay extends StatelessWidget {
         Center(
           child: _LoadingCard(
             backgroundColor: effectiveCardColor,
-            padding: cardPadding ??
+            padding:
+                cardPadding ??
                 const EdgeInsets.symmetric(
                   horizontal: AppSpacing.space16,
                   vertical: AppSpacing.space12,
@@ -172,10 +173,7 @@ class _DefaultIndicator extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CircularProgressIndicator(
-        strokeWidth: 3,
-        color: scheme.primary,
-      ),
+      child: CircularProgressIndicator(strokeWidth: 3, color: scheme.primary),
     );
   }
 }

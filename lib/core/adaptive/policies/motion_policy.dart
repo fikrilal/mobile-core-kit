@@ -19,4 +19,3 @@ class _StandardMotionPolicy extends MotionPolicy {
     return MotionSpec(reduceMotion: reduceMotion);
   }
 }
-

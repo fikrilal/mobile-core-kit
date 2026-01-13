@@ -14,4 +14,3 @@ class DeepLinkIntent {
   /// Optional tag for observability (e.g. `https`, `push`, `test`).
   final String? source;
 }
-

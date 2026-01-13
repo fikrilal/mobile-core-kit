@@ -95,7 +95,13 @@ class StartupMetrics {
       try {
         SchedulerBinding.instance.removeTimingsCallback(callback);
       } catch (e, st) {
-        Log.error('Failed to remove frame timings callback', e, st, false, 'StartupMetrics');
+        Log.error(
+          'Failed to remove frame timings callback',
+          e,
+          st,
+          false,
+          'StartupMetrics',
+        );
       } finally {
         _timingsCallback = null;
       }
@@ -106,7 +112,13 @@ class StartupMetrics {
     try {
       SchedulerBinding.instance.addTimingsCallback(callback);
     } catch (e, st) {
-      Log.error('Failed to attach frame timings callback', e, st, false, 'StartupMetrics');
+      Log.error(
+        'Failed to attach frame timings callback',
+        e,
+        st,
+        false,
+        'StartupMetrics',
+      );
       _timingsCallback = null;
     }
   }
@@ -143,8 +155,8 @@ class StartupMetrics {
     );
 
     if (kDebugMode) {
-      final entries =
-          _marks.entries.toList()..sort((a, b) => a.value.compareTo(b.value));
+      final entries = _marks.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
       final pretty = entries
           .map((e) => '${e.key.label}=${e.value.inMilliseconds}ms')
           .join(' ');
@@ -160,11 +172,20 @@ class StartupMetrics {
 
     _reportedToAnalytics = true;
     try {
-      await analytics.logEvent(AnalyticsEvents.startupMetrics, parameters: params);
+      await analytics.logEvent(
+        AnalyticsEvents.startupMetrics,
+        parameters: params,
+      );
     } catch (e, st) {
       // Allow retries on future app starts if the analytics stack wasn't ready.
       _reportedToAnalytics = false;
-      Log.error('Failed to report startup metrics', e, st, false, 'StartupMetrics');
+      Log.error(
+        'Failed to report startup metrics',
+        e,
+        st,
+        false,
+        'StartupMetrics',
+      );
     }
   }
 
@@ -210,7 +231,9 @@ class StartupMetrics {
     }
     if (ttffMs != null) params[AnalyticsParams.startupTtffMs] = ttffMs;
     if (readyMs != null) params[AnalyticsParams.startupReadyMs] = readyMs;
-    if (bootstrapMs != null) params[AnalyticsParams.startupBootstrapMs] = bootstrapMs;
+    if (bootstrapMs != null) {
+      params[AnalyticsParams.startupBootstrapMs] = bootstrapMs;
+    }
     if (secureStorageReadMs != null) {
       params[AnalyticsParams.startupSecureStorageReadMs] = secureStorageReadMs;
     }
@@ -276,10 +299,7 @@ class StartupMetrics {
   }
 
   @visibleForTesting
-  void setFirstFrameTimingsForTesting({
-    Duration? build,
-    Duration? raster,
-  }) {
+  void setFirstFrameTimingsForTesting({Duration? build, Duration? raster}) {
     _firstFrameBuild = build;
     _firstFrameRaster = raster;
   }

@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/adaptive/widgets/adaptive_scaffold.dart';
 
 class AppShellPage extends StatelessWidget {
-  const AppShellPage({
-    super.key,
-    required this.navigationShell,
-  });
+  const AppShellPage({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 

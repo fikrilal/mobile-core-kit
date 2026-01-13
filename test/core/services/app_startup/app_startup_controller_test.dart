@@ -25,20 +25,27 @@ void main() {
     test('fails open when SessionManager.init times out', () {
       fakeAsync((async) {
         final appLaunch = _MockAppLaunchService();
-        when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
 
         final connectivity = _MockConnectivityService();
-        when(() => connectivity.networkStatusStream)
-            .thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.isAuthPending).thenReturn(false);
-        when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
 
         final initCompleter = Completer<void>();
-        when(() => sessionManager.init()).thenAnswer((_) => initCompleter.future);
+        when(
+          () => sessionManager.init(),
+        ).thenAnswer((_) => initCompleter.future);
 
         final getMe = _MockGetMeUseCase();
 
@@ -74,19 +81,23 @@ void main() {
       fakeAsync((async) {
         final appLaunch = _MockAppLaunchService();
         final onboardingCompleter = Completer<bool>();
-        when(() => appLaunch.shouldShowOnboarding())
-            .thenAnswer((_) => onboardingCompleter.future);
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) => onboardingCompleter.future);
 
         final connectivity = _MockConnectivityService();
-        when(() => connectivity.networkStatusStream)
-            .thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.isAuthPending).thenReturn(false);
         when(() => sessionManager.init()).thenAnswer((_) async {});
-        when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
 
         final getMe = _MockGetMeUseCase();
 

@@ -17,10 +17,7 @@ void main() {
 
     await tester.pumpWidget(
       wrapWidget(
-        AppTextField.password(
-          controller: controller,
-          labelText: 'Password',
-        ),
+        AppTextField.password(controller: controller, labelText: 'Password'),
       ),
     );
 
@@ -37,10 +34,7 @@ void main() {
 
     await tester.pumpWidget(
       wrapWidget(
-        AppTextField(
-          fieldType: FieldType.number,
-          controller: controller,
-        ),
+        AppTextField(fieldType: FieldType.number, controller: controller),
       ),
     );
 
@@ -53,22 +47,17 @@ void main() {
   testWidgets('uses semanticLabel when provided', (tester) async {
     await tester.pumpWidget(
       wrapWidget(
-        const AppTextField(
-          labelText: 'Name',
-          semanticLabel: 'Full name input',
-        ),
+        const AppTextField(labelText: 'Name', semanticLabel: 'Full name input'),
       ),
     );
 
-    final semanticsWidgets =
-        tester.widgetList<Semantics>(find.byType(Semantics)).toList();
+    final semanticsWidgets = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .toList();
 
     expect(
-      semanticsWidgets.where(
-        (s) => s.properties.label == 'Full name input',
-      ),
+      semanticsWidgets.where((s) => s.properties.label == 'Full name input'),
       isNotEmpty,
     );
   });
 }
-

@@ -19,8 +19,9 @@ void main() {
     );
   });
 
-  testWidgets('AppDotWave renders the requested number of dots',
-      (tester) async {
+  testWidgets('AppDotWave renders the requested number of dots', (
+    tester,
+  ) async {
     const dotSize = 10.0;
     await tester.pumpWidget(
       wrap(const AppDotWave(color: Colors.black, count: 4, dotSize: dotSize)),
@@ -33,13 +34,16 @@ void main() {
         final decoration = widget.decoration;
         final constraints = widget.constraints;
         if (constraints == null) return false;
-        if (constraints.minWidth != dotSize || constraints.minHeight != dotSize) {
+        if (constraints.minWidth != dotSize ||
+            constraints.minHeight != dotSize) {
           return false;
         }
-        if (constraints.maxWidth != dotSize || constraints.maxHeight != dotSize) {
+        if (constraints.maxWidth != dotSize ||
+            constraints.maxHeight != dotSize) {
           return false;
         }
-        return decoration is BoxDecoration && decoration.shape == BoxShape.circle;
+        return decoration is BoxDecoration &&
+            decoration.shape == BoxShape.circle;
       }),
     );
 

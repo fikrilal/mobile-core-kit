@@ -12,10 +12,7 @@ class HomePage extends StatelessWidget {
     return const AppPageContainer(
       surface: SurfaceKind.dashboard,
       alignment: Alignment.center,
-      child: AppText.titleLarge(
-        'Home',
-        textAlign: TextAlign.center,
-      ),
+      child: AppText.titleLarge('Home', textAlign: TextAlign.center),
     );
   }
 }

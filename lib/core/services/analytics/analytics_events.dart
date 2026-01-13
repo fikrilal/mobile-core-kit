@@ -50,7 +50,9 @@ class AnalyticsParams {
   static const String startupIntlMs = 'startup_intl_ms';
 
   static const String startupFirstFrameBuildMs = 'startup_first_frame_build_ms';
-  static const String startupFirstFrameRasterMs = 'startup_first_frame_raster_ms';
+  static const String startupFirstFrameRasterMs =
+      'startup_first_frame_raster_ms';
 
-  static const String startupSecureStorageReadMs = 'startup_secure_storage_read_ms';
+  static const String startupSecureStorageReadMs =
+      'startup_secure_storage_read_ms';
 }

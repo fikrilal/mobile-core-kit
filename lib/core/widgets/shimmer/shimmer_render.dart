@@ -125,4 +125,3 @@ class _ShimmerFilter extends RenderProxyBox {
     return start + (end - start) * percent;
   }
 }
-

@@ -18,11 +18,11 @@ class AdaptiveSplitView extends StatelessWidget {
     this.minMasterWidth = 320,
     this.minDetailWidth = 360,
     this.dividerWidth = 1,
-  })  : assert(masterFlex > 0),
-        assert(detailFlex > 0),
-        assert(minMasterWidth >= 0),
-        assert(minDetailWidth >= 0),
-        assert(dividerWidth >= 0);
+  }) : assert(masterFlex > 0),
+       assert(detailFlex > 0),
+       assert(minMasterWidth >= 0),
+       assert(minDetailWidth >= 0),
+       assert(dividerWidth >= 0);
 
   final Widget master;
   final Widget detail;
@@ -52,7 +52,8 @@ class AdaptiveSplitView extends StatelessWidget {
     final layout = context.adaptiveLayout;
     final foldable = context.adaptiveFoldable;
 
-    final isTwoPane = _isAtLeastExpanded(layout.widthClass) || foldable.isSpanned;
+    final isTwoPane =
+        _isAtLeastExpanded(layout.widthClass) || foldable.isSpanned;
     if (!isTwoPane) {
       return showDetailInCompact && hasSelection ? detail : master;
     }
@@ -61,7 +62,8 @@ class AdaptiveSplitView extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final canUseGlobalHingeGeometry = foldable.isSpanned &&
+        final canUseGlobalHingeGeometry =
+            foldable.isSpanned &&
             foldable.hingeRect != null &&
             constraints.hasBoundedWidth &&
             constraints.hasBoundedHeight &&
@@ -115,10 +117,12 @@ class AdaptiveSplitView extends StatelessWidget {
     final flexSum = (masterFlex + detailFlex).toDouble();
     final idealMaster = available * (masterFlex / flexSum);
 
-    final maxMasterWidth =
-        math.max(minMasterWidth, available - minDetailWidth).toDouble();
-    final masterWidth =
-        idealMaster.clamp(minMasterWidth, maxMasterWidth).toDouble();
+    final maxMasterWidth = math
+        .max(minMasterWidth, available - minDetailWidth)
+        .toDouble();
+    final masterWidth = idealMaster
+        .clamp(minMasterWidth, maxMasterWidth)
+        .toDouble();
     final detailWidth = math.max(0.0, available - masterWidth).toDouble();
 
     if (masterWidth < minMasterWidth || detailWidth < minDetailWidth) {
@@ -128,8 +132,7 @@ class AdaptiveSplitView extends StatelessWidget {
     return Row(
       children: [
         SizedBox(width: masterWidth, child: master),
-        if (divider > 0)
-          VerticalDivider(width: divider, thickness: divider),
+        if (divider > 0) VerticalDivider(width: divider, thickness: divider),
         SizedBox(
           width: detailWidth,
           child: hasSelection ? detail : placeholder,
@@ -156,10 +159,7 @@ class AdaptiveSplitView extends StatelessWidget {
       children: [
         SizedBox(width: leftWidth, child: master),
         SizedBox(width: gapWidth),
-        SizedBox(
-          width: rightWidth,
-          child: hasSelection ? detail : placeholder,
-        ),
+        SizedBox(width: rightWidth, child: hasSelection ? detail : placeholder),
       ],
     );
   }
@@ -172,8 +172,9 @@ class AdaptiveSplitView extends StatelessWidget {
     final totalHeight = constraints.maxHeight;
 
     final topHeight = math.max(0.0, hingeRect.top).toDouble();
-    final bottomHeight =
-        math.max(0.0, totalHeight - hingeRect.bottom).toDouble();
+    final bottomHeight = math
+        .max(0.0, totalHeight - hingeRect.bottom)
+        .toDouble();
     final gapHeight = math.max(dividerWidth, hingeRect.height).toDouble();
 
     if (topHeight <= 0 || bottomHeight <= 0) return null;

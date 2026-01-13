@@ -39,9 +39,8 @@ class MyApp extends StatelessWidget {
             child: AppStartupGate(
               listenable: startup,
               isReady: () => startup.isReady,
-              overlayBuilder: (_) => const AppStartupOverlay(
-                title: 'Mobile Core Kit',
-              ),
+              overlayBuilder: (_) =>
+                  const AppStartupOverlay(title: 'Mobile Core Kit'),
               child: child ?? const SizedBox.shrink(),
             ),
           );

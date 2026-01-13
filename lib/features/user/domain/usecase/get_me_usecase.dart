@@ -10,4 +10,3 @@ class GetMeUseCase {
 
   Future<Either<AuthFailure, UserEntity>> call() => _repository.getMe();
 }
-

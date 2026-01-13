@@ -20,7 +20,8 @@ extension ScreenUtils on BuildContext {
   // Device type checks
   bool get isMobile => screenWidth < Breakpoints.sm;
 
-  bool get isTablet => screenWidth >= Breakpoints.sm && screenWidth < Breakpoints.lg;
+  bool get isTablet =>
+      screenWidth >= Breakpoints.sm && screenWidth < Breakpoints.lg;
 
   bool get isDesktop => screenWidth >= Breakpoints.lg;
 
@@ -30,9 +31,11 @@ extension ScreenUtils on BuildContext {
   String get breakpointName => Breakpoints.getBreakpointName(screenWidth);
 
   // Orientation checks
-  bool get isPortrait => MediaQuery.of(this).orientation == Orientation.portrait;
+  bool get isPortrait =>
+      MediaQuery.of(this).orientation == Orientation.portrait;
 
-  bool get isLandscape => MediaQuery.of(this).orientation == Orientation.landscape;
+  bool get isLandscape =>
+      MediaQuery.of(this).orientation == Orientation.landscape;
 
   // Text scale factor (accessibility)
   double get textScaleFactor => MediaQuery.of(this).textScaler.scale(1.0);

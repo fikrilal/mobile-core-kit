@@ -31,33 +31,44 @@ class SurfaceTokenTable {
 
       case SurfaceKind.reading:
         return switch (widthClass) {
-          WindowWidthClass.compact => const SurfaceTokens(contentMaxWidth: null),
+          WindowWidthClass.compact => const SurfaceTokens(
+            contentMaxWidth: null,
+          ),
           _ => const SurfaceTokens(contentMaxWidth: 720),
         };
 
       case SurfaceKind.form:
       case SurfaceKind.settings:
         return switch (widthClass) {
-          WindowWidthClass.compact => const SurfaceTokens(contentMaxWidth: null),
+          WindowWidthClass.compact => const SurfaceTokens(
+            contentMaxWidth: null,
+          ),
           _ => const SurfaceTokens(contentMaxWidth: 720),
         };
 
       case SurfaceKind.dashboard:
         return switch (widthClass) {
-          WindowWidthClass.compact => const SurfaceTokens(contentMaxWidth: null),
+          WindowWidthClass.compact => const SurfaceTokens(
+            contentMaxWidth: null,
+          ),
           WindowWidthClass.medium => const SurfaceTokens(contentMaxWidth: 900),
-          WindowWidthClass.expanded => const SurfaceTokens(contentMaxWidth: 1100),
+          WindowWidthClass.expanded => const SurfaceTokens(
+            contentMaxWidth: 1100,
+          ),
           WindowWidthClass.large => const SurfaceTokens(contentMaxWidth: 1200),
-          WindowWidthClass.extraLarge => const SurfaceTokens(contentMaxWidth: 1200),
+          WindowWidthClass.extraLarge => const SurfaceTokens(
+            contentMaxWidth: 1200,
+          ),
         };
 
       case SurfaceKind.media:
         return switch (widthClass) {
-          WindowWidthClass.compact => const SurfaceTokens(contentMaxWidth: null),
+          WindowWidthClass.compact => const SurfaceTokens(
+            contentMaxWidth: null,
+          ),
           WindowWidthClass.medium => const SurfaceTokens(contentMaxWidth: 960),
           _ => const SurfaceTokens(contentMaxWidth: 1200),
         };
     }
   }
 }
-

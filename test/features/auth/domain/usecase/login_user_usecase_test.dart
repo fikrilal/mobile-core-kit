@@ -18,17 +18,18 @@ void main() {
   });
 
   group('LoginUserUseCase', () {
-    test('returns validation failure and does not call repo when invalid', () async {
-      final repo = _MockAuthRepository();
-      final usecase = LoginUserUseCase(repo);
+    test(
+      'returns validation failure and does not call repo when invalid',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = LoginUserUseCase(repo);
 
-      final result = await usecase(
-        const LoginRequestEntity(email: 'not-an-email', password: '   '),
-      );
+        final result = await usecase(
+          const LoginRequestEntity(email: 'not-an-email', password: '   '),
+        );
 
-      expect(result.isLeft(), true);
-      result.match(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.match((failure) {
           expect(
             failure,
             const AuthFailure.validation([
@@ -44,55 +45,57 @@ void main() {
               ),
             ]),
           );
-        },
-        (_) => fail('Expected Left'),
-      );
+        }, (_) => fail('Expected Left'));
 
-      verifyNever(() => repo.login(any()));
-    });
+        verifyNever(() => repo.login(any()));
+      },
+    );
 
-    test('normalizes email but preserves password before calling repo',
-        () async {
-      final repo = _MockAuthRepository();
-      const session = AuthSessionEntity(
-        tokens: AuthTokensEntity(
-          accessToken: 'access',
-          refreshToken: 'refresh',
-          tokenType: 'Bearer',
-          expiresIn: 900,
-        ),
-        user: UserEntity(id: 'u1', email: 'user@example.com'),
-      );
-      when(() => repo.login(any())).thenAnswer((_) async => right(session));
+    test(
+      'normalizes email but preserves password before calling repo',
+      () async {
+        final repo = _MockAuthRepository();
+        const session = AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: UserEntity(id: 'u1', email: 'user@example.com'),
+        );
+        when(() => repo.login(any())).thenAnswer((_) async => right(session));
 
-      final usecase = LoginUserUseCase(repo);
+        final usecase = LoginUserUseCase(repo);
 
-      final result = await usecase(
-        const LoginRequestEntity(
-          email: ' user@example.com ',
-          password: ' password ',
-        ),
-      );
+        final result = await usecase(
+          const LoginRequestEntity(
+            email: ' user@example.com ',
+            password: ' password ',
+          ),
+        );
 
-      expect(result.isRight(), true);
-      final captured = verify(() => repo.login(captureAny())).captured;
-      expect(captured.length, 1);
-      final request = captured.single as LoginRequestEntity;
-      expect(request.email, 'user@example.com');
-      expect(request.password, ' password ');
-    });
+        expect(result.isRight(), true);
+        final captured = verify(() => repo.login(captureAny())).captured;
+        expect(captured.length, 1);
+        final request = captured.single as LoginRequestEntity;
+        expect(request.email, 'user@example.com');
+        expect(request.password, ' password ');
+      },
+    );
 
-    test('returns email-only validation failure when password is valid', () async {
-      final repo = _MockAuthRepository();
-      final usecase = LoginUserUseCase(repo);
+    test(
+      'returns email-only validation failure when password is valid',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = LoginUserUseCase(repo);
 
-      final result = await usecase(
-        const LoginRequestEntity(email: 'not-an-email', password: 'password'),
-      );
+        final result = await usecase(
+          const LoginRequestEntity(email: 'not-an-email', password: 'password'),
+        );
 
-      expect(result.isLeft(), true);
-      result.match(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.match((failure) {
           expect(
             failure,
             const AuthFailure.validation([
@@ -103,11 +106,10 @@ void main() {
               ),
             ]),
           );
-        },
-        (_) => fail('Expected Left'),
-      );
+        }, (_) => fail('Expected Left'));
 
-      verifyNever(() => repo.login(any()));
-    });
+        verifyNever(() => repo.login(any()));
+      },
+    );
   });
 }

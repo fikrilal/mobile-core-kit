@@ -8,13 +8,7 @@ class Redactor {
     'x-access-token',
   };
 
-  static const defaultBodyKeys = {
-    'password',
-    'token',
-    'otp',
-    'pin',
-    'email',
-  };
+  static const defaultBodyKeys = {'password', 'token', 'otp', 'pin', 'email'};
 
   static Map<String, dynamic> redactMap(
     Map<String, dynamic> data, {
@@ -36,7 +30,9 @@ class Redactor {
           result[key] = redactMap(value, bodyKeys: bodyKeys);
         } else if (value is List) {
           result[key] = value.map((e) {
-            if (e is Map<String, dynamic>) return redactMap(e, bodyKeys: bodyKeys);
+            if (e is Map<String, dynamic>) {
+              return redactMap(e, bodyKeys: bodyKeys);
+            }
             return _maskValue(e);
           }).toList();
         } else {
@@ -46,7 +42,9 @@ class Redactor {
         result[key] = redactMap(value, bodyKeys: bodyKeys);
       } else if (value is List) {
         result[key] = value.map((e) {
-          if (e is Map<String, dynamic>) return redactMap(e, bodyKeys: bodyKeys);
+          if (e is Map<String, dynamic>) {
+            return redactMap(e, bodyKeys: bodyKeys);
+          }
           return e;
         }).toList();
       } else {

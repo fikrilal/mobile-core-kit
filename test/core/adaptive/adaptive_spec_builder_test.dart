@@ -29,7 +29,10 @@ void main() {
 
       expect(spec.layout.widthClass, WindowWidthClass.compact);
       expect(spec.layout.heightClass, WindowHeightClass.medium);
-      expect(spec.layout.pagePadding, const EdgeInsets.symmetric(horizontal: 16));
+      expect(
+        spec.layout.pagePadding,
+        const EdgeInsets.symmetric(horizontal: 16),
+      );
       expect(spec.layout.gutter, 12);
       expect(spec.layout.minTapTarget, 48);
       expect(spec.layout.navigation.kind, NavigationKind.bar);
@@ -54,7 +57,10 @@ void main() {
       );
 
       expect(spec.layout.widthClass, WindowWidthClass.expanded);
-      expect(spec.layout.pagePadding, const EdgeInsets.symmetric(horizontal: 32));
+      expect(
+        spec.layout.pagePadding,
+        const EdgeInsets.symmetric(horizontal: 32),
+      );
       expect(spec.layout.navigation.kind, NavigationKind.rail);
     });
   });

@@ -25,23 +25,23 @@ void main() {
   });
 
   group('RegisterUserUseCase', () {
-    test('returns validation failure and does not call repo when invalid',
-        () async {
-      final repo = _MockAuthRepository();
-      final usecase = RegisterUserUseCase(repo);
+    test(
+      'returns validation failure and does not call repo when invalid',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = RegisterUserUseCase(repo);
 
-      final result = await usecase(
-        const RegisterRequestEntity(
-          email: 'not-an-email',
-          password: 'short',
-          firstName: ' ',
-          lastName: 'A',
-        ),
-      );
+        final result = await usecase(
+          const RegisterRequestEntity(
+            email: 'not-an-email',
+            password: 'short',
+            firstName: ' ',
+            lastName: 'A',
+          ),
+        );
 
-      expect(result.isLeft(), true);
-      result.match(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.match((failure) {
           expect(
             failure,
             const AuthFailure.validation([
@@ -67,12 +67,11 @@ void main() {
               ),
             ]),
           );
-        },
-        (_) => fail('Expected Left'),
-      );
+        }, (_) => fail('Expected Left'));
 
-      verifyNever(() => repo.register(any()));
-    });
+        verifyNever(() => repo.register(any()));
+      },
+    );
 
     test('normalizes fields before calling repo', () async {
       final repo = _MockAuthRepository();

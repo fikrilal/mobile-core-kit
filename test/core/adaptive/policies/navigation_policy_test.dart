@@ -11,47 +11,57 @@ void main() {
 
     test('maps width classes to navigation kinds', () {
       expect(
-        policy.derive(
-          widthClass: WindowWidthClass.compact,
-          platform: TargetPlatform.android,
-          input: input,
-        ).kind,
+        policy
+            .derive(
+              widthClass: WindowWidthClass.compact,
+              platform: TargetPlatform.android,
+              input: input,
+            )
+            .kind,
         NavigationKind.bar,
       );
 
       expect(
-        policy.derive(
-          widthClass: WindowWidthClass.medium,
-          platform: TargetPlatform.android,
-          input: input,
-        ).kind,
+        policy
+            .derive(
+              widthClass: WindowWidthClass.medium,
+              platform: TargetPlatform.android,
+              input: input,
+            )
+            .kind,
         NavigationKind.rail,
       );
 
       expect(
-        policy.derive(
-          widthClass: WindowWidthClass.expanded,
-          platform: TargetPlatform.android,
-          input: input,
-        ).kind,
+        policy
+            .derive(
+              widthClass: WindowWidthClass.expanded,
+              platform: TargetPlatform.android,
+              input: input,
+            )
+            .kind,
         NavigationKind.rail,
       );
 
       expect(
-        policy.derive(
-          widthClass: WindowWidthClass.large,
-          platform: TargetPlatform.android,
-          input: input,
-        ).kind,
+        policy
+            .derive(
+              widthClass: WindowWidthClass.large,
+              platform: TargetPlatform.android,
+              input: input,
+            )
+            .kind,
         NavigationKind.extendedRail,
       );
 
       expect(
-        policy.derive(
-          widthClass: WindowWidthClass.extraLarge,
-          platform: TargetPlatform.android,
-          input: input,
-        ).kind,
+        policy
+            .derive(
+              widthClass: WindowWidthClass.extraLarge,
+              platform: TargetPlatform.android,
+              input: input,
+            )
+            .kind,
         NavigationKind.standardDrawer,
       );
     });
@@ -64,15 +74,16 @@ void main() {
     test('always returns NavigationKind.none', () {
       for (final widthClass in WindowWidthClass.values) {
         expect(
-          policy.derive(
-            widthClass: widthClass,
-            platform: TargetPlatform.android,
-            input: input,
-          ).kind,
+          policy
+              .derive(
+                widthClass: widthClass,
+                platform: TargetPlatform.android,
+                input: input,
+              )
+              .kind,
           NavigationKind.none,
         );
       }
     });
   });
 }
-

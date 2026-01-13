@@ -57,14 +57,9 @@ class _ProfileContent extends StatelessWidget {
           children: [
             const AppText.titleLarge('Profile'),
             SizedBox(height: sectionSpacing),
-            AppAvatar(
-              onChangePhoto: () {},
-            ),
+            AppAvatar(onChangePhoto: () {}),
             SizedBox(height: sectionSpacing),
-            const AppIconBadge(
-              icon: Icon(Icons.settings),
-              showDot: true,
-            ),
+            const AppIconBadge(icon: Icon(Icons.settings), showDot: true),
             SizedBox(height: sectionSpacing),
             AppButton(
               text: 'Log out',

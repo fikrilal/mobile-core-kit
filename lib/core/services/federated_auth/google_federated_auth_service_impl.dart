@@ -51,8 +51,9 @@ class GoogleFederatedAuthServiceImpl implements GoogleFederatedAuthService {
     await _ensureGoogleInitialized();
 
     final lightweightAttempt = _googleSignIn.attemptLightweightAuthentication();
-    final GoogleSignInAccount? lightweightAccount =
-        lightweightAttempt == null ? null : await lightweightAttempt;
+    final GoogleSignInAccount? lightweightAccount = lightweightAttempt == null
+        ? null
+        : await lightweightAttempt;
 
     GoogleSignInAccount account;
     try {
@@ -68,9 +69,7 @@ class GoogleFederatedAuthServiceImpl implements GoogleFederatedAuthService {
       throw StateError('Google sign-in did not return tokens.');
     }
 
-    final credential = GoogleAuthProvider.credential(
-      idToken: idToken,
-    );
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
 
     final userCredential = await _firebaseAuth.signInWithCredential(credential);
     final firebaseIdToken = await userCredential.user?.getIdToken(true);

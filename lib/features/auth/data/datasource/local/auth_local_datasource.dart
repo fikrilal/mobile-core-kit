@@ -8,9 +8,8 @@ class AuthLocalDataSource {
 
   Future get _db async => AppDatabase().database;
 
-  Future cacheUserEntity(UserEntity user) async => cacheUser(
-        user.toLocalModel(),
-      );
+  Future cacheUserEntity(UserEntity user) async =>
+      cacheUser(user.toLocalModel());
 
   Future cacheUser(UserLocalModel user) async {
     final db = await _db;
@@ -35,13 +34,15 @@ class AuthLocalDataSource {
     await dao.createTable();
     final existing = await dao.getFirst();
     if (existing != null) {
-      await dao.update(UserLocalModel(
-        id: existing.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        emailVerified: user.emailVerified,
-      ));
+      await dao.update(
+        UserLocalModel(
+          id: existing.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          emailVerified: user.emailVerified,
+        ),
+      );
     }
   }
 

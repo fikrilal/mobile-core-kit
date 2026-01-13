@@ -24,14 +24,13 @@ class AppPageContainer extends StatelessWidget {
     final layout = context.adaptiveLayout;
 
     final resolvedPadding = padding ?? layout.pagePadding;
-    final safePadding = safeArea ? MediaQuery.paddingOf(context) : EdgeInsets.zero;
+    final safePadding = safeArea
+        ? MediaQuery.paddingOf(context)
+        : EdgeInsets.zero;
     final effectivePadding = safePadding.add(resolvedPadding);
 
     final maxWidth = layout.surface(surface).contentMaxWidth;
-    Widget content = Padding(
-      padding: effectivePadding,
-      child: child,
-    );
+    Widget content = Padding(padding: effectivePadding, child: child);
 
     content = Align(
       alignment: alignment,
@@ -46,4 +45,3 @@ class AppPageContainer extends StatelessWidget {
     return content;
   }
 }
-

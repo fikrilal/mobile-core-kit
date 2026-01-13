@@ -6,8 +6,10 @@ part 'auth_failure.freezed.dart';
 @freezed
 sealed class AuthFailure with _$AuthFailure {
   const factory AuthFailure.network() = _NetworkFailure;
+
   /// User intentionally cancelled a sign-in flow (e.g. dismiss Google account picker).
   const factory AuthFailure.cancelled() = _CancelledFailure;
+
   /// Session is missing/expired or the user is not authenticated.
   ///
   /// Use this for protected endpoints that return 401 (e.g. `GET /users/me`),

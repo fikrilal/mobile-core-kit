@@ -3,11 +3,7 @@
 /// This type intentionally lives outside the network layer so that domain code
 /// (use cases, failures) can depend on it without importing API/HTTP concepts.
 class ValidationError {
-  const ValidationError({
-    this.field,
-    required this.message,
-    this.code,
-  });
+  const ValidationError({this.field, required this.message, this.code});
 
   final String? field;
   final String message;
@@ -44,4 +40,3 @@ class ValidationError {
   @override
   int get hashCode => Object.hash(field, message, code);
 }
-

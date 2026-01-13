@@ -20,10 +20,9 @@ abstract class AuthTokensModel with _$AuthTokensModel {
       _$AuthTokensModelFromJson(json);
 
   AuthTokensEntity toEntity() => AuthTokensEntity(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        tokenType: tokenType,
-        expiresIn: expiresIn,
-      );
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+    tokenType: tokenType,
+    expiresIn: expiresIn,
+  );
 }
-

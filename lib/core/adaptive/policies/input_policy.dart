@@ -25,16 +25,12 @@ class _StandardInputPolicy extends InputPolicy {
     final hoverEnabled = _pointerHoverEnabled(platform: platform);
 
     final mode = switch (platform) {
-      TargetPlatform.android || TargetPlatform.iOS => hoverEnabled
-          ? InputMode.mixed
-          : InputMode.touch,
+      TargetPlatform.android ||
+      TargetPlatform.iOS => hoverEnabled ? InputMode.mixed : InputMode.touch,
       _ => hoverEnabled ? InputMode.pointer : InputMode.mixed,
     };
 
-    return InputSpec(
-      mode: mode,
-      pointerHoverEnabled: hoverEnabled,
-    );
+    return InputSpec(mode: mode, pointerHoverEnabled: hoverEnabled);
   }
 
   bool _pointerHoverEnabled({required TargetPlatform platform}) {

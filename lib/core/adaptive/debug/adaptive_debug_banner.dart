@@ -54,4 +54,3 @@ class AdaptiveDebugBanner extends StatelessWidget {
     );
   }
 }
-

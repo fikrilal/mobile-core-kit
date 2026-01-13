@@ -27,9 +27,7 @@ class AnalyticsTracker {
   Future<void> trackLogin({required String method}) {
     return _analyticsService.logEvent(
       AnalyticsEvents.login,
-      parameters: {
-        AnalyticsParams.method: method,
-      },
+      parameters: {AnalyticsParams.method: method},
     );
   }
 

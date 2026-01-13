@@ -59,13 +59,17 @@ class Log {
     _crashlyticsReportingEnabled = enabled;
   }
 
-  static void debug(dynamic message, {String? name}) => _log(message, _debug, name: name);
+  static void debug(dynamic message, {String? name}) =>
+      _log(message, _debug, name: name);
 
-  static void info(dynamic message, {String? name}) => _log(message, _info, name: name);
+  static void info(dynamic message, {String? name}) =>
+      _log(message, _info, name: name);
 
-  static void warning(dynamic message, {String? name}) => _log(message, _warning, name: name);
+  static void warning(dynamic message, {String? name}) =>
+      _log(message, _warning, name: name);
 
-  static void verbose(dynamic message, {String? name}) => _log(message, _verbose, name: name);
+  static void verbose(dynamic message, {String? name}) =>
+      _log(message, _verbose, name: name);
 
   static void error(
     dynamic message, [
@@ -73,7 +77,14 @@ class Log {
     StackTrace? stackTrace,
     bool report = false,
     String? name,
-  ]) => _log(message, _error, error: error, stackTrace: stackTrace, report: report, name: name);
+  ]) => _log(
+    message,
+    _error,
+    error: error,
+    stackTrace: stackTrace,
+    report: report,
+    name: name,
+  );
 
   static void wtf(
     dynamic message, [
@@ -81,7 +92,14 @@ class Log {
     StackTrace? stackTrace,
     bool report = false,
     String? name,
-  ]) => _log(message, _wtf, error: error, stackTrace: stackTrace, report: report, name: name);
+  ]) => _log(
+    message,
+    _wtf,
+    error: error,
+    stackTrace: stackTrace,
+    report: report,
+    name: name,
+  );
 
   static void _log(
     dynamic message,
@@ -97,7 +115,12 @@ class Log {
     final String logTag = name ?? BuildConfig.env.name.toUpperCase();
 
     if (shouldLog) {
-      developer.log(logMessage, name: logTag, error: error, stackTrace: stackTrace);
+      developer.log(
+        logMessage,
+        name: logTag,
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       if (level >= _error && kDebugMode) {
         developer.log('⚠️ $logMessage', name: logTag);

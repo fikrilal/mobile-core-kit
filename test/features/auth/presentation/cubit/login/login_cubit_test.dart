@@ -58,14 +58,20 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
-      when(() => analytics.trackLogin(method: any(named: 'method')))
-          .thenAnswer((_) async {});
+      when(
+        () => analytics.trackLogin(method: any(named: 'method')),
+      ).thenAnswer((_) async {});
 
       when(() => sessionManager.login(any())).thenAnswer((_) async {});
     });
 
     test('emits field errors and does not call usecase when invalid', () async {
-      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
+      final cubit = LoginCubit(
+        loginUser,
+        googleSignIn,
+        sessionManager,
+        analytics,
+      );
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
@@ -102,7 +108,12 @@ void main() {
       );
       when(() => loginUser(any())).thenAnswer((_) async => right(session));
 
-      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
+      final cubit = LoginCubit(
+        loginUser,
+        googleSignIn,
+        sessionManager,
+        analytics,
+      );
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
@@ -113,10 +124,7 @@ void main() {
 
       expect(emitted.length, 4);
       expect(emitted[2].status, LoginStatus.submitting);
-      expect(
-        emitted[2].submittingMethod,
-        LoginSubmitMethod.emailPassword,
-      );
+      expect(emitted[2].submittingMethod, LoginSubmitMethod.emailPassword);
       expect(emitted[3].status, LoginStatus.success);
       expect(emitted[3].submittingMethod, isNull);
 
@@ -133,36 +141,43 @@ void main() {
       await cubit.close();
     });
 
-    test('emits submitting -> failure for invalid credentials and resets on edit',
-        () async {
-      when(
-        () => loginUser(any()),
-      ).thenAnswer((_) async => left(const AuthFailure.invalidCredentials()));
+    test(
+      'emits submitting -> failure for invalid credentials and resets on edit',
+      () async {
+        when(
+          () => loginUser(any()),
+        ).thenAnswer((_) async => left(const AuthFailure.invalidCredentials()));
 
-      final cubit = LoginCubit(loginUser, googleSignIn, sessionManager, analytics);
-      final emitted = <LoginState>[];
-      final sub = cubit.stream.listen(emitted.add);
+        final cubit = LoginCubit(
+          loginUser,
+          googleSignIn,
+          sessionManager,
+          analytics,
+        );
+        final emitted = <LoginState>[];
+        final sub = cubit.stream.listen(emitted.add);
 
-      cubit.emailChanged('user@example.com');
-      cubit.passwordChanged('password');
-      await cubit.submit();
-      await pumpEventQueue();
+        cubit.emailChanged('user@example.com');
+        cubit.passwordChanged('password');
+        await cubit.submit();
+        await pumpEventQueue();
 
-      expect(emitted.length, 4);
-      expect(emitted[3].status, LoginStatus.failure);
-      expect(emitted[3].errorMessage, 'Invalid email or password');
+        expect(emitted.length, 4);
+        expect(emitted[3].status, LoginStatus.failure);
+        expect(emitted[3].errorMessage, 'Invalid email or password');
 
-      cubit.emailChanged('user@example.com');
-      await pumpEventQueue();
+        cubit.emailChanged('user@example.com');
+        await pumpEventQueue();
 
-      expect(emitted.last.status, LoginStatus.initial);
-      expect(emitted.last.errorMessage, isNull);
+        expect(emitted.last.status, LoginStatus.initial);
+        expect(emitted.last.errorMessage, isNull);
 
-      verifyNever(() => sessionManager.login(any()));
-      verifyNever(() => analytics.trackLogin(method: any(named: 'method')));
+        verifyNever(() => sessionManager.login(any()));
+        verifyNever(() => analytics.trackLogin(method: any(named: 'method')));
 
-      await sub.cancel();
-      await cubit.close();
-    });
+        await sub.cancel();
+        await cubit.close();
+      },
+    );
   });
 }

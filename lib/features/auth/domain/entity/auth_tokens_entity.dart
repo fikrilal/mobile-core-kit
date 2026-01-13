@@ -9,6 +9,7 @@ abstract class AuthTokensEntity with _$AuthTokensEntity {
     required String refreshToken,
     required String tokenType,
     required int expiresIn,
+
     /// When the access token is expected to expire.
     ///
     /// This is computed client-side using `expiresIn` at the time tokens are

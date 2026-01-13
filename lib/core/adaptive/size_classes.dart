@@ -39,4 +39,3 @@ WindowHeightClass heightClassFor(double height) {
   }
   return WindowHeightClass.expanded;
 }
-

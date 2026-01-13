@@ -18,13 +18,11 @@ class AnalyticsRouteObserver extends NavigatorObserver {
     }
 
     final previousName = previousRoute is PageRoute
-        ? previousRoute.settings.name ?? previousRoute.settings.arguments?.toString()
+        ? previousRoute.settings.name ??
+              previousRoute.settings.arguments?.toString()
         : null;
 
-    _tracker.trackScreen(
-      screenName,
-      previous: previousName,
-    );
+    _tracker.trackScreen(screenName, previous: previousName);
   }
 
   @override
@@ -45,4 +43,3 @@ class AnalyticsRouteObserver extends NavigatorObserver {
     _trackCurrent(previousRoute, route);
   }
 }
-

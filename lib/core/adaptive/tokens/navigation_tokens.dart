@@ -5,4 +5,3 @@ class NavigationTokens {
   static const double extendedRailWidth = 256;
   static const double drawerWidth = 304;
 }
-

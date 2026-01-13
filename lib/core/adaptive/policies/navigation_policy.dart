@@ -42,7 +42,8 @@ class _StandardNavigationPolicy extends NavigationPolicy {
   }) {
     final kind = switch (widthClass) {
       WindowWidthClass.compact => NavigationKind.bar,
-      WindowWidthClass.medium || WindowWidthClass.expanded => NavigationKind.rail,
+      WindowWidthClass.medium ||
+      WindowWidthClass.expanded => NavigationKind.rail,
       WindowWidthClass.large => NavigationKind.extendedRail,
       WindowWidthClass.extraLarge => NavigationKind.standardDrawer,
     };
@@ -55,4 +56,3 @@ class _StandardNavigationPolicy extends NavigationPolicy {
     );
   }
 }
-

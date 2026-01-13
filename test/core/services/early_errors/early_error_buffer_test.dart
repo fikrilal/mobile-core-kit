@@ -14,12 +14,7 @@ class _FakeReporter implements EarlyErrorReporter {
     bool fatal = false,
   }) {
     errors.add(
-      _RecordedError(
-        error: error,
-        stack: stack,
-        reason: reason,
-        fatal: fatal,
-      ),
+      _RecordedError(error: error, stack: stack, reason: reason, fatal: fatal),
     );
     return Future.value();
   }
@@ -29,12 +24,7 @@ class _FakeReporter implements EarlyErrorReporter {
     FlutterErrorDetails details, {
     bool fatal = false,
   }) {
-    flutterErrors.add(
-      _RecordedFlutterError(
-        details: details,
-        fatal: fatal,
-      ),
-    );
+    flutterErrors.add(_RecordedFlutterError(details: details, fatal: fatal));
     return Future.value();
   }
 }
@@ -54,10 +44,7 @@ class _RecordedError {
 }
 
 class _RecordedFlutterError {
-  const _RecordedFlutterError({
-    required this.details,
-    required this.fatal,
-  });
+  const _RecordedFlutterError({required this.details, required this.fatal});
 
   final FlutterErrorDetails details;
   final bool fatal;
@@ -121,4 +108,3 @@ void main() {
     });
   });
 }
-

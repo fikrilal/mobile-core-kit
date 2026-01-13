@@ -5,10 +5,7 @@ abstract class IAnalyticsService {
   /// Logs a raw analytics event.
   ///
   /// Prefer using a higher-level tracker where possible.
-  Future<void> logEvent(
-    String eventName, {
-    Map<String, Object?>? parameters,
-  });
+  Future<void> logEvent(String eventName, {Map<String, Object?>? parameters});
 
   /// Logs a screen view.
   Future<void> logScreenView(

@@ -14,12 +14,7 @@ void main() {
 
   testWidgets('renders child when not loading', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        const AppLoadingOverlay(
-          isLoading: false,
-          child: Text('Content'),
-        ),
-      ),
+      wrap(const AppLoadingOverlay(isLoading: false, child: Text('Content'))),
     );
 
     expect(find.text('Content'), findsOneWidget);
@@ -32,8 +27,9 @@ void main() {
     );
   });
 
-  testWidgets('blocks interaction and shows message when loading',
-      (tester) async {
+  testWidgets('blocks interaction and shows message when loading', (
+    tester,
+  ) async {
     var tapCount = 0;
 
     await tester.pumpWidget(
@@ -64,8 +60,9 @@ void main() {
     expect(tapCount, 0);
   });
 
-  testWidgets('wraps with PopScope when blockBackButton is true',
-      (tester) async {
+  testWidgets('wraps with PopScope when blockBackButton is true', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(
         const AppLoadingOverlay(
@@ -80,8 +77,9 @@ void main() {
     expect(tester.widget<PopScope>(find.byType(PopScope)).canPop, isFalse);
   });
 
-  testWidgets('does not use PopScope when blockBackButton is false',
-      (tester) async {
+  testWidgets('does not use PopScope when blockBackButton is false', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(
         const AppLoadingOverlay(

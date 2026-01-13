@@ -18,4 +18,3 @@ class _StandardPlatformPolicy extends PlatformPolicy {
     return PlatformSpec(platform: platform);
   }
 }
-

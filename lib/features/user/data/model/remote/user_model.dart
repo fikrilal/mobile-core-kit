@@ -22,11 +22,11 @@ abstract class UserModel with _$UserModel {
       _$UserModelFromJson(json);
 
   UserEntity toEntity() => UserEntity(
-        id: id,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        emailVerified: emailVerified,
-        createdAt: createdAt,
-      );
+    id: id,
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+    emailVerified: emailVerified,
+    createdAt: createdAt,
+  );
 }

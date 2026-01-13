@@ -90,12 +90,8 @@ void main() {
       final router = GoRouter(
         initialLocation: AppRoutes.root,
         refreshListenable: Listenable.merge([startup, deepLinks]),
-        redirect: (context, state) => appRedirectUri(
-          state.uri,
-          startup,
-          deepLinks,
-          DeepLinkParser(),
-        ),
+        redirect: (context, state) =>
+            appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser()),
         routes: [
           GoRoute(
             path: AppRoutes.root,

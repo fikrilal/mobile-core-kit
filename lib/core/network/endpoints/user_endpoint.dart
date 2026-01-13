@@ -3,4 +3,3 @@ class UserEndpoint {
 
   static const String me = '/users/me';
 }
-

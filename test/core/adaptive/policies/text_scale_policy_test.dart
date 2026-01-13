@@ -16,7 +16,10 @@ void main() {
 
     test('clamp enforces maxScaleFactor via TextScaler.clamp', () {
       final incoming = TextScaler.linear(3.0);
-      const policy = TextScalePolicy.clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0);
+      const policy = TextScalePolicy.clamp(
+        minScaleFactor: 1.0,
+        maxScaleFactor: 2.0,
+      );
 
       final applied = policy.apply(incoming);
 
@@ -26,7 +29,10 @@ void main() {
 
     test('clamp enforces minScaleFactor via TextScaler.clamp', () {
       final incoming = TextScaler.linear(0.5);
-      const policy = TextScalePolicy.clamp(minScaleFactor: 1.0, maxScaleFactor: 2.0);
+      const policy = TextScalePolicy.clamp(
+        minScaleFactor: 1.0,
+        maxScaleFactor: 2.0,
+      );
 
       final applied = policy.apply(incoming);
 
