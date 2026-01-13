@@ -12,10 +12,9 @@ class AdaptiveRegion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final parent = AdaptiveModel.read(context);
-
     return LayoutBuilder(
       builder: (context, constraints) {
+        final parent = AdaptiveModel.of(context);
         final media = MediaQuery.of(context);
         final size = Size(
           constraints.hasBoundedWidth ? constraints.maxWidth : media.size.width,
