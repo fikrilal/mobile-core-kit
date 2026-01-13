@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
 
 import '../../../../core/theme/responsive/spacing.dart';
 import '../../../../core/theme/typography/components/text.dart';
@@ -48,6 +49,12 @@ class _ProfileContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const AppText.titleLarge('Profile'),
+            SizedBox(height: AppSpacing.sectionSpacing(context)),
+            AppAvatar(
+              onChangePhoto: () {
+
+              },
+            ),
             SizedBox(height: AppSpacing.sectionSpacing(context)),
             AppButton(
               text: 'Log out',
