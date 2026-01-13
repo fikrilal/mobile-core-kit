@@ -11,20 +11,36 @@ Future<T?> showAdaptiveModal<T>({
   bool useSafeArea = true,
   bool isScrollControlled = true,
   bool? showDragHandle,
+  bool? enableDrag,
   double dialogMaxWidth = 560,
   EdgeInsets? dialogInsetPadding,
+  ShapeBorder? dialogShape,
+  Color? dialogBackgroundColor,
+  ShapeBorder? bottomSheetShape,
+  Color? bottomSheetBackgroundColor,
+  Clip clipBehavior = Clip.none,
 }) {
   final layout = context.adaptiveLayout;
+  final effectiveEnableDrag = enableDrag ?? barrierDismissible;
 
   if (layout.widthClass == WindowWidthClass.compact) {
     return showModalBottomSheet<T>(
       context: context,
       useRootNavigator: useRootNavigator,
       isDismissible: barrierDismissible,
+      enableDrag: effectiveEnableDrag,
       isScrollControlled: isScrollControlled,
       showDragHandle: showDragHandle,
       useSafeArea: useSafeArea,
-      builder: builder,
+      shape: bottomSheetShape,
+      backgroundColor: bottomSheetBackgroundColor,
+      clipBehavior: clipBehavior,
+      builder: (modalContext) {
+        return PopScope(
+          canPop: barrierDismissible,
+          child: builder(modalContext),
+        );
+      },
     );
   }
 
@@ -34,11 +50,17 @@ Future<T?> showAdaptiveModal<T>({
     barrierDismissible: barrierDismissible,
     useSafeArea: useSafeArea,
     builder: (context) {
-      return Dialog(
-        insetPadding: dialogInsetPadding ?? layout.pagePadding,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: dialogMaxWidth),
-          child: builder(context),
+      return PopScope(
+        canPop: barrierDismissible,
+        child: Dialog(
+          insetPadding: dialogInsetPadding ?? layout.pagePadding,
+          shape: dialogShape,
+          backgroundColor: dialogBackgroundColor,
+          clipBehavior: clipBehavior,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: dialogMaxWidth),
+            child: builder(context),
+          ),
         ),
       );
     },

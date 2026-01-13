@@ -1,6 +1,6 @@
 # AppConfirmationDialog
 
-Reusable confirmation dialog with consistent layout, spacing, and button styles.
+Reusable, adaptive confirmation modal with consistent layout, spacing, and button styles.
 
 ## Usage
 
@@ -24,7 +24,9 @@ if (confirmed == true) {
 
 ## Dismiss behavior (template defaults)
 
+- Presentation:
+  - Compact width → modal bottom sheet
+  - Medium+ width → dialog
 - `barrierDismissible` defaults to `isCancelEnabled && !isLoading`.
 - Back navigation is disabled when `barrierDismissible` is false.
-- If dismissed via barrier/back (when allowed), the helper resolves to `false` and calls `onCancel` (if provided).
-
+- If dismissed via barrier/back/drag (when allowed), the helper resolves to `false` and calls `onCancel` (if provided).
