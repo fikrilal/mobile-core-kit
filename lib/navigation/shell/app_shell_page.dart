@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/widgets/navigation/navigation.dart';
+import '../../core/adaptive/widgets/adaptive_scaffold.dart';
 
 class AppShellPage extends StatelessWidget {
   const AppShellPage({
@@ -13,30 +13,27 @@ class AppShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AdaptiveScaffold(
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: (index) {
+        navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        );
+      },
+      destinations: const [
+        AdaptiveScaffoldDestination(
+          label: 'Home',
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+        ),
+        AdaptiveScaffoldDestination(
+          label: 'Profile',
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person),
+        ),
+      ],
       body: navigationShell,
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        items: const [
-          AppBottomNavItem(
-            label: 'Home',
-            icon: Icons.home_outlined,
-            selectedIcon: Icons.home,
-          ),
-          AppBottomNavItem(
-            label: 'Profile',
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-          ),
-        ],
-      ),
     );
   }
 }
-

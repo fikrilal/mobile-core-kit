@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
@@ -37,61 +39,68 @@ class _SignInForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.space16),
-      child: BlocBuilder<LoginCubit, LoginState>(
-        builder: (context, state) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppTextField(
-                fieldType: FieldType.email,
-                labelText: 'Email',
-                errorText: state.emailError,
-                onChanged: context.read<LoginCubit>().emailChanged,
-              ),
-              const SizedBox(height: AppSpacing.space16),
-              AppTextField(
-                fieldType: FieldType.password,
-                labelText: 'Password',
-                errorText: state.passwordError,
-                onChanged: context.read<LoginCubit>().passwordChanged,
-              ),
-              const SizedBox(height: AppSpacing.space24),
-              AppButton.primary(
-                text: 'Sign In',
-                isExpanded: true,
-                isLoading: state.isSubmittingEmailPassword,
-                isDisabled: !state.canSubmit,
-                semanticLabel: 'Sign in to your account',
-                onPressed: state.canSubmit
-                    ? () => context.read<LoginCubit>().submit()
-                    : null,
-              ),
-              const SizedBox(height: AppSpacing.space12),
-              AppButton.outline(
-                text: 'Continue with Google',
-                isExpanded: true,
-                isLoading: state.isSubmittingGoogle,
-                isDisabled: state.isSubmitting,
-                semanticLabel: 'Continue with Google',
-                onPressed: state.isSubmitting
-                    ? null
-                    : () => context.read<LoginCubit>().signInWithGoogle(),
-              ),
-              const SizedBox(height: AppSpacing.space12),
-              TextButton(
-                onPressed: state.isSubmitting
-                    ? null
-                    : () => context.go(AuthRoutes.register),
-                child: const AppText.bodyMedium(
-                  'Don’t have an account? Create one',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          );
-        },
+    return SafeArea(
+      top: false,
+      child: AppPageContainer(
+        surface: SurfaceKind.form,
+        safeArea: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
+          child: BlocBuilder<LoginCubit, LoginState>(
+            builder: (context, state) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppTextField(
+                    fieldType: FieldType.email,
+                    labelText: 'Email',
+                    errorText: state.emailError,
+                    onChanged: context.read<LoginCubit>().emailChanged,
+                  ),
+                  const SizedBox(height: AppSpacing.space16),
+                  AppTextField(
+                    fieldType: FieldType.password,
+                    labelText: 'Password',
+                    errorText: state.passwordError,
+                    onChanged: context.read<LoginCubit>().passwordChanged,
+                  ),
+                  const SizedBox(height: AppSpacing.space24),
+                  AppButton.primary(
+                    text: 'Sign In',
+                    isExpanded: true,
+                    isLoading: state.isSubmittingEmailPassword,
+                    isDisabled: !state.canSubmit,
+                    semanticLabel: 'Sign in to your account',
+                    onPressed: state.canSubmit
+                        ? () => context.read<LoginCubit>().submit()
+                        : null,
+                  ),
+                  const SizedBox(height: AppSpacing.space12),
+                  AppButton.outline(
+                    text: 'Continue with Google',
+                    isExpanded: true,
+                    isLoading: state.isSubmittingGoogle,
+                    isDisabled: state.isSubmitting,
+                    semanticLabel: 'Continue with Google',
+                    onPressed: state.isSubmitting
+                        ? null
+                        : () => context.read<LoginCubit>().signInWithGoogle(),
+                  ),
+                  const SizedBox(height: AppSpacing.space12),
+                  TextButton(
+                    onPressed: state.isSubmitting
+                        ? null
+                        : () => context.go(AuthRoutes.register),
+                    child: const AppText.bodyMedium(
+                      'Don’t have an account? Create one',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

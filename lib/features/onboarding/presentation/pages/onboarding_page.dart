@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/theme/responsive/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
@@ -13,9 +15,10 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: AppPageContainer(
+        surface: SurfaceKind.reading,
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.space24),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.space24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
