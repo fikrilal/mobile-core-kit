@@ -174,9 +174,18 @@ class _CommandRunner {
       'cmd.exe',
       ['/C', cmd],
       workingDirectory: _rootDir.path,
-      mode: ProcessStartMode.inheritStdio,
+      mode: ProcessStartMode.normal,
     );
-    return process.exitCode;
+
+    // Non-interactive safe: prevent Windows console handshake hangs in PTY runners
+    // by closing stdin (equivalent to `< /dev/null` in bash).
+    await process.stdin.close();
+
+    final stdoutFuture = stdout.addStream(process.stdout);
+    final stderrFuture = stderr.addStream(process.stderr);
+    final exitCode = await process.exitCode;
+    await Future.wait([stdoutFuture, stderrFuture]);
+    return exitCode;
   }
 
   static String _toWindowsPath(String wslPath) {

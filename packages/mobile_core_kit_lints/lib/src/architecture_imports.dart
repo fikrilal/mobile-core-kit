@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/error/error.dart' show ErrorSeverity;
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:glob/glob.dart';
@@ -20,7 +21,17 @@ class ArchitectureImportsLint extends DartLintRule {
         'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
     correctionMessage:
         'Refactor to comply, or add an explicit exception in tool/lints/architecture_lints.yaml.',
+    errorSeverity: ErrorSeverity.ERROR,
   );
+
+  static const _configErrorCode = LintCode(
+    name: 'architecture_imports_config',
+    problemMessage: 'Architecture lint configuration error: {0}',
+    correctionMessage: 'Fix tool/lints/architecture_lints.yaml and rerun.',
+    errorSeverity: ErrorSeverity.ERROR,
+  );
+
+  static final Set<String> _reportedConfigErrors = {};
 
   @override
   void run(
@@ -40,10 +51,23 @@ class ArchitectureImportsLint extends DartLintRule {
       projectRoot: projectRoot,
       options: _options,
     );
-    final config = _ArchitectureImportsConfigCache.load(
+    final configLoadResult = _ArchitectureImportsConfigCache.load(
       configPath: configPath,
       fallbackPackageName: _readPackageName(projectRoot) ?? 'mobile_core_kit',
     );
+    if (configLoadResult.error != null) {
+      final key =
+          '$configPath@${configLoadResult.mtime?.millisecondsSinceEpoch ?? 'missing'}';
+      context.registry.addCompilationUnit((unit) {
+        if (!_reportedConfigErrors.add(key)) return;
+        reporter.atNode(unit, _configErrorCode, arguments: [
+          configLoadResult.error!,
+        ]);
+      });
+      return;
+    }
+
+    final config = configLoadResult.config;
     if (config == null) return;
 
     void check(UriBasedDirective directive) {
@@ -176,47 +200,90 @@ class _ProjectRootFinder {
 }
 
 class _ArchitectureImportsConfigCache {
-  static ArchitectureImportsConfig? load({
+  static _ConfigLoadResult load({
     required String configPath,
     required String fallbackPackageName,
   }) {
     final file = File(configPath);
 
-    final mtime = file.existsSync() ? file.lastModifiedSync() : null;
+    final exists = file.existsSync();
+    final mtime = exists ? file.lastModifiedSync() : null;
     final cached = _cache[configPath];
-    if (cached != null && cached.mtime == mtime) {
-      return cached.config;
+    if (cached != null && cached.result.mtime == mtime) {
+      return cached.result;
     }
 
-    final config = ArchitectureImportsConfig.tryParse(
-      yamlFile: file.existsSync() ? file : null,
+    if (!exists) {
+      final result = _ConfigLoadResult(
+        mtime: null,
+        config: null,
+        error: 'Missing config file at "$configPath".',
+      );
+      _cache[configPath] = _CacheEntry(result);
+      return result;
+    }
+
+    String yaml;
+    try {
+      yaml = file.readAsStringSync();
+    } catch (e) {
+      final result = _ConfigLoadResult(
+        mtime: mtime,
+        config: null,
+        error: 'Failed to read config file "$configPath": $e',
+      );
+      _cache[configPath] = _CacheEntry(result);
+      return result;
+    }
+
+    final parsed = ArchitectureImportsConfig.tryParseYamlWithError(
+      yaml: yaml,
       fallbackPackageName: fallbackPackageName,
     );
-    _cache[configPath] = _CacheEntry(mtime: mtime, config: config);
-    return config;
+    final result = _ConfigLoadResult(
+      mtime: mtime,
+      config: parsed.config,
+      error: parsed.error,
+    );
+    _cache[configPath] = _CacheEntry(result);
+    return result;
   }
 
   static final Map<String, _CacheEntry> _cache = {};
 }
 
 class _CacheEntry {
-  const _CacheEntry({required this.mtime, required this.config});
+  const _CacheEntry(this.result);
+
+  final _ConfigLoadResult result;
+}
+
+class _ConfigLoadResult {
+  const _ConfigLoadResult({
+    required this.mtime,
+    required this.config,
+    required this.error,
+  });
 
   final DateTime? mtime;
   final ArchitectureImportsConfig? config;
+  final String? error;
 }
 
 class ArchitectureImportsConfig {
-  ArchitectureImportsConfig({required this.packageName, required this.rules});
+  ArchitectureImportsConfig._({
+    required this.packageName,
+    required List<_ImportRule> rules,
+  }) : _rules = rules;
 
   final String packageName;
-  final List<_ImportRule> rules;
+  final List<_ImportRule> _rules;
 
   ArchitectureImportViolation? firstViolation({
     required String sourcePath,
     required String targetPath,
   }) {
-    for (final rule in rules) {
+    for (final rule in _rules) {
       final violation = rule.check(
         sourcePath: sourcePath,
         targetPath: targetPath,
@@ -248,20 +315,36 @@ class ArchitectureImportsConfig {
     required String? yaml,
     required String fallbackPackageName,
   }) {
+    return tryParseYamlWithError(
+      yaml: yaml,
+      fallbackPackageName: fallbackPackageName,
+    ).config;
+  }
+
+  static ({ArchitectureImportsConfig? config, String? error})
+  tryParseYamlWithError({
+    required String? yaml,
+    required String fallbackPackageName,
+  }) {
     if (yaml == null) {
-      return ArchitectureImportsConfig(
-        packageName: fallbackPackageName,
-        rules: const [],
+      return (
+        config: ArchitectureImportsConfig._(
+          packageName: fallbackPackageName,
+          rules: const [],
+        ),
+        error: null,
       );
     }
 
     Object? parsed;
     try {
       parsed = loadYaml(yaml);
-    } catch (_) {
-      return null;
+    } catch (e) {
+      return (config: null, error: 'Invalid YAML: $e');
     }
-    if (parsed is! YamlMap) return null;
+    if (parsed is! YamlMap) {
+      return (config: null, error: 'Invalid YAML: expected a map at the root.');
+    }
 
     final rawPackageName = parsed['package_name'];
     final packageName =
@@ -271,9 +354,9 @@ class ArchitectureImportsConfig {
 
     final rulesYaml = parsed['rules'];
     if (rulesYaml is! YamlList) {
-      return ArchitectureImportsConfig(
-        packageName: packageName,
-        rules: const [],
+      return (
+        config: null,
+        error: 'Invalid config: missing required `rules` list.',
       );
     }
 
@@ -320,7 +403,17 @@ class ArchitectureImportsConfig {
       );
     }
 
-    return ArchitectureImportsConfig(packageName: packageName, rules: rules);
+    if (rulesYaml.isNotEmpty && rules.isEmpty) {
+      return (
+        config: null,
+        error: 'Invalid config: no valid rules parsed (check YAML schema).',
+      );
+    }
+
+    return (
+      config: ArchitectureImportsConfig._(packageName: packageName, rules: rules),
+      error: null,
+    );
   }
 }
 

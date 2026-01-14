@@ -43,6 +43,13 @@ tool/agent/dartw run custom_lint
 tool/agent/dartw run tool/verify.dart --env dev
 ```
 
+In non-interactive runners (Codex CLI PTY sessions / scripts), prefer `winrun` with stdin redirected:
+
+```bash
+tool/agent/winrun --no-stdin -- ./.fvm/flutter_sdk/bin/dart.bat run custom_lint
+tool/agent/winrun --no-stdin -- ./.fvm/flutter_sdk/bin/dart.bat run tool/verify.dart --env dev
+```
+
 ## IDE Setup
 
 Custom linting is enabled through `analysis_options.yaml`:

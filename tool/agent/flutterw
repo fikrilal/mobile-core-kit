@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+no_stdin=0
+if [[ "${1:-}" == "--no-stdin" ]]; then
+  no_stdin=1
+  shift
+fi
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -z "$repo_root" ]]; then
@@ -10,6 +16,20 @@ fi
 if ! command -v cmd.exe >/dev/null 2>&1; then
   echo "ERROR: cmd.exe not found. This wrapper is intended for WSL Windows interop." >&2
   exit 1
+fi
+
+winrun="$script_dir/winrun"
+if [[ ! -x "$winrun" ]]; then
+  echo "ERROR: $winrun not found or not executable." >&2
+  exit 1
+fi
+
+local_flutter_bat="$repo_root/.fvm/flutter_sdk/bin/flutter.bat"
+if [[ -f "$local_flutter_bat" ]]; then
+  if [[ $no_stdin -eq 1 ]]; then
+    exec "$winrun" --no-stdin -- "$local_flutter_bat" "$@"
+  fi
+  exec "$winrun" -- "$local_flutter_bat" "$@"
 fi
 
 fvmrc="$repo_root/.fvmrc"
@@ -39,5 +59,7 @@ else
   flutter_bin="${versions_dir}\\${flutter_version}\\bin\\flutter.bat"
 fi
 
-exec cmd.exe /C "$flutter_bin" "$@"
-
+if [[ $no_stdin -eq 1 ]]; then
+  exec "$winrun" --no-stdin -- "$flutter_bin" "$@"
+fi
+exec "$winrun" -- "$flutter_bin" "$@"
