@@ -16,8 +16,10 @@ class ArchitectureImportsLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'architecture_imports',
-    problemMessage: 'Disallowed import across architecture boundary.',
-    correctionMessage: 'Import "{0}" from "{1}" is not allowed. {2}',
+    problemMessage:
+        'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
+    correctionMessage:
+        'Refactor to comply, or add an explicit exception in tool/lints/architecture_lints.yaml.',
   );
 
   @override
@@ -48,7 +50,7 @@ class ArchitectureImportsLint extends DartLintRule {
       final uriValue = directive.uri.stringValue;
       if (uriValue == null) return;
 
-      final targetRelativePath = _resolveImportToProjectRelativePath(
+      final targetRelativePath = resolveImportToProjectRelativePath(
         uri: uriValue,
         sourceFileAbsolutePath: resolver.path,
         projectRoot: projectRoot,
@@ -65,7 +67,12 @@ class ArchitectureImportsLint extends DartLintRule {
       reporter.atNode(
         directive.uri,
         _code,
-        arguments: [targetRelativePath, sourceRelativePath, violation.reason],
+        arguments: [
+          targetRelativePath,
+          sourceRelativePath,
+          violation.ruleId,
+          violation.reason,
+        ],
       );
     }
 
@@ -102,7 +109,7 @@ bool _isGeneratedDart(String path) =>
 
 String _normalizePath(String value) => value.replaceAll('\\', '/');
 
-String? _resolveImportToProjectRelativePath({
+String? resolveImportToProjectRelativePath({
   required String uri,
   required String sourceFileAbsolutePath,
   required String projectRoot,
@@ -169,7 +176,7 @@ class _ProjectRootFinder {
 }
 
 class _ArchitectureImportsConfigCache {
-  static _ArchitectureImportsConfig? load({
+  static ArchitectureImportsConfig? load({
     required String configPath,
     required String fallbackPackageName,
   }) {
@@ -181,7 +188,7 @@ class _ArchitectureImportsConfigCache {
       return cached.config;
     }
 
-    final config = _ArchitectureImportsConfig.tryParse(
+    final config = ArchitectureImportsConfig.tryParse(
       yamlFile: file.existsSync() ? file : null,
       fallbackPackageName: fallbackPackageName,
     );
@@ -196,16 +203,16 @@ class _CacheEntry {
   const _CacheEntry({required this.mtime, required this.config});
 
   final DateTime? mtime;
-  final _ArchitectureImportsConfig? config;
+  final ArchitectureImportsConfig? config;
 }
 
-class _ArchitectureImportsConfig {
-  _ArchitectureImportsConfig({required this.packageName, required this.rules});
+class ArchitectureImportsConfig {
+  ArchitectureImportsConfig({required this.packageName, required this.rules});
 
   final String packageName;
   final List<_ImportRule> rules;
 
-  _Violation? firstViolation({
+  ArchitectureImportViolation? firstViolation({
     required String sourcePath,
     required String targetPath,
   }) {
@@ -219,34 +226,52 @@ class _ArchitectureImportsConfig {
     return null;
   }
 
-  static _ArchitectureImportsConfig? tryParse({
+  static ArchitectureImportsConfig? tryParse({
     required File? yamlFile,
     required String fallbackPackageName,
   }) {
-    if (yamlFile == null) {
-      return _ArchitectureImportsConfig(
+    String? yaml;
+    if (yamlFile != null) {
+      try {
+        yaml = yamlFile.readAsStringSync();
+      } catch (_) {
+        return null;
+      }
+    }
+    return tryParseYaml(
+      yaml: yaml,
+      fallbackPackageName: fallbackPackageName,
+    );
+  }
+
+  static ArchitectureImportsConfig? tryParseYaml({
+    required String? yaml,
+    required String fallbackPackageName,
+  }) {
+    if (yaml == null) {
+      return ArchitectureImportsConfig(
         packageName: fallbackPackageName,
         rules: const [],
       );
     }
 
-    Object? yaml;
+    Object? parsed;
     try {
-      yaml = loadYaml(yamlFile.readAsStringSync());
+      parsed = loadYaml(yaml);
     } catch (_) {
       return null;
     }
-    if (yaml is! YamlMap) return null;
+    if (parsed is! YamlMap) return null;
 
-    final rawPackageName = yaml['package_name'];
+    final rawPackageName = parsed['package_name'];
     final packageName =
         rawPackageName is String && rawPackageName.trim().isNotEmpty
         ? rawPackageName.trim()
         : fallbackPackageName;
 
-    final rulesYaml = yaml['rules'];
+    final rulesYaml = parsed['rules'];
     if (rulesYaml is! YamlList) {
-      return _ArchitectureImportsConfig(
+      return ArchitectureImportsConfig(
         packageName: packageName,
         rules: const [],
       );
@@ -295,7 +320,7 @@ class _ArchitectureImportsConfig {
       );
     }
 
-    return _ArchitectureImportsConfig(packageName: packageName, rules: rules);
+    return ArchitectureImportsConfig(packageName: packageName, rules: rules);
   }
 }
 
@@ -314,7 +339,10 @@ class _ImportRule {
   final List<_ImportRuleException> exceptions;
   final String? reason;
 
-  _Violation? check({required String sourcePath, required String targetPath}) {
+  ArchitectureImportViolation? check({
+    required String sourcePath,
+    required String targetPath,
+  }) {
     if (!from.matches(sourcePath)) return null;
     if (!deny.any((glob) => glob.matches(targetPath))) return null;
 
@@ -325,7 +353,8 @@ class _ImportRule {
       }
     }
 
-    return _Violation(
+    return ArchitectureImportViolation(
+      ruleId: name ?? '(unnamed)',
       reason:
           reason ??
           'Update import boundaries (see tool/lints/architecture_lints.yaml).',
@@ -340,8 +369,9 @@ class _ImportRuleException {
   final List<Glob> allow;
 }
 
-class _Violation {
-  const _Violation({required this.reason});
+class ArchitectureImportViolation {
+  const ArchitectureImportViolation({required this.ruleId, required this.reason});
 
+  final String ruleId;
   final String reason;
 }
