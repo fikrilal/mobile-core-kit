@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/system/motion_durations.dart';
 import '../../theme/typography/components/text.dart';
 import 'app_dot_wave.dart';

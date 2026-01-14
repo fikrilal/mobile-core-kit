@@ -8,8 +8,8 @@ import 'tokens/secondary_colors.dart';
 import 'tokens/tertiary_colors.dart';
 import 'tokens/yellow_colors.dart';
 import 'extensions/semantic_colors.dart';
-import 'responsive/sizing.dart';
-import 'responsive/spacing.dart';
+import 'tokens/sizing.dart';
+import 'tokens/spacing.dart';
 import 'system/state_opacities.dart';
 
 final ThemeData lightTheme = (() {

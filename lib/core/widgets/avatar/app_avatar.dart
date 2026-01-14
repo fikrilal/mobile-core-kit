@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import 'avatar_size.dart';
 
 /// A reusable circular avatar component with sensible fallbacks:

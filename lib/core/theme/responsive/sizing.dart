@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
+
 import 'breakpoints.dart';
 
-class AppSizing {
-  AppSizing._();
+export '../tokens/sizing.dart';
 
-  // Fixed component sizes (non-responsive)
-  static const double buttonHeightSmall = 32.0;
-  static const double buttonHeightMedium = 40.0;
-  static const double buttonHeightLarge = 48.0;
+@Deprecated(
+  'Legacy responsive helpers. Prefer adaptive layout tokens/widgets instead.',
+)
+class LegacyResponsiveSizing {
+  LegacyResponsiveSizing._();
 
-  static const double iconSizeSmall = 16.0;
-  static const double iconSizeMedium = 24.0;
-  static const double iconSizeLarge = 32.0;
-
-  static const double avatarSizeExtraSmall = 24.0;
-  static const double avatarSizeSmall = 32.0;
-  static const double avatarSizeMedium = 40.0;
-  static const double avatarSizeLarge = 56.0;
-  static const double avatarSizeExtraLarge = 80.0;
-
-  // Component-specific responsive utilities
   static double heroHeight(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    // Responsive hero height based on device type
+    // Responsive hero height based on legacy breakpoints.
     if (width < Breakpoints.sm) {
       return (height * 0.25).clamp(120.0, 200.0); // Smaller on mobile
     } else if (width < Breakpoints.lg) {

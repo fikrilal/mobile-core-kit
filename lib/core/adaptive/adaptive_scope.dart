@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'adaptive_aspect.dart';
@@ -30,6 +31,37 @@ class AdaptiveScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure we rebuild when input capabilities change (e.g., mouse/trackpad
+    // connect/disconnect), since Flutter does not expose this via MediaQueryData.
+    return _MouseConnectionListener(
+      child: _AdaptiveScopeBody(
+        textScalePolicy: textScalePolicy,
+        navigationPolicy: navigationPolicy,
+        motionPolicy: motionPolicy,
+        inputPolicy: inputPolicy,
+        child: child,
+      ),
+    );
+  }
+}
+
+class _AdaptiveScopeBody extends StatelessWidget {
+  const _AdaptiveScopeBody({
+    required this.child,
+    required this.textScalePolicy,
+    required this.navigationPolicy,
+    required this.motionPolicy,
+    required this.inputPolicy,
+  });
+
+  final Widget child;
+  final TextScalePolicy textScalePolicy;
+  final NavigationPolicy navigationPolicy;
+  final MotionPolicy motionPolicy;
+  final InputPolicy inputPolicy;
+
+  @override
+  Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final appliedTextScaler = textScalePolicy.apply(media.textScaler);
 
@@ -51,6 +83,40 @@ class AdaptiveScope extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MouseConnectionListener extends StatefulWidget {
+  const _MouseConnectionListener({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_MouseConnectionListener> createState() =>
+      _MouseConnectionListenerState();
+}
+
+class _MouseConnectionListenerState extends State<_MouseConnectionListener> {
+  @override
+  void initState() {
+    super.initState();
+    RendererBinding.instance.mouseTracker.addListener(_handleMouseConnection);
+  }
+
+  @override
+  void dispose() {
+    RendererBinding.instance.mouseTracker.removeListener(
+      _handleMouseConnection,
+    );
+    super.dispose();
+  }
+
+  void _handleMouseConnection() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class AdaptiveModel extends InheritedModel<AdaptiveAspect> {

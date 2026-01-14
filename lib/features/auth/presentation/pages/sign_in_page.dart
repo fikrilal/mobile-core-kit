@@ -6,7 +6,7 @@ import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
-import 'package:mobile_core_kit/core/theme/responsive/spacing.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 

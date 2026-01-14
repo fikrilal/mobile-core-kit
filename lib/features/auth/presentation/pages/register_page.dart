@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
-import 'package:mobile_core_kit/core/theme/responsive/spacing.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/widgets/field/field.dart';

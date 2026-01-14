@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../avatar/avatar_size.dart';
 
 /// Circular icon container with an optional notification dot (top-right).

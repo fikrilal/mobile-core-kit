@@ -1,6 +1,3 @@
-import '../../responsive/responsive_scale.dart';
-import '../../responsive/breakpoints.dart';
-
 class TypeScale {
   TypeScale._();
 
@@ -28,26 +25,4 @@ class TypeScale {
   static const double labelLarge = 14.0;
   static const double labelMedium = 12.0;
   static const double labelSmall = 11.0;
-
-  static double getResponsiveSize(double baseSize, Object breakpoint) {
-    Breakpoint bp;
-    if (breakpoint is Breakpoint) {
-      bp = breakpoint;
-    } else if (breakpoint is String) {
-      switch (breakpoint) {
-        case 'mobile':
-          bp = Breakpoint.mobile;
-          break;
-        case 'tablet':
-          bp = Breakpoint.tablet;
-          break;
-        case 'desktop':
-        default:
-          bp = Breakpoint.desktop;
-      }
-    } else {
-      bp = Breakpoint.mobile;
-    }
-    return ResponsiveScale.getScaledValue(baseSize, bp);
-  }
 }

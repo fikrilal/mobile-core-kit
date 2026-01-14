@@ -184,7 +184,8 @@ Optional per-surface override:
 
 ### 4.3 Input policy (touch vs pointer vs mixed)
 Derive from:
-- `MediaQueryData.pointerHoverEnabled`
+- Flutter does not currently expose pointer-hover capability via `MediaQueryData`.
+- Use `RendererBinding.instance.mouseTracker.mouseIsConnected` (and rebuild the scope when it changes) as a best-effort signal.
 - platform signals (desktop/web more likely pointer-first)
 
 ### 4.4 Platform policy

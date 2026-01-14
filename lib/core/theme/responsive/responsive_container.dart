@@ -27,7 +27,8 @@ class ResponsiveContainer extends StatelessWidget {
     return Container(
       color: backgroundColor,
       height: height,
-      padding: padding ?? AppSpacing.screenPadding(context),
+      // ignore: deprecated_member_use_from_same_package
+      padding: padding ?? LegacyResponsiveSpacing.screenPadding(context),
       width: double.infinity,
       decoration: decoration,
       child: ConstrainedBox(

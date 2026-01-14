@@ -22,7 +22,7 @@ class _StandardInputPolicy extends InputPolicy {
     required MediaQueryData media,
     required TargetPlatform platform,
   }) {
-    final hoverEnabled = _pointerHoverEnabled(platform: platform);
+    final hoverEnabled = _mouseIsConnected();
 
     final mode = switch (platform) {
       TargetPlatform.android ||
@@ -33,14 +33,12 @@ class _StandardInputPolicy extends InputPolicy {
     return InputSpec(mode: mode, pointerHoverEnabled: hoverEnabled);
   }
 
-  bool _pointerHoverEnabled({required TargetPlatform platform}) {
-    // MediaQueryData does not currently expose pointer-hover capability.
-    // For mobile-first apps, we treat iOS/Android as touch-first by default.
-    if (platform == TargetPlatform.android || platform == TargetPlatform.iOS) {
+  bool _mouseIsConnected() {
+    try {
+      return RendererBinding.instance.mouseTracker.mouseIsConnected;
+    } catch (_) {
+      // Unit tests may call pure builders without initializing the binding.
       return false;
     }
-
-    // Best-effort for non-mobile platforms.
-    return RendererBinding.instance.mouseTracker.mouseIsConnected;
   }
 }

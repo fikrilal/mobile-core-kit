@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../adaptive/widgets/adaptive_modal.dart';
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/typography/components/text.dart';
 import '../button/button.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/system/state_opacities.dart';
 import '../../theme/typography/components/text.dart';
 import '../common/app_haptic_feedback.dart';

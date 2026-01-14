@@ -3,9 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import '../styles/accessible_text_style.dart';
 import '../styles/responsive_text_styles.dart';
-import '../../responsive/spacing.dart';
 import '../tokens/type_metrics.dart';
-import '../../responsive/screen_utils.dart';
 
 /// A component optimized for multi-line body text with proper paragraph formatting.
 ///
@@ -457,14 +455,21 @@ class Paragraph extends StatelessWidget {
 
     // If width constraining is requested, wrap in a container with ideal width
     if (constrainWidth) {
-      // Calculate ideal width based on font size and character count
-      final idealWidth = _calculateIdealWidth(context, baseStyle.fontSize!);
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final idealWidth = _calculateIdealWidth(
+            constraints: constraints,
+            media: MediaQuery.of(context),
+            fontSize: baseStyle.fontSize ?? 14.0,
+          );
 
-      return Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: idealWidth),
-          child: textWidget,
-        ),
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: idealWidth),
+              child: textWidget,
+            ),
+          );
+        },
       );
     }
 
@@ -473,15 +478,22 @@ class Paragraph extends StatelessWidget {
 
   /// Calculates the ideal width for a paragraph based on font size
   /// and character count guidelines for optimal readability
-  double _calculateIdealWidth(BuildContext context, double fontSize) {
-    // Get available width
-    final availableWidth =
-        context.screenWidth - (AppSpacing.screenPadding(context).horizontal);
+  double _calculateIdealWidth({
+    required BoxConstraints constraints,
+    required MediaQueryData media,
+    required double fontSize,
+  }) {
+    final availableWidth = constraints.hasBoundedWidth
+        ? constraints.maxWidth
+        : media.size.width;
 
-    // Calculate ideal width based on character width
+    final safeAvailableWidth = availableWidth.isFinite && availableWidth > 0
+        ? availableWidth
+        : 0.0;
+
     final idealCharWidth = TypeMetrics.getIdealTextContainerWidth(fontSize);
-
-    // Return the smaller of the two (don't exceed available width)
-    return idealCharWidth < availableWidth ? idealCharWidth : availableWidth;
+    return idealCharWidth < safeAvailableWidth
+        ? idealCharWidth
+        : safeAvailableWidth;
   }
 }

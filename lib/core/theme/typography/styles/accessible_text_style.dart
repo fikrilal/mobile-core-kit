@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../responsive/screen_utils.dart';
 
 /// Provides accessibility-enhanced text styles that adapt to user preferences.
 ///
@@ -12,28 +11,21 @@ class AccessibleTextStyles {
 
   /// Apply accessibility adjustments to a text style
   ///
-  /// This method respects the user's text scale preference while
-  /// enforcing reasonable min/max bounds to maintain layout integrity.
+  /// Text scaling is applied by Flutter via `MediaQueryData.textScaler`.
+  /// In this codebase, clamping is enforced at the app root via `AdaptiveScope`
+  /// (using `TextScaler.clamp`, which preserves Android 14+ nonlinear scaling).
   ///
-  /// Defaults are chosen to respect user accessibility settings while
-  /// avoiding extreme values that can completely break layouts.
+  /// This method intentionally does **not** manually multiply `fontSize`, to
+  /// avoid double-scaling and to keep nonlinear scaling behavior correct.
   static TextStyle applyAccessibility(
     BuildContext context,
     TextStyle baseStyle, {
     double minScaleFactor = 1.0,
     double maxScaleFactor = 2.5,
   }) {
-    // Get the user's text scale factor preference
-    final scaleFactor = context.textScaleFactor.clamp(
-      minScaleFactor,
-      maxScaleFactor,
-    );
-
-    // Apply scaled font size with bounds
-    final scaledSize = baseStyle.fontSize! * scaleFactor;
-
-    // Return the modified style with the scaled font size
-    return baseStyle.copyWith(fontSize: scaledSize);
+    // Parameters are retained for backward compatibility with the previous API.
+    // Effective clamping is enforced at `AdaptiveScope`.
+    return baseStyle;
   }
 
   /// Enhances the provided responsive text style with accessibility features
@@ -56,9 +48,7 @@ class AccessibleTextStyles {
     Color backgroundColor,
   ) {
     // Check if user has high contrast setting enabled
-    // This is a simplified version - in a real app, you would
-    // check the actual accessibility settings
-    final needsHighContrast = context.preferLargeText;
+    final needsHighContrast = MediaQuery.highContrastOf(context);
 
     if (needsHighContrast) {
       // Calculate if the current contrast is sufficient

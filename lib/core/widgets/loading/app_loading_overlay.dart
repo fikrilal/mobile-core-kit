@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/typography/components/text.dart';
 
 /// A blocking, modal-style loading overlay.

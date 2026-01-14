@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/typography/components/text.dart';
 
 part 'app_snackbar_styles.dart';

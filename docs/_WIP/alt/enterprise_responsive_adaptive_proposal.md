@@ -104,7 +104,8 @@ This matches modern platform guidance on adaptive layouts and window size classe
 - `MediaQueryData.disableAnimations` / `accessibleNavigation`
 
 ### 3.3 Input + platform conventions
-- `MediaQueryData.pointerHoverEnabled` (pointer capability)
+- Flutter does not currently expose pointer-hover capability via `MediaQueryData`.
+- Use `RendererBinding.instance.mouseTracker.mouseIsConnected` (and rebuild the scope when it changes) as a best-effort pointer capability signal.
 - `defaultTargetPlatform` (or theme platform) for conventions and polish
 - keyboard navigation considerations on desktop/web
 

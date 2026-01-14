@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/responsive/sizing.dart';
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/sizing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/system/state_opacities.dart';
 import 'button_variants.dart';
 

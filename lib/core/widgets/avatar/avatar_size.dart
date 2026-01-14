@@ -1,4 +1,4 @@
-import '../../theme/responsive/sizing.dart';
+import '../../theme/tokens/sizing.dart';
 
 enum AppAvatarSize { xs, sm, md, lg, xl }
 
