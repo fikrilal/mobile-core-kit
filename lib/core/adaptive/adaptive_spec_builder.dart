@@ -14,9 +14,21 @@ import 'tokens/grid_tokens.dart';
 import 'tokens/layout_tokens.dart';
 import 'tokens/surface_tokens.dart';
 
+/// Derives the [AdaptiveSpec] contract from constraints + runtime capabilities.
+///
+/// This class is intentionally "pure": it takes `BoxConstraints` and
+/// `MediaQueryData` and returns value types. Keep feature logic out of here.
+///
+/// If you change token/policy behavior, add unit tests and update relevant
+/// docs under `docs/explainers/core/adaptive/`.
 class AdaptiveSpecBuilder {
   AdaptiveSpecBuilder._();
 
+  /// Builds the full [AdaptiveSpec] for the given constraints and media.
+  ///
+  /// `AdaptiveScope` typically applies [TextScalePolicy] at the root via
+  /// `MediaQuery.copyWith(textScaler: ...)`, then passes an unclamped policy
+  /// here so [TextSpec] reflects the effective scaler without double-clamping.
   static AdaptiveSpec build({
     required BoxConstraints constraints,
     required MediaQueryData media,
@@ -75,6 +87,10 @@ class AdaptiveSpecBuilder {
     );
   }
 
+  /// Derives the layout-only portion of the contract.
+  ///
+  /// This is used by [AdaptiveRegion] / [AdaptiveOverrides] to recompute layout
+  /// decisions while inheriting non-layout specs from the parent.
   static LayoutSpec deriveLayout({
     required BoxConstraints constraints,
     required MediaQueryData media,

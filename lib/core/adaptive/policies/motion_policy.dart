@@ -2,11 +2,18 @@ import 'package:flutter/widgets.dart';
 
 import '../adaptive_spec.dart';
 
+/// Policy for motion preferences (reduce motion).
+///
+/// This reads platform accessibility signals (via [MediaQueryData]) and exposes
+/// a stable boolean in [MotionSpec] that widgets can respect.
 sealed class MotionPolicy {
   const MotionPolicy();
 
+  /// Standard policy: reduced motion when animations are disabled or when
+  /// accessible navigation is enabled.
   const factory MotionPolicy.standard() = _StandardMotionPolicy;
 
+  /// Derives [MotionSpec] from the current [MediaQueryData].
   MotionSpec derive({required MediaQueryData media});
 }
 

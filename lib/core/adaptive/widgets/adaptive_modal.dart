@@ -4,6 +4,11 @@ import '../adaptive_context.dart';
 import '../adaptive_policies.dart';
 import '../policies/modal_policy.dart';
 
+/// Adaptive modal entrypoint (sheet on compact, dialog on larger widths).
+///
+/// Use this instead of `showModalBottomSheet` / `showDialog` directly in
+/// feature code. The presentation decision is driven by [ModalPolicy] (set once
+/// via `AdaptiveScope.modalPolicy`).
 Future<T?> showAdaptiveModal<T>({
   required BuildContext context,
   required WidgetBuilder builder,

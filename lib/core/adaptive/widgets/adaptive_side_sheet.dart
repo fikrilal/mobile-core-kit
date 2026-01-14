@@ -5,6 +5,10 @@ import '../adaptive_policies.dart';
 import '../policies/modal_policy.dart';
 import 'adaptive_modal.dart';
 
+/// Adaptive side sheet entrypoint (side sheet on medium+, fallback on compact).
+///
+/// On compact widths, this falls back to [showAdaptiveModal] using the same
+/// [ModalPolicy] decision logic.
 Future<T?> showAdaptiveSideSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,

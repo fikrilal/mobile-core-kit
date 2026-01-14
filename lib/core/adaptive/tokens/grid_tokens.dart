@@ -2,9 +2,13 @@ import 'dart:math' as math;
 
 import '../size_classes.dart';
 
+/// Token table for computing safe grid columns.
+///
+/// Grid behavior is derived from content width and the chosen [WindowWidthClass].
 class GridTokens {
   GridTokens._();
 
+  /// Minimum tile width used for column computation.
   static double minTileWidth(WindowWidthClass widthClass) {
     return switch (widthClass) {
       WindowWidthClass.compact => 160.0,
@@ -15,6 +19,7 @@ class GridTokens {
     };
   }
 
+  /// Hard cap on computed columns for a given width class.
   static int maxColumns(WindowWidthClass widthClass) {
     return switch (widthClass) {
       WindowWidthClass.compact => 2,
@@ -25,6 +30,7 @@ class GridTokens {
     };
   }
 
+  /// Computes grid columns based on content width and gutter spacing.
   static int computeColumns({
     required double contentWidth,
     required double gutter,

@@ -1,3 +1,8 @@
+// Immutable contract types for the responsive + adaptive system.
+//
+// The adaptive module derives an `AdaptiveSpec` from constraints
+// (`BoxConstraints`) and capabilities (`MediaQueryData`), then publishes it via
+// `AdaptiveScope`.
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -7,8 +12,13 @@ import 'tokens/surface_tokens.dart';
 
 enum InputMode { touch, pointer, mixed }
 
+/// High-level layout density for spacing and chrome decisions.
 enum LayoutDensity { comfortable, compact }
 
+/// Navigation UI patterns that the app shell can render.
+///
+/// These are *patterns*, not widgets. The actual rendering is handled by
+/// `AdaptiveScaffold`.
 enum NavigationKind {
   bar,
   rail,
@@ -18,6 +28,10 @@ enum NavigationKind {
   none,
 }
 
+/// Full adaptive contract for a subtree.
+///
+/// This type is intentionally immutable and uses value equality so changes can
+/// be detected precisely by `InheritedModel` aspect subscriptions.
 @immutable
 class AdaptiveSpec {
   const AdaptiveSpec({
@@ -74,6 +88,14 @@ class AdaptiveSpec {
       Object.hash(layout, insets, text, motion, input, platform, foldable);
 }
 
+/// Layout-related derived values and token tables.
+///
+/// This is the primary spec used by feature code:
+/// - size classes (`widthClass`, `heightClass`)
+/// - page-level padding/gutter/min tap target
+/// - surface max-width rules via [surface]
+/// - grid columns via [grid]
+/// - shell navigation via [navigation]
 @immutable
 class LayoutSpec {
   const LayoutSpec({
@@ -104,6 +126,10 @@ class LayoutSpec {
   final GridSpec grid;
   final NavigationSpec navigation;
 
+  /// Returns surface-specific tokens for [kind].
+  ///
+  /// Surfaces encode "content max width" and other page-level rules that should
+  /// be stable across the product (settings, reading, dashboard, etc.).
   SurfaceTokens surface(SurfaceKind kind) =>
       surfaceTokens[kind] ?? const SurfaceTokens(contentMaxWidth: null);
 
@@ -146,6 +172,7 @@ class LayoutSpec {
   }
 }
 
+/// Grid guidance derived from content width and grid tokens.
 @immutable
 class GridSpec {
   const GridSpec({
@@ -169,6 +196,7 @@ class GridSpec {
   int get hashCode => Object.hash(columns, minTileWidth, maxColumns);
 }
 
+/// Derived navigation values used by the shell (`AdaptiveScaffold`).
 @immutable
 class NavigationSpec {
   const NavigationSpec({
@@ -196,6 +224,7 @@ class NavigationSpec {
       Object.hash(kind, railWidth, extendedRailWidth, drawerWidth);
 }
 
+/// Safe area and keyboard insets for a subtree.
 @immutable
 class InsetsSpec {
   const InsetsSpec({required this.safePadding, required this.viewInsets});
@@ -213,6 +242,10 @@ class InsetsSpec {
   int get hashCode => Object.hash(safePadding, viewInsets);
 }
 
+/// Text-related capabilities for a subtree.
+///
+/// Note: Text scaling uses [TextScaler], not a single linear factor. The root
+/// `AdaptiveScope` installs the configured scaler via `MediaQuery.copyWith(...)`.
 @immutable
 class TextSpec {
   const TextSpec({required this.textScaler, required this.boldText});
@@ -230,6 +263,7 @@ class TextSpec {
   int get hashCode => Object.hash(textScaler, boldText);
 }
 
+/// Motion preferences for a subtree (e.g., reduce motion).
 @immutable
 class MotionSpec {
   const MotionSpec({required this.reduceMotion});
@@ -244,6 +278,7 @@ class MotionSpec {
   int get hashCode => reduceMotion.hashCode;
 }
 
+/// Input capabilities for a subtree (touch vs pointer vs mixed).
 @immutable
 class InputSpec {
   const InputSpec({required this.mode, required this.pointerHoverEnabled});
@@ -261,6 +296,7 @@ class InputSpec {
   int get hashCode => Object.hash(mode, pointerHoverEnabled);
 }
 
+/// Platform information used for platform-specific behavior.
 @immutable
 class PlatformSpec {
   const PlatformSpec({required this.platform});

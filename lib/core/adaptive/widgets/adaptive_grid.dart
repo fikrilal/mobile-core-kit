@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 
 import '../adaptive_context.dart';
 
+/// Convenience grid widget for responsive column counts.
+///
+/// Typically you compute `columns` from `context.adaptiveLayout.grid.columns`.
+/// If `gutter` is not provided, this defaults to `layout.gutter`.
 class AdaptiveGrid extends StatelessWidget {
   AdaptiveGrid({
     super.key,
@@ -28,6 +32,8 @@ class AdaptiveGrid extends StatelessWidget {
        assert(itemCount >= 0, 'itemCount must be >= 0');
 
   final int columns;
+
+  /// Spacing between tiles. Defaults to `context.adaptiveLayout.gutter`.
   final double? gutter;
   final EdgeInsetsGeometry? padding;
   final bool shrinkWrap;

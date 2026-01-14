@@ -3,6 +3,15 @@ import 'package:flutter/widgets.dart';
 import '../adaptive_context.dart';
 import '../tokens/surface_tokens.dart';
 
+/// Default screen wrapper for adaptive page layout.
+///
+/// Responsibilities:
+/// - applies safe area padding (optional)
+/// - applies adaptive page padding (`layout.pagePadding`) by default
+/// - clamps content width by [SurfaceKind] via surface tokens
+///
+/// This widget is intentionally lightweight. Scrolling, app bars, etc. are the
+/// responsibility of the caller.
 class AppPageContainer extends StatelessWidget {
   const AppPageContainer({
     super.key,
@@ -14,9 +23,15 @@ class AppPageContainer extends StatelessWidget {
   });
 
   final Widget child;
+
+  /// Semantic surface classification used to select max-width rules.
   final SurfaceKind surface;
+
+  /// When true, includes `MediaQuery.padding` (safe area) in the effective padding.
   final bool safeArea;
   final AlignmentGeometry alignment;
+
+  /// Optional padding override. Defaults to `context.adaptiveLayout.pagePadding`.
   final EdgeInsetsGeometry? padding;
 
   @override

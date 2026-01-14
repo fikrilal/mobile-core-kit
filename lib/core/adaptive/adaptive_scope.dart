@@ -13,6 +13,25 @@ import 'policies/navigation_policy.dart';
 import 'policies/platform_policy.dart';
 import 'policies/text_scale_policy.dart';
 
+/// Root provider for the adaptive contract.
+///
+/// Place exactly once at the app root (typically `MaterialApp.builder`):
+/// ```dart
+/// MaterialApp(
+///   builder: (context, child) {
+///     return AdaptiveScope(
+///       navigationPolicy: const NavigationPolicy.standard(),
+///       textScalePolicy: const TextScalePolicy.clamp(maxScaleFactor: 2.0),
+///       child: child ?? const SizedBox.shrink(),
+///     );
+///   },
+/// );
+/// ```
+///
+/// This widget:
+/// - applies the configured [TextScalePolicy] via `MediaQuery.copyWith(...)`
+/// - derives [AdaptiveSpec] from constraints + capabilities
+/// - publishes it via [AdaptiveModel] (`InheritedModel`) with aspect scoping
 class AdaptiveScope extends StatelessWidget {
   const AdaptiveScope({
     super.key,
@@ -78,6 +97,9 @@ class _AdaptiveScopeBody extends StatelessWidget {
     final media = MediaQuery.of(context);
     final appliedTextScaler = textScalePolicy.apply(media.textScaler);
 
+    // Clamp text scaling once at the root via MediaQuery.
+    // The builder receives an unclamped policy because `media.textScaler` is
+    // already the effective scaler for the subtree.
     return MediaQuery(
       data: media.copyWith(textScaler: appliedTextScaler),
       child: LayoutBuilder(
@@ -133,11 +155,19 @@ class _MouseConnectionListenerState extends State<_MouseConnectionListener> {
   Widget build(BuildContext context) => widget.child;
 }
 
+/// InheritedModel wrapper that publishes the current [AdaptiveSpec].
+///
+/// Widgets should not depend on this directly; prefer
+/// `BuildContext` extension getters in `adaptive_context.dart`.
 class AdaptiveModel extends InheritedModel<AdaptiveAspect> {
   const AdaptiveModel({super.key, required this.spec, required super.child});
 
   final AdaptiveSpec spec;
 
+  /// Returns the current [AdaptiveSpec] and registers an aspect dependency.
+  ///
+  /// If [aspect] is omitted, the dependency is on the whole spec (rebuilds on
+  /// any change).
   static AdaptiveSpec of(BuildContext context, {AdaptiveAspect? aspect}) {
     final model = InheritedModel.inheritFrom<AdaptiveModel>(
       context,
@@ -147,6 +177,9 @@ class AdaptiveModel extends InheritedModel<AdaptiveAspect> {
     return model!.spec;
   }
 
+  /// Returns the current [AdaptiveSpec] without registering a dependency.
+  ///
+  /// Use sparingly; most widgets should listen to updates.
   static AdaptiveSpec read(BuildContext context) {
     final widget =
         context.getElementForInheritedWidgetOfExactType<AdaptiveModel>()?.widget

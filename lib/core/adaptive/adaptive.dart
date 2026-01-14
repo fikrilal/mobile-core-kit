@@ -1,3 +1,11 @@
+// Public entrypoint for the in-house responsive + adaptive system.
+//
+// Prefer importing this file instead of reaching into subpaths:
+// `import 'package:mobile_core_kit/core/adaptive/adaptive.dart';`
+//
+// References:
+// - Usage guide: `docs/explainers/core/adaptive/enterprise_responsive_adaptive_usage_guide.md`
+// - Under the hood: `docs/explainers/core/adaptive/adaptive_system_under_the_hood.md`
 export 'adaptive_aspect.dart';
 export 'adaptive_context.dart';
 export 'adaptive_overrides.dart';

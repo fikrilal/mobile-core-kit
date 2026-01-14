@@ -5,6 +5,15 @@ import 'package:flutter/material.dart';
 import '../adaptive_context.dart';
 import '../size_classes.dart';
 
+/// List/detail split view that adapts between one-pane and two-pane layouts.
+///
+/// - Compact widths: typically handled via navigation; this widget renders
+///   either `master` or `detail` depending on [showDetailInCompact].
+/// - Expanded widths (or spanned foldables): renders a two-pane layout.
+///
+/// When spanned and hinge geometry is available for the global window, this
+/// widget prefers hinge-aware splits. Otherwise it falls back to a flex split
+/// with minimum widths.
 class AdaptiveSplitView extends StatelessWidget {
   const AdaptiveSplitView({
     super.key,

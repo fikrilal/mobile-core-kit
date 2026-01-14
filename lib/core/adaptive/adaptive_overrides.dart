@@ -1,3 +1,8 @@
+// Governed escape hatches for rare adaptive overrides.
+//
+// Most product adaptation should be expressed via tokens/policies/widgets in
+// `lib/core/adaptive/`. This file exists for exceptional flows that need a
+// narrowly scoped override without forking the whole contract.
 import 'package:flutter/widgets.dart';
 
 import 'adaptive_scope.dart';

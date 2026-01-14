@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 
 import '../adaptive_context.dart';
 
+/// Ensures a minimum interactive size for touch targets.
+///
+/// Defaults to `context.adaptiveLayout.minTapTarget`, but can be overridden via
+/// [minSize]. Useful for icon-only buttons.
 class MinTapTarget extends StatelessWidget {
   const MinTapTarget({super.key, required this.child, this.minSize});
 
