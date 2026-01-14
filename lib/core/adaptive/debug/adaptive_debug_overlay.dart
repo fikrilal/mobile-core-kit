@@ -3,6 +3,17 @@ import 'package:flutter/widgets.dart';
 
 import 'adaptive_debug_banner.dart';
 
+/// Debug-only overlay that renders [AdaptiveDebugBanner] on top of the app.
+///
+/// Intended usage (debug only):
+/// ```dart
+/// Stack(
+///   children: [
+///     AdaptiveScope(...),
+///     if (kDebugMode) const AdaptiveDebugOverlay(),
+///   ],
+/// )
+/// ```
 class AdaptiveDebugOverlay extends StatelessWidget {
   const AdaptiveDebugOverlay({super.key});
 

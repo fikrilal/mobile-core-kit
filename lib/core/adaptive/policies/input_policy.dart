@@ -3,11 +3,22 @@ import 'package:flutter/widgets.dart';
 
 import '../adaptive_spec.dart';
 
+/// Policy for deriving input capabilities (touch vs pointer vs mixed).
+///
+/// This is intentionally conservative:
+/// - On Android/iOS, touch is assumed unless a mouse/trackpad is connected.
+/// - On other platforms, pointer is assumed when a mouse is connected.
+///
+/// Note: Flutter does not always rebuild `MediaQuery` when pointer devices are
+/// connected/disconnected. `AdaptiveScope` includes a small listener to ensure
+/// input capability changes can trigger a rebuild.
 sealed class InputPolicy {
   const InputPolicy();
 
+  /// Standard policy based on connected mouse/trackpad and platform.
   const factory InputPolicy.standard() = _StandardInputPolicy;
 
+  /// Derives [InputSpec] from the current environment.
   InputSpec derive({
     required MediaQueryData media,
     required TargetPlatform platform,

@@ -43,17 +43,13 @@ Future<int> main(List<String> argv) async {
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
   if (exitCode != 0) return exitCode;
 
+  exitCode = await step('Custom lint', ['dart', 'run', 'custom_lint']);
+  if (exitCode != 0) return exitCode;
+
   exitCode = await step('Verify modal entrypoints', [
     'dart',
     'run',
     'tool/verify_modal_entrypoints.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify legacy responsive imports', [
-    'dart',
-    'run',
-    'tool/verify_legacy_responsive_usage.dart',
   ]);
   if (exitCode != 0) return exitCode;
 
@@ -178,9 +174,18 @@ class _CommandRunner {
       'cmd.exe',
       ['/C', cmd],
       workingDirectory: _rootDir.path,
-      mode: ProcessStartMode.inheritStdio,
+      mode: ProcessStartMode.normal,
     );
-    return process.exitCode;
+
+    // Non-interactive safe: prevent Windows console handshake hangs in PTY runners
+    // by closing stdin (equivalent to `< /dev/null` in bash).
+    await process.stdin.close();
+
+    final stdoutFuture = stdout.addStream(process.stdout);
+    final stderrFuture = stderr.addStream(process.stderr);
+    final exitCode = await process.exitCode;
+    await Future.wait([stdoutFuture, stderrFuture]);
+    return exitCode;
   }
 
   static String _toWindowsPath(String wslPath) {

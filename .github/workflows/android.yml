@@ -89,11 +89,20 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Lint plugin tests
+        working-directory: packages/mobile_core_kit_lints
+        run: |
+          dart pub get
+          dart test
+
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
 
       - name: Flutter analyze
         run: flutter analyze
+
+      - name: Custom lint
+        run: dart run custom_lint
 
       - name: Run unit tests
         run: flutter test
@@ -192,11 +201,20 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Lint plugin tests
+        working-directory: packages/mobile_core_kit_lints
+        run: |
+          dart pub get
+          dart test
+
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
 
       - name: Flutter analyze
         run: flutter analyze
+
+      - name: Custom lint
+        run: dart run custom_lint
 
       - name: Run unit tests
         run: flutter test

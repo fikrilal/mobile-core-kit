@@ -1,0 +1,126 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+
+    // ============================================================================
+    // FLUTTER BUILD MODES:
+    // ============================================================================
+    //
+    // DEBUG (default, no flutterMode specified)
+    //   - Hot reload/restart enabled
+    //   - Assertions enabled, service extensions active
+    //   - No code optimization, larger app size
+    //   - USE FOR: Daily development, debugging, breakpoints
+    //
+    // PROFILE
+    //   - Performance profiling with DevTools
+    //   - Some optimizations, but tracing overhead retained
+    //   - Hot reload disabled, assertions disabled
+    //   - USE FOR: Investigating jank, measuring frame times, CPU/memory profiling
+    //
+    // RELEASE
+    //   - Full optimizations (tree shaking, minification)
+    //   - Smallest app size, fastest runtime
+    //   - No debugging capabilities, no DevTools
+    //   - USE FOR: Final QA testing, production builds
+    //
+    // ============================================================================
+    // NOTE: Each launch runs `dart run tool/gen_config.dart -e <env>` before
+    //       starting the app. This generates lib/core/configs/build_config_values.dart
+    // ============================================================================
+
+    "configurations": [
+        // ==================== DEV ====================
+        // Development environment - connected to dev backend
+        {
+            "name": "Dev",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "preLaunchTask": "Generate Config (Dev)",
+            "args": ["--flavor", "dev"]
+            // Debug mode: Use for daily development with hot reload
+        },
+        {
+            "name": "Dev (Profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "profile",
+            "preLaunchTask": "Generate Config (Dev)",
+            "args": ["--flavor", "dev"]
+            // Profile mode: Use when investigating performance issues
+        },
+        {
+            "name": "Dev (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "release",
+            "preLaunchTask": "Generate Config (Dev)",
+            "args": ["--flavor", "dev"]
+            // Release mode: Use to test optimized build against dev backend
+        },
+
+        // ==================== STAGING ====================
+        // Staging environment - for pre-production testing
+        {
+            "name": "Staging",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_staging.dart",
+            "preLaunchTask": "Generate Config (Staging)",
+            "args": ["--flavor", "staging"]
+        },
+        {
+            "name": "Staging (Profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_staging.dart",
+            "flutterMode": "profile",
+            "preLaunchTask": "Generate Config (Staging)",
+            "args": ["--flavor", "staging"]
+        },
+        {
+            "name": "Staging (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_staging.dart",
+            "flutterMode": "release",
+            "preLaunchTask": "Generate Config (Staging)",
+            "args": ["--flavor", "staging"]
+        },
+
+        // ==================== PROD ====================
+        // Production environment - USE WITH CAUTION
+        {
+            "name": "Prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "preLaunchTask": "Generate Config (Prod)",
+            "args": ["--flavor", "prod"]
+        },
+        {
+            "name": "Prod (Profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "profile",
+            "preLaunchTask": "Generate Config (Prod)",
+            "args": ["--flavor", "prod"]
+        },
+        {
+            "name": "Prod (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "release",
+            "preLaunchTask": "Generate Config (Prod)",
+            "args": ["--flavor", "prod"]
+            // This is what goes to the app store
+        }
+    ]
+}

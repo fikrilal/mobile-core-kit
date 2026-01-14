@@ -1,3 +1,7 @@
+/// Default dimensions for navigation patterns (rail/drawer widths).
+///
+/// These are used as fallbacks by [NavigationPolicy] and `AdaptiveScaffold`
+/// when the derived [NavigationSpec] does not specify explicit widths.
 class NavigationTokens {
   NavigationTokens._();
 

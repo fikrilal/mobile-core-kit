@@ -1,9 +1,16 @@
+// Surface tokens define page-level layout rules by "surface kind".
+//
+// A surface is a semantic classification of a screen: settings, reading,
+// dashboard, etc. Surface tokens are the right place for content max width
+// rules and other constraints that should be stable across the product.
 import 'package:flutter/foundation.dart';
 
 import '../size_classes.dart';
 
+/// High-level surface categories used for max-width and layout guidance.
 enum SurfaceKind { reading, form, settings, dashboard, media, fullBleed }
 
+/// Token set for a single [SurfaceKind].
 @immutable
 class SurfaceTokens {
   const SurfaceTokens({required this.contentMaxWidth});
@@ -18,9 +25,11 @@ class SurfaceTokens {
   int get hashCode => contentMaxWidth.hashCode;
 }
 
+/// Lookup table for surface tokens by width class.
 class SurfaceTokenTable {
   SurfaceTokenTable._();
 
+  /// Resolves tokens for a surface kind given the current width class.
   static SurfaceTokens resolve({
     required SurfaceKind kind,
     required WindowWidthClass widthClass,

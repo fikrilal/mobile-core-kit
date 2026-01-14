@@ -6,6 +6,10 @@ import 'package:flutter/widgets.dart';
 import 'display_feature_utils.dart';
 import 'display_posture.dart';
 
+/// Foldable/dual-screen contract derived from `MediaQueryData.displayFeatures`.
+///
+/// The spec is value-based and safe to store in `AdaptiveSpec`. Feature code
+/// should consume it via `context.adaptiveFoldable`.
 @immutable
 class FoldableSpec {
   const FoldableSpec({
@@ -28,6 +32,7 @@ class FoldableSpec {
   final Rect? hingeRect;
   final Axis? hingeAxis;
 
+  /// Builds a normalized spec from raw display features.
   factory FoldableSpec.fromDisplayFeatures(List<DisplayFeature> features) {
     if (features.isEmpty) return FoldableSpec.none;
 

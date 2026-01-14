@@ -59,9 +59,19 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
    fvm flutter test
    ```
 
+### Architecture linting (IDE + CI)
+
+This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
+
+- Rules config: `tool/lints/architecture_lints.yaml`
+- Run locally: `dart run custom_lint` (also included in `dart run tool/verify.dart --env dev`)
+- If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
+  - VS Code: `Dart: Restart Analysis Server`
+  - Android Studio: `Tools > Dart > Restart Dart Analysis Server`
+
 ### Verify (one command)
 
-Run all checks (config generation + analyze + tests + format check):
+Run all checks (config generation + analyze + custom lint + tests + format check):
 
 ```bash
 dart run tool/verify.dart --env dev
@@ -130,6 +140,7 @@ See `docs/engineering/analytics_documentation.md` for patterns and examples.
 
 For deeper details on the architecture and patterns used in this template:
 
+- `docs/engineering/architecture_linting.md`
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/model_entity_guide.md`
 - `docs/engineering/ui_state_architecture.md`
@@ -143,3 +154,5 @@ Template customization guides:
 - `docs/template/deep_linking.md`
 
 `AGENTS.md` contains some repo-specific tooling notes (e.g., WSL + FVM commands).
+
+See `docs/engineering/architecture_linting.md` for details on rule semantics and how to extend them.

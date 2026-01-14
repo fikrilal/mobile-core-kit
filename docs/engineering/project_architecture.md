@@ -14,6 +14,7 @@ Important: We use Bloc/Cubit only in presentation. No GetX.
 4. Reusability with discipline. Share only when ≥2 slices need it now.
 5. Evolvability. Scales to extracting large features into local packages.
 6. Presentation uses Bloc/Cubit with a single source of truth per screen.
+7. Enforced boundaries. Import rules are enforced via `custom_lint` (see `docs/engineering/architecture_linting.md`).
 
 ---
 

@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 
 import '../adaptive_context.dart';
 
+/// Debug-only banner that prints a short summary of the current `AdaptiveSpec`.
+///
+/// This is a developer tool; do not rely on it for production UI.
 class AdaptiveDebugBanner extends StatelessWidget {
   const AdaptiveDebugBanner({super.key});
 

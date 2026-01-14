@@ -15,10 +15,20 @@ class AdaptiveScaffoldDestination {
 
   final Widget icon;
   final Widget? selectedIcon;
+
+  /// Human readable label used for destinations and accessibility.
   final String label;
   final String? tooltip;
 }
 
+/// Adaptive app shell that selects a navigation pattern from `AdaptiveSpec`.
+///
+/// This widget reads `context.adaptiveLayout.navigation.kind` and renders:
+/// - `bar` → bottom navigation bar
+/// - `rail` / `extendedRail` → navigation rail
+/// - `modalDrawer` → hamburger drawer
+/// - `standardDrawer` → persistent drawer (two-column layout)
+/// - `none` → plain scaffold with no navigation chrome
 class AdaptiveScaffold extends StatelessWidget {
   const AdaptiveScaffold({
     super.key,

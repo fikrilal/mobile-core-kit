@@ -1,9 +1,14 @@
+// Utilities for interpreting foldable display features.
+//
+// Flutter exposes foldable/dual-screen signals via `MediaQueryData.displayFeatures`.
+// This file normalizes those signals into the simpler `FoldableSpec` contract.
 import 'dart:ui' show DisplayFeature, DisplayFeatureState, Rect;
 
 import 'package:flutter/widgets.dart';
 
 import 'display_posture.dart';
 
+/// Derives a coarse foldable posture from raw display features.
 DisplayPosture postureForDisplayFeatures(List<DisplayFeature> features) {
   final hasFeatures = features.isNotEmpty;
   if (!hasFeatures) return DisplayPosture.flat;
@@ -19,6 +24,7 @@ DisplayPosture postureForDisplayFeatures(List<DisplayFeature> features) {
   return DisplayPosture.unknown;
 }
 
+/// Returns the first hinge-like rect from the given display features, if any.
 Rect? hingeRectForDisplayFeatures(List<DisplayFeature> features) {
   for (final feature in features) {
     final isHingeLike =
@@ -29,12 +35,16 @@ Rect? hingeRectForDisplayFeatures(List<DisplayFeature> features) {
   return null;
 }
 
+/// Derives hinge axis from the given hinge rect.
+///
+/// Returns `null` for empty/degenerate rects.
 Axis? hingeAxisForRect(Rect? rect) {
   if (rect == null) return null;
   if (rect.width == 0 && rect.height == 0) return null;
   return rect.width >= rect.height ? Axis.horizontal : Axis.vertical;
 }
 
+/// Returns true when any display feature indicates a spanned layout.
 bool isSpannedByDisplayFeatures(List<DisplayFeature> features) {
   return features.any((f) => f.bounds.shortestSide > 0);
 }

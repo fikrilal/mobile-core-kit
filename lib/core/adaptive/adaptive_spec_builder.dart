@@ -7,15 +7,28 @@ import 'foldables/foldable_spec.dart';
 import 'policies/input_policy.dart';
 import 'policies/motion_policy.dart';
 import 'policies/navigation_policy.dart';
+import 'policies/platform_policy.dart';
 import 'policies/text_scale_policy.dart';
 import 'size_classes.dart';
 import 'tokens/grid_tokens.dart';
 import 'tokens/layout_tokens.dart';
 import 'tokens/surface_tokens.dart';
 
+/// Derives the [AdaptiveSpec] contract from constraints + runtime capabilities.
+///
+/// This class is intentionally "pure": it takes `BoxConstraints` and
+/// `MediaQueryData` and returns value types. Keep feature logic out of here.
+///
+/// If you change token/policy behavior, add unit tests and update relevant
+/// docs under `docs/explainers/core/adaptive/`.
 class AdaptiveSpecBuilder {
   AdaptiveSpecBuilder._();
 
+  /// Builds the full [AdaptiveSpec] for the given constraints and media.
+  ///
+  /// `AdaptiveScope` typically applies [TextScalePolicy] at the root via
+  /// `MediaQuery.copyWith(textScaler: ...)`, then passes an unclamped policy
+  /// here so [TextSpec] reflects the effective scaler without double-clamping.
   static AdaptiveSpec build({
     required BoxConstraints constraints,
     required MediaQueryData media,
@@ -24,6 +37,7 @@ class AdaptiveSpecBuilder {
     required NavigationPolicy navigationPolicy,
     required MotionPolicy motionPolicy,
     required InputPolicy inputPolicy,
+    PlatformPolicy platformPolicy = const PlatformPolicy.standard(),
   }) {
     final size = _sizeFor(constraints, media);
 
@@ -44,6 +58,7 @@ class AdaptiveSpecBuilder {
     );
 
     final foldable = FoldableSpec.fromDisplayFeatures(media.displayFeatures);
+    final platformSpec = platformPolicy.derive(platform: platform);
 
     final navigation = navigationPolicy.derive(
       widthClass: widthClass,
@@ -67,11 +82,15 @@ class AdaptiveSpecBuilder {
       text: text,
       motion: motion,
       input: input,
-      platform: PlatformSpec(platform: platform),
+      platform: platformSpec,
       foldable: foldable,
     );
   }
 
+  /// Derives the layout-only portion of the contract.
+  ///
+  /// This is used by [AdaptiveRegion] / [AdaptiveOverrides] to recompute layout
+  /// decisions while inheriting non-layout specs from the parent.
   static LayoutSpec deriveLayout({
     required BoxConstraints constraints,
     required MediaQueryData media,

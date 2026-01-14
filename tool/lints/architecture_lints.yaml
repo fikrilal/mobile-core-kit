@@ -1,0 +1,43 @@
+# Architecture import boundaries (custom_lint).
+#
+# This file is the single source of truth for architecture import rules:
+# - IDE linting via `custom_lint`
+# - CLI/CI checks via `dart run custom_lint` (wired into tool/verify.dart)
+#
+# Patterns are POSIX globs, relative to the repository root (use `/`).
+version: 1
+package_name: mobile_core_kit
+
+rules:
+  # Strict rule: core should not depend on features (enforced by default).
+  #
+  # TODO(core-boundary): Refactor so `core/di/**` only imports `features/*/di/**`
+  # and `core/session/**` no longer imports `features/user/**` (move shared user/session
+  # types or introduce core-owned abstractions).
+  - id: core_no_features
+    reason: Core code must not import feature code (except explicitly allowlisted cases).
+    from: lib/core/**
+    deny:
+      - lib/features/**
+    exceptions:
+      # Allowed: core DI composes feature modules.
+      - from: lib/core/di/**
+        allow:
+          - lib/features/*/di/**
+          # TEMP (to be removed by TODO above): move registration to user_module.dart.
+          - lib/features/user/domain/usecase/**
+
+      # Allowed: session infrastructure depends on auth feature (temporary).
+      - from: lib/core/session/**
+        allow:
+          - lib/features/auth/**
+          # TEMP (to be removed by TODO above): move shared user/session type out of features/user.
+          - lib/features/user/domain/entity/**
+
+      # TEMP: app startup currently coordinates auth+user hydration from core.
+      # TODO(core-boundary): move AppStartupController to an app-layer module or a core-owned abstraction.
+      - from: lib/core/services/app_startup/**
+        allow:
+          - lib/features/user/domain/usecase/**
+          - lib/features/auth/domain/failure/**
+

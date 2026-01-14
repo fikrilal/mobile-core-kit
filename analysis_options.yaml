@@ -9,6 +9,16 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  plugins:
+    - custom_lint
+
+custom_lint:
+  rules:
+    # Note: custom_lint reads rule options as sibling keys of the rule name.
+    - architecture_imports:
+      config: tool/lints/architecture_lints.yaml
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

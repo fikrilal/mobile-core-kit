@@ -123,6 +123,16 @@ Recommend supporting:
 ### 5.3 MotionPolicy / InputPolicy / PlatformPolicy
 Keep these explicit and testable; do not hide them in widget code.
 
+Notes:
+- `AdaptiveScope.platformPolicy` governs the `PlatformSpec` produced in `AdaptiveSpec`.
+
+### 5.4 ModalPolicy
+Centralizes modal presentation decisions (sheet vs dialog vs side sheet).
+
+Notes:
+- Configure once via `AdaptiveScope.modalPolicy`.
+- Feature code should call `showAdaptiveModal(...)` / `showAdaptiveSideSheet(...)` and never decide “sheet vs dialog” locally.
+
 ---
 
 ## 6) Tokens
@@ -156,13 +166,22 @@ Grid should expose:
 
 ## 7) Widgets
 
+Only `AdaptiveScope` is mandatory (app root). Everything else is either a recommended default, a use-case widget, or an optional helper. See: `enterprise_responsive_adaptive_usage_guide.md`.
+
 ### 7.1 AdaptiveScope
 Place exactly once at app root (MaterialApp builder is ideal).
 
 ### 7.2 AdaptiveRegion
 Use inside split panes / resizable panels. It recomputes local **layout**.
 
-### 7.3 AppPageContainer
+### 7.3 AdaptiveOverrides
+Governed escape hatch for rare, per-screen overrides.
+
+Notes:
+- Prefer adding tokens/policies/widgets in `lib/core/adaptive/` instead.
+- Intended for exceptional flows (e.g., force `NavigationPolicy.none()` for a subtree).
+
+### 7.4 AppPageContainer
 The default screen wrapper.
 Responsibilities:
 - applies page padding
@@ -170,22 +189,26 @@ Responsibilities:
 - clamps max width by surface kind
 - optional safe area handling
 
-### 7.4 AdaptiveScaffold
+### 7.5 AdaptiveScaffold
 Shell scaffold that chooses nav component based on `layout.navigation.kind`.
 
-### 7.5 AdaptiveSplitView
+### 7.6 AdaptiveSplitView
 List/detail wrapper.
 Responsibilities:
 - compact: single-pane
 - expanded+: two-pane
 - hinge-aware when spanned
 
-### 7.6 showAdaptiveModal / showAdaptiveSideSheet
+### 7.7 showAdaptiveModal / showAdaptiveSideSheet
 Single entrypoints for modality adaptation:
 - compact: bottom sheet
 - medium+: dialog or side sheet
 
-### 7.7 Optional helpers
+Notes:
+- Modal selection is driven by `ModalPolicy` from `AdaptiveScope`.
+- Use `showDialog` + `AlertDialog` for blocking confirmations/alerts (dialog is correct even on phones).
+
+### 7.8 Optional helpers
 - AdaptiveGrid
 - MinTapTarget
 - AdaptiveDebugOverlay

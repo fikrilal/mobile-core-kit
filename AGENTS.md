@@ -128,10 +128,12 @@ silenced with `git config core.autocrlf true`.
   `fvm flutter` with `flutter` and `fvm dart` with `dart`.
 - When working inside WSL, run Flutter/Dart via the Windows toolchain to avoid CRLF shim issues. The
   toolchain wrappers are provided in `tool/agent/` (recommended):
-    - Flutter: `tool/agent/flutterw` (reads `.fvmrc`, runs Windows `flutter.bat`)
-    - Dart: `tool/agent/dartw` (reads `.fvmrc`, runs Windows `dart.bat`)
+    - Generic: `tool/agent/winrun` (runs any Windows command from WSL; use `--no-stdin` for non-interactive/PTY runners like Codex CLI)
+    - Flutter: `tool/agent/flutterw` (runs Windows `flutter.bat`; supports `--no-stdin`)
+    - Dart: `tool/agent/dartw` (runs Windows `dart.bat`; supports `--no-stdin`)
     - Example: `tool/agent/flutterw analyze`
     - Example: `tool/agent/dartw run build_runner build --delete-conflicting-outputs`
+    - Example (non-interactive safe): `tool/agent/dartw --no-stdin run custom_lint`
     - Override defaults via `WIN_FVM_VERSIONS_DIR`, `WIN_FLUTTER_BIN`, `WIN_DART_BIN`.
 - Always run lint/analyze after making changes to catch errors early:
     - `fvm flutter analyze` (or the WSL/Windows command shown above)

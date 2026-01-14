@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate Config (Dev)",
+            "type": "shell",
+            "command": "dart",
+            "args": ["run", "tool/gen_config.dart", "-e", "dev"],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate Config (Staging)",
+            "type": "shell",
+            "command": "dart",
+            "args": ["run", "tool/gen_config.dart", "-e", "staging"],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate Config (Prod)",
+            "type": "shell",
+            "command": "dart",
+            "args": ["run", "tool/gen_config.dart", "-e", "prod"],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

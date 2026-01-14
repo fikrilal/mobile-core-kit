@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../adaptive_context.dart';
-import '../size_classes.dart';
+import '../adaptive_policies.dart';
+import '../policies/modal_policy.dart';
 
+/// Adaptive modal entrypoint (sheet on compact, dialog on larger widths).
+///
+/// Use this instead of `showModalBottomSheet` / `showDialog` directly in
+/// feature code. The presentation decision is driven by [ModalPolicy] (set once
+/// via `AdaptiveScope.modalPolicy`).
 Future<T?> showAdaptiveModal<T>({
   required BuildContext context,
   required WidgetBuilder builder,
+  ModalPolicy? modalPolicy,
   bool barrierDismissible = true,
   bool useRootNavigator = true,
   bool useSafeArea = true,
@@ -21,9 +28,12 @@ Future<T?> showAdaptiveModal<T>({
   Clip clipBehavior = Clip.none,
 }) {
   final layout = context.adaptiveLayout;
+  final policy = modalPolicy ?? AdaptivePolicies.of(context).modalPolicy;
   final effectiveEnableDrag = enableDrag ?? barrierDismissible;
 
-  if (layout.widthClass == WindowWidthClass.compact) {
+  final presentation = policy.modalPresentation(layout: layout);
+
+  if (presentation == AdaptiveModalPresentation.bottomSheet) {
     return showModalBottomSheet<T>(
       context: context,
       useRootNavigator: useRootNavigator,

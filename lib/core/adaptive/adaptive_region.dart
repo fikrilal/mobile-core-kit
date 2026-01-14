@@ -5,6 +5,17 @@ import 'adaptive_spec.dart';
 import 'adaptive_spec_builder.dart';
 import 'size_classes.dart';
 
+/// Local adaptive scope for nested constraints.
+///
+/// Use this inside split panes / resizable panels where the subtree should
+/// adapt based on *its own* `BoxConstraints`, not the global window size.
+///
+/// `AdaptiveRegion` re-derives only [LayoutSpec] from the local constraints and
+/// inherits the rest of the contract (text/motion/input/platform/foldable/insets)
+/// from the nearest `AdaptiveScope`.
+///
+/// Navigation is forced to `NavigationKind.none` inside the region to prevent
+/// accidental nested navigation shells.
 class AdaptiveRegion extends StatelessWidget {
   const AdaptiveRegion({super.key, required this.child});
 
