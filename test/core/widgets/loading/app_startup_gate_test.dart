@@ -12,7 +12,11 @@ void main() {
     );
   }
 
-  Widget wrapSized(Widget child, {required Size size, required TextScaler textScaler}) {
+  Widget wrapSized(
+    Widget child, {
+    required Size size,
+    required TextScaler textScaler,
+  }) {
     return MaterialApp(
       theme: AppTheme.light(),
       home: MediaQuery(
@@ -60,8 +64,9 @@ void main() {
     ready.dispose();
   });
 
-  testWidgets('shows overlay only after showDelay when still not ready',
-      (tester) async {
+  testWidgets('shows overlay only after showDelay when still not ready', (
+    tester,
+  ) async {
     final ready = ValueNotifier<bool>(false);
 
     await tester.pumpWidget(
@@ -95,8 +100,9 @@ void main() {
     ready.dispose();
   });
 
-  testWidgets('removes backdrop and cancels delayed overlay when ready early',
-      (tester) async {
+  testWidgets('removes backdrop and cancels delayed overlay when ready early', (
+    tester,
+  ) async {
     final ready = ValueNotifier<bool>(false);
     var tapCount = 0;
 
@@ -137,7 +143,9 @@ void main() {
     ready.dispose();
   });
 
-  testWidgets('startup overlay does not overflow on small screens', (tester) async {
+  testWidgets('startup overlay does not overflow on small screens', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrapSized(
         const AppStartupOverlay(title: 'Mobile Core Kit'),

@@ -203,10 +203,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Inline in a row',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Inline in a row', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -299,4 +296,3 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
     );
   }
 }
-

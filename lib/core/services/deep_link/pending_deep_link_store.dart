@@ -73,4 +73,3 @@ class PendingDeepLinkStore {
     await prefs.remove(_kSourceKey);
   }
 }
-

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$repo_root" ]]; then
+  repo_root="$(cd "$script_dir/.." && pwd)"
+fi
+
+if ! command -v cmd.exe >/dev/null 2>&1; then
+  echo "ERROR: cmd.exe not found. This wrapper is intended for WSL Windows interop." >&2
+  exit 1
+fi
+
+fvmrc="$repo_root/.fvmrc"
+flutter_version=""
+if [[ -f "$fvmrc" ]]; then
+  flutter_version="$(
+    tr -d '\r' < "$fvmrc" \
+      | sed -n 's/.*"flutter"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+      | head -n1
+  )"
+
+  if [[ -z "$flutter_version" ]]; then
+    flutter_version="$(tr -d '\r\n ' < "$fvmrc")"
+  fi
+fi
+
+if [[ -n "${WIN_DART_BIN:-}" ]]; then
+  dart_bin="$WIN_DART_BIN"
+else
+  if [[ -z "$flutter_version" ]]; then
+    echo "ERROR: Could not determine Flutter version from $fvmrc." >&2
+    echo "Set WIN_DART_BIN (full path to dart.bat) or WIN_FVM_VERSIONS_DIR (path to fvm versions dir)." >&2
+    exit 1
+  fi
+
+  versions_dir="${WIN_FVM_VERSIONS_DIR:-D:\\DEV\\SDK\\Flutter\\fvm\\versions}"
+  dart_bin="${versions_dir}\\${flutter_version}\\bin\\dart.bat"
+fi
+
+exec cmd.exe /C "$dart_bin" "$@"
+

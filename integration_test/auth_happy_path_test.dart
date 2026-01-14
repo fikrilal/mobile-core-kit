@@ -23,6 +23,7 @@ import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -83,12 +84,8 @@ void main() {
     final router = GoRouter(
       initialLocation: AppRoutes.root,
       refreshListenable: Listenable.merge([startup, deepLinks]),
-      redirect: (context, state) => appRedirectUri(
-        state.uri,
-        startup,
-        deepLinks,
-        DeepLinkParser(),
-      ),
+      redirect: (context, state) =>
+          appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser()),
       routes: [
         GoRoute(
           path: AppRoutes.root,
@@ -101,8 +98,12 @@ void main() {
         GoRoute(
           path: AuthRoutes.signIn,
           builder: (context, state) => BlocProvider<LoginCubit>(
-            create:
-                (_) => LoginCubit(loginUseCase, googleUseCase, sessionManager, analytics),
+            create: (_) => LoginCubit(
+              loginUseCase,
+              googleUseCase,
+              sessionManager,
+              analytics,
+            ),
             child: const SignInPage(),
           ),
         ),
@@ -185,12 +186,15 @@ class _NoopAnalyticsService implements IAnalyticsService {
   Future<void> setUserId(String userId) async {}
 
   @override
-  Future<void> setUserProperty(String propertyName, String propertyValue) async {}
+  Future<void> setUserProperty(
+    String propertyName,
+    String propertyValue,
+  ) async {}
 }
 
 class _FakeAppLaunchService implements AppLaunchService {
   _FakeAppLaunchService({required bool onboardingSeen})
-      : _onboardingSeen = onboardingSeen;
+    : _onboardingSeen = onboardingSeen;
 
   bool _onboardingSeen;
 
@@ -278,7 +282,7 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, Unit>> revokeSessions() async {
+  Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request) async {
     return right(unit);
   }
 

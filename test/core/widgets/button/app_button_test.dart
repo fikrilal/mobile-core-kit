@@ -34,24 +34,26 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('AppButton expands to full width when isExpanded in bounded width',
-      (tester) async {
-    await tester.pumpWidget(
-      wrap(
-        SizedBox(
-          width: 200,
-          child: AppButton(
-            text: 'Expand',
-            isExpanded: true,
-            onPressed: () {},
+  testWidgets(
+    'AppButton expands to full width when isExpanded in bounded width',
+    (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SizedBox(
+            width: 200,
+            child: AppButton(
+              text: 'Expand',
+              isExpanded: true,
+              onPressed: () {},
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final buttonSize = tester.getSize(find.byType(ElevatedButton));
-    expect(buttonSize.width, 200);
-  });
+      final buttonSize = tester.getSize(find.byType(ElevatedButton));
+      expect(buttonSize.width, 200);
+    },
+  );
 
   testWidgets('AppButton exposes semantics label', (tester) async {
     await tester.pumpWidget(
@@ -64,8 +66,9 @@ void main() {
       ),
     );
 
-    final semanticsWidgets =
-        tester.widgetList<Semantics>(find.byType(Semantics)).toList();
+    final semanticsWidgets = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .toList();
 
     final matching = semanticsWidgets.where(
       (s) => s.properties.label == 'Save document',

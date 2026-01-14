@@ -3,7 +3,8 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
-typedef EarlyErrorPlatformHandler = bool Function(Object error, StackTrace stack);
+typedef EarlyErrorPlatformHandler =
+    bool Function(Object error, StackTrace stack);
 
 abstract class EarlyErrorReporter {
   Future<void> recordError(
@@ -13,10 +14,7 @@ abstract class EarlyErrorReporter {
     bool fatal,
   });
 
-  Future<void> recordFlutterError(
-    FlutterErrorDetails details, {
-    bool fatal,
-  });
+  Future<void> recordFlutterError(FlutterErrorDetails details, {bool fatal});
 }
 
 /// Buffers unhandled errors until the real crash reporter is ready.
@@ -110,17 +108,18 @@ class EarlyErrorBuffer {
   }) {
     final reporter = _reporter;
     if (reporter != null) {
-      unawaited(reporter.recordError(error, stack, reason: reason, fatal: fatal));
+      unawaited(
+        reporter.recordError(error, stack, reason: reason, fatal: fatal),
+      );
       return;
     }
 
-    _addToBuffer(_BufferedNonFlutterError(error, stack, reason: reason, fatal: fatal));
+    _addToBuffer(
+      _BufferedNonFlutterError(error, stack, reason: reason, fatal: fatal),
+    );
   }
 
-  void recordFlutterError(
-    FlutterErrorDetails details, {
-    bool fatal = false,
-  }) {
+  void recordFlutterError(FlutterErrorDetails details, {bool fatal = false}) {
     final reporter = _reporter;
     if (reporter != null) {
       unawaited(reporter.recordFlutterError(details, fatal: fatal));
@@ -184,4 +183,3 @@ class _BufferedFlutterError implements _BufferedEvent {
     return reporter.recordFlutterError(details, fatal: fatal);
   }
 }
-

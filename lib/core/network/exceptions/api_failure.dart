@@ -29,7 +29,8 @@ class ApiFailure implements Exception {
 
   factory ApiFailure.fromDioException(DioException e) {
     final response = e.response;
-    final statusCode = response?.statusCode;
+    int? statusCode = response?.statusCode;
+    statusCode ??= _statusCodeForDioException(e);
     final data = response?.data;
     String message = response?.statusMessage ?? e.message ?? 'Unknown error';
     String? code;
@@ -94,6 +95,27 @@ class ApiFailure implements Exception {
       traceId: traceId,
       validationErrors: validationErrors,
     );
+  }
+
+  static int? _statusCodeForDioException(DioException e) {
+    // Negative codes are used for client-side categorization when there is no
+    // HTTP response.
+    //
+    // -1: network/unreachable (offline, DNS, connection refused)
+    // -2: timeout with unknown outcome (request may have reached server)
+    switch (e.type) {
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return -2;
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.connectionError:
+      case DioExceptionType.badCertificate:
+      case DioExceptionType.cancel:
+      case DioExceptionType.unknown:
+        return -1;
+      case DioExceptionType.badResponse:
+        return e.response?.statusCode;
+    }
   }
 
   @override

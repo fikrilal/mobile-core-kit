@@ -56,4 +56,3 @@ class DeepLinkParser {
     return path;
   }
 }
-

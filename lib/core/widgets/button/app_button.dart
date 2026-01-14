@@ -284,25 +284,21 @@ class AppButton extends StatelessWidget {
       child: buttonChild,
     );
 
-	    // Wrap with accessibility features
-	    button = _wrapWithAccessibility(button);
+    // Wrap with accessibility features
+    button = _wrapWithAccessibility(button);
 
-	    // Wrap with focus management
-	    button = _wrapWithFocusManagement(button);
+    // Wrap with focus management
+    button = _wrapWithFocusManagement(button);
 
-	    // Add subtle zoom interaction on tap for enabled buttons.
-	    if (!isButtonDisabled) {
-	      button = ZoomTapAnimation(
-	        begin: 1.0,
-	        end: 0.98,
-	        child: button,
-	      );
-	    }
+    // Add subtle zoom interaction on tap for enabled buttons.
+    if (!isButtonDisabled) {
+      button = ZoomTapAnimation(begin: 1.0, end: 0.98, child: button);
+    }
 
-	    // Apply margin if specified
-	    if (margin != null) {
-	      button = Padding(padding: margin!, child: button);
-	    }
+    // Apply margin if specified
+    if (margin != null) {
+      button = Padding(padding: margin!, child: button);
+    }
 
     // Apply safe expansion: only when width is bounded
     return LayoutBuilder(

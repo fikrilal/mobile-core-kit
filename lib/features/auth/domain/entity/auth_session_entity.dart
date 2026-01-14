@@ -9,6 +9,7 @@ part 'auth_session_entity.freezed.dart';
 abstract class AuthSessionEntity with _$AuthSessionEntity {
   const factory AuthSessionEntity({
     required AuthTokensEntity tokens,
+
     /// User can be null when restoring a session from tokens only.
     ///
     /// On app start, the app may restore tokens from secure storage and then

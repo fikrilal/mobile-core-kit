@@ -47,91 +47,89 @@ void main() {
       expect(deepLinks.hasPending, isFalse);
     });
 
-    testWidgets(
-      'does not clear when canPop and clearWhenCanPop is false',
-      (tester) async {
-        SharedPreferences.setMockInitialValues({});
+    testWidgets('does not clear when canPop and clearWhenCanPop is false', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
 
-        final deepLinks = PendingDeepLinkController(
-          store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-          parser: DeepLinkParser(),
-          now: () => DateTime(2026, 1, 1),
-        );
+      final deepLinks = PendingDeepLinkController(
+        store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
+        parser: DeepLinkParser(),
+        now: () => DateTime(2026, 1, 1),
+      );
 
-        await deepLinks.setPendingLocation('/profile', source: 'test');
-        expect(deepLinks.hasPending, isTrue);
+      await deepLinks.setPendingLocation('/profile', source: 'test');
+      expect(deepLinks.hasPending, isTrue);
 
-        final navigatorKey = GlobalKey<NavigatorState>();
-        await tester.pumpWidget(
-          MaterialApp(
-            navigatorKey: navigatorKey,
-            home: const Scaffold(body: Text('home')),
+      final navigatorKey = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: navigatorKey,
+          home: const Scaffold(body: Text('home')),
+        ),
+      );
+
+      navigatorKey.currentState!.push(
+        MaterialPageRoute<void>(
+          builder: (_) => PendingDeepLinkCancelOnPop(
+            deepLinks: deepLinks,
+            clearWhenCanPop: false,
+            child: const Scaffold(body: Text('auth')),
           ),
-        );
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        navigatorKey.currentState!.push(
-          MaterialPageRoute<void>(
-            builder: (_) => PendingDeepLinkCancelOnPop(
-              deepLinks: deepLinks,
-              clearWhenCanPop: false,
-              child: const Scaffold(body: Text('auth')),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
 
-        await tester.binding.handlePopRoute();
-        await tester.pumpAndSettle();
+      expect(deepLinks.hasPending, isTrue);
+    });
 
-        expect(deepLinks.hasPending, isTrue);
-      },
-    );
+    testWidgets('clears when cannot pop and clearWhenCanPop is false', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
 
-    testWidgets(
-      'clears when cannot pop and clearWhenCanPop is false',
-      (tester) async {
-        SharedPreferences.setMockInitialValues({});
-
-        var didRequestExit = false;
+      var didRequestExit = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+            if (call.method == 'SystemNavigator.pop') {
+              didRequestExit = true;
+            }
+            return null;
+          });
+      addTearDown(() {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(SystemChannels.platform, (call) async {
-              if (call.method == 'SystemNavigator.pop') {
-                didRequestExit = true;
-              }
-              return null;
-            });
-        addTearDown(() {
-          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-              .setMockMethodCallHandler(SystemChannels.platform, null);
-        });
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      });
 
-        final deepLinks = PendingDeepLinkController(
-          store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-          parser: DeepLinkParser(),
-          now: () => DateTime(2026, 1, 1),
-        );
+      final deepLinks = PendingDeepLinkController(
+        store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
+        parser: DeepLinkParser(),
+        now: () => DateTime(2026, 1, 1),
+      );
 
-        await deepLinks.setPendingLocation('/profile', source: 'test');
-        expect(deepLinks.hasPending, isTrue);
+      await deepLinks.setPendingLocation('/profile', source: 'test');
+      expect(deepLinks.hasPending, isTrue);
 
-        final navigatorKey = GlobalKey<NavigatorState>();
-        await tester.pumpWidget(
-          MaterialApp(
-            navigatorKey: navigatorKey,
-            home: PendingDeepLinkCancelOnPop(
-              deepLinks: deepLinks,
-              clearWhenCanPop: false,
-              child: const Scaffold(body: Text('auth')),
-            ),
+      final navigatorKey = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: navigatorKey,
+          home: PendingDeepLinkCancelOnPop(
+            deepLinks: deepLinks,
+            clearWhenCanPop: false,
+            child: const Scaffold(body: Text('auth')),
           ),
-        );
+        ),
+      );
 
-        await navigatorKey.currentState!.maybePop();
-        await tester.pumpAndSettle();
+      await navigatorKey.currentState!.maybePop();
+      await tester.pumpAndSettle();
 
-        expect(deepLinks.hasPending, isFalse);
-        expect(didRequestExit, isTrue);
-      },
-    );
+      expect(deepLinks.hasPending, isFalse);
+      expect(didRequestExit, isTrue);
+    });
   });
 }

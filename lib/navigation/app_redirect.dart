@@ -29,8 +29,9 @@ String? appRedirectUri(
   DeepLinkParser deepLinkParser,
 ) {
   final isExternalHttps = uri.hasScheme && uri.scheme == 'https';
-  final mappedExternal =
-      isExternalHttps ? deepLinkParser.parseExternalUri(uri) : null;
+  final mappedExternal = isExternalHttps
+      ? deepLinkParser.parseExternalUri(uri)
+      : null;
 
   // Fail safe: reject non-allowlisted HTTPS links.
   if (isExternalHttps && mappedExternal == null) return AppRoutes.root;

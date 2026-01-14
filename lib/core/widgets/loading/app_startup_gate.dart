@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../theme/responsive/spacing.dart';
+import '../../theme/tokens/spacing.dart';
 import '../../theme/system/motion_durations.dart';
 import '../../theme/typography/components/text.dart';
 import 'app_dot_wave.dart';
@@ -249,8 +249,8 @@ class _AppStartupGateState extends State<AppStartupGate> {
   Widget build(BuildContext context) {
     final effectiveChild =
         widget.disableChildTickers && (_mountedBackdrop || _mountedOverlay)
-            ? TickerMode(enabled: false, child: widget.child)
-            : widget.child;
+        ? TickerMode(enabled: false, child: widget.child)
+        : widget.child;
 
     final backdrop = _mountedBackdrop
         ? Positioned.fill(
@@ -263,10 +263,7 @@ class _AppStartupGateState extends State<AppStartupGate> {
 
     final barrier = (_mountedBackdrop || _mountedOverlay)
         ? const Positioned.fill(
-            child: ModalBarrier(
-              dismissible: false,
-              color: Colors.transparent,
-            ),
+            child: ModalBarrier(dismissible: false, color: Colors.transparent),
           )
         : null;
 
@@ -276,9 +273,10 @@ class _AppStartupGateState extends State<AppStartupGate> {
               opacity: _opaqueOverlay ? 1 : 0,
               duration: widget.fadeDuration,
               curve: Curves.easeOut,
-              child: (widget.overlayBuilder ?? (_) => const AppStartupOverlay())(
-                context,
-              ),
+              child:
+                  (widget.overlayBuilder ?? (_) => const AppStartupOverlay())(
+                    context,
+                  ),
             ),
           )
         : null;
@@ -309,9 +307,7 @@ class AppStartupBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return ColoredBox(
-      color: scheme.surface,
-    );
+    return ColoredBox(color: scheme.surface);
   }
 }
 

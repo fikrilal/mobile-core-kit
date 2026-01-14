@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'core/di/service_locator.dart';
+import 'core/adaptive/adaptive_scope.dart';
+import 'core/adaptive/policies/navigation_policy.dart';
+import 'core/adaptive/policies/text_scale_policy.dart';
 import 'core/services/app_startup/app_startup_controller.dart';
 import 'core/theme/theme.dart';
 import 'package:go_router/go_router.dart';
@@ -26,14 +29,22 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.light,
         routerConfig: _router,
         scaffoldMessengerKey: navigation.scaffoldMessengerKey,
-        builder: (context, child) => AppStartupGate(
-          listenable: startup,
-          isReady: () => startup.isReady,
-          overlayBuilder: (_) => const AppStartupOverlay(
-            title: 'Mobile Core Kit',
-          ),
-          child: child ?? const SizedBox.shrink(),
-        ),
+        builder: (context, child) {
+          return AdaptiveScope(
+            navigationPolicy: const NavigationPolicy.standard(),
+            textScalePolicy: const TextScalePolicy.clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 2.0,
+            ),
+            child: AppStartupGate(
+              listenable: startup,
+              isReady: () => startup.isReady,
+              overlayBuilder: (_) =>
+                  const AppStartupOverlay(title: 'Mobile Core Kit'),
+              child: child ?? const SizedBox.shrink(),
+            ),
+          );
+        },
       ),
     );
   }

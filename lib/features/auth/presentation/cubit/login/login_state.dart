@@ -2,12 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_state.freezed.dart';
 
-enum LoginStatus {
-  initial,
-  submitting,
-  success,
-  failure,
-}
+enum LoginStatus { initial, submitting, success, failure }
 
 enum LoginSubmitMethod { emailPassword, google }
 

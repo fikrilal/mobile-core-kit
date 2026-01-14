@@ -6,4 +6,3 @@ import '../entity/user_entity.dart';
 abstract class UserRepository {
   Future<Either<AuthFailure, UserEntity>> getMe();
 }
-

@@ -31,7 +31,8 @@ class PendingDeepLinkCancelOnPop extends StatefulWidget {
       _PendingDeepLinkCancelOnPopState();
 }
 
-class _PendingDeepLinkCancelOnPopState extends State<PendingDeepLinkCancelOnPop> {
+class _PendingDeepLinkCancelOnPopState
+    extends State<PendingDeepLinkCancelOnPop> {
   bool _isHandlingPop = false;
 
   Future<void> _handleCancel() async {

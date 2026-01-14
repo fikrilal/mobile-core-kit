@@ -26,7 +26,9 @@ class AppDateUtils {
         'Nov',
         'Dec',
       ];
-      final m = (date.month >= 1 && date.month <= 12) ? months[date.month - 1] : '';
+      final m = (date.month >= 1 && date.month <= 12)
+          ? months[date.month - 1]
+          : '';
       return '$m ${date.year}';
     }
   }

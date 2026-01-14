@@ -20,7 +20,8 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   static const String _tag = 'AnalyticsServiceImpl';
 
   bool get _debugLoggingEnabled =>
-      BuildConfig.analyticsDebugLoggingEnabled && AppConfig.instance.enableLogging;
+      BuildConfig.analyticsDebugLoggingEnabled &&
+      AppConfig.instance.enableLogging;
 
   @override
   Future<void> initialize() async {
@@ -50,14 +51,20 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   Future<void> logEvent(String name, {Map<String, Object?>? parameters}) async {
     if (!_isInitialized) {
       if (_debugLoggingEnabled) {
-        Log.warning('Analytics not initialized, skipping event: $name', name: _tag);
+        Log.warning(
+          'Analytics not initialized, skipping event: $name',
+          name: _tag,
+        );
       }
       return;
     }
 
     if (!_analyticsEnabled) {
       if (_debugLoggingEnabled) {
-        Log.debug('Analytics disabled; would log event: $name | $parameters', name: _tag);
+        Log.debug(
+          'Analytics disabled; would log event: $name | $parameters',
+          name: _tag,
+        );
       }
       return;
     }
@@ -70,7 +77,10 @@ class AnalyticsServiceImpl implements IAnalyticsService {
         Log.debug('Analytics event: $name | $parameters', name: _tag);
       }
 
-      await analytics.logEvent(name: name, parameters: parameters?.cast<String, Object>());
+      await analytics.logEvent(
+        name: name,
+        parameters: parameters?.cast<String, Object>(),
+      );
     } catch (e, st) {
       Log.error('Failed to log event $name', e, st, false, _tag);
     }
@@ -85,7 +95,8 @@ class AnalyticsServiceImpl implements IAnalyticsService {
     final mergedParams = <String, Object?>{
       if (parameters != null) ...parameters,
       AnalyticsParams.screenName: screenName,
-      if (previousScreenName != null) AnalyticsParams.previousScreenName: previousScreenName,
+      if (previousScreenName != null)
+        AnalyticsParams.previousScreenName: previousScreenName,
     };
 
     await logEvent(AnalyticsEvents.screenView, parameters: mergedParams);
@@ -95,7 +106,10 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   Future<void> setUserId(String userId) async {
     if (!_isInitialized) {
       if (_debugLoggingEnabled) {
-        Log.warning('Analytics not initialized, skipping setUserId', name: _tag);
+        Log.warning(
+          'Analytics not initialized, skipping setUserId',
+          name: _tag,
+        );
       }
       return;
     }
@@ -146,14 +160,20 @@ class AnalyticsServiceImpl implements IAnalyticsService {
   Future<void> setUserProperty(String name, String value) async {
     if (!_isInitialized) {
       if (_debugLoggingEnabled) {
-        Log.warning('Analytics not initialized, skipping setUserProperty', name: _tag);
+        Log.warning(
+          'Analytics not initialized, skipping setUserProperty',
+          name: _tag,
+        );
       }
       return;
     }
 
     if (!_analyticsEnabled) {
       if (_debugLoggingEnabled) {
-        Log.debug('Analytics disabled; would set user property: $name = $value', name: _tag);
+        Log.debug(
+          'Analytics disabled; would set user property: $name = $value',
+          name: _tag,
+        );
       }
       return;
     }
@@ -163,7 +183,10 @@ class AnalyticsServiceImpl implements IAnalyticsService {
       if (analytics == null) return;
 
       if (_debugLoggingEnabled) {
-        Log.debug('Setting analytics user property: $name = $value', name: _tag);
+        Log.debug(
+          'Setting analytics user property: $name = $value',
+          name: _tag,
+        );
       }
 
       await analytics.setUserProperty(name: name, value: value);
@@ -186,9 +209,18 @@ class AnalyticsServiceImpl implements IAnalyticsService {
       }
 
       await analytics.setAnalyticsCollectionEnabled(enabled);
-      Log.info('Analytics collection ${enabled ? 'enabled' : 'disabled'}', name: _tag);
+      Log.info(
+        'Analytics collection ${enabled ? 'enabled' : 'disabled'}',
+        name: _tag,
+      );
     } catch (e, st) {
-      Log.error('Failed to set analytics collection enabled', e, st, false, _tag);
+      Log.error(
+        'Failed to set analytics collection enabled',
+        e,
+        st,
+        false,
+        _tag,
+      );
     }
   }
 

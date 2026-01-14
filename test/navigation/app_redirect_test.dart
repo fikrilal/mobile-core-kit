@@ -29,13 +29,16 @@ AppStartupController _startupNotReady() {
   final appLaunch = _MockAppLaunchService();
 
   final connectivity = _MockConnectivityService();
-  when(() => connectivity.networkStatusStream)
-      .thenAnswer((_) => const Stream<NetworkStatus>.empty());
+  when(
+    () => connectivity.networkStatusStream,
+  ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
   final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
   final sessionManager = _MockSessionManager();
   when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
-  when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+  when(
+    () => sessionManager.restoreCachedUserIfNeeded(),
+  ).thenAnswer((_) async {});
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(false);
 
@@ -61,18 +64,22 @@ Future<AppStartupController> _startup({
   required bool isAuthenticated,
 }) async {
   final appLaunch = _MockAppLaunchService();
-  when(() => appLaunch.shouldShowOnboarding())
-      .thenAnswer((_) async => shouldShowOnboarding);
+  when(
+    () => appLaunch.shouldShowOnboarding(),
+  ).thenAnswer((_) async => shouldShowOnboarding);
 
   final connectivity = _MockConnectivityService();
-  when(() => connectivity.networkStatusStream)
-      .thenAnswer((_) => const Stream<NetworkStatus>.empty());
+  when(
+    () => connectivity.networkStatusStream,
+  ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
   final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
   final sessionManager = _MockSessionManager();
   when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
   when(() => sessionManager.init()).thenAnswer((_) async {});
-  when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+  when(
+    () => sessionManager.restoreCachedUserIfNeeded(),
+  ).thenAnswer((_) async {});
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(isAuthenticated);
 
@@ -183,24 +190,27 @@ void main() {
       expect(deepLinks.pendingLocation, isNull);
     });
 
-    test('canonicalizes allowlisted https://orymu.com links to internal /path', () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'canonicalizes allowlisted https://orymu.com links to internal /path',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startupAuthed = await _startup(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-      );
+        final startupAuthed = await _startup(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse('https://orymu.com/profile'),
-        startupAuthed,
-        deepLinks,
-        parser,
-      );
+        final redirect = appRedirectUri(
+          Uri.parse('https://orymu.com/profile'),
+          startupAuthed,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, '/profile');
-    });
+        expect(redirect, '/profile');
+      },
+    );
 
     test('rejects non-allowlisted https hosts (fail safe to /)', () async {
       final deepLinks = _deepLinks();

@@ -75,7 +75,9 @@ class RegisterUserUseCase {
     );
 
     if (errors.isNotEmpty) {
-      return left<AuthFailure, AuthSessionEntity>(AuthFailure.validation(errors));
+      return left<AuthFailure, AuthSessionEntity>(
+        AuthFailure.validation(errors),
+      );
     }
 
     return _repository.register(

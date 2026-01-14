@@ -99,8 +99,9 @@ class AppStartupController extends ChangeNotifier {
     final restoreCachedUserFuture = _sessionManager.restoreCachedUserIfNeeded();
 
     try {
-      _shouldShowOnboarding =
-          await _appLaunch.shouldShowOnboarding().timeout(_onboardingReadTimeout);
+      _shouldShowOnboarding = await _appLaunch.shouldShowOnboarding().timeout(
+        _onboardingReadTimeout,
+      );
     } on TimeoutException catch (e, st) {
       // Fail open: if we cannot read persisted onboarding state, default to
       // showing onboarding instead of blocking app startup forever.

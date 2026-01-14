@@ -58,7 +58,6 @@ class SemanticColors extends ThemeExtension<SemanticColors> {
       warningContainer: yellow.yellow100,
       onWarningContainer: yellow.yellow600,
     );
-    
   }
 
   /// Build dark semantic colors from token palettes.
@@ -123,19 +122,32 @@ class SemanticColors extends ThemeExtension<SemanticColors> {
     return SemanticColors(
       success: Color.lerp(success, other.success, t)!,
       onSuccess: Color.lerp(onSuccess, other.onSuccess, t)!,
-      successContainer: Color.lerp(successContainer, other.successContainer, t)!,
-      onSuccessContainer:
-          Color.lerp(onSuccessContainer, other.onSuccessContainer, t)!,
+      successContainer: Color.lerp(
+        successContainer,
+        other.successContainer,
+        t,
+      )!,
+      onSuccessContainer: Color.lerp(
+        onSuccessContainer,
+        other.onSuccessContainer,
+        t,
+      )!,
       info: Color.lerp(info, other.info, t)!,
       onInfo: Color.lerp(onInfo, other.onInfo, t)!,
       infoContainer: Color.lerp(infoContainer, other.infoContainer, t)!,
       onInfoContainer: Color.lerp(onInfoContainer, other.onInfoContainer, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       onWarning: Color.lerp(onWarning, other.onWarning, t)!,
-      warningContainer: Color.lerp(warningContainer, other.warningContainer, t)!,
-      onWarningContainer:
-          Color.lerp(onWarningContainer, other.onWarningContainer, t)!,
+      warningContainer: Color.lerp(
+        warningContainer,
+        other.warningContainer,
+        t,
+      )!,
+      onWarningContainer: Color.lerp(
+        onWarningContainer,
+        other.onWarningContainer,
+        t,
+      )!,
     );
   }
 }
-

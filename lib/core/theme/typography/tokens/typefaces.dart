@@ -3,4 +3,3 @@ class Typefaces {
 
   static const String primary = 'InterTight';
 }
-

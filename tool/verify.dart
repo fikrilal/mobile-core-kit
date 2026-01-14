@@ -31,13 +31,30 @@ Future<int> main(List<String> argv) async {
   exitCode = await step('Flutter pub get', ['flutter', 'pub', 'get']);
   if (exitCode != 0) return exitCode;
 
-  exitCode = await step(
-    'Generate build config (.env/$env.yaml)',
-    ['dart', 'run', 'tool/gen_config.dart', '--env', env],
-  );
+  exitCode = await step('Generate build config (.env/$env.yaml)', [
+    'dart',
+    'run',
+    'tool/gen_config.dart',
+    '--env',
+    env,
+  ]);
   if (exitCode != 0) return exitCode;
 
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
+  if (exitCode != 0) return exitCode;
+
+  exitCode = await step('Verify modal entrypoints', [
+    'dart',
+    'run',
+    'tool/verify_modal_entrypoints.dart',
+  ]);
+  if (exitCode != 0) return exitCode;
+
+  exitCode = await step('Verify legacy responsive imports', [
+    'dart',
+    'run',
+    'tool/verify_legacy_responsive_usage.dart',
+  ]);
   if (exitCode != 0) return exitCode;
 
   if (!skipTests) {
@@ -49,6 +66,8 @@ Future<int> main(List<String> argv) async {
     exitCode = await step('Dart format (check)', [
       'dart',
       'format',
+      '--output',
+      'none',
       '--set-exit-if-changed',
       '.',
     ]);
@@ -151,7 +170,8 @@ class _CommandRunner {
     final resolved = _resolveWindowsExecutable(executable);
 
     final joinedArgs = args.map(_escapeWindowsArg).join(' ');
-    final cmd = 'cd /d $windowsRoot && ${resolved.executable} '
+    final cmd =
+        'cd /d $windowsRoot && ${resolved.executable} '
         '$joinedArgs';
 
     final process = await Process.start(

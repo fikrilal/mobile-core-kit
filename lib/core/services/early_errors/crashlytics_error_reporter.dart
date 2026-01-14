@@ -48,4 +48,3 @@ class CrashlyticsErrorReporter implements EarlyErrorReporter {
     );
   }
 }
-

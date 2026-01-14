@@ -7,6 +7,7 @@ import '../../../../../core/utilities/log_utils.dart';
 import '../../model/remote/login_request_model.dart';
 import '../../model/remote/auth_session_model.dart';
 import '../../model/remote/auth_tokens_model.dart';
+import '../../model/remote/logout_request_model.dart';
 import '../../model/remote/refresh_request_model.dart';
 import '../../model/remote/register_request_model.dart';
 import '../../model/remote/google_sign_in_request_model.dart';
@@ -46,7 +47,7 @@ class AuthRemoteDataSource {
     Log.info('Starting user login', name: _tag);
 
     final response = await _apiHelper.post<AuthSessionModel>(
-      AuthEndpoint.passwordLogin,
+      AuthEndpoint.login,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
@@ -86,20 +87,20 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<ApiNoData>> revokeSessions() async {
-    Log.info('Revoking all sessions for current user', name: _tag);
+  Future<ApiResponse<ApiNoData>> logout(LogoutRequestModel requestModel) async {
+    Log.info('Logging out (remote)', name: _tag);
 
     final response = await _apiHelper.post<ApiNoData>(
-      AuthEndpoint.revokeSessions,
+      AuthEndpoint.logout,
+      data: requestModel.toJson(),
       host: ApiHost.auth,
-      requiresAuth: true,
+      requiresAuth: false,
       throwOnError: false,
-      parser: (_) => const ApiNoData(),
     );
 
     if (response.isError) {
       Log.warning(
-        'Revoke sessions failed (status=${response.statusCode}): ${response.message}',
+        'Remote logout failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }

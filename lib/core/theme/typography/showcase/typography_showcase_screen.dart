@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../adaptive/adaptive_context.dart';
 import '../components/text.dart';
 import '../tokens/type_weights.dart';
 import '../tokens/typefaces.dart';
-import '../../responsive/screen_utils.dart';
 
 /// A comprehensive showcase screen for testing all typography styles and font weights.
 ///
@@ -194,13 +194,13 @@ class TypographyShowcaseScreen extends StatelessWidget {
   }
 
   Widget _buildResponsiveSection(BuildContext context) {
-    final breakpoint = context.breakpoint;
+    final layout = context.adaptiveLayout;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText.bodyMedium(
-          'Current breakpoint: $breakpoint',
+          'Width class: ${layout.widthClass}  •  Height class: ${layout.heightClass}',
           color: Colors.blue.shade600,
         ),
         const SizedBox(height: 16),
@@ -211,13 +211,13 @@ class TypographyShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 8),
 
         AppText.bodyMedium(
-          'The text sizes automatically adjust based on the current screen breakpoint.',
+          'Layout adapts using the adaptive size classes; text scaling follows system settings (clamped at the app root).',
         ),
         const SizedBox(height: 16),
 
-        // Example of responsive text
+        // Example header + body text under the current layout constraints
         AppText.headlineLarge(
-          'This headline scales responsively',
+          'This headline follows the type ramp',
           color: Colors.green.shade700,
         ),
       ],

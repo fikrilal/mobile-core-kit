@@ -2,61 +2,41 @@ import 'package:flutter/material.dart';
 import '../tokens/type_scale.dart';
 import '../tokens/type_weights.dart';
 import '../tokens/type_metrics.dart';
-import '../../responsive/screen_utils.dart';
 import '../tokens/typefaces.dart';
 
 /// Provides text styles that adapt to different screen sizes.
 ///
-/// These styles use the typography tokens but adjust the sizes based
-/// on the current screen breakpoint, providing a consistent typography
-/// experience across device sizes.
+/// These styles are based on typography tokens and rely on the app-level
+/// adaptive system (`AdaptiveScope`) for text scaling and layout adaptation.
 class ResponsiveTextStyles {
   // Private constructor to prevent instantiation
   ResponsiveTextStyles._();
 
   // Display Styles
-  static TextStyle displayLarge(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.displayLarge,
-      breakpoint,
-    );
-
+  static TextStyle displayLarge(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.displayLarge,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
       letterSpacing: TypeMetrics.displayLetterSpacing,
     );
   }
 
-  static TextStyle displayMedium(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.displayMedium,
-      breakpoint,
-    );
-
+  static TextStyle displayMedium(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.displayMedium,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
       letterSpacing: TypeMetrics.displayLetterSpacing,
     );
   }
 
-  static TextStyle displaySmall(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.displaySmall,
-      breakpoint,
-    );
-
+  static TextStyle displaySmall(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.displaySmall,
       fontWeight: TypeWeights.displayWeight,
       height: TypeMetrics.displayLineHeight,
       letterSpacing: TypeMetrics.displayLetterSpacing,
@@ -64,48 +44,30 @@ class ResponsiveTextStyles {
   }
 
   // Headline Styles
-  static TextStyle headlineLarge(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.headlineLarge,
-      breakpoint,
-    );
-
+  static TextStyle headlineLarge(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.headlineLarge,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
       letterSpacing: TypeMetrics.headlineLetterSpacing,
     );
   }
 
-  static TextStyle headlineMedium(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.headlineMedium,
-      breakpoint,
-    );
-
+  static TextStyle headlineMedium(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.headlineMedium,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
       letterSpacing: TypeMetrics.headlineLetterSpacing,
     );
   }
 
-  static TextStyle headlineSmall(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(
-      TypeScale.headlineSmall,
-      breakpoint,
-    );
-
+  static TextStyle headlineSmall(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.headlineSmall,
       fontWeight: TypeWeights.headlineWeight,
       height: TypeMetrics.headlineLineHeight,
       letterSpacing: TypeMetrics.headlineLetterSpacing,
@@ -113,39 +75,30 @@ class ResponsiveTextStyles {
   }
 
   // Title Styles
-  static TextStyle titleLarge(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.titleLarge, breakpoint);
-
+  static TextStyle titleLarge(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.titleLarge,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
       letterSpacing: TypeMetrics.titleLetterSpacing,
     );
   }
 
-  static TextStyle titleMedium(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.titleMedium, breakpoint);
-
+  static TextStyle titleMedium(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.titleMedium,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
       letterSpacing: TypeMetrics.titleLetterSpacing,
     );
   }
 
-  static TextStyle titleSmall(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.titleSmall, breakpoint);
-
+  static TextStyle titleSmall(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.titleSmall,
       fontWeight: TypeWeights.titleWeight,
       height: TypeMetrics.titleLineHeight,
       letterSpacing: TypeMetrics.titleLetterSpacing,
@@ -153,39 +106,30 @@ class ResponsiveTextStyles {
   }
 
   // Body Styles
-  static TextStyle bodyLarge(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.bodyLarge, breakpoint);
-
+  static TextStyle bodyLarge(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.bodyLarge,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
       letterSpacing: TypeMetrics.bodyLetterSpacing,
     );
   }
 
-  static TextStyle bodyMedium(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.bodyMedium, breakpoint);
-
+  static TextStyle bodyMedium(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.bodyMedium,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
       letterSpacing: TypeMetrics.bodyLetterSpacing,
     );
   }
 
-  static TextStyle bodySmall(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.bodySmall, breakpoint);
-
+  static TextStyle bodySmall(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.bodySmall,
       fontWeight: TypeWeights.bodyWeight,
       height: TypeMetrics.bodyLineHeight,
       letterSpacing: TypeMetrics.bodyLetterSpacing,
@@ -193,39 +137,30 @@ class ResponsiveTextStyles {
   }
 
   // Label Styles
-  static TextStyle labelLarge(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.labelLarge, breakpoint);
-
+  static TextStyle labelLarge(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.labelLarge,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,
       letterSpacing: TypeMetrics.labelLetterSpacing,
     );
   }
 
-  static TextStyle labelMedium(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.labelMedium, breakpoint);
-
+  static TextStyle labelMedium(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.labelMedium,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,
       letterSpacing: TypeMetrics.labelLetterSpacing,
     );
   }
 
-  static TextStyle labelSmall(BuildContext context) {
-    final breakpoint = context.breakpoint;
-    final size = TypeScale.getResponsiveSize(TypeScale.labelSmall, breakpoint);
-
+  static TextStyle labelSmall(BuildContext _) {
     return TextStyle(
       fontFamily: Typefaces.primary,
-      fontSize: size,
+      fontSize: TypeScale.labelSmall,
       fontWeight: TypeWeights.labelWeight,
       height: TypeMetrics.labelLineHeight,
       letterSpacing: TypeMetrics.labelLetterSpacing,

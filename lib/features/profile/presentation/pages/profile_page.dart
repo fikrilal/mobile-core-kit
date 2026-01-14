@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
+import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 
-import '../../../../core/theme/responsive/spacing.dart';
+import '../../../../core/adaptive/adaptive_context.dart';
+import '../../../../core/adaptive/tokens/surface_tokens.dart';
+import '../../../../core/adaptive/widgets/app_page_container.dart';
 import '../../../../core/theme/typography/components/text.dart';
 import '../../../../core/widgets/button/app_button.dart';
 import '../../../../core/widgets/button/button_variants.dart';
@@ -41,14 +45,22 @@ class _ProfileContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final layout = context.adaptiveLayout;
+    final sectionSpacing = layout.gutter * 3;
+
+    return AppPageContainer(
+      surface: SurfaceKind.settings,
       child: Padding(
-        padding: AppSpacing.screenPadding(context),
+        padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const AppText.titleLarge('Profile'),
-            SizedBox(height: AppSpacing.sectionSpacing(context)),
+            SizedBox(height: sectionSpacing),
+            AppAvatar(onChangePhoto: () {}),
+            SizedBox(height: sectionSpacing),
+            const AppIconBadge(icon: Icon(Icons.settings), showDot: true),
+            SizedBox(height: sectionSpacing),
             AppButton(
               text: 'Log out',
               variant: ButtonVariant.danger,

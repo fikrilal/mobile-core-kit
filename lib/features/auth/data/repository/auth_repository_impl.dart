@@ -1,12 +1,14 @@
 import 'package:fpdart/fpdart.dart';
 import '../../domain/entity/login_request_entity.dart';
 import '../../domain/entity/refresh_request_entity.dart';
+import '../../domain/entity/logout_request_entity.dart';
 import '../../domain/entity/auth_session_entity.dart';
 import '../../domain/entity/auth_tokens_entity.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../datasource/remote/auth_remote_datasource.dart';
 import '../model/remote/login_request_model.dart';
 import '../model/remote/refresh_request_model.dart';
+import '../model/remote/logout_request_model.dart';
 import '../model/remote/register_request_model.dart';
 import '../model/remote/auth_session_model.dart';
 import '../../../../../core/network/api/api_response_either.dart';
@@ -74,7 +76,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final apiResponse = await _remote.refreshToken(apiRequest);
       return apiResponse
           .toEitherWithFallback('Token refresh failed.')
-          .mapLeft(mapAuthFailure)
+          .mapLeft(mapAuthFailureForRefresh)
           .map((m) => m.toEntity());
     } catch (e, st) {
       Log.error(
@@ -89,15 +91,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, Unit>> revokeSessions() async {
+  Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request) async {
+    final apiRequest = LogoutRequestModel.fromEntity(request);
     try {
-      final apiResponse = await _remote.revokeSessions();
+      final apiResponse = await _remote.logout(apiRequest);
       return apiResponse
-          .toEitherWithFallback('Revoke sessions failed.')
+          .toEitherWithFallback('Logout failed.')
           .mapLeft(mapAuthFailure)
           .map((_) => unit);
     } catch (e, st) {
-      Log.error('Revoke sessions unexpected error', e, st, true, 'AuthRepository');
+      Log.error('Logout unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
     }
   }

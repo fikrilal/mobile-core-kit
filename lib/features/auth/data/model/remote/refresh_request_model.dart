@@ -7,9 +7,8 @@ part 'refresh_request_model.g.dart';
 
 @freezed
 abstract class RefreshRequestModel with _$RefreshRequestModel {
-  const factory RefreshRequestModel({
-    required String refreshToken,
-  }) = _RefreshRequestModel;
+  const factory RefreshRequestModel({required String refreshToken}) =
+      _RefreshRequestModel;
 
   const RefreshRequestModel._();
 

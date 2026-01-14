@@ -9,7 +9,7 @@ A comprehensive guide to using the theme system in the Orymu Mobile Flutter appl
 3. [Theme Structure](#theme-structure)
 4. [Color System](#color-system)
 5. [Typography System](#typography-system)
-6. [Responsive Design](#responsive-design)
+6. [Adaptive Layout](#adaptive-layout)
 7. [Components](#components)
 8. [Usage Examples](#usage-examples)
 9. [Best Practices](#best-practices)
@@ -20,8 +20,8 @@ A comprehensive guide to using the theme system in the Orymu Mobile Flutter appl
 The Orymu Mobile theme system provides a unified, responsive, and accessible design foundation for the Flutter application. It includes:
 
 - **Unified Color Palette**: Consistent color tokens across light and dark themes
-- **Responsive Typography**: Text that adapts to screen sizes and accessibility needs
-- **Responsive Layout System**: Breakpoint-based responsive design utilities
+- **Typography System**: Token-based type ramp with accessibility-correct text scaling (via `TextScaler`)
+- **Adaptive Layout System**: Constraint-first responsive + adaptive layout decisions (`lib/core/adaptive/`)
 - **Component Theming**: Pre-styled components with consistent design patterns
 - **Accessibility Support**: Built-in accessibility features and WCAG compliance
 
@@ -72,26 +72,28 @@ class ExamplePage extends StatelessWidget {
 }
 ```
 
-### 3. Use Responsive Layout
+### 3. Use Adaptive Layout
 
 ```dart:lib/widgets/responsive_widget.dart
 import 'package:flutter/material.dart';
-import '../core/theme/responsive/responsive_container.dart';
-import '../core/theme/responsive/screen_utils.dart';
-import '../core/theme/responsive/spacing.dart';
+import '../core/adaptive/adaptive_context.dart';
+import '../core/adaptive/tokens/surface_tokens.dart';
+import '../core/adaptive/widgets/app_page_container.dart';
 
-class ResponsiveWidget extends StatelessWidget {
+class AdaptiveWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ResponsiveContainer(
-      child: Padding(
-        padding: AppSpacing.screenPadding(context),
-        child: Column(
-          children: [
-            Text('Screen width: ${context.screenWidth}'),
-            Text('Device type: ${context.isMobile ? "Mobile" : context.isTablet ? "Tablet" : "Desktop"}'),
-          ],
-        ),
+    final layout = context.adaptiveLayout;
+
+    return AppPageContainer(
+      surface: SurfaceKind.settings,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Width class: ${layout.widthClass}'),
+          Text('Height class: ${layout.heightClass}'),
+          Text('Grid columns: ${layout.grid.columns}'),
+        ],
       ),
     );
   }
@@ -107,15 +109,9 @@ lib/core/theme/
 ├── dark_theme.dart           # Dark theme configuration
 ├── extensions/               # Theme extension utilities
 │   └── theme_extensions_utils.dart
-├── responsive/               # Responsive design system
-│   ├── breakpoints.dart      # Screen breakpoints
-│   ├── responsive_container.dart
-│   ├── responsive_layout.dart
-│   ├── responsive_scale.dart # Unified scaling system
-│   ├── screen_utils.dart     # Screen utility extensions
-│   ├── sizing.dart           # Component sizing
-│   └── spacing.dart          # Spacing tokens
 ├── tokens/                   # Base color tokens
+│   ├── spacing.dart          # Spacing scale (constants)
+│   ├── sizing.dart           # Component sizing (constants)
 │   ├── primary_colors.dart
 │   ├── secondary_colors.dart
 │   └── ...
@@ -262,88 +258,60 @@ AppText.custom(
 
 ### Typography Features
 
-- **Responsive Scaling**: Text sizes adapt to screen size
-- **Accessibility Support**: Respects user's text size preferences
+- **Type ramp**: Token-based sizes for consistent hierarchy
+- **Accessibility Support**: Respects user's text scaling via `TextScaler` (clamped at app root)
 - **Semantic Structure**: Proper heading hierarchy for screen readers
 - **Consistent Line Heights**: Optimized for readability
 - **Font Weight Variations**: Multiple weights available
 
-## Responsive Design
+## Adaptive Layout
 
-### Breakpoints
+Adaptive layout is provided by `lib/core/adaptive/` and is intentionally separate
+from ThemeData construction (ThemeData is context-free; adaptive decisions are
+constraint/capability-driven at runtime).
 
-The system uses three main breakpoints (matching `lib/core/theme/responsive/breakpoints.dart`):
+### Size classes (industry-aligned)
+
+Use window size classes (dp) derived from constraints:
 
 ```dart
-// Breakpoint values
-Breakpoints.sm = 600.0   // Small (mobile)
-Breakpoints.md = 900.0   // Medium (tablet)
-Breakpoints.lg = 1200.0  // Large (desktop)
-Breakpoints.xl = 1536.0  // Extra large (desktop wide)
+enum WindowWidthClass { compact, medium, expanded, large, extraLarge }
+enum WindowHeightClass { compact, medium, expanded }
 ```
 
-### Screen Utilities
+### Preferred access pattern
 
-Use the `ScreenUtils` extension for responsive logic:
+Use aspect-specific accessors to avoid rebuild storms:
 
 ```dart
-// Device type detection
-if (context.isMobile) {
-  // Mobile-specific logic
-} else if (context.isTablet) {
-  // Tablet-specific logic
-} else if (context.isDesktop) {
-  // Desktop-specific logic
-}
+final layout = context.adaptiveLayout;
+final insets = context.adaptiveInsets;
 
-// Screen dimensions
-final width = context.screenWidth;
-final height = context.screenHeight;
-final safeHeight = context.screenHeight - context.safeTopPadding - context.safeBottomPadding;
-
-// Responsive values
-final columns = context.gridColumns;                   // 2, 3, 4, or 6 columns
-final maxWidth = context.contentMaxWidth;              // Responsive max width
-final padding = AppSpacing.screenPadding(context);     // Responsive padding
+final padding = layout.pagePadding;      // responsive page padding
+final columns = layout.grid.columns;     // responsive grid columns
+final safe = insets.safePadding;         // safe areas
+final keyboard = insets.viewInsets;      // keyboard/system insets
 ```
 
-### Responsive Container
+### Page layout
 
-Use `ResponsiveContainer` to constrain content width:
-
-```dart
-ResponsiveContainer(
-  centerContent: true,  // Center the content
-  child: Column(
-    children: [
-      // Your content here
-    ],
-  ),
-)
-```
-
-### Responsive Layout Builder
+Use `AppPageContainer` to apply padding + safe area + content max width:
 
 ```dart
-ResponsiveLayout.builder(
-  context: context,
-  mobile: MobileLayout(),
-  tablet: TabletLayout(),
-  desktop: DesktopLayout(),
-)
-
-// Or with values
-final fontSize = ResponsiveLayout.value(
-  context: context,
-  mobile: 14.0,
-  tablet: 16.0,
-  desktop: 18.0,
+AppPageContainer(
+  surface: SurfaceKind.reading,
+  child: child,
 );
 ```
 
-### Spacing System
+### Nested panes
 
-Use consistent spacing throughout the app:
+Use `AdaptiveRegion` to adapt a subtree to its own constraints (e.g. split panes).
+
+### Spacing system
+
+Use `AppSpacing` for the fixed scale inside components, and adaptive layout
+tokens for page-level padding and layout decisions:
 
 ```dart
 // Fixed spacing values
@@ -353,11 +321,6 @@ AppSpacing.space16  // 16.0
 AppSpacing.space24  // 24.0
 AppSpacing.space32  // 32.0
 // ... up to space96
-
-// Responsive spacing
-AppSpacing.screenPadding(context)     // Responsive screen padding
-AppSpacing.sectionSpacing(context)    // Responsive section spacing
-AppSpacing.componentSpacing(context)  // Responsive component spacing
 ```
 
 ## Components
@@ -394,8 +357,7 @@ AppSizing.iconSizeMedium  // 24.0
 AppSizing.iconSizeLarge   // 32.0
 
 // Responsive utilities
-AppSizing.heroHeight(context)  // Responsive hero section height
-AppSizing.modalWidth(context)  // Responsive modal width
+// Prefer adaptive layout tokens for responsive layout decisions.
 ```
 
 ## Usage Examples
@@ -404,61 +366,58 @@ AppSizing.modalWidth(context)  // Responsive modal width
 
 ```dart:lib/pages/example_page.dart
 import 'package:flutter/material.dart';
+import '../core/adaptive/adaptive_context.dart';
+import '../core/adaptive/tokens/surface_tokens.dart';
+import '../core/adaptive/widgets/adaptive_grid.dart';
+import '../core/adaptive/widgets/app_page_container.dart';
 import '../core/theme/typography/components/heading.dart';
 import '../core/theme/typography/components/paragraph.dart';
-import '../core/theme/responsive/responsive_container.dart';
-import '../core/theme/responsive/spacing.dart';
-import '../core/theme/responsive/screen_utils.dart';
+import '../core/theme/tokens/spacing.dart';
+import '../core/theme/tokens/sizing.dart';
 
 class ExamplePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final layout = context.adaptiveLayout;
     return Scaffold(
       appBar: AppBar(
         title: Text('Example Page'),
       ),
-      body: ResponsiveContainer(
+      body: AppPageContainer(
+        surface: SurfaceKind.reading,
         child: SingleChildScrollView(
-          padding: AppSpacing.screenPadding(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Hero section
-              Container(
-                height: AppSizing.heroHeight(context),
-                child: Center(
-                  child: Heading.h1('Welcome to Orymu'),
-                ),
+              SizedBox(
+                height: 160,
+                child: Center(child: Heading.h1('Welcome to Orymu')),
               ),
 
-              SizedBox(height: AppSpacing.sectionSpacing(context)),
+              const SizedBox(height: AppSpacing.space32),
 
               // Content section
               Heading.h2('About This App'),
-              SizedBox(height: AppSpacing.componentSpacing(context)),
+              const SizedBox(height: AppSpacing.space16),
 
               Paragraph.large(
-                'This is an example of how to use the Orymu theme system. '
-                'The typography automatically adapts to different screen sizes '
-                'and the layout responds to the current breakpoint.',
+                'This is an example of how to use the Orymu theme + adaptive layout system. '
+                'Layout adapts via size classes and surface tokens; text scaling follows system settings.',
               ),
 
-              SizedBox(height: AppSpacing.componentSpacing(context)),
+              const SizedBox(height: AppSpacing.space16),
 
-              // Responsive grid
-              GridView.builder(
+              // Adaptive grid
+              AdaptiveGrid.builder(
+                columns: layout.grid.columns,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: context.gridColumns,
-                  crossAxisSpacing: AppSpacing.space16,
-                  mainAxisSpacing: AppSpacing.space16,
-                ),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: 6,
                 itemBuilder: (context, index) {
                   return Card(
                     child: Padding(
-                      padding: EdgeInsets.all(AppSpacing.space16),
+                      padding: const EdgeInsets.all(AppSpacing.space16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -467,7 +426,7 @@ class ExamplePage extends StatelessWidget {
                             size: AppSizing.iconSizeLarge,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          SizedBox(height: AppSpacing.space8),
+                          const SizedBox(height: AppSpacing.space8),
                           AppText.labelMedium('Item ${index + 1}'),
                         ],
                       ),
@@ -527,15 +486,12 @@ Paragraph.medium('Body content')
 Text('Page Title', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold))
 ```
 
-### 2. Leverage Responsive Utilities
+### 2. Leverage Adaptive Utilities
 
-✅ **Good**: Use responsive utilities
+✅ **Good**: Use adaptive layout tokens/widgets
 
 ```dart
-Padding(
-  padding: AppSpacing.screenPadding(context),
-  child: child,
-)
+AppPageContainer(child: child)
 ```
 
 ❌ **Avoid**: Fixed values
@@ -561,18 +517,15 @@ color: Theme.of(context).colorScheme.primary
 color: Color(0xFF6366F1)
 ```
 
-### 4. Responsive Layout Patterns
+### 4. Adaptive Layout Patterns
 
-✅ **Good**: Use responsive containers and utilities
+✅ **Good**: Use `AppPageContainer` and adaptive grid/tokens
 
 ```dart
-ResponsiveContainer(
-  child: GridView.builder(
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: context.gridColumns,
-    ),
-    // ...
-  ),
+AdaptiveGrid.builder(
+  columns: context.adaptiveLayout.grid.columns,
+  itemCount: items.length,
+  itemBuilder: ...,
 )
 ```
 
@@ -620,12 +573,7 @@ Container(
 **After:**
 
 ```dart
-ResponsiveContainer(
-  child: Padding(
-    padding: AppSpacing.screenPadding(context),
-    child: child,
-  ),
-)
+AppPageContainer(child: child)
 ```
 
 ### From Hardcoded Colors
@@ -660,17 +608,11 @@ class CustomResponsiveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final layout = context.adaptiveLayout;
     return Card(
-      margin: EdgeInsets.all(
-        ResponsiveLayout.value(
-          context: context,
-          mobile: AppSpacing.space8,
-          tablet: AppSpacing.space12,
-          desktop: AppSpacing.space16,
-        ),
-      ),
+      margin: EdgeInsets.all(layout.gutter),
       child: Padding(
-        padding: AppSpacing.componentSpacing(context),
+        padding: const EdgeInsets.all(AppSpacing.space16),
         child: child,
       ),
     );
@@ -717,7 +659,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
 For questions or issues with the theme system:
 
 1. Check the existing documentation in each module
-2. Review the `responsive-docs.md` for responsive-specific guidance
+2. Review `lib/core/adaptive/README.md` for adaptive layout guidance
 3. Check the `typography-guide.md` for typography-specific guidance
 4. Refer to component examples in the codebase
 

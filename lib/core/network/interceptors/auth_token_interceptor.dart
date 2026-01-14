@@ -12,7 +12,8 @@ class AuthTokenInterceptor extends dio.Interceptor {
   Completer<bool>? _refreshCompleter;
   static const String _requiresAuthKey = 'requiresAuth';
   static const String _allowAuthRetryKey = 'allowAuthRetry';
-  static const Set<String> _defaultRetryMethods = {'GET', 'HEAD'};
+  static const String _retriedKey = 'retried';
+  static const String _idempotencyKeyHeader = 'idempotency-key';
 
   bool _requiresAuth(dio.RequestOptions options) {
     final value = options.extra[_requiresAuthKey];
@@ -22,11 +23,27 @@ class AuthTokenInterceptor extends dio.Interceptor {
   }
 
   bool _allowAuthRetry(dio.RequestOptions options) {
-    final method = options.method.toUpperCase();
-    if (_defaultRetryMethods.contains(method)) return true;
-
     final value = options.extra[_allowAuthRetryKey];
-    if (value is bool) return value;
+    // Explicit opt-out always wins.
+    if (value is bool && value == false) return false;
+
+    // Default retry policy (aligned with backend-core-kit contract):
+    // - Reads (GET/HEAD) can be retried after refresh.
+    // - Writes (POST/PUT/PATCH/DELETE) must have an Idempotency-Key to be retried.
+    final method = options.method.toUpperCase();
+    if (method == 'GET' || method == 'HEAD') return true;
+
+    return _hasIdempotencyKey(options);
+  }
+
+  bool _hasIdempotencyKey(dio.RequestOptions options) {
+    for (final entry in options.headers.entries) {
+      if (entry.key.toLowerCase() != _idempotencyKeyHeader) continue;
+      final value = entry.value;
+      if (value == null) return false;
+      if (value is String) return value.trim().isNotEmpty;
+      return value.toString().trim().isNotEmpty;
+    }
     return false;
   }
 
@@ -36,7 +53,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
     dio.RequestInterceptorHandler handler,
   ) async {
     if (_requiresAuth(options)) {
-      if (options.extra['retried'] != true &&
+      if (options.extra[_retriedKey] != true &&
           _session.isAccessTokenExpiringSoon) {
         try {
           await _refreshOnce();
@@ -85,7 +102,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
 
     if (statusCode == 401 &&
         _requiresAuth(err.requestOptions) &&
-        err.requestOptions.extra['retried'] != true &&
+        err.requestOptions.extra[_retriedKey] != true &&
         _allowAuthRetry(err.requestOptions)) {
       try {
         final refreshResult = await _refreshOnce();
@@ -93,7 +110,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
         if (refreshResult) {
           // clone original request with new token
           final dio.RequestOptions opts = err.requestOptions;
-          opts.extra['retried'] = true;
+          opts.extra[_retriedKey] = true;
           opts.headers['Authorization'] = 'Bearer ${_session.accessToken}';
           final dio.Dio client = getIt<ApiClient>().dio;
           try {

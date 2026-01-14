@@ -70,4 +70,3 @@ void main() {
     expect(find.text('Required to continue'), findsOneWidget);
   });
 }
-

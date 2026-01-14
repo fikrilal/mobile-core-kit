@@ -58,6 +58,7 @@ dependencies:
   zoom_tap_animation: ^1.1.0
   shared_preferences: ^2.5.4
   app_links: ^7.0.0
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:

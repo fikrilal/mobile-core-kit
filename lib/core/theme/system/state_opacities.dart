@@ -10,4 +10,3 @@ class StateOpacities {
   static const double pressed = 0.12;
   static const double dragged = 0.16;
 }
-

@@ -36,9 +36,7 @@ void main() {
 
       final result = Redactor.redactMap({
         'data': {
-          'tokens': {
-            'accessToken': accessToken,
-          },
+          'tokens': {'accessToken': accessToken},
         },
         'items': [
           {'refreshToken': refreshToken},
@@ -57,4 +55,3 @@ void main() {
     });
   });
 }
-

@@ -32,10 +32,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
-    final error = result.fold(
-      (f) => f.userMessage,
-      (_) => null,
-    );
+    final error = result.fold((f) => f.userMessage, (_) => null);
 
     emit(
       state.copyWith(
@@ -52,10 +49,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   void passwordChanged(String value) {
     final result = LoginPassword.create(value);
-    final error = result.fold(
-      (f) => f.userMessage,
-      (_) => null,
-    );
+    final error = result.fold((f) => f.userMessage, (_) => null);
 
     emit(
       state.copyWith(
@@ -86,10 +80,7 @@ class LoginCubit extends Cubit<LoginState> {
     final emailResult = EmailAddress.create(state.email);
     final passwordResult = LoginPassword.create(state.password);
 
-    final emailError = emailResult.fold(
-      (f) => f.userMessage,
-      (_) => null,
-    );
+    final emailError = emailResult.fold((f) => f.userMessage, (_) => null);
     final passwordError = passwordResult.fold(
       (f) => f.userMessage,
       (_) => null,
@@ -115,10 +106,7 @@ class LoginCubit extends Cubit<LoginState> {
     );
 
     final result = await _loginUser(
-      LoginRequestEntity(
-        email: state.email.trim(),
-        password: state.password,
-      ),
+      LoginRequestEntity(email: state.email.trim(), password: state.password),
     );
 
     result.match(
@@ -220,11 +208,7 @@ class LoginCubit extends Cubit<LoginState> {
     /// EXAMPLE: login success event with a generic method label.
     /// Do not pass user identifiers or tokens here; use `setUserId`
     /// / `setUserProperty` in a privacy-aware place if needed.
-    unawaited(
-      _analytics.trackLogin(
-        method: method,
-      ),
-    );
+    unawaited(_analytics.trackLogin(method: method));
 
     emit(
       state.copyWith(

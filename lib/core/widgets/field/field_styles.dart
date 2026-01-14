@@ -147,10 +147,7 @@ class FieldStyles {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
-            borderSide: BorderSide(
-              color: colorScheme.primary,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(sizeConfig.borderRadius),
@@ -224,10 +221,9 @@ class FieldStyles {
 
       case FieldVariant.filled:
         final baseBorderSide = BorderSide(
-          color:
-              state == FieldState.enabled && borderColor == null
-                  ? context.grey.grey200
-                  : getBorderColor(),
+          color: state == FieldState.enabled && borderColor == null
+              ? context.grey.grey200
+              : getBorderColor(),
           width: 1.0,
         );
 

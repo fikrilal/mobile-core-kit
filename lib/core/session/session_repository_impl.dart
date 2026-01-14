@@ -39,7 +39,9 @@ class SessionRepositoryImpl implements SessionRepository {
     StartupMetrics.instance.mark(StartupMilestone.secureStorageReadStart);
     final tokens = await _secure.read();
     StartupMetrics.instance.mark(StartupMilestone.secureStorageReadComplete);
-    if (tokens.access == null || tokens.refresh == null || tokens.expiresIn == null) {
+    if (tokens.access == null ||
+        tokens.refresh == null ||
+        tokens.expiresIn == null) {
       return null;
     }
 

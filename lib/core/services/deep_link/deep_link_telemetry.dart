@@ -70,7 +70,9 @@ class DeepLinkTelemetry {
     final source = intent.source ?? 'unknown';
     final path = _safePathFromLocation(intent.location);
     final wasReplaced =
-        previous != null && previous.location.isNotEmpty && previous.location != intent.location;
+        previous != null &&
+        previous.location.isNotEmpty &&
+        previous.location != intent.location;
 
     Log.debug(
       'Pending deep link set: $path (source=$source, reason=$reason, replaced=$wasReplaced)',

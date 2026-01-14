@@ -133,7 +133,7 @@ void main() {
     verify(() => session.refreshTokens()).called(1);
   });
 
-  test('does not refresh/retry POST on 401 by default', () async {
+  test('does not retry POST on 401 by default (no Idempotency-Key)', () async {
     final session = _MockSessionManager();
     when(() => session.accessToken).thenReturn('access_old');
     when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
@@ -174,10 +174,14 @@ void main() {
     expect(calls, 1);
   });
 
-  test('retries POST on 401 when allowAuthRetry is true', () async {
+  test('retries POST on 401 when Idempotency-Key is present', () async {
     final session = _MockSessionManager();
-    when(() => session.refreshTokens()).thenAnswer((_) async => true);
-    when(() => session.accessToken).thenReturn('access_new');
+    var token = 'access_old';
+    when(() => session.accessToken).thenAnswer((_) => token);
+    when(() => session.refreshTokens()).thenAnswer((_) async {
+      token = 'access_new';
+      return true;
+    });
     when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
 
     final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
@@ -205,12 +209,60 @@ void main() {
     final response = await dio.post(
       '/protected',
       data: {'x': 1},
-      options: Options(extra: {'allowAuthRetry': true}),
+      options: Options(headers: {'Idempotency-Key': 'idem-1'}),
     );
 
     expect(response.statusCode, 200);
     verify(() => session.refreshTokens()).called(1);
     expect(calls, 2);
+  });
+
+  test('does not retry POST on 401 when allowAuthRetry is false', () async {
+    final session = _MockSessionManager();
+    when(() => session.accessToken).thenReturn('access_old');
+    when(() => session.isAccessTokenExpiringSoon).thenReturn(false);
+
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
+    var calls = 0;
+    dio.httpClientAdapter = _FakeAdapter((options) async {
+      calls += 1;
+      return ResponseBody.fromString(
+        jsonEncode({'message': 'Unauthorized'}),
+        401,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    });
+
+    final apiClient = _MockApiClient();
+    when(() => apiClient.dio).thenReturn(dio);
+
+    locator.registerSingleton<SessionManager>(session);
+    locator.registerSingleton<ApiClient>(apiClient);
+
+    dio.interceptors.add(AuthTokenInterceptor());
+
+    await expectLater(
+      dio.post(
+        '/protected',
+        data: {'x': 1},
+        options: Options(
+          headers: {'Idempotency-Key': 'idem-1'},
+          extra: {'allowAuthRetry': false},
+        ),
+      ),
+      throwsA(
+        isA<DioException>().having(
+          (e) => e.response?.statusCode,
+          'statusCode',
+          401,
+        ),
+      ),
+    );
+
+    verifyNever(() => session.refreshTokens());
+    expect(calls, 1);
   });
 
   test(

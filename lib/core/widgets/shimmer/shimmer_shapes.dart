@@ -108,4 +108,3 @@ class ShimmerText extends StatelessWidget {
     );
   }
 }
-

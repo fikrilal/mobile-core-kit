@@ -37,8 +37,9 @@ void main() {
     final connectivity = _MockConnectivityService();
     when(() => connectivity.isConnected).thenReturn(true);
     when(() => connectivity.currentStatus).thenReturn(NetworkStatus.online);
-    when(() => connectivity.networkStatusStream)
-        .thenAnswer((_) => const Stream.empty());
+    when(
+      () => connectivity.networkStatusStream,
+    ).thenAnswer((_) => const Stream.empty());
 
     final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
     dio.httpClientAdapter = _FakeAdapter((options) async {
@@ -74,8 +75,9 @@ void main() {
     final connectivity = _MockConnectivityService();
     when(() => connectivity.isConnected).thenReturn(true);
     when(() => connectivity.currentStatus).thenReturn(NetworkStatus.online);
-    when(() => connectivity.networkStatusStream)
-        .thenAnswer((_) => const Stream.empty());
+    when(
+      () => connectivity.networkStatusStream,
+    ).thenAnswer((_) => const Stream.empty());
 
     final dio = Dio(BaseOptions(baseUrl: 'https://example.com'));
     dio.httpClientAdapter = _FakeAdapter((options) async {
@@ -112,25 +114,29 @@ void main() {
     expect(response.traceId, 'rid-2');
   });
 
-  test('ApiFailure uses X-Request-Id header as traceId when absent in body', () {
-    final requestOptions = RequestOptions(path: '/v1/whatever');
-    final dioResponse = Response(
-      requestOptions: requestOptions,
-      statusCode: 401,
-      data: {'title': 'Unauthorized', 'code': 'UNAUTHORIZED'},
-      headers: Headers.fromMap({'x-request-id': ['rid-err']}),
-    );
+  test(
+    'ApiFailure uses X-Request-Id header as traceId when absent in body',
+    () {
+      final requestOptions = RequestOptions(path: '/v1/whatever');
+      final dioResponse = Response(
+        requestOptions: requestOptions,
+        statusCode: 401,
+        data: {'title': 'Unauthorized', 'code': 'UNAUTHORIZED'},
+        headers: Headers.fromMap({
+          'x-request-id': ['rid-err'],
+        }),
+      );
 
-    final exception = DioException(
-      requestOptions: requestOptions,
-      response: dioResponse,
-      type: DioExceptionType.badResponse,
-    );
+      final exception = DioException(
+        requestOptions: requestOptions,
+        response: dioResponse,
+        type: DioExceptionType.badResponse,
+      );
 
-    final failure = ApiFailure.fromDioException(exception);
-    expect(failure.code, 'UNAUTHORIZED');
-    expect(failure.traceId, 'rid-err');
-    expect(failure.message, 'Unauthorized');
-  });
+      final failure = ApiFailure.fromDioException(exception);
+      expect(failure.code, 'UNAUTHORIZED');
+      expect(failure.traceId, 'rid-err');
+      expect(failure.message, 'Unauthorized');
+    },
+  );
 }
-

@@ -39,21 +39,23 @@ void main() {
       expect(controller.pendingLocation, isNull);
     });
 
-    test('setPendingFromExternalUri parses and stores allowlisted https intent', () async {
-      SharedPreferences.setMockInitialValues({});
+    test(
+      'setPendingFromExternalUri parses and stores allowlisted https intent',
+      () async {
+        SharedPreferences.setMockInitialValues({});
 
-      final controller = PendingDeepLinkController(
-        store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-        parser: DeepLinkParser(),
-        now: () => DateTime(2026, 1, 1),
-      );
+        final controller = PendingDeepLinkController(
+          store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
+          parser: DeepLinkParser(),
+          now: () => DateTime(2026, 1, 1),
+        );
 
-      await controller.setPendingFromExternalUri(
-        Uri.parse('https://orymu.com/profile?tab=security'),
-      );
+        await controller.setPendingFromExternalUri(
+          Uri.parse('https://orymu.com/profile?tab=security'),
+        );
 
-      expect(controller.pendingLocation, '/profile?tab=security');
-    });
+        expect(controller.pendingLocation, '/profile?tab=security');
+      },
+    );
   });
 }
-

@@ -8,4 +8,3 @@ abstract class GoogleFederatedAuthService {
   /// Returns null when the user cancels the sign-in flow.
   Future<String?> signInAndGetFirebaseIdToken();
 }
-
