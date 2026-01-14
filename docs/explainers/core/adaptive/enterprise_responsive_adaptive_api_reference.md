@@ -166,6 +166,8 @@ Grid should expose:
 
 ## 7) Widgets
 
+Only `AdaptiveScope` is mandatory (app root). Everything else is either a recommended default, a use-case widget, or an optional helper. See: `enterprise_responsive_adaptive_usage_guide.md`.
+
 ### 7.1 AdaptiveScope
 Place exactly once at app root (MaterialApp builder is ideal).
 
@@ -204,6 +206,7 @@ Single entrypoints for modality adaptation:
 
 Notes:
 - Modal selection is driven by `ModalPolicy` from `AdaptiveScope`.
+- Use `showDialog` + `AlertDialog` for blocking confirmations/alerts (dialog is correct even on phones).
 
 ### 7.8 Optional helpers
 - AdaptiveGrid

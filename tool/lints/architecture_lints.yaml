@@ -40,3 +40,4 @@ rules:
         allow:
           - lib/features/user/domain/usecase/**
           - lib/features/auth/domain/failure/**
+

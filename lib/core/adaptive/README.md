@@ -60,19 +60,16 @@ Place `AdaptiveScope` once at app root (typically in `MaterialApp.builder`):
 ```dart
 MaterialApp(
   builder: (context, child) {
-    return Stack(
-      children: [
-        AdaptiveScope(
-          navigationPolicy: const NavigationPolicy.standard(),
-          textScalePolicy: const TextScalePolicy.clamp(maxScaleFactor: 2.0),
-          child: child ?? const SizedBox.shrink(),
-        ),
-        if (kDebugMode) const AdaptiveDebugOverlay(),
-      ],
+    return AdaptiveScope(
+      navigationPolicy: const NavigationPolicy.standard(),
+      textScalePolicy: const TextScalePolicy.clamp(maxScaleFactor: 2.0),
+      child: child ?? const SizedBox.shrink(),
     );
   },
 )
 ```
+
+Debug-only tools (optional): `AdaptiveDebugOverlay` / `AdaptiveDebugBanner`.
 
 ## Feature usage (canonical)
 ```dart

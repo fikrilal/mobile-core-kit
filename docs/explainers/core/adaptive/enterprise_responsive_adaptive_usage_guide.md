@@ -51,7 +51,35 @@ That’s it. Everything below assumes this exists.
 - Default list/detail: `AdaptiveSplitView(...)`
 - Default modals: `showAdaptiveModal(...)` / `showAdaptiveSideSheet(...)`
 
-### 1.3 Use aspect accessors (not `MediaQuery`)
+### 1.3 Which adaptive widgets are “mandatory” vs optional?
+
+This system does **not** require you to use every widget in `lib/core/adaptive/widgets/`.
+
+Think of the module in layers:
+
+- **Mandatory (app-level)**: `AdaptiveScope` (installed once at the root).
+- **Recommended defaults**: the “good path” widgets you’ll use on most screens.
+- **Optional helpers**: convenience widgets that save boilerplate but do not change the contract.
+- **Rare/escape hatch**: `AdaptiveOverrides` (review required).
+- **Debug-only**: `AdaptiveDebugOverlay` / `AdaptiveDebugBanner`.
+
+Note: we intentionally do **not** provide a generic “AdaptiveContainer” widget. For pages, use `AppPageContainer`. For everything else, use normal Flutter layout primitives (`Padding`, `ConstrainedBox`, `Align`, etc.) fed by `context.adaptiveLayout` tokens.
+
+Decision table:
+
+| Thing | Use when | Mandatory? | Notes |
+|---|---|---:|---|
+| `AdaptiveScope` | App root | Yes | Provides the contract + applies text scaling policy. |
+| `AppPageContainer` | A top-level page needs consistent padding + max width | Strongly recommended | Don’t nest it; use once per page. |
+| `AdaptiveScaffold` | A screen participates in the app’s primary navigation | Recommended | For special flows that should hide nav chrome, use `AdaptiveOverrides` or a plain `Scaffold`. |
+| `AdaptiveSplitView` | List/detail (master/detail) UI | Use-case based | Not a general layout primitive. |
+| `AdaptiveRegion` | A subtree must adapt to *its own* constraints (panes) | Use-case based | Prefer this over sprinkling `LayoutBuilder` breakpoints in feature code. |
+| `showAdaptiveModal` | Non-blocking task UI (pickers, small forms) | Use-case based | Do not use for blocking confirmations/alerts (use `AlertDialog`). |
+| `showAdaptiveSideSheet` | Tablet-first secondary panels | Use-case based | Falls back to `showAdaptiveModal` on compact widths. |
+| `AdaptiveGrid` | Simple grids where columns come from `layout.grid.columns` | Optional helper | You can always use `GridView`/slivers directly with tokens. |
+| `MinTapTarget` | Custom icon-only hit targets | Optional helper | Many Material buttons already meet min sizes; use this for custom gesture widgets. |
+
+### 1.4 Use aspect accessors (not `MediaQuery`)
 
 Prefer the most specific accessor:
 
@@ -181,6 +209,42 @@ Guidelines:
 
 ## 7) Modals and side sheets (single entrypoints)
 
+### 7.0 Pick the right modality primitive (intent first)
+
+Adaptive presentation is only correct **within a category**. Pick the intent first, then let the policy pick the container.
+
+| Intent | Use | Notes |
+|---|---|---|
+| Blocking confirmation / destructive action / permission-style prompt | `showDialog` + `AlertDialog` | Dialog on phone is correct here; this is an *alert* primitive, not a “task modal”. |
+| Non-critical task UI (filters, pickers, small forms, “edit name”, etc.) | `showAdaptiveModal(...)` | Adapts bottom sheet (compact) ↔ dialog (medium+), driven by `ModalPolicy`. |
+| Secondary panel on tablet (inspector/settings panel) | `showAdaptiveSideSheet(...)` | Adapts side sheet (medium+) ↔ modal fallback (compact). |
+
+Example: confirmation dialog (phone + tablet)
+
+```dart
+final confirmed =
+    await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete item?'),
+          content: const Text('This cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    ) ??
+    false;
+```
+
 ### 7.1 Use `showAdaptiveModal` for “sheet on phone, dialog on tablet”
 
 ```dart
@@ -283,4 +347,3 @@ Reference: `test/core/adaptive/goldens/adaptive_settings_matrix_golden_test.dart
 - Mechanics/pipeline/rebuilds: `adaptive_system_under_the_hood.md`
 - Extending the module: `enterprise_responsive_adaptive_implementation_guide.md`
 - Height class usage: `height_class_adaptation.md`
-

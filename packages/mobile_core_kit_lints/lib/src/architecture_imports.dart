@@ -83,7 +83,7 @@ String _configPathFromOptions({
   if (value is String && value.trim().isNotEmpty) {
     return p.normalize(p.join(projectRoot, value.trim()));
   }
-  return p.normalize(p.join(projectRoot, 'tool/architecture_lints.yaml'));
+  return p.normalize(p.join(projectRoot, 'tool/lints/architecture_lints.yaml'));
 }
 
 String? _readPackageName(String projectRoot) {
@@ -328,7 +328,7 @@ class _ImportRule {
     return _Violation(
       reason:
           reason ??
-          'Update import boundaries (see tool/architecture_lints.yaml).',
+          'Update import boundaries (see tool/lints/architecture_lints.yaml).',
     );
   }
 }

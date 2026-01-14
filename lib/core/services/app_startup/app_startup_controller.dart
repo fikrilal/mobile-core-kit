@@ -177,7 +177,7 @@ class AppStartupController extends ChangeNotifier {
     try {
       final result = await _getMe();
       await result.match(
-        (failure) async {
+        (AuthFailure failure) async {
           final shouldLogout = failure.maybeWhen(
             unauthenticated: () => true,
             orElse: () => false,

@@ -63,7 +63,7 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
 
 This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
 
-- Rules config: `tool/architecture_lints.yaml`
+- Rules config: `tool/lints/architecture_lints.yaml`
 - Run locally: `dart run custom_lint` (also included in `dart run tool/verify.dart --env dev`)
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`

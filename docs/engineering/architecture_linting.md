@@ -11,14 +11,14 @@ The goal is to make boundary violations hard to introduce accidentally and easy 
 
 The main rule today is `architecture_imports`, configured by:
 
-- `tool/architecture_lints.yaml`
+- `tool/lints/architecture_lints.yaml`
 
 This file is the **single source of truth** for the architecture rules. It uses glob patterns relative to the repo root (always use `/` as the separator).
 
 ### Current Policy (Core → Features)
 
 - Default: `lib/core/**` MUST NOT import `lib/features/**`.
-- Exceptions are explicitly allowlisted in `tool/architecture_lints.yaml` (e.g. feature DI composition).
+- Exceptions are explicitly allowlisted in `tool/lints/architecture_lints.yaml` (e.g. feature DI composition).
 
 Note: some exceptions are marked **TEMP** and have TODOs to refactor away.
 
@@ -48,7 +48,14 @@ tool/agent/dartw run tool/verify.dart --env dev
 Custom linting is enabled through `analysis_options.yaml`:
 
 - `analyzer.plugins: [custom_lint]`
-- `custom_lint.rules: [architecture_imports: { config: tool/architecture_lints.yaml }]`
+- `custom_lint.rules` is configured in `analysis_options.yaml`:
+
+```yaml
+custom_lint:
+  rules:
+    - architecture_imports:
+      config: tool/lints/architecture_lints.yaml
+```
 
 After you run `flutter pub get`, you may need to restart the analyzer:
 
@@ -57,7 +64,7 @@ After you run `flutter pub get`, you may need to restart the analyzer:
 
 ## Extending the Rules
 
-Add new rules in `tool/architecture_lints.yaml`. Each rule has:
+Add new rules in `tool/lints/architecture_lints.yaml`. Each rule has:
 
 - `from`: files the rule applies to
 - `deny`: forbidden import targets (project-relative)
@@ -77,4 +84,3 @@ Examples of common “next rules” in mature apps:
   - `analysis_options.yaml` has `analyzer.plugins: [custom_lint]`
   - You ran `flutter pub get`
   - You restarted the Dart analysis server
-

@@ -17,7 +17,7 @@ custom_lint:
   rules:
     # Note: custom_lint reads rule options as sibling keys of the rule name.
     - architecture_imports:
-      config: tool/architecture_lints.yaml
+      config: tool/lints/architecture_lints.yaml
 
 linter:
   # The lint rules applied to this project can be customized in the
