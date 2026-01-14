@@ -3,11 +3,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'adaptive_aspect.dart';
+import 'adaptive_policies.dart';
 import 'adaptive_spec.dart';
 import 'adaptive_spec_builder.dart';
 import 'policies/input_policy.dart';
+import 'policies/modal_policy.dart';
 import 'policies/motion_policy.dart';
 import 'policies/navigation_policy.dart';
+import 'policies/platform_policy.dart';
 import 'policies/text_scale_policy.dart';
 
 class AdaptiveScope extends StatelessWidget {
@@ -19,27 +22,35 @@ class AdaptiveScope extends StatelessWidget {
       minScaleFactor: 1.0,
       maxScaleFactor: 2.0,
     ),
+    this.modalPolicy = const ModalPolicy.standard(),
     this.motionPolicy = const MotionPolicy.standard(),
     this.inputPolicy = const InputPolicy.standard(),
+    this.platformPolicy = const PlatformPolicy.standard(),
   });
 
   final Widget child;
   final TextScalePolicy textScalePolicy;
   final NavigationPolicy navigationPolicy;
+  final ModalPolicy modalPolicy;
   final MotionPolicy motionPolicy;
   final InputPolicy inputPolicy;
+  final PlatformPolicy platformPolicy;
 
   @override
   Widget build(BuildContext context) {
     // Ensure we rebuild when input capabilities change (e.g., mouse/trackpad
     // connect/disconnect), since Flutter does not expose this via MediaQueryData.
-    return _MouseConnectionListener(
-      child: _AdaptiveScopeBody(
-        textScalePolicy: textScalePolicy,
-        navigationPolicy: navigationPolicy,
-        motionPolicy: motionPolicy,
-        inputPolicy: inputPolicy,
-        child: child,
+    return AdaptivePolicies(
+      modalPolicy: modalPolicy,
+      child: _MouseConnectionListener(
+        child: _AdaptiveScopeBody(
+          textScalePolicy: textScalePolicy,
+          navigationPolicy: navigationPolicy,
+          motionPolicy: motionPolicy,
+          inputPolicy: inputPolicy,
+          platformPolicy: platformPolicy,
+          child: child,
+        ),
       ),
     );
   }
@@ -52,6 +63,7 @@ class _AdaptiveScopeBody extends StatelessWidget {
     required this.navigationPolicy,
     required this.motionPolicy,
     required this.inputPolicy,
+    required this.platformPolicy,
   });
 
   final Widget child;
@@ -59,6 +71,7 @@ class _AdaptiveScopeBody extends StatelessWidget {
   final NavigationPolicy navigationPolicy;
   final MotionPolicy motionPolicy;
   final InputPolicy inputPolicy;
+  final PlatformPolicy platformPolicy;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +90,7 @@ class _AdaptiveScopeBody extends StatelessWidget {
             navigationPolicy: navigationPolicy,
             motionPolicy: motionPolicy,
             inputPolicy: inputPolicy,
+            platformPolicy: platformPolicy,
           );
           return AdaptiveModel(spec: spec, child: child);
         },

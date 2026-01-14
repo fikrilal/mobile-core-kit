@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 
 import '../adaptive_context.dart';
-import '../size_classes.dart';
+import '../adaptive_policies.dart';
+import '../policies/modal_policy.dart';
 import 'adaptive_modal.dart';
 
 Future<T?> showAdaptiveSideSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
+  ModalPolicy? modalPolicy,
   bool barrierDismissible = true,
   bool useRootNavigator = true,
   double width = 360,
   Duration transitionDuration = const Duration(milliseconds: 220),
 }) {
   final layout = context.adaptiveLayout;
+  final policy = modalPolicy ?? AdaptivePolicies.of(context).modalPolicy;
+
+  final presentation = policy.sideSheetPresentation(layout: layout);
 
   // Compact surfaces should avoid side sheets; fall back to the modal strategy.
-  if (layout.widthClass == WindowWidthClass.compact) {
+  if (presentation == AdaptiveSideSheetPresentation.modalFallback) {
     return showAdaptiveModal<T>(
       context: context,
       builder: builder,
+      modalPolicy: policy,
       barrierDismissible: barrierDismissible,
       useRootNavigator: useRootNavigator,
     );

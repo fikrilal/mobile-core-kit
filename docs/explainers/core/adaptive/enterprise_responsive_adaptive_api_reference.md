@@ -123,6 +123,16 @@ Recommend supporting:
 ### 5.3 MotionPolicy / InputPolicy / PlatformPolicy
 Keep these explicit and testable; do not hide them in widget code.
 
+Notes:
+- `AdaptiveScope.platformPolicy` governs the `PlatformSpec` produced in `AdaptiveSpec`.
+
+### 5.4 ModalPolicy
+Centralizes modal presentation decisions (sheet vs dialog vs side sheet).
+
+Notes:
+- Configure once via `AdaptiveScope.modalPolicy`.
+- Feature code should call `showAdaptiveModal(...)` / `showAdaptiveSideSheet(...)` and never decide “sheet vs dialog” locally.
+
 ---
 
 ## 6) Tokens
@@ -184,6 +194,9 @@ Responsibilities:
 Single entrypoints for modality adaptation:
 - compact: bottom sheet
 - medium+: dialog or side sheet
+
+Notes:
+- Modal selection is driven by `ModalPolicy` from `AdaptiveScope`.
 
 ### 7.7 Optional helpers
 - AdaptiveGrid

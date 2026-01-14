@@ -1,5 +1,6 @@
 export 'adaptive_aspect.dart';
 export 'adaptive_context.dart';
+export 'adaptive_policies.dart';
 export 'adaptive_region.dart';
 export 'adaptive_scope.dart';
 export 'adaptive_spec.dart';
@@ -13,6 +14,7 @@ export 'foldables/display_posture.dart';
 export 'foldables/foldable_spec.dart';
 
 export 'policies/input_policy.dart';
+export 'policies/modal_policy.dart';
 export 'policies/motion_policy.dart';
 export 'policies/navigation_policy.dart';
 export 'policies/platform_policy.dart';

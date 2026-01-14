@@ -7,6 +7,7 @@ import 'foldables/foldable_spec.dart';
 import 'policies/input_policy.dart';
 import 'policies/motion_policy.dart';
 import 'policies/navigation_policy.dart';
+import 'policies/platform_policy.dart';
 import 'policies/text_scale_policy.dart';
 import 'size_classes.dart';
 import 'tokens/grid_tokens.dart';
@@ -24,6 +25,7 @@ class AdaptiveSpecBuilder {
     required NavigationPolicy navigationPolicy,
     required MotionPolicy motionPolicy,
     required InputPolicy inputPolicy,
+    PlatformPolicy platformPolicy = const PlatformPolicy.standard(),
   }) {
     final size = _sizeFor(constraints, media);
 
@@ -44,6 +46,7 @@ class AdaptiveSpecBuilder {
     );
 
     final foldable = FoldableSpec.fromDisplayFeatures(media.displayFeatures);
+    final platformSpec = platformPolicy.derive(platform: platform);
 
     final navigation = navigationPolicy.derive(
       widthClass: widthClass,
@@ -67,7 +70,7 @@ class AdaptiveSpecBuilder {
       text: text,
       motion: motion,
       input: input,
-      platform: PlatformSpec(platform: platform),
+      platform: platformSpec,
       foldable: foldable,
     );
   }
