@@ -172,7 +172,14 @@ Place exactly once at app root (MaterialApp builder is ideal).
 ### 7.2 AdaptiveRegion
 Use inside split panes / resizable panels. It recomputes local **layout**.
 
-### 7.3 AppPageContainer
+### 7.3 AdaptiveOverrides
+Governed escape hatch for rare, per-screen overrides.
+
+Notes:
+- Prefer adding tokens/policies/widgets in `lib/core/adaptive/` instead.
+- Intended for exceptional flows (e.g., force `NavigationPolicy.none()` for a subtree).
+
+### 7.4 AppPageContainer
 The default screen wrapper.
 Responsibilities:
 - applies page padding
@@ -180,17 +187,17 @@ Responsibilities:
 - clamps max width by surface kind
 - optional safe area handling
 
-### 7.4 AdaptiveScaffold
+### 7.5 AdaptiveScaffold
 Shell scaffold that chooses nav component based on `layout.navigation.kind`.
 
-### 7.5 AdaptiveSplitView
+### 7.6 AdaptiveSplitView
 List/detail wrapper.
 Responsibilities:
 - compact: single-pane
 - expanded+: two-pane
 - hinge-aware when spanned
 
-### 7.6 showAdaptiveModal / showAdaptiveSideSheet
+### 7.7 showAdaptiveModal / showAdaptiveSideSheet
 Single entrypoints for modality adaptation:
 - compact: bottom sheet
 - medium+: dialog or side sheet
@@ -198,7 +205,7 @@ Single entrypoints for modality adaptation:
 Notes:
 - Modal selection is driven by `ModalPolicy` from `AdaptiveScope`.
 
-### 7.7 Optional helpers
+### 7.8 Optional helpers
 - AdaptiveGrid
 - MinTapTarget
 - AdaptiveDebugOverlay

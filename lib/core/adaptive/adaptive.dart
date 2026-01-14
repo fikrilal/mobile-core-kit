@@ -1,5 +1,6 @@
 export 'adaptive_aspect.dart';
 export 'adaptive_context.dart';
+export 'adaptive_overrides.dart';
 export 'adaptive_policies.dart';
 export 'adaptive_region.dart';
 export 'adaptive_scope.dart';

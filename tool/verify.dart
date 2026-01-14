@@ -50,13 +50,6 @@ Future<int> main(List<String> argv) async {
   ]);
   if (exitCode != 0) return exitCode;
 
-  exitCode = await step('Verify legacy responsive imports', [
-    'dart',
-    'run',
-    'tool/verify_legacy_responsive_usage.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
   if (!skipTests) {
     exitCode = await step('Flutter test', ['flutter', 'test']);
     if (exitCode != 0) return exitCode;

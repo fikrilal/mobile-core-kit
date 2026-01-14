@@ -670,6 +670,22 @@ class AdaptiveRegion extends StatelessWidget {
 > Real implementation: don’t rebuild `navigation` inside regions; treat it as a root concern.  
 > You can add a builder method `deriveLayout(...)` to avoid re-deriving env specs.
 
+### 10.3 AdaptiveOverrides (rare; reviewed)
+`AdaptiveOverrides` is a governed escape hatch for **exceptional flows**.
+
+Use it when you must override adaptive behavior for a subtree without inventing
+new breakpoints in feature code. If this becomes common, it’s a signal that the
+core module needs a new token/policy/widget.
+
+Example (force no navigation for a subtree even on tablets):
+
+```dart
+AdaptiveOverrides(
+  navigationPolicy: const NavigationPolicy.none(),
+  child: AdaptiveScaffold(...),
+)
+```
+
 ---
 
 ## 11) Opinionated widgets (the good path)
@@ -714,6 +730,10 @@ Public API:
 Responsibilities:
 - choose sheet vs dialog vs side sheet based on layout width class
 - enforce max width + insets
+
+Notes:
+- Modal selection is driven by `ModalPolicy` from `AdaptiveScope`.
+- You can override per call-site only when absolutely necessary (prefer the scope policy).
 
 ---
 
@@ -776,6 +796,8 @@ Run a small matrix per key page:
 - compact + 2.0x text
 - expanded + 1.0x text
 - expanded + 2.0x text
+
+In this repo, see: `test/core/adaptive/goldens/adaptive_settings_matrix_golden_test.dart`
 
 ### 14.3 Accessibility regression checks
 - verify tappable controls meet `minTapTarget`
