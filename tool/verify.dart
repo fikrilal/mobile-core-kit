@@ -43,6 +43,9 @@ Future<int> main(List<String> argv) async {
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
   if (exitCode != 0) return exitCode;
 
+  exitCode = await step('Custom lint', ['dart', 'run', 'custom_lint']);
+  if (exitCode != 0) return exitCode;
+
   exitCode = await step('Verify modal entrypoints', [
     'dart',
     'run',

@@ -95,6 +95,9 @@ jobs:
       - name: Flutter analyze
         run: flutter analyze
 
+      - name: Custom lint
+        run: dart run custom_lint
+
       - name: Run unit tests
         run: flutter test
 
@@ -197,6 +200,9 @@ jobs:
 
       - name: Flutter analyze
         run: flutter analyze
+
+      - name: Custom lint
+        run: dart run custom_lint
 
       - name: Run unit tests
         run: flutter test
