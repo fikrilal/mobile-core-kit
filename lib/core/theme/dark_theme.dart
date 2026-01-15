@@ -1,53 +1,16 @@
 import 'package:flutter/material.dart';
-import 'tokens/blue_colors.dart';
-import 'tokens/green_colors.dart';
-import 'tokens/grey_colors.dart';
-import 'tokens/primary_colors.dart';
-import 'tokens/red_colors.dart';
-import 'tokens/secondary_colors.dart';
-import 'tokens/tertiary_colors.dart';
-import 'tokens/yellow_colors.dart';
-import 'extensions/semantic_colors.dart';
 import 'tokens/sizing.dart';
 import 'tokens/spacing.dart';
+import 'system/app_color_scheme_builder.dart';
 import 'system/state_opacities.dart';
 
 final ThemeData darkTheme = (() {
-  final scheme = ColorScheme.dark(
-    primary: PrimaryColors.dark.primary300,
-    onPrimary: GreyColors.dark.grey1000,
-    primaryContainer: PrimaryColors.dark.primary700,
-    onPrimaryContainer: PrimaryColors.dark.primary100,
-
-    secondary: SecondaryColors.dark.secondary300,
-    onSecondary: GreyColors.dark.grey1000,
-    secondaryContainer: SecondaryColors.dark.secondary700,
-    onSecondaryContainer: SecondaryColors.dark.secondary100,
-
-    surface: GreyColors.dark.grey1000,
-    onSurface: GreyColors.dark.grey100,
-    onSurfaceVariant: GreyColors.dark.grey400,
-
-    surfaceContainerHighest: GreyColors.dark.grey800,
-    surfaceContainerHigh: GreyColors.dark.grey900,
-    surfaceContainer: GreyColors.dark.grey1000,
-    surfaceContainerLow: GreyColors.dark.grey1000,
-    surfaceContainerLowest: GreyColors.dark.grey1000,
-
-    outline: GreyColors.dark.grey700,
-    outlineVariant: GreyColors.dark.grey800,
-
-    inverseSurface: GreyColors.dark.grey200,
-    onInverseSurface: GreyColors.dark.grey900,
-    inversePrimary: PrimaryColors.dark.primary600,
-
-    shadow: GreyColors.dark.grey100,
-    scrim: GreyColors.dark.grey100,
-  );
+  final colors = AppColorSchemeBuilder.build(brightness: Brightness.dark);
+  final scheme = colors.scheme;
   return ThemeData(
     brightness: Brightness.dark,
     useMaterial3: true,
-    scaffoldBackgroundColor: const Color(0xFF121212),
+    scaffoldBackgroundColor: scheme.surface,
     colorScheme: scheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -113,21 +76,7 @@ final ThemeData darkTheme = (() {
     ),
     // textTheme will be applied through AppTheme.dark() which uses TypographySystem.applyTypography
     extensions: [
-      // Token colors (design tokens)
-      PrimaryColors.dark,
-      SecondaryColors.dark,
-      TertiaryColors.dark,
-      GreyColors.dark,
-      GreenColors.dark,
-      RedColors.dark,
-      YellowColors.dark,
-      BlueColors.dark,
-      // Semantic status colors (non-M3)
-      SemanticColors.dark(
-        green: GreenColors.dark,
-        blue: BlueColors.dark,
-        yellow: YellowColors.dark,
-      ),
+      colors.semantic,
     ],
   );
 })();

@@ -135,7 +135,7 @@ class AppConfirmationDialog extends StatelessWidget {
                       size: ButtonSize.medium,
                       onPressed: isCancelEnabled ? onCancel : null,
                       isDisabled: !isCancelEnabled,
-                      borderColor: context.grey.grey300,
+                      borderColor: context.borderSubtle,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.space12),

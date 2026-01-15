@@ -35,6 +35,33 @@ class SemanticColors extends ThemeExtension<SemanticColors> {
     required this.onWarningContainer,
   });
 
+  /// Build semantic status roles from dedicated per-status schemes.
+  ///
+  /// This keeps status colors consistent with the same role semantics as M3:
+  /// - `success` uses `successScheme.primary`
+  /// - `onSuccess` uses `successScheme.onPrimary`
+  /// - ...and the same for container roles
+  static SemanticColors fromSchemes({
+    required ColorScheme success,
+    required ColorScheme info,
+    required ColorScheme warning,
+  }) {
+    return SemanticColors(
+      success: success.primary,
+      onSuccess: success.onPrimary,
+      successContainer: success.primaryContainer,
+      onSuccessContainer: success.onPrimaryContainer,
+      info: info.primary,
+      onInfo: info.onPrimary,
+      infoContainer: info.primaryContainer,
+      onInfoContainer: info.onPrimaryContainer,
+      warning: warning.primary,
+      onWarning: warning.onPrimary,
+      warningContainer: warning.primaryContainer,
+      onWarningContainer: warning.onPrimaryContainer,
+    );
+  }
+
   /// Build light semantic colors from token palettes.
   static SemanticColors light({
     required GreenColors green,

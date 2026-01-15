@@ -101,9 +101,9 @@ class AppTappable extends StatelessWidget {
 
     // Theme-aware colors
     final effectiveHighlight =
-        highlightColor ?? context.grey.grey300.withValues(alpha: 0.08);
+        highlightColor ?? context.cs.onSurface.withValues(alpha: 0.08);
     final effectiveSplash =
-        splashColor ?? context.grey.grey300.withValues(alpha: 0.12);
+        splashColor ?? context.cs.onSurface.withValues(alpha: 0.12);
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
 
     Widget content = child;

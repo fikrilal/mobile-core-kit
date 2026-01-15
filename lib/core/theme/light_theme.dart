@@ -1,53 +1,16 @@
 import 'package:flutter/material.dart';
-import 'tokens/blue_colors.dart';
-import 'tokens/green_colors.dart';
-import 'tokens/grey_colors.dart';
-import 'tokens/primary_colors.dart';
-import 'tokens/red_colors.dart';
-import 'tokens/secondary_colors.dart';
-import 'tokens/tertiary_colors.dart';
-import 'tokens/yellow_colors.dart';
-import 'extensions/semantic_colors.dart';
 import 'tokens/sizing.dart';
 import 'tokens/spacing.dart';
+import 'system/app_color_scheme_builder.dart';
 import 'system/state_opacities.dart';
 
 final ThemeData lightTheme = (() {
-  final scheme = ColorScheme.light(
-    primary: PrimaryColors.light.primary500,
-    onPrimary: GreyColors.light.grey100,
-    primaryContainer: PrimaryColors.light.primary100,
-    onPrimaryContainer: PrimaryColors.light.primary800,
-
-    secondary: SecondaryColors.light.secondary500,
-    onSecondary: GreyColors.light.grey100,
-    secondaryContainer: SecondaryColors.light.secondary100,
-    onSecondaryContainer: SecondaryColors.light.secondary800,
-
-    surface: GreyColors.light.grey100,
-    onSurface: GreyColors.light.grey900,
-    onSurfaceVariant: GreyColors.light.grey600,
-
-    surfaceContainerHighest: GreyColors.light.grey300,
-    surfaceContainerHigh: GreyColors.light.grey200,
-    surfaceContainer: GreyColors.light.grey100,
-    surfaceContainerLow: GreyColors.light.grey100,
-    surfaceContainerLowest: GreyColors.light.grey100,
-
-    outline: GreyColors.light.grey400,
-    outlineVariant: GreyColors.light.grey300,
-
-    inverseSurface: GreyColors.light.grey900,
-    onInverseSurface: GreyColors.light.grey200,
-    inversePrimary: PrimaryColors.light.primary200,
-
-    shadow: GreyColors.light.grey1000,
-    scrim: GreyColors.light.grey1000,
-  );
+  final colors = AppColorSchemeBuilder.build(brightness: Brightness.light);
+  final scheme = colors.scheme;
   return ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
-    scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+    scaffoldBackgroundColor: scheme.surface,
     colorScheme: scheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -113,21 +76,7 @@ final ThemeData lightTheme = (() {
     ),
     // textTheme will be applied through AppTheme.light() which uses TypographySystem.applyTypography
     extensions: [
-      // Token colors (design tokens)
-      PrimaryColors.light,
-      SecondaryColors.light,
-      TertiaryColors.light,
-      GreyColors.light,
-      GreenColors.light,
-      RedColors.light,
-      YellowColors.light,
-      BlueColors.light,
-      // Semantic status colors (non-M3)
-      SemanticColors.light(
-        green: GreenColors.light,
-        blue: BlueColors.light,
-        yellow: YellowColors.light,
-      ),
+      colors.semantic,
     ],
   );
 })();

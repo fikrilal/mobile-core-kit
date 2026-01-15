@@ -221,9 +221,7 @@ class FieldStyles {
 
       case FieldVariant.filled:
         final baseBorderSide = BorderSide(
-          color: state == FieldState.enabled && borderColor == null
-              ? context.grey.grey200
-              : getBorderColor(),
+          color: getBorderColor(),
           width: 1.0,
         );
 
