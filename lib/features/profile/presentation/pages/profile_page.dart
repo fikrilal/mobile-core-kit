@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/avatar_size.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
+import 'package:mobile_core_kit/core/widgets/tappable/app_tappable.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/adaptive/adaptive_context.dart';
 import '../../../../core/adaptive/tokens/surface_tokens.dart';
@@ -50,16 +55,49 @@ class _ProfileContent extends StatelessWidget {
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
+      safeArea: true,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const AppText.titleLarge('Profile'),
             SizedBox(height: sectionSpacing),
-            AppAvatar(onChangePhoto: () {}),
+            AppAvatar(size: AppAvatarSize.xl, onChangePhoto: () {}),
             SizedBox(height: sectionSpacing),
-            const AppIconBadge(icon: Icon(Icons.settings), showDot: true),
+            AppTappable(
+              onTap: () {},
+              padding: const EdgeInsets.all(AppSpacing.space12),
+              child: Row(
+                children: [
+                  Row(
+                    children: [
+                      const AppIconBadge(
+                        icon: Icon(Icons.settings),
+                        showDot: true,
+                      ),
+                      const SizedBox(width: AppSpacing.space20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText.bodyLarge(
+                            'Settings',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: AppSpacing.space2),
+                          AppText.bodyMedium(
+                            'Manage your account settings',
+                            color: context.textSecondary,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  PhosphorIcon(PhosphorIconsRegular.caretRight, size: 24),
+                ],
+              ),
+            ),
             SizedBox(height: sectionSpacing),
             AppButton(
               text: 'Log out',

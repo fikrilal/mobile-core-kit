@@ -48,10 +48,10 @@ class AppIconBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final diameter = size.diameter;
 
-    final effectiveBackground = backgroundColor ?? context.bgContainerHigh;
-    final effectiveBorder = borderColor ?? context.borderSubtle;
+    final effectiveBackground = backgroundColor ?? context.bgContainerLow;
+    final effectiveBorder = borderColor ?? context.borderMuted;
     final effectiveIconColor = iconColor ?? context.textPrimary;
-    final effectiveIconSize = iconSize ?? (diameter * 0.44).clamp(16.0, 28.0);
+    final effectiveIconSize = iconSize ?? (diameter * 0.48).clamp(16.0, 28.0);
 
     final circle = _buildCircle(
       diameter: diameter,
