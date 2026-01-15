@@ -26,7 +26,7 @@ final ThemeData lightTheme = (() {
 
     surface: GreyColors.light.grey100,
     onSurface: GreyColors.light.grey900,
-    onSurfaceVariant: GreyColors.light.grey700,
+    onSurfaceVariant: GreyColors.light.grey600,
 
     surfaceContainerHighest: GreyColors.light.grey300,
     surfaceContainerHigh: GreyColors.light.grey200,
@@ -47,7 +47,7 @@ final ThemeData lightTheme = (() {
   return ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
-    scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+    scaffoldBackgroundColor: const Color(0xFFFFFFFF),
     colorScheme: scheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

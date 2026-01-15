@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
 
 import '../../adaptive/widgets/adaptive_modal.dart';
 import '../../theme/tokens/spacing.dart';
@@ -134,7 +135,7 @@ class AppConfirmationDialog extends StatelessWidget {
                       size: ButtonSize.medium,
                       onPressed: isCancelEnabled ? onCancel : null,
                       isDisabled: !isCancelEnabled,
-                      borderColor: scheme.outlineVariant,
+                      borderColor: context.grey.grey300,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.space12),

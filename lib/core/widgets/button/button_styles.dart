@@ -180,8 +180,10 @@ class ButtonStyles {
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
       side: BorderSide(
-        color: isDisabled ? disabledBorder : borderColor ?? scheme.primary,
-        width: 1.5,
+        color: isDisabled
+            ? disabledBorder
+            : borderColor ?? scheme.surfaceContainerHigh,
+        width: 1,
       ),
     );
   }

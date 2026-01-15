@@ -49,7 +49,7 @@ class AppIconBadge extends StatelessWidget {
     final diameter = size.diameter;
 
     final effectiveBackground = backgroundColor ?? context.bgContainerLow;
-    final effectiveBorder = borderColor ?? context.borderMuted;
+    final effectiveBorder = borderColor ?? context.grey.grey200;
     final effectiveIconColor = iconColor ?? context.textPrimary;
     final effectiveIconSize = iconSize ?? (diameter * 0.48).clamp(16.0, 28.0);
 
@@ -141,7 +141,7 @@ class AppIconBadge extends StatelessWidget {
     final border = dotBorderColor ?? context.bgSurface;
 
     return Transform.translate(
-      offset: Offset(overlap, -overlap),
+      offset: Offset(overlap - 1, -overlap + 1),
       child: SizedBox(
         key: _dotKey,
         width: dotDiameter,

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
-import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
-import 'package:mobile_core_kit/core/widgets/avatar/avatar_size.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
-import 'package:mobile_core_kit/core/widgets/tappable/app_tappable.dart';
+import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/adaptive/adaptive_context.dart';
@@ -61,44 +58,62 @@ class _ProfileContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const AppText.titleLarge('Profile'),
-            SizedBox(height: sectionSpacing),
-            AppAvatar(size: AppAvatarSize.xl, onChangePhoto: () {}),
-            SizedBox(height: sectionSpacing),
-            AppTappable(
-              onTap: () {},
-              padding: const EdgeInsets.all(AppSpacing.space12),
-              child: Row(
-                children: [
-                  Row(
-                    children: [
-                      const AppIconBadge(
-                        icon: Icon(Icons.settings),
-                        showDot: true,
-                      ),
-                      const SizedBox(width: AppSpacing.space20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppText.bodyLarge(
-                            'Settings',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: AppSpacing.space2),
-                          AppText.bodyMedium(
-                            'Manage your account settings',
-                            color: context.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  PhosphorIcon(PhosphorIconsRegular.caretRight, size: 24),
-                ],
+            const AppText.headlineMedium('Your account'),
+            const SizedBox(height: AppSpacing.space8),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.bell, size: 24),
+                showDot: true,
               ),
+              title: 'Inbox',
+              onTap: () {},
+            ),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.question, size: 24),
+              ),
+              title: 'Help',
+              onTap: () {},
+            ),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.fileText, size: 24),
+              ),
+              title: 'Statements and reports',
+              onTap: () {},
             ),
             SizedBox(height: sectionSpacing),
+
+            // Settings Section
+            const AppText.headlineMedium('Settings'),
+            const SizedBox(height: AppSpacing.space8),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.shieldCheck, size: 24),
+              ),
+              title: 'Security and privacy',
+              subtitle: 'Change your security and privacy settings',
+              onTap: () {},
+            ),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.bellRinging, size: 24),
+              ),
+              title: 'Notifications',
+              subtitle: 'Customise how you get updates',
+              onTap: () {},
+            ),
+            AppListTile(
+              leading: AppIconBadge(
+                icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),
+              ),
+              title: 'Payment methods',
+              subtitle: 'Manage saved cards and bank accounts',
+              onTap: () {},
+            ),
+            SizedBox(height: sectionSpacing),
+
+            // Logout Button
             AppButton(
               text: 'Log out',
               variant: ButtonVariant.danger,
