@@ -38,6 +38,10 @@ abstract final class AppColorSchemeBuilder {
 
     final scheme = brandScheme.copyWith(
       // Keep accents/brand from brand scheme, but force neutral surfaces.
+      //
+      // Policy: neutral elevation. We want elevated surfaces to remain neutral
+      // (no brand tint). Material 3 applies tonal elevation via `surfaceTint`,
+      // so we source it from the neutral scheme.
       surface: neutralScheme.surface,
       onSurface: neutralScheme.onSurface,
       onSurfaceVariant: neutralScheme.onSurfaceVariant,
@@ -50,6 +54,7 @@ abstract final class AppColorSchemeBuilder {
       outlineVariant: neutralScheme.outlineVariant,
       inverseSurface: neutralScheme.inverseSurface,
       onInverseSurface: neutralScheme.onInverseSurface,
+      surfaceTint: neutralScheme.surfaceTint,
       shadow: neutralScheme.shadow,
       scrim: neutralScheme.scrim,
     );
@@ -75,4 +80,3 @@ abstract final class AppColorSchemeBuilder {
     );
   }
 }
-

@@ -97,6 +97,11 @@ So we build:
 - a **brand scheme** for accent roles (`primary`, `secondary`, etc.)
 - a **neutral scheme** for surfaces/outlines (`surfaceContainer*`, `outline`, etc.)
 
+We also use the neutral scheme for **neutral elevation**:
+
+- Material 3 applies tonal elevation via `ColorScheme.surfaceTint`.
+- We source `surfaceTint` from the **neutral** scheme so elevated surfaces don’t pick up a brand tint.
+
 Then we combine them via `copyWith` in `AppColorSchemeBuilder`.
 
 ---

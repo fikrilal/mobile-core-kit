@@ -8,24 +8,26 @@ import 'package:flutter/material.dart';
 /// Updating the theme colors should generally mean updating these values, then
 /// running the contrast gate tests.
 abstract final class AppColorSeeds {
-  /// Brand primary seed.
+  /// Brand primary seed (core brand color).
   ///
-  /// Provided by design. For now this is the agreed placeholder:
-  /// `#9FE870`.
+  /// Provided by design: `#9FE870` (Bright Green).
   static const brandPrimarySeed = Color(0xFF9FE870);
 
   /// Neutral seed used for surfaces/containers/outlines.
   ///
   /// Keeping this neutral avoids “tinted surfaces” when the brand seed is a
   /// saturated hue (common enterprise preference).
-  static const neutralSeed = Color(0xFF6B7280);
+  ///
+  /// Provided by design: `#868685` (Interactive Secondary).
+  static const neutralSeed = Color(0xFF868685);
 
   /// Semantic status seeds.
   ///
-  /// These are temporary placeholders until design provides canonical status
-  /// colors. They are chosen to behave well in both light and dark schemes.
-  static const successSeed = Color(0xFF2E7D32);
-  static const warningSeed = Color(0xFFF9A825);
-  static const infoSeed = Color(0xFF1565C0);
+  /// Provided by design:
+  /// - Success: `#2F5711` (Sentiment Positive)
+  /// - Warning: `#EDC843` (Sentiment Warning)
+  /// - Info: `#A0E1E1` (Bright Blue)
+  static const successSeed = Color(0xFF2F5711);
+  static const warningSeed = Color(0xFFEDC843);
+  static const infoSeed = Color(0xFFA0E1E1);
 }
-

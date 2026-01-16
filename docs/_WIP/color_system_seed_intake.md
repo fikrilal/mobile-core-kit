@@ -75,11 +75,11 @@ See the deep dive:
 
 ```text
 brandPrimarySeed: #9FE870
-neutralSeed: #C8C8C8
+neutralSeed: #868685
 
-successSeed: #1DB954
-infoSeed: #2F80ED
-warningSeed: #F2C94C
+successSeed: #2F5711
+infoSeed: #A0E1E1
+warningSeed: #EDC843
 ```
 
 Notes:

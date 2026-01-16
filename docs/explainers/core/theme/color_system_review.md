@@ -76,6 +76,10 @@ We intentionally generate:
 - a **neutral scheme** (surface + outline roles)
 - **status schemes** (success/info/warning → `SemanticColors`)
 
+Policy decision (this template):
+
+- **Neutral elevation**: `ColorScheme.surfaceTint` is sourced from the neutral scheme so elevated surfaces don’t pick up a brand tint.
+
 Derivation happens in:
 - `lib/core/theme/system/app_color_scheme_builder.dart`
 
