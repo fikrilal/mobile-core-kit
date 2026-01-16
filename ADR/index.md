@@ -9,6 +9,7 @@ Baseline ADRs (apply to `mobile-core-kit` adopters):
 - `records/0005-dio-api-helper-networking.md` — Dio networking via ApiClient + ApiHelper + interceptors (accepted, 2025‑12‑12)
 - `records/0006-env-yaml-build-config-flavors.md` — Environment YAML + BuildConfig generator (accepted, 2025‑12‑12)
 - `records/0007-intent-based-deep-linking.md` — Intent‑based deep linking (Option C) with safe startup gating (accepted, 2026‑01‑02)
+- `records/0008-seed-driven-role-based-color-system.md` — Seed-driven, role-based color system (neutral elevation + contrast gates) (accepted, 2026‑01‑16)
 
 Examples (downstream reference only):
 

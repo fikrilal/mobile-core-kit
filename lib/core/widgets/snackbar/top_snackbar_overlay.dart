@@ -143,20 +143,21 @@ class _TopSnackBarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final media = _mediaQueryData(context);
+    final shadow = Theme.of(context).colorScheme.shadow;
     return Material(
       color: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(AppSpacing.space12),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x1F000000),
+              color: shadow.withValues(alpha: 0.12),
               blurRadius: 24,
               offset: Offset(0, 8),
             ),
             BoxShadow(
-              color: Color(0x0A000000),
+              color: shadow.withValues(alpha: 0.04),
               blurRadius: 48,
               offset: Offset(0, 16),
             ),

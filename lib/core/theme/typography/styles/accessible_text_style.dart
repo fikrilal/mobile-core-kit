@@ -19,12 +19,10 @@ class AccessibleTextStyles {
   /// avoid double-scaling and to keep nonlinear scaling behavior correct.
   static TextStyle applyAccessibility(
     BuildContext context,
-    TextStyle baseStyle, {
-    double minScaleFactor = 1.0,
-    double maxScaleFactor = 2.5,
-  }) {
-    // Parameters are retained for backward compatibility with the previous API.
-    // Effective clamping is enforced at `AdaptiveScope`.
+    TextStyle baseStyle,
+  ) {
+    // Accessibility clamping is enforced at `AdaptiveScope` (via `MediaQuery`),
+    // so this method stays intentionally minimal.
     return baseStyle;
   }
 
@@ -51,19 +49,13 @@ class AccessibleTextStyles {
     final needsHighContrast = MediaQuery.highContrastOf(context);
 
     if (needsHighContrast) {
-      // Calculate if the current contrast is sufficient
-      // This is a simplified version - in a real app, you would
-      // use a proper contrast calculation algorithm
-      // final foreground = style.color ?? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-
-      // For simplicity, we're just ensuring black or white text
-      // based on background brightness
+      final scheme = Theme.of(context).colorScheme;
       final backgroundBrightness = ThemeData.estimateBrightnessForColor(
         backgroundColor,
       );
       final highContrastColor = backgroundBrightness == Brightness.light
-          ? Colors.black
-          : Colors.white;
+          ? scheme.onSurface
+          : scheme.onInverseSurface;
 
       // Return the style with improved contrast
       return style.copyWith(color: highContrastColor);

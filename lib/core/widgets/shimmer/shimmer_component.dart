@@ -4,18 +4,22 @@ import 'package:flutter/rendering.dart';
 part 'shimmer_render.dart';
 part 'shimmer_shapes.dart';
 
-const LinearGradient _kDefaultShimmerGradient = LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.centerRight,
-  colors: <Color>[
-    Color(0xFFE0E0E0),
-    Color(0xFFE0E0E0),
-    Color(0xFFF5F5F5),
-    Color(0xFFE0E0E0),
-    Color(0xFFE0E0E0),
-  ],
-  stops: <double>[0.0, 0.35, 0.5, 0.65, 1.0],
-);
+LinearGradient _defaultShimmerGradient(ColorScheme scheme) {
+  final base = scheme.surfaceContainerHigh;
+  final highlight = scheme.surfaceContainerHighest;
+  return LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      base,
+      base,
+      highlight,
+      base,
+      base,
+    ],
+    stops: const <double>[0.0, 0.35, 0.5, 0.65, 1.0],
+  );
+}
 
 ///
 /// An enum defines all supported directions of shimmer effect
@@ -138,10 +142,12 @@ class _ShimmerComponentState extends State<ShimmerComponent>
       return widget.child;
     }
 
+    final scheme = Theme.of(context).colorScheme;
+
     return _Shimmer(
       animation: _controller,
       direction: widget.direction,
-      gradient: widget.gradient ?? _kDefaultShimmerGradient,
+      gradient: widget.gradient ?? _defaultShimmerGradient(scheme),
       child: widget.child,
     );
   }

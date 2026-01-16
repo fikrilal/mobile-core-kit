@@ -5,8 +5,8 @@ class ShimmerBox extends StatelessWidget {
   final double width;
   final double height;
   final double borderRadius;
-  final Color baseColor;
-  final Color highlightColor;
+  final Color? baseColor;
+  final Color? highlightColor;
   final ShimmerDirection direction;
   final Duration period;
 
@@ -15,24 +15,27 @@ class ShimmerBox extends StatelessWidget {
     required this.width,
     required this.height,
     this.borderRadius = 8.0,
-    this.baseColor = const Color(0xFFE0E0E0),
-    this.highlightColor = const Color(0xFFF5F5F5),
+    this.baseColor,
+    this.highlightColor,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final effectiveBase = baseColor ?? scheme.surfaceContainerHigh;
+    final effectiveHighlight = highlightColor ?? scheme.surfaceContainerHighest;
     return ShimmerComponent.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+      baseColor: effectiveBase,
+      highlightColor: effectiveHighlight,
       direction: direction,
       period: period,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: baseColor,
+          color: effectiveBase,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
@@ -42,31 +45,34 @@ class ShimmerBox extends StatelessWidget {
 
 class ShimmerCircle extends StatelessWidget {
   final double diameter;
-  final Color baseColor;
-  final Color highlightColor;
+  final Color? baseColor;
+  final Color? highlightColor;
   final ShimmerDirection direction;
   final Duration period;
 
   const ShimmerCircle({
     super.key,
     required this.diameter,
-    this.baseColor = const Color(0xFFE0E0E0),
-    this.highlightColor = const Color(0xFFF5F5F5),
+    this.baseColor,
+    this.highlightColor,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final effectiveBase = baseColor ?? scheme.surfaceContainerHigh;
+    final effectiveHighlight = highlightColor ?? scheme.surfaceContainerHighest;
     return ShimmerComponent.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+      baseColor: effectiveBase,
+      highlightColor: effectiveHighlight,
       direction: direction,
       period: period,
       child: Container(
         width: diameter,
         height: diameter,
-        decoration: BoxDecoration(color: baseColor, shape: BoxShape.circle),
+        decoration: BoxDecoration(color: effectiveBase, shape: BoxShape.circle),
       ),
     );
   }
@@ -75,8 +81,8 @@ class ShimmerCircle extends StatelessWidget {
 class ShimmerText extends StatelessWidget {
   final double width;
   final double height;
-  final Color baseColor;
-  final Color highlightColor;
+  final Color? baseColor;
+  final Color? highlightColor;
   final ShimmerDirection direction;
   final Duration period;
 
@@ -84,24 +90,27 @@ class ShimmerText extends StatelessWidget {
     super.key,
     required this.width,
     this.height = 16.0,
-    this.baseColor = const Color(0xFFE0E0E0),
-    this.highlightColor = const Color(0xFFF5F5F5),
+    this.baseColor,
+    this.highlightColor,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final effectiveBase = baseColor ?? scheme.surfaceContainerHigh;
+    final effectiveHighlight = highlightColor ?? scheme.surfaceContainerHighest;
     return ShimmerComponent.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+      baseColor: effectiveBase,
+      highlightColor: effectiveHighlight,
       direction: direction,
       period: period,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: baseColor,
+          color: effectiveBase,
           borderRadius: BorderRadius.circular(4.0),
         ),
       ),

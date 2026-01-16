@@ -66,7 +66,7 @@ AppText.labelSmall('Small label text')
 // With customization
 AppText.titleLarge(
   'Title Text',
-  color: Colors.blue,
+  color: Theme.of(context).colorScheme.primary,
   maxLines: 2,
 )
 ```

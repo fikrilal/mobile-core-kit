@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../adaptive/adaptive_context.dart';
+import '../../extensions/theme_extensions_utils.dart';
 import '../components/text.dart';
 import '../tokens/type_weights.dart';
 import '../tokens/typefaces.dart';
@@ -24,23 +25,23 @@ class TypographyShowcaseScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Font Weights'),
-            _buildFontWeightsSection(),
+            _buildSectionHeader(context, 'Font Weights'),
+            _buildFontWeightsSection(context),
             const SizedBox(height: 32),
 
-            _buildSectionHeader('Text Styles'),
-            _buildTextStylesSection(),
+            _buildSectionHeader(context, 'Text Styles'),
+            _buildTextStylesSection(context),
             const SizedBox(height: 32),
 
-            _buildSectionHeader('Responsive Behavior'),
+            _buildSectionHeader(context, 'Responsive Behavior'),
             _buildResponsiveSection(context),
             const SizedBox(height: 32),
 
-            _buildSectionHeader('Accessibility Features'),
-            _buildAccessibilitySection(),
+            _buildSectionHeader(context, 'Accessibility Features'),
+            _buildAccessibilitySection(context),
             const SizedBox(height: 32),
 
-            _buildSectionHeader('Color Variations'),
+            _buildSectionHeader(context, 'Color Variations'),
             _buildColorVariationsSection(context),
           ],
         ),
@@ -48,14 +49,16 @@ class TypographyShowcaseScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: AppText.headlineMedium(title, color: Colors.blue.shade700),
+      child: AppText.headlineMedium(title, color: scheme.primary),
     );
   }
 
-  Widget _buildFontWeightsSection() {
+  Widget _buildFontWeightsSection(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final weights = [
       ('Regular (400)', TypeWeights.regular),
       ('Medium (500)', TypeWeights.medium),
@@ -73,7 +76,7 @@ class TypographyShowcaseScreen extends StatelessWidget {
                 width: 150,
                 child: AppText.labelMedium(
                   weight.$1,
-                  color: Colors.grey.shade600,
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
               Expanded(
@@ -93,19 +96,22 @@ class TypographyShowcaseScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextStylesSection() {
+  Widget _buildTextStylesSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildStyleExample(
+          context,
           'Display Large',
           () => AppText.displayLarge('Display Large Text'),
         ),
         _buildStyleExample(
+          context,
           'Display Medium',
           () => AppText.displayMedium('Display Medium Text'),
         ),
         _buildStyleExample(
+          context,
           'Display Small',
           () => AppText.displaySmall('Display Small Text'),
         ),
@@ -113,14 +119,17 @@ class TypographyShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 16),
 
         _buildStyleExample(
+          context,
           'Headline Large',
           () => AppText.headlineLarge('Headline Large Text'),
         ),
         _buildStyleExample(
+          context,
           'Headline Medium',
           () => AppText.headlineMedium('Headline Medium Text'),
         ),
         _buildStyleExample(
+          context,
           'Headline Small',
           () => AppText.headlineSmall('Headline Small Text'),
         ),
@@ -128,14 +137,17 @@ class TypographyShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 16),
 
         _buildStyleExample(
+          context,
           'Title Large',
           () => AppText.titleLarge('Title Large Text'),
         ),
         _buildStyleExample(
+          context,
           'Title Medium',
           () => AppText.titleMedium('Title Medium Text'),
         ),
         _buildStyleExample(
+          context,
           'Title Small',
           () => AppText.titleSmall('Title Small Text'),
         ),
@@ -143,18 +155,21 @@ class TypographyShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 16),
 
         _buildStyleExample(
+          context,
           'Body Large',
           () => AppText.bodyLarge(
             'Body Large Text - Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
           ),
         ),
         _buildStyleExample(
+          context,
           'Body Medium',
           () => AppText.bodyMedium(
             'Body Medium Text - Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
           ),
         ),
         _buildStyleExample(
+          context,
           'Body Small',
           () => AppText.bodySmall(
             'Body Small Text - Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -164,14 +179,17 @@ class TypographyShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 16),
 
         _buildStyleExample(
+          context,
           'Label Large',
           () => AppText.labelLarge('Label Large'),
         ),
         _buildStyleExample(
+          context,
           'Label Medium',
           () => AppText.labelMedium('Label Medium'),
         ),
         _buildStyleExample(
+          context,
           'Label Small',
           () => AppText.labelSmall('Label Small'),
         ),
@@ -179,13 +197,18 @@ class TypographyShowcaseScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStyleExample(String label, Widget Function() builder) {
+  Widget _buildStyleExample(
+    BuildContext context,
+    String label,
+    Widget Function() builder,
+  ) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.labelSmall(label, color: Colors.grey.shade600),
+          AppText.labelSmall(label, color: scheme.onSurfaceVariant),
           const SizedBox(height: 4),
           builder(),
         ],
@@ -195,13 +218,14 @@ class TypographyShowcaseScreen extends StatelessWidget {
 
   Widget _buildResponsiveSection(BuildContext context) {
     final layout = context.adaptiveLayout;
+    final scheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText.bodyMedium(
           'Width class: ${layout.widthClass}  •  Height class: ${layout.heightClass}',
-          color: Colors.blue.shade600,
+          color: scheme.primary,
         ),
         const SizedBox(height: 16),
 
@@ -218,13 +242,14 @@ class TypographyShowcaseScreen extends StatelessWidget {
         // Example header + body text under the current layout constraints
         AppText.headlineLarge(
           'This headline follows the type ramp',
-          color: Colors.green.shade700,
+          color: scheme.primary,
         ),
       ],
     );
   }
 
-  Widget _buildAccessibilitySection() {
+  Widget _buildAccessibilitySection(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -242,7 +267,7 @@ class TypographyShowcaseScreen extends StatelessWidget {
 
         AppText.bodyMedium(
           'Try changing your device\'s text size in system settings to see the responsive behavior.',
-          color: Colors.orange.shade700,
+          color: scheme.tertiary,
         ),
       ],
     );
@@ -257,13 +282,15 @@ class TypographyShowcaseScreen extends StatelessWidget {
 
   Widget _buildColorVariationsSection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final semantic = context.semanticColors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText.bodyMedium(
           'Current theme: ${isDark ? "Dark" : "Light"}',
-          color: Colors.purple.shade600,
+          color: scheme.tertiary,
         ),
         const SizedBox(height: 16),
 
@@ -276,14 +303,14 @@ class TypographyShowcaseScreen extends StatelessWidget {
           Theme.of(context).colorScheme.secondary,
         ),
         _buildColorExample('Error Color', Theme.of(context).colorScheme.error),
-        _buildColorExample('Success Color', Colors.green),
-        _buildColorExample('Warning Color', Colors.orange),
+        _buildColorExample('Success Color', semantic.success),
+        _buildColorExample('Warning Color', semantic.warning),
 
         const SizedBox(height: 16),
 
         AppText.bodySmall(
           'Toggle between light and dark themes to see how typography adapts.',
-          color: Colors.grey.shade600,
+          color: scheme.onSurfaceVariant,
         ),
       ],
     );

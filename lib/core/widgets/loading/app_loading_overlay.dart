@@ -124,6 +124,7 @@ class _LoadingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final shadow = scheme.shadow;
 
     return RepaintBoundary(
       child: Material(
@@ -132,9 +133,9 @@ class _LoadingCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: borderRadius,
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Color(0x1F000000),
+                color: shadow.withValues(alpha: 0.12),
                 blurRadius: 24,
                 offset: Offset(0, 8),
               ),

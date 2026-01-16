@@ -1,6 +1,9 @@
-# Orymu Mobile Theme System Documentation
+# Mobile Core Kit Theme System
 
-A comprehensive guide to using the theme system in the Orymu Mobile Flutter application.
+This is the guide to using the theme system in this template.
+
+Start here for color rules + examples:
+- `docs/explainers/core/theme/color_usage_guide.md`
 
 ## Table of Contents
 
@@ -13,17 +16,17 @@ A comprehensive guide to using the theme system in the Orymu Mobile Flutter appl
 7. [Components](#components)
 8. [Usage Examples](#usage-examples)
 9. [Best Practices](#best-practices)
-10. [Migration Guide](#migration-guide)
+10. [Refactoring Recipes](#refactoring-recipes)
 
 ## Overview
 
-The Orymu Mobile theme system provides a unified, responsive, and accessible design foundation for the Flutter application. It includes:
+The theme system provides a unified, responsive, and accessible design foundation for the Flutter application. It includes:
 
-- **Unified Color Palette**: Consistent color tokens across light and dark themes
+- **Role-based colors**: `ColorScheme` + `SemanticColors` derived from seeds (contrast is gated by tests)
 - **Typography System**: Token-based type ramp with accessibility-correct text scaling (via `TextScaler`)
 - **Adaptive Layout System**: Constraint-first responsive + adaptive layout decisions (`lib/core/adaptive/`)
 - **Component Theming**: Pre-styled components with consistent design patterns
-- **Accessibility Support**: Built-in accessibility features and WCAG compliance
+- **Accessibility Support**: built-in text scaling support + WCAG contrast enforcement via `test/core/theme/color_contrast_test.dart`
 
 ## Quick Start
 
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Orymu Mobile',
+      title: 'Mobile Core Kit',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
@@ -61,7 +64,7 @@ class ExamplePage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Heading.h1('Welcome to Orymu'),
+          Heading.h1('Welcome'),
           Heading.h2('Getting Started'),
           Paragraph.large('This is a large paragraph with proper typography.'),
           AppText.bodyMedium('Regular body text'),
@@ -108,13 +111,18 @@ lib/core/theme/
 ├── light_theme.dart          # Light theme configuration
 ├── dark_theme.dart           # Dark theme configuration
 ├── extensions/               # Theme extension utilities
+│   ├── semantic_colors.dart
 │   └── theme_extensions_utils.dart
-├── tokens/                   # Base color tokens
-│   ├── spacing.dart          # Spacing scale (constants)
-│   ├── sizing.dart           # Component sizing (constants)
-│   ├── primary_colors.dart
-│   ├── secondary_colors.dart
-│   └── ...
+├── system/                   # Seed → role derivation + policies
+│   ├── app_color_seeds.dart
+│   ├── app_color_scheme_builder.dart
+│   ├── app_theme_builder.dart
+│   ├── color_contrast.dart
+│   ├── motion_durations.dart
+│   └── state_opacities.dart
+├── tokens/                   # Layout primitives (constants)
+│   ├── spacing.dart          # Spacing scale
+│   └── sizing.dart           # Component sizing
 └── typography/               # Typography system
     ├── typography_system.dart # Main typography entry
     ├── components/           # Typography components
@@ -140,8 +148,8 @@ lib/core/theme/
 
 The color system uses a two-layer approach:
 
-1. **Base Tokens** (`tokens/`): Raw brand and neutral color values
-2. **Theme Colors** (`ColorScheme` + `SemanticColors`): Colors used by UI components
+1. **Seeds** (`system/app_color_seeds.dart`): small set of hex inputs (brand + neutral + status)
+2. **Theme roles** (`ColorScheme` + `SemanticColors`): the only colors UI should use
 
 ### Using Colors
 
@@ -175,26 +183,14 @@ final onWarningText = semantic.onWarning;
 
 Use these for non‑Material status UI (badges, banners, charts) where `ColorScheme.error` is not enough.
 
-#### 3. Brand token palettes (advanced)
+#### 3. Seeds (advanced)
 
-```dart
-// Access raw brand tokens when you need specific steps
-final primaryTokens = context.primary; // PrimaryColors
-final primary500 = primaryTokens.primary500;
+This theme derives its role colors from a small set of seeds (single hex inputs).
 
-final greyTokens = context.grey;       // GreyColors
-final neutralBackground = greyTokens.grey100;
-```
+- Seeds live in `lib/core/theme/system/app_color_seeds.dart`
+- Roles are generated in `lib/core/theme/system/app_color_scheme_builder.dart`
 
-Token palettes are useful for design‑system primitives, charts, and marketing visuals. For regular app UI, prefer `ColorScheme` and `SemanticColors`.
-
-### Available Color Palettes
-
-- **Primary Colors**: Main brand colors (50-900 scale)
-- **Secondary Colors**: Supporting brand colors
-- **Tertiary Colors**: Accent colors
-- **Grey Colors**: Neutral colors for text and backgrounds
-- **Semantic Colors**: Red (error), Green (success), Yellow (warning), Blue (info)
+For app UI, prefer consuming the roles (`ColorScheme` + `SemanticColors`).
 
 ## Typography System
 
@@ -216,7 +212,7 @@ Heading.h6('Smallest Heading')     // Smallest heading
 // With customization
 Heading.h1(
   'Custom Heading',
-  color: Colors.blue,
+  color: Theme.of(context).colorScheme.primary,
   textAlign: TextAlign.center,
   maxLines: 2,
 )
@@ -251,7 +247,7 @@ AppText.labelMedium('Label text')
 AppText.custom(
   'Custom styled text',
   getStyle: (context) => ResponsiveTextStyles.bodyMedium(context),
-  color: Colors.red,
+  color: Theme.of(context).colorScheme.error,
   selectable: true,
 )
 ```
@@ -327,18 +323,13 @@ AppSpacing.space32  // 32.0
 
 ### Using Theme Extensions
 
-Access custom color tokens through theme extensions:
+Access custom semantic extensions through theme extensions:
 
 ```dart
-// Get custom colors
-final primaryColors = Theme.of(context).extension<PrimaryColors>();
-final buttonColors = Theme.of(context).extension<CompButtonColors>();
+final semantic = Theme.of(context).extension<SemanticColors>()!;
 
-// Use in widgets
-Container(
-  color: primaryColors?.primary100,
-  child: Text('Themed container'),
-)
+final bg = semantic.successContainer;
+final fg = semantic.onSuccessContainer;
 ```
 
 ### Component Sizing
@@ -392,7 +383,7 @@ class ExamplePage extends StatelessWidget {
               // Hero section
               SizedBox(
                 height: 160,
-                child: Center(child: Heading.h1('Welcome to Orymu')),
+                child: Center(child: Heading.h1('Welcome')),
               ),
 
               const SizedBox(height: AppSpacing.space32),
@@ -402,7 +393,7 @@ class ExamplePage extends StatelessWidget {
               const SizedBox(height: AppSpacing.space16),
 
               Paragraph.large(
-                'This is an example of how to use the Orymu theme + adaptive layout system. '
+                'This is an example of how to use the theme + adaptive layout system. '
                 'Layout adapts via size classes and surface tokens; text scaling follows system settings.',
               ),
 
@@ -536,11 +527,11 @@ AdaptiveGrid.builder(
 - Ensure sufficient color contrast (provided by the color tokens)
 - Use meaningful widget semantics
 
-## Migration Guide
+## Refactoring Recipes
 
-### From Raw Text Widgets
+### Prefer semantic typography components
 
-**Before:**
+**Avoid:**
 
 ```dart
 Text(
@@ -552,15 +543,15 @@ Text(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 Heading.h2('Heading')
 ```
 
-### From Fixed Layouts
+### Prefer constraint-aware layout primitives
 
-**Before:**
+**Avoid:**
 
 ```dart
 Container(
@@ -570,15 +561,15 @@ Container(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 AppPageContainer(child: child)
 ```
 
-### From Hardcoded Colors
+### Prefer role colors (no hardcoded hex)
 
-**Before:**
+**Avoid:**
 
 ```dart
 Container(
@@ -587,7 +578,7 @@ Container(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 Container(
@@ -663,4 +654,4 @@ For questions or issues with the theme system:
 3. Check the `typography-guide.md` for typography-specific guidance
 4. Refer to component examples in the codebase
 
-The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the Orymu Mobile application.
+The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the application.

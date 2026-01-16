@@ -23,6 +23,22 @@ class AppTheme {
     return TypographySystem.applyTypography(darkTheme);
   }
 
+  /// Get the high-contrast light theme (context-free).
+  ///
+  /// Selection should happen at the app shell based on `MediaQueryData` (e.g.
+  /// `MediaQuery.highContrastOf(context)`).
+  static ThemeData lightHighContrast() {
+    return TypographySystem.applyTypography(lightHighContrastTheme);
+  }
+
+  /// Get the high-contrast dark theme (context-free).
+  ///
+  /// Selection should happen at the app shell based on `MediaQueryData` (e.g.
+  /// `MediaQuery.highContrastOf(context)`).
+  static ThemeData darkHighContrast() {
+    return TypographySystem.applyTypography(darkHighContrastTheme);
+  }
+
   /// Create a custom theme with the specified color scheme (context-free)
   static ThemeData custom({
     required ColorScheme colorScheme,

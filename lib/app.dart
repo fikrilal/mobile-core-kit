@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         routerConfig: _router,
         scaffoldMessengerKey: navigation.scaffoldMessengerKey,
         builder: (context, child) {
-          return AdaptiveScope(
+          final app = AdaptiveScope(
             navigationPolicy: const NavigationPolicy.standard(),
             textScalePolicy: const TextScalePolicy.clamp(
               minScaleFactor: 1.0,
@@ -44,6 +44,15 @@ class MyApp extends StatelessWidget {
               child: child ?? const SizedBox.shrink(),
             ),
           );
+
+          if (!MediaQuery.highContrastOf(context)) return app;
+
+          final brightness = Theme.of(context).brightness;
+          final theme = brightness == Brightness.dark
+              ? AppTheme.darkHighContrast()
+              : AppTheme.lightHighContrast();
+
+          return Theme(data: theme, child: app);
         },
       ),
     );

@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
 import 'semantic_colors.dart';
-import '../tokens/blue_colors.dart';
-import '../tokens/green_colors.dart';
-import '../tokens/grey_colors.dart';
-import '../tokens/primary_colors.dart';
-import '../tokens/red_colors.dart';
-import '../tokens/secondary_colors.dart';
-import '../tokens/tertiary_colors.dart';
-import '../tokens/yellow_colors.dart';
 
 extension ThemeColorAccess on BuildContext {
-  // Token Colors
-  PrimaryColors get primary => Theme.of(this).extension<PrimaryColors>()!;
-  SecondaryColors get secondary => Theme.of(this).extension<SecondaryColors>()!;
-  TertiaryColors get tertiary => Theme.of(this).extension<TertiaryColors>()!;
-  GreyColors get grey => Theme.of(this).extension<GreyColors>()!;
-  GreenColors get green => Theme.of(this).extension<GreenColors>()!;
-  RedColors get red => Theme.of(this).extension<RedColors>()!;
-  YellowColors get yellow => Theme.of(this).extension<YellowColors>()!;
-  BlueColors get blue => Theme.of(this).extension<BlueColors>()!;
-
   // Semantic status colors (non-M3)
   SemanticColors get semanticColors =>
       Theme.of(this).extension<SemanticColors>()!;

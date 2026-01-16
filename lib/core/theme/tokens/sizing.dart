@@ -10,9 +10,9 @@ class AppSizing {
   static const double iconSizeMedium = 24.0;
   static const double iconSizeLarge = 32.0;
 
-  static const double avatarSizeExtraSmall = 24.0;
-  static const double avatarSizeSmall = 32.0;
-  static const double avatarSizeMedium = 40.0;
+  static const double avatarSizeExtraSmall = 32.0;
+  static const double avatarSizeSmall = 40.0;
+  static const double avatarSizeMedium = 48.0;
   static const double avatarSizeLarge = 56.0;
   static const double avatarSizeExtraLarge = 80.0;
 }

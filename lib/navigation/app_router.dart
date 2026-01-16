@@ -9,12 +9,14 @@ import '../core/services/analytics/analytics_tracker.dart';
 import '../core/services/app_startup/app_startup_controller.dart';
 import '../core/services/deep_link/deep_link_parser.dart';
 import '../core/services/deep_link/pending_deep_link_controller.dart';
+import '../core/configs/build_config.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'app_redirect.dart';
 import 'app_routes.dart';
 import 'auth/auth_routes_list.dart';
+import 'dev_tools/dev_tools_routes_list.dart';
 import 'shell/app_shell_page.dart';
 import 'onboarding/onboarding_routes_list.dart';
 
@@ -69,6 +71,7 @@ GoRouter createRouter() {
           ),
         ],
       ),
+      if (BuildConfig.env == BuildEnv.dev) ...devToolsRoutes,
       ...authRoutes,
       ...onboardingRoutes,
     ],
