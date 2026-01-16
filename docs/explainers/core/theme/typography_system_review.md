@@ -12,9 +12,9 @@ What’s already strong:
 
 What’s not yet enterprise-grade:
 
-- “Responsive” naming suggests breakpoint-driven typography, but the ramp is currently **static** (no breakpoint logic). That’s fine for now, but the naming should not over-promise.
-- Legacy entrypoints still exist, but the system should continue converging on **one canonical API** (`Theme.of(context).textTheme.*`) with everything else as thin wrappers or deprecated compatibility.
-- The “design system widgets” (`AppText`, `Heading`, `Paragraph`) have an extremely large API surface (nearly mirroring `Text`/`SelectableText`), which is high-maintenance and weakens governance.
+- The type ramp is currently **static** (no breakpoint-derived ramp). That’s an acceptable enterprise default, but it must be documented as such.
+- `MediaQuery.boldText` is captured by `AdaptiveSpec`, but typography does not apply a bold-text policy yet (intentional; needs an explicit decision).
+- `TextThemeBuilder` is an internal implementation detail; feature code should not bypass the theme by constructing styles directly.
 
 If you do one thing next: pick a **single canonical API** and demote everything else to either “thin wrapper” or “advanced escape hatch”.
 
@@ -38,16 +38,13 @@ If you do one thing next: pick a **single canonical API** and demote everything 
 There are some compatibility helpers around typography, but the intent is a single source of truth:
 
 - Canonical: `Theme.of(context).textTheme.*` (from `TextThemeBuilder`)
-- Compatibility:
-  - `lib/core/theme/typography/styles/responsive_text_styles.dart` → deprecated proxy to `Theme.of(context).textTheme.*`
-  - `lib/core/theme/typography/utils/typography_extensions.dart` → deprecated convenience getters that proxy to `textTheme`
 - `lib/core/theme/typography/styles/accessible_text_style.dart` → currently a pass-through (correct, because scaling is handled at root)
 - Components:
   - `lib/core/theme/typography/components/text.dart` (`AppText.*`)
   - `lib/core/theme/typography/components/heading.dart` (`Heading.h1` … `Heading.h6`)
   - `lib/core/theme/typography/components/paragraph.dart` (`Paragraph`, with optional width constraining)
 
-The remaining work is not “style drift” (the styles already flow through `textTheme`), but governance + maintainability: reduce wrapper surface area and keep one obvious path for developers.
+Compatibility helpers that bypassed theme access (e.g., `ResponsiveTextStyles`, `TypographyExtensions`, and large legacy wrappers) have been removed as part of the v2 rollout. Governance is now enforced via custom lints (see `packages/mobile_core_kit_lints`).
 
 ## What already aligns with enterprise best practice
 
@@ -79,44 +76,36 @@ The `TypeScale` values match a well-known ramp shape (close to Material 3’s ba
 
 ### 1) “Responsive” is currently a misnomer (implementation vs docs)
 
-The type ramp is static today (no breakpoint-derived ramp). The deprecated `ResponsiveTextStyles` name is a leftover from the earlier direction.
+The type ramp is static today (no breakpoint-derived ramp). This repo treats “responsive typography” as:
+
+- root-level text scaling clamp (accessibility correctness)
+- layout-level constraints (paragraph max width) for readability
 
 Consequences:
 
-- Developers read “responsive” and assume typography changes with device class; it does not.
-- Docs must not claim breakpoint behavior that isn’t implemented.
+- Developers should not expect breakpoint-driven typography changes.
+- Docs must not claim behavior that isn’t implemented.
 
 Enterprise standard here is: **either implement the behavior, or rename and document the truth**.
+
+Status: fixed by removing misleading compatibility APIs and aligning docs with the current static ramp + adaptive layout approach.
 
 ### 2) Too many public entrypoints (governance risk)
 
 Right now, teams can pick any of:
 
 - `Theme.of(context).textTheme.*`
-- `TextThemeBuilder` (bypasses theme)
-- `ResponsiveTextStyles` (bypasses theme)
-- `context.bodyMedium` etc (bypasses theme)
 - `AppText.*` / `Heading.*` / `Paragraph.*`
 
 This is how typography “drifts” in large orgs: different teams take different paths and assumptions.
 
 Enterprise standard is to have a **single canonical API** and make other APIs either private, deprecated, or explicitly documented as “escape hatch”.
 
+Status: largely fixed. Remaining risk is accidental direct usage of internal style builders (treat `TextThemeBuilder` as internal; prefer the theme and thin wrappers).
+
 ### 3) Wrapper widgets are too large (maintenance + policy escape)
 
-`AppText`, `Heading`, and `Paragraph` expose a very large parameter surface (almost a 1:1 mirror of `Text` / `SelectableText`).
-
-Risks:
-
-- High maintenance (Flutter’s text APIs evolve; wrappers must track them).
-- Inconsistent forwarding (easy to forget a parameter; behavior subtly differs from `Text`).
-- Governance failure: allowing per-call overrides like `letterSpacing`, `lineHeight`, and `textScaler` makes it easy to bypass the design system and accessibility policy.
-
-Enterprise standard tends to do the opposite:
-
-- provide **small** DS components that cover the common 90% cases
-- allow direct `Text`/`SelectableText` for advanced cases
-- limit the DS surface area so it can be reviewed and policed
+Status: fixed. `AppText`, `Heading`, and `Paragraph` are now intentionally thin and do not expose font-size/scaling overrides.
 
 ### 4) Accessibility responsibilities are blurred
 
@@ -135,7 +124,7 @@ Helpers like `.larger`, `.smaller`, `.tight`, `.wide`, `.compact`, `.relaxed` ca
 - unreviewable typography drift (“why is this 1.2x here?”)
 - inconsistent vertical rhythm and layout behavior
 
-If you keep them, they need explicit rules for when they are allowed.
+Status: fixed by removing these extensions from the public API surface.
 
 ## Recommendations (ordered, practical)
 
@@ -154,19 +143,25 @@ Option A2 (if you want a design-system-first API):
 
 Right now you have a hybrid. Hybrids don’t scale.
 
+Status: implemented. Canonical typography is `Theme.of(context).textTheme.*` with slim wrappers for the common path.
+
 ### Recommendation B — Rename or implement “responsive typography”
 
 If the intent is “static ramp + root text scaling + layout adaptation”, then:
 
-- Rename `ResponsiveTextStyles` → `AppTextStyles` (or similar)
-- Update docs to remove breakpoint claims
+- Keep `ThemeData.textTheme` static.
+- Clamp text scaling once at the app root (`AdaptiveScope`) and avoid per-widget scaling.
+- Avoid “responsive” naming in public typography APIs (it implies breakpoint ramps).
+- Solve tablet readability via layout constraints (e.g., paragraph max width), not a second ramp.
 
 If the intent is real device-class-aware typography, then implement it in a way that preserves context-free theme:
 
 - Keep `ThemeData.textTheme` static.
 - Provide a context-aware selection layer that chooses between ramps based on `context.adaptiveLayout` (phone vs tablet).
   - Example: `context.typeRamp.displayLarge` selects from `TypeScalePhone` vs `TypeScaleTablet`.
-  - This selection layer can live in `core/adaptive` or `core/theme/typography` as an adapter.
+- This selection layer can live in `core/adaptive` or `core/theme/typography` as an adapter.
+
+Status: implemented for the current scope by removing misleading naming and documenting the static ramp. Multi-ramp typography remains an optional future feature.
 
 ### Recommendation C — Reduce DS widget surface area
 
@@ -187,6 +182,8 @@ Avoid exposing:
 
 Keep an explicit escape hatch: “use Flutter `Text` directly with `Theme.of(context).textTheme.*`”.
 
+Status: implemented. Wrappers are small and predictable; advanced cases should use `Text`/`SelectableText` directly.
+
 ### Recommendation D — Decide how to handle `MediaQuery.boldText`
 
 `AdaptiveSpec` already captures `boldText`. Decide if you want to:
@@ -195,6 +192,8 @@ Keep an explicit escape hatch: “use Flutter `Text` directly with `Theme.of(con
 2) Respect it in a controlled way (e.g., bump weights by one step for body/label only).
 
 If you choose (2), do it via a controlled policy layer (not ad-hoc `.bolder` calls in feature code).
+
+Status: not implemented (by design). Needs an explicit decision when you want to respect bold-text across the app.
 
 ### Recommendation E — Fix and consolidate docs
 
@@ -205,6 +204,8 @@ If you choose (2), do it via a controlled policy layer (not ad-hoc `.bolder` cal
 
 In a starter kit, duplicated/contradictory docs are worse than missing docs.
 
+Status: implemented. The guide and explainer docs now align with the static-ramp + root clamp strategy.
+
 ## Usage rules (so devs don’t get lost)
 
 If you keep the current implementation for now, the least confusing ruleset is:
@@ -212,16 +213,9 @@ If you keep the current implementation for now, the least confusing ruleset is:
 1) Prefer `AppText` / `Heading` / `Paragraph` for common UI.
 2) If you need something `AppText` can’t do cleanly, use `Text` / `SelectableText` with `Theme.of(context).textTheme.*`.
 3) Do not pass `textScaler` to DS widgets; scaling is controlled at `AdaptiveScope`.
-4) Avoid `TextStyleExtensions` that change size/spacing (`.larger`, `.smaller`, `.tight`, `.wide`, `.compact`, `.relaxed`) unless you have an explicit UI spec to justify them.
-5) Never hardcode font sizes in feature code (`TextStyle(fontSize: ...)`). If a new role is needed, add it to the ramp/tokens and document it.
+4) Never hardcode font sizes in feature code (`TextStyle(fontSize: ...)`). If a new role is needed, add it to the ramp/tokens and document it.
 
 ## Suggested follow-up work (optional, but high leverage)
 
-- Add a typography “contract test”:
-  - verifies the ramp values are what you expect (guard against accidental edits)
-  - verifies key theme bindings (AppBar/TabBar) use intended styles
-- Add a dev-only typography roles showcase route (already exists: `TypographyShowcaseScreen`) and document how to reach it.
-- Add a custom lint rule to discourage:
-  - `TextStyle(fontSize: ...)` in UI layers
-  - `TextScaler.linear(...)` usage in widgets
-  - large-scale use of `TextStyleExtensions.larger/smaller`
+- Decide whether to support `MediaQuery.boldText` via a centralized policy (do not allow ad-hoc weight bumps).
+- Treat internal style builders as internal API (keep feature code on `textTheme`/wrappers).

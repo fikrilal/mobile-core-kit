@@ -126,20 +126,21 @@ lib/core/theme/
 └── typography/               # Typography system
     ├── typography_system.dart # Main typography entry
     ├── components/           # Typography components
+    │   ├── app_heading.dart
+    │   ├── app_paragraph.dart
+    │   ├── app_text.dart
     │   ├── heading.dart
     │   ├── paragraph.dart
     │   └── text.dart
     ├── styles/               # Text styles
     │   ├── accessible_text_style.dart
-    │   ├── responsive_text_styles.dart
     │   └── text_theme_builder.dart
     ├── tokens/               # Typography tokens
     │   ├── type_metrics.dart
     │   ├── type_scale.dart
     │   └── type_weights.dart
     └── utils/                # Typography utilities
-        ├── line_height_calculator.dart
-        └── typography_extensions.dart
+        └── line_height_calculator.dart
 ```
 
 ## Color System

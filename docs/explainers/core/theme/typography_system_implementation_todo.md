@@ -2,6 +2,13 @@
 
 This checklist translates `typography_system_proposal.md` into concrete implementation work. It is intentionally phased so we can land improvements without destabilizing the app.
 
+## Status
+
+As of 2026-01-16:
+
+- Completed: Phases 0–3 and Phase 5
+- Deferred (optional): Phase 4 (`MediaQuery.boldText` policy)
+
 ## Phase 0 — Align on decisions (requires a quick call)
 
 1) Canonical API choice
@@ -27,15 +34,12 @@ This checklist translates `typography_system_proposal.md` into concrete implemen
 
 Goal: stop presenting multiple “sources of truth” to feature developers.
 
-- Deprecate `lib/core/theme/typography/styles/responsive_text_styles.dart`
-  - Replace with theme-driven access (`Theme.of(context).textTheme.*`).
-  - If you keep a helper, it must simply proxy to `textTheme` (no new styles).
-- Deprecate `lib/core/theme/typography/utils/typography_extensions.dart`
-  - Replace with either:
-    - direct `Theme.of(context).textTheme.*`, or
-    - a narrow extension that just returns `Theme.of(context).textTheme.*` (no independent ramp).
+- Removed `lib/core/theme/typography/styles/responsive_text_styles.dart`
+  - Replaced with theme-driven access (`Theme.of(context).textTheme.*`).
+- Removed `lib/core/theme/typography/utils/typography_extensions.dart`
+  - Replaced with direct `Theme.of(context).textTheme.*` access.
 
-Deliverable: a clear README section that says “use textTheme; don’t use ResponsiveTextStyles”.
+Deliverable: a clear README section that says “use textTheme; don’t bypass theme typography”.
 
 ### 1.3 Ensure wrappers don’t bypass root text policy
 
@@ -122,17 +126,13 @@ Add tests that prevent silent drift:
 
 Important: do not sprinkle `.bolder` calls throughout the app.
 
-## Phase 5 — Migration plan (when ready)
+## Phase 5 — Migration (completed)
 
-This is the “next sprint” step once the new system is landed and stable.
+As of 2026-01-16:
 
-1) Migrate all feature code to:
-   - `Theme.of(context).textTheme.*` OR the slim DS wrappers.
-2) Remove usage of:
-   - `ResponsiveTextStyles`
-   - `TypographyExtensions`
-   - large legacy wrappers
-3) Delete deprecated files once grep shows 0 usage.
+1) Feature code uses `Theme.of(context).textTheme.*` or the slim DS wrappers.
+2) Removed legacy entrypoints (`ResponsiveTextStyles`, `TypographyExtensions`, and large legacy wrappers).
+3) Deleted deprecated files after confirming 0 usage.
 
 ## Deliverables checklist (definition of done)
 
@@ -142,4 +142,3 @@ This is the “next sprint” step once the new system is landed and stable.
 - DS wrappers exist, small and predictable (90% cases).
 - Lints prevent ad-hoc font sizes and manual scaling in UI layers.
 - Contract tests cover token values + theme bindings.
-
