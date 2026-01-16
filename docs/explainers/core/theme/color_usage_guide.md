@@ -132,3 +132,27 @@ return DecoratedBox(
 2) Run the contrast gate:
    - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
 3) If the gate fails, do not “pick prettier `on*` colors” in widgets; adjust seeds (or discuss a move to a custom tonal mapping strategy).
+
+## Guardrails (so the system stays clean)
+
+### 1) Lint: `hardcoded_ui_colors` (IDE + CI)
+
+We enforce “no hardcoded UI colors” in app/feature layers:
+
+- Disallowed: `Color(...)`, `Color.fromARGB(...)`, `Colors.*`, `CupertinoColors.*`
+- Allowed (sentinel): `Colors.transparent`
+
+If you truly must use a hardcoded value, add a suppression with a justification:
+
+- File: `// ignore_for_file: hardcoded_ui_colors`
+- Line: `// ignore: hardcoded_ui_colors`
+
+### 2) CI verify tool
+
+CI also runs:
+- `tool/verify_hardcoded_ui_colors.dart`
+
+### 3) QA helper
+
+In non-prod builds, the Profile page exposes:
+- **Developer → Theme roles** (visualizes `ColorScheme` + `SemanticColors`).

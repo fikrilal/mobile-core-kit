@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/adaptive/adaptive_context.dart';
@@ -49,6 +52,7 @@ class _ProfileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
+    final showDevTools = BuildConfig.env != BuildEnv.prod;
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
@@ -111,6 +115,19 @@ class _ProfileContent extends StatelessWidget {
               subtitle: 'Manage saved cards and bank accounts',
               onTap: () {},
             ),
+            if (showDevTools) ...[
+              SizedBox(height: sectionSpacing),
+              const AppText.headlineMedium('Developer'),
+              const SizedBox(height: AppSpacing.space8),
+              AppListTile(
+                leading: AppIconBadge(
+                  icon: PhosphorIcon(PhosphorIconsRegular.palette, size: 24),
+                ),
+                title: 'Theme roles',
+                subtitle: 'View ColorScheme + SemanticColors roles',
+                onTap: () => context.push(DevToolsRoutes.themeRoles),
+              ),
+            ],
             SizedBox(height: sectionSpacing),
 
             // Logout Button
