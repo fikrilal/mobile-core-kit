@@ -104,6 +104,12 @@ jobs:
       - name: Custom lint
         run: dart run custom_lint
 
+      - name: Verify modal entrypoints
+        run: dart run tool/verify_modal_entrypoints.dart
+
+      - name: Verify hardcoded UI colors
+        run: dart run tool/verify_hardcoded_ui_colors.dart
+
       - name: Run unit tests
         run: flutter test
 
@@ -215,6 +221,12 @@ jobs:
 
       - name: Custom lint
         run: dart run custom_lint
+
+      - name: Verify modal entrypoints
+        run: dart run tool/verify_modal_entrypoints.dart
+
+      - name: Verify hardcoded UI colors
+        run: dart run tool/verify_hardcoded_ui_colors.dart
 
       - name: Run unit tests
         run: flutter test

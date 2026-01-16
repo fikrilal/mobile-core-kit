@@ -22,35 +22,24 @@ We do *not* expose palette-step APIs (palette ramps like `neutral/200`) to UI co
 At runtime, colors are derived once when building the app theme (light/dark) and then consumed everywhere via `Theme.of(context)`.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
-  subgraph Inputs["Inputs (source of truth)"]
-    Seeds["`AppColorSeeds
- (hex constants)
- [app_color_seeds.dart]`"]
-    Policy["`Contrast policy
- (4.5:1 text, 3.0:1 non-text)
- [color_contrast_test.dart]`"]
+  subgraph Inputs["Inputs"]
+    Seeds["AppColorSeeds (seed hex values)"]
+    Policy["WCAG contrast gates (tests)"]
   end
 
   subgraph Builder["Derivation"]
-    Build["`AppColorSchemeBuilder.build(brightness)
- [app_color_scheme_builder.dart]`"]
-    Brand["ColorScheme.fromSeed(brandPrimarySeed) (brand accents)"]
-    Neutral["ColorScheme.fromSeed(neutralSeed) (neutral surfaces/outlines)"]
-    Status["ColorScheme.fromSeed(status seeds) (success/info/warning)"]
-    Semantic["`SemanticColors.fromSchemes(...)
- [semantic_colors.dart]`"]
+    Build["AppColorSchemeBuilder.build(brightness)"]
+    Brand["fromSeed(brandPrimarySeed) → brand accents"]
+    Neutral["fromSeed(neutralSeed) → neutral surfaces/outlines"]
+    Status["fromSeed(status seeds) → success/info/warning"]
+    Semantic["SemanticColors.fromSchemes(...)"]
     Scheme["Final ColorScheme (brand + neutral roles)"]
   end
 
   subgraph Theme["Theme wiring"]
-    Light["`lightTheme
- [light_theme.dart]`"]
-    Dark["`darkTheme
- [dark_theme.dart]`"]
-    AppTheme["`AppTheme.light/dark
- [theme.dart]`"]
+    Light["lightTheme / darkTheme"]
+    AppTheme["AppTheme.light/dark"]
   end
 
   subgraph Consumption["UI consumption"]
@@ -64,9 +53,7 @@ flowchart LR
   Build --> Neutral --> Scheme
   Build --> Status --> Semantic
   Scheme --> Light --> AppTheme
-  Scheme --> Dark --> AppTheme
   Semantic --> Light
-  Semantic --> Dark
   AppTheme --> CS --> Widgets
   AppTheme --> Sem --> Widgets
   Policy --> Widgets

@@ -25,6 +25,7 @@ class AppColorSystem {
 abstract final class AppColorSchemeBuilder {
   static AppColorSystem build({
     required Brightness brightness,
+    bool highContrast = false,
   }) {
     final brandScheme = ColorScheme.fromSeed(
       seedColor: AppColorSeeds.brandPrimarySeed,
@@ -36,7 +37,7 @@ abstract final class AppColorSchemeBuilder {
       brightness: brightness,
     );
 
-    final scheme = brandScheme.copyWith(
+    var scheme = brandScheme.copyWith(
       // Keep accents/brand from brand scheme, but force neutral surfaces.
       //
       // Policy: neutral elevation. We want elevated surfaces to remain neutral
@@ -73,6 +74,13 @@ abstract final class AppColorSchemeBuilder {
         brightness: brightness,
       ),
     );
+
+    if (highContrast) {
+      // High-contrast policy: strengthen subtle separators/borders so UI
+      // boundaries remain perceivable when the user requests increased
+      // contrast (MediaQueryData.highContrast).
+      scheme = scheme.copyWith(outlineVariant: scheme.outline);
+    }
 
     return AppColorSystem(
       scheme: scheme,

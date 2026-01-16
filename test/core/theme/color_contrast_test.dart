@@ -13,10 +13,22 @@ void main() {
       _expectSemanticRoles(lightTheme.extension<SemanticColors>()!);
     });
 
+    test('light high-contrast theme meets WCAG AA for core roles', () {
+      _expectCoreRoles(lightHighContrastTheme.colorScheme);
+      _expectNonTextRoles(lightHighContrastTheme.colorScheme);
+      _expectSemanticRoles(lightHighContrastTheme.extension<SemanticColors>()!);
+    });
+
     test('dark theme meets WCAG AA for core roles', () {
       _expectCoreRoles(darkTheme.colorScheme);
       _expectNonTextRoles(darkTheme.colorScheme);
       _expectSemanticRoles(darkTheme.extension<SemanticColors>()!);
+    });
+
+    test('dark high-contrast theme meets WCAG AA for core roles', () {
+      _expectCoreRoles(darkHighContrastTheme.colorScheme);
+      _expectNonTextRoles(darkHighContrastTheme.colorScheme);
+      _expectSemanticRoles(darkHighContrastTheme.extension<SemanticColors>()!);
     });
   });
 }

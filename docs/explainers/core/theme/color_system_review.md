@@ -100,6 +100,19 @@ If the gate fails:
 - Fix by adjusting seeds (preferred), or add a narrowly-scoped override in the builder.
 - Do not patch widget-level colors to “make it pass” (that creates drift).
 
+## 5.1) High contrast mode (OS accessibility)
+
+When the user enables high contrast at the OS level, Flutter exposes it via:
+
+- `MediaQuery.highContrastOf(context)`
+
+Our app shell can switch to a high-contrast theme variant (still seed-driven, still role-based).
+Current policy:
+
+- strengthen subtle separators by setting `ColorScheme.outlineVariant = ColorScheme.outline`
+
+This keeps borders/dividers more perceivable without requiring widget-level conditionals.
+
 ---
 
 ## 6) Extension rules (how we avoid color sprawl)

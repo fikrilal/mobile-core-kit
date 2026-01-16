@@ -55,6 +55,10 @@ Automated tests enforce:
 
 See: `test/core/theme/color_contrast_test.dart:1`
 
+High contrast mode:
+- When the OS requests increased contrast (`MediaQuery.highContrastOf(context)`), the app shell can
+  switch to a high-contrast theme variant that strengthens subtle borders (e.g. `outlineVariant`).
+
 ### 4) Status colors (success/info/warning)
 
 Use `context.semanticColors.*`:
@@ -154,5 +158,5 @@ CI also runs:
 
 ### 3) QA helper
 
-In non-prod builds, the Profile page exposes:
+In dev builds, the Profile page exposes:
 - **Developer → Theme roles** (visualizes `ColorScheme` + `SemanticColors`).

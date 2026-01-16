@@ -111,13 +111,18 @@ lib/core/theme/
 ├── light_theme.dart          # Light theme configuration
 ├── dark_theme.dart           # Dark theme configuration
 ├── extensions/               # Theme extension utilities
+│   ├── semantic_colors.dart
 │   └── theme_extensions_utils.dart
-├── tokens/                   # Base color tokens
-│   ├── spacing.dart          # Spacing scale (constants)
-│   ├── sizing.dart           # Component sizing (constants)
-│   ├── primary_colors.dart
-│   ├── secondary_colors.dart
-│   └── ...
+├── system/                   # Seed → role derivation + policies
+│   ├── app_color_seeds.dart
+│   ├── app_color_scheme_builder.dart
+│   ├── app_theme_builder.dart
+│   ├── color_contrast.dart
+│   ├── motion_durations.dart
+│   └── state_opacities.dart
+├── tokens/                   # Layout primitives (constants)
+│   ├── spacing.dart          # Spacing scale
+│   └── sizing.dart           # Component sizing
 └── typography/               # Typography system
     ├── typography_system.dart # Main typography entry
     ├── components/           # Typography components
@@ -143,8 +148,8 @@ lib/core/theme/
 
 The color system uses a two-layer approach:
 
-1. **Base Tokens** (`tokens/`): Raw brand and neutral color values
-2. **Theme Colors** (`ColorScheme` + `SemanticColors`): Colors used by UI components
+1. **Seeds** (`system/app_color_seeds.dart`): small set of hex inputs (brand + neutral + status)
+2. **Theme roles** (`ColorScheme` + `SemanticColors`): the only colors UI should use
 
 ### Using Colors
 
@@ -207,7 +212,7 @@ Heading.h6('Smallest Heading')     // Smallest heading
 // With customization
 Heading.h1(
   'Custom Heading',
-  color: Colors.blue,
+  color: Theme.of(context).colorScheme.primary,
   textAlign: TextAlign.center,
   maxLines: 2,
 )

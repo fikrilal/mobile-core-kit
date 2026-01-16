@@ -52,7 +52,7 @@ class _ProfileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
-    final showDevTools = BuildConfig.env != BuildEnv.prod;
+    final showDevTools = BuildConfig.env == BuildEnv.dev;
 
     return AppPageContainer(
       surface: SurfaceKind.settings,

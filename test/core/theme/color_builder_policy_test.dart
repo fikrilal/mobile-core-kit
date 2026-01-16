@@ -10,18 +10,25 @@ void main() {
         Brightness.light,
         Brightness.dark,
       ]) {
-        final built =
-            AppColorSchemeBuilder.build(brightness: brightness).scheme;
-        final neutral = ColorScheme.fromSeed(
-          seedColor: AppColorSeeds.neutralSeed,
-          brightness: brightness,
-        );
+        for (final highContrast in <bool>[false, true]) {
+          final built = AppColorSchemeBuilder.build(
+            brightness: brightness,
+            highContrast: highContrast,
+          ).scheme;
+          final neutral = ColorScheme.fromSeed(
+            seedColor: AppColorSeeds.neutralSeed,
+            brightness: brightness,
+          );
 
-        expect(built.surfaceTint, neutral.surfaceTint);
-        expect(built.surface, neutral.surface);
-        expect(built.outline, neutral.outline);
+          expect(built.surfaceTint, neutral.surfaceTint);
+          expect(built.surface, neutral.surface);
+          expect(built.outline, neutral.outline);
+
+          if (highContrast) {
+            expect(built.outlineVariant, built.outline);
+          }
+        }
       }
     });
   });
 }
-

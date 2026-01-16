@@ -71,7 +71,7 @@ GoRouter createRouter() {
           ),
         ],
       ),
-      if (BuildConfig.env != BuildEnv.prod) ...devToolsRoutes,
+      if (BuildConfig.env == BuildEnv.dev) ...devToolsRoutes,
       ...authRoutes,
       ...onboardingRoutes,
     ],
