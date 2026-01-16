@@ -14,6 +14,11 @@ double wcagContrastRatio(Color a, Color b) {
 }
 
 double _relativeLuminance(Color color) {
+  // Relative luminance for sRGB as defined by WCAG 2.x:
+  // https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
+  //
+  // The coefficients are the standard ITU‑R BT.709 luma weights for linear
+  // RGB: 0.2126 R + 0.7152 G + 0.0722 B.
   final r = _srgbToLinear(color.r);
   final g = _srgbToLinear(color.g);
   final b = _srgbToLinear(color.b);

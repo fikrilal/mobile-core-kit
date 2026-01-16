@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  tool/agent/gitw [--no-stdin] [git-args...]
+
+Runs Windows git from WSL via cmd.exe (same cwd as the WSL directory).
+
+Options:
+  --no-stdin   Redirect stdin from /dev/null (non-interactive safe).
+
+Examples:
+  tool/agent/gitw status
+  tool/agent/gitw --no-stdin add -A
+  tool/agent/gitw --no-stdin commit -m "chore: tighten color guardrails"
+  tool/agent/gitw --no-stdin push
+EOF
+}
+
+no_stdin=0
+if [[ "${1:-}" == "--no-stdin" ]]; then
+  no_stdin=1
+  shift
+fi
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+winrun="$script_dir/winrun"
+if [[ ! -x "$winrun" ]]; then
+  echo "ERROR: $winrun not found or not executable." >&2
+  exit 1
+fi
+
+if [[ $no_stdin -eq 1 ]]; then
+  exec "$winrun" --no-stdin -- git "$@"
+fi
+exec "$winrun" -- git "$@"
+

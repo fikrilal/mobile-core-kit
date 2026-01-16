@@ -120,6 +120,9 @@ class AppTappable extends StatelessWidget {
       // Splash on TOP of child (Wise-style)
       // Uses Stack with InkResponse overlay
       tappable = Material(
+        // `Colors.transparent` is a deliberate “no paint” sentinel:
+        // `Material` is required for ink effects, but we don't want to paint a
+        // background unless explicitly provided.
         color: backgroundColor ?? Colors.transparent,
         borderRadius: effectiveBorderRadius,
         clipBehavior: Clip.antiAlias,
@@ -150,6 +153,8 @@ class AppTappable extends StatelessWidget {
     } else {
       // Splash BELOW child (traditional InkWell behavior)
       tappable = Material(
+        // See note above: keep this a “no paint” default while still providing
+        // a Material for ink rendering.
         color: backgroundColor ?? Colors.transparent,
         borderRadius: effectiveBorderRadius,
         child: InkWell(

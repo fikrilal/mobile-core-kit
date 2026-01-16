@@ -19,11 +19,10 @@ class AccessibleTextStyles {
   /// avoid double-scaling and to keep nonlinear scaling behavior correct.
   static TextStyle applyAccessibility(
     BuildContext context,
-    TextStyle baseStyle, {
-    double minScaleFactor = 1.0,
-    double maxScaleFactor = 2.5,
-  }) {
-    // Parameters are currently unused; clamping is enforced at `AdaptiveScope`.
+    TextStyle baseStyle,
+  ) {
+    // Accessibility clamping is enforced at `AdaptiveScope` (via `MediaQuery`),
+    // so this method stays intentionally minimal.
     return baseStyle;
   }
 
