@@ -3,6 +3,12 @@
 **Goal:** identify misalignments, risks, and a best-practice target architecture (breaking changes are acceptable)  
 **Last updated:** 2026-01-15
 
+> Status update (2026-01-16): the repo has moved to a **seed-driven, role-based** system
+> (`ColorScheme` + `SemanticColors`) and removed legacy palette token files.
+>
+> Start here for usage rules: `docs/explainers/core/theme/color_usage_guide.md`
+> (seeds live in `lib/core/theme/system/app_color_seeds.dart`).
+
 ---
 
 ## 1) Executive summary
@@ -192,4 +198,3 @@ This is non-negotiable for enterprise quality.
    - `SemanticColors` with correct `on*` pairings
 4) Add contrast verification (tests or `tool/verify_colors.dart`).
 5) Only then consider whether raw palettes are still needed as ThemeExtensions.
-

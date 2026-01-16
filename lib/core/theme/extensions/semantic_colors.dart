@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import '../tokens/green_colors.dart';
-import '../tokens/blue_colors.dart';
-import '../tokens/yellow_colors.dart';
 
 @immutable
 class SemanticColors extends ThemeExtension<SemanticColors> {
@@ -59,56 +56,6 @@ class SemanticColors extends ThemeExtension<SemanticColors> {
       onWarning: warning.onPrimary,
       warningContainer: warning.primaryContainer,
       onWarningContainer: warning.onPrimaryContainer,
-    );
-  }
-
-  /// Build light semantic colors from token palettes.
-  static SemanticColors light({
-    required GreenColors green,
-    required BlueColors blue,
-    required YellowColors yellow,
-  }) {
-    return SemanticColors(
-      // Success (Green)
-      success: green.green500,
-      onSuccess: green.green100,
-      successContainer: green.green200,
-      onSuccessContainer: green.green700,
-      // Info (Blue)
-      info: blue.blue600,
-      onInfo: blue.blue100,
-      infoContainer: blue.blue100,
-      onInfoContainer: blue.blue800,
-      // Warning (Yellow)
-      warning: yellow.yellow400,
-      onWarning: yellow.yellow200,
-      warningContainer: yellow.yellow100,
-      onWarningContainer: yellow.yellow600,
-    );
-  }
-
-  /// Build dark semantic colors from token palettes.
-  static SemanticColors dark({
-    required GreenColors green,
-    required BlueColors blue,
-    required YellowColors yellow,
-  }) {
-    return SemanticColors(
-      // Success (Green)
-      success: green.green300,
-      onSuccess: green.green900,
-      successContainer: green.green700,
-      onSuccessContainer: green.green100,
-      // Info (Blue)
-      info: blue.blue400,
-      onInfo: blue.blue900,
-      infoContainer: blue.blue800,
-      onInfoContainer: blue.blue100,
-      // Warning (Yellow)
-      warning: yellow.yellow300,
-      onWarning: yellow.yellow900,
-      warningContainer: yellow.yellow800,
-      onWarningContainer: yellow.yellow100,
     );
   }
 

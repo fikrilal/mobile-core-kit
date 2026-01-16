@@ -1,5 +1,14 @@
 # Orymu Mobile Theme System Documentation
 
+> Note: Parts of this doc describe the **legacy palette-token system**
+> (e.g. `context.grey.grey300`, `PrimaryColors`, etc).
+>
+> The current system is role-based and seed-driven:
+> - Use `ColorScheme` via `context.cs.*`
+> - Use status roles via `context.semanticColors.*`
+>
+> Start here: `docs/explainers/core/theme/color_usage_guide.md`
+
 A comprehensive guide to using the theme system in the Orymu Mobile Flutter application.
 
 ## Table of Contents
@@ -175,26 +184,14 @@ final onWarningText = semantic.onWarning;
 
 Use these for non‑Material status UI (badges, banners, charts) where `ColorScheme.error` is not enough.
 
-#### 3. Brand token palettes (advanced)
+#### 3. Seeds (advanced)
 
-```dart
-// Access raw brand tokens when you need specific steps
-final primaryTokens = context.primary; // PrimaryColors
-final primary500 = primaryTokens.primary500;
+This theme derives its role colors from a small set of seeds (single hex inputs).
 
-final greyTokens = context.grey;       // GreyColors
-final neutralBackground = greyTokens.grey100;
-```
+- Seeds live in `lib/core/theme/system/app_color_seeds.dart`
+- Roles are generated in `lib/core/theme/system/app_color_scheme_builder.dart`
 
-Token palettes are useful for design‑system primitives, charts, and marketing visuals. For regular app UI, prefer `ColorScheme` and `SemanticColors`.
-
-### Available Color Palettes
-
-- **Primary Colors**: Main brand colors (50-900 scale)
-- **Secondary Colors**: Supporting brand colors
-- **Tertiary Colors**: Accent colors
-- **Grey Colors**: Neutral colors for text and backgrounds
-- **Semantic Colors**: Red (error), Green (success), Yellow (warning), Blue (info)
+For regular app UI, still prefer consuming the roles (`ColorScheme` + `SemanticColors`), not any palette steps.
 
 ## Typography System
 
@@ -327,18 +324,13 @@ AppSpacing.space32  // 32.0
 
 ### Using Theme Extensions
 
-Access custom color tokens through theme extensions:
+Access custom semantic extensions through theme extensions:
 
 ```dart
-// Get custom colors
-final primaryColors = Theme.of(context).extension<PrimaryColors>();
-final buttonColors = Theme.of(context).extension<CompButtonColors>();
+final semantic = Theme.of(context).extension<SemanticColors>()!;
 
-// Use in widgets
-Container(
-  color: primaryColors?.primary100,
-  child: Text('Themed container'),
-)
+final bg = semantic.successContainer;
+final fg = semantic.onSuccessContainer;
 ```
 
 ### Component Sizing
