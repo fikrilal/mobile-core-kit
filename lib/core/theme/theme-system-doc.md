@@ -651,7 +651,7 @@ For questions or issues with the theme system:
 
 1. Check the existing documentation in each module
 2. Review `lib/core/adaptive/README.md` for adaptive layout guidance
-3. Check the `typography-guide.md` for typography-specific guidance
+3. Check `lib/core/theme/typography/typography-guide.md` (and `docs/explainers/core/theme/*`) for typography guidance
 4. Refer to component examples in the codebase
 
 The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the application.
