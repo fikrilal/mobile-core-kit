@@ -41,6 +41,18 @@ These convenience widgets must remain **thin wrappers** over `textTheme`.
 2) Do not pass `textScaler:` to text widgets in feature code.
 3) Do not invent font sizes in feature code (`TextStyle(fontSize: ...)`).
 
+## Guardrails (lint)
+
+This repo enforces typography guardrails via custom lints:
+
+- `hardcoded_font_sizes` — blocks `TextStyle(fontSize: ...)`, `copyWith(fontSize: ...)`, and `apply(fontSizeFactor/fontSizeDelta: ...)` in UI layers.
+- `manual_text_scaling` — blocks `TextScaler.linear(...)` and per-widget `textScaler:` usage in UI layers.
+
+Suppressions are allowed but should be rare and justified:
+
+- File: `// ignore_for_file: <rule_name>`
+- Line: `// ignore: <rule_name>`
+
 ## Phone/tablet guidance
 
 We use a single type ramp for phone + tablet. Tablet readability is handled via:

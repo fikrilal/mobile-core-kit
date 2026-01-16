@@ -12,21 +12,18 @@ class FieldStyles {
   static const Map<FieldSize, FieldSizeConfig> _sizeConfigs = {
     FieldSize.small: FieldSizeConfig(
       height: 36.0,
-      fontSize: 13.0,
       iconSize: 16.0,
       borderRadius: 8.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
     ),
     FieldSize.medium: FieldSizeConfig(
       height: 44.0,
-      fontSize: 15.0,
       iconSize: 20.0,
       borderRadius: 10.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
     ),
     FieldSize.large: FieldSizeConfig(
       height: 52.0,
-      fontSize: 16.0,
       iconSize: 24.0,
       borderRadius: 10.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
@@ -262,7 +259,6 @@ class FieldStyles {
     Color? textColor,
   }) {
     final theme = Theme.of(context);
-    final sizeConfig = getSizeConfig(size);
     final colorScheme = theme.colorScheme;
 
     Color getTextColor() {
@@ -280,8 +276,13 @@ class FieldStyles {
       }
     }
 
-    return TextStyle(
-      fontSize: sizeConfig.fontSize,
+    final base = switch (size) {
+      FieldSize.small => theme.textTheme.bodySmall,
+      FieldSize.medium => theme.textTheme.bodyMedium,
+      FieldSize.large => theme.textTheme.bodyLarge,
+    };
+
+    return (base ?? const TextStyle()).copyWith(
       color: getTextColor(),
       fontWeight: FontWeight.normal,
     );
@@ -290,14 +291,12 @@ class FieldStyles {
 
 class FieldSizeConfig {
   final double height;
-  final double fontSize;
   final double iconSize;
   final double borderRadius;
   final EdgeInsets contentPadding;
 
   const FieldSizeConfig({
     required this.height,
-    required this.fontSize,
     required this.iconSize,
     required this.borderRadius,
     required this.contentPadding,
