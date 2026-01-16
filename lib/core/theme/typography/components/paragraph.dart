@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import '../styles/accessible_text_style.dart';
-import '../styles/responsive_text_styles.dart';
 import '../tokens/type_metrics.dart';
+
+TextStyle _textThemeBodyLarge(BuildContext context) =>
+    Theme.of(context).textTheme.bodyLarge ?? const TextStyle();
+
+TextStyle _textThemeBodyMedium(BuildContext context) =>
+    Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
+
+TextStyle _textThemeBodySmall(BuildContext context) =>
+    Theme.of(context).textTheme.bodySmall ?? const TextStyle();
 
 /// A component optimized for multi-line body text with proper paragraph formatting.
 ///
@@ -135,7 +143,7 @@ class Paragraph extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodyLarge;
+  }) : getStyle = _textThemeBodyLarge;
 
   /// Creates a paragraph with medium (default) body text.
   const Paragraph(
@@ -196,7 +204,7 @@ class Paragraph extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodyMedium;
+  }) : getStyle = _textThemeBodyMedium;
 
   /// Creates a paragraph with small body text.
   const Paragraph.small(
@@ -257,7 +265,7 @@ class Paragraph extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodySmall;
+  }) : getStyle = _textThemeBodySmall;
 
   /// Creates a paragraph with custom text style.
   const Paragraph.custom(

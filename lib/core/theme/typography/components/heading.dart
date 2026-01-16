@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../styles/accessible_text_style.dart';
-import '../styles/responsive_text_styles.dart';
+
+TextStyle _textThemeDisplayLarge(BuildContext context) =>
+    Theme.of(context).textTheme.displayLarge ?? const TextStyle();
+
+TextStyle _textThemeDisplayMedium(BuildContext context) =>
+    Theme.of(context).textTheme.displayMedium ?? const TextStyle();
+
+TextStyle _textThemeDisplaySmall(BuildContext context) =>
+    Theme.of(context).textTheme.displaySmall ?? const TextStyle();
+
+TextStyle _textThemeHeadlineLarge(BuildContext context) =>
+    Theme.of(context).textTheme.headlineLarge ?? const TextStyle();
+
+TextStyle _textThemeHeadlineMedium(BuildContext context) =>
+    Theme.of(context).textTheme.headlineMedium ?? const TextStyle();
+
+TextStyle _textThemeHeadlineSmall(BuildContext context) =>
+    Theme.of(context).textTheme.headlineSmall ?? const TextStyle();
 
 /// A semantic heading component that follows proper heading hierarchy.
 ///
@@ -497,19 +514,19 @@ class Heading extends StatelessWidget {
   TextStyle Function(BuildContext) _getStyleForLevel() {
     switch (level) {
       case 1:
-        return ResponsiveTextStyles.displayLarge;
+        return _textThemeDisplayLarge;
       case 2:
-        return ResponsiveTextStyles.displayMedium;
+        return _textThemeDisplayMedium;
       case 3:
-        return ResponsiveTextStyles.displaySmall;
+        return _textThemeDisplaySmall;
       case 4:
-        return ResponsiveTextStyles.headlineLarge;
+        return _textThemeHeadlineLarge;
       case 5:
-        return ResponsiveTextStyles.headlineMedium;
+        return _textThemeHeadlineMedium;
       case 6:
-        return ResponsiveTextStyles.headlineSmall;
+        return _textThemeHeadlineSmall;
       default:
-        return ResponsiveTextStyles.displayLarge;
+        return _textThemeDisplayLarge;
     }
   }
 }

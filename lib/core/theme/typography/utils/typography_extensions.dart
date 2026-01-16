@@ -1,65 +1,67 @@
 import 'package:flutter/material.dart';
-import '../styles/accessible_text_style.dart';
-import '../styles/responsive_text_styles.dart';
 
 /// Extension methods for BuildContext to easily access typography styles.
 ///
 /// These extensions make it simple to apply typography styles consistently
 /// throughout the app, providing a concise syntax for accessing the
 /// responsive text styles.
+@Deprecated('Use Theme.of(context).textTheme.* as the canonical typography API.')
 extension TypographyExtensions on BuildContext {
   // Display styles
   TextStyle get displayLarge =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.displayLarge);
+      Theme.of(this).textTheme.displayLarge ?? const TextStyle();
 
   TextStyle get displayMedium =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.displayMedium);
+      Theme.of(this).textTheme.displayMedium ?? const TextStyle();
 
   TextStyle get displaySmall =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.displaySmall);
+      Theme.of(this).textTheme.displaySmall ?? const TextStyle();
 
   // Headline styles
   TextStyle get headlineLarge =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.headlineLarge);
+      Theme.of(this).textTheme.headlineLarge ?? const TextStyle();
 
   TextStyle get headlineMedium =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.headlineMedium);
+      Theme.of(this).textTheme.headlineMedium ?? const TextStyle();
 
   TextStyle get headlineSmall =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.headlineSmall);
+      Theme.of(this).textTheme.headlineSmall ?? const TextStyle();
 
   // Title styles
   TextStyle get titleLarge =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.titleLarge);
+      Theme.of(this).textTheme.titleLarge ?? const TextStyle();
 
   TextStyle get titleMedium =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.titleMedium);
+      Theme.of(this).textTheme.titleMedium ?? const TextStyle();
 
   TextStyle get titleSmall =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.titleSmall);
+      Theme.of(this).textTheme.titleSmall ?? const TextStyle();
 
   // Body styles
   TextStyle get bodyLarge =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.bodyLarge);
+      Theme.of(this).textTheme.bodyLarge ?? const TextStyle();
 
   TextStyle get bodyMedium =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.bodyMedium);
+      Theme.of(this).textTheme.bodyMedium ?? const TextStyle();
 
   TextStyle get bodySmall =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.bodySmall);
+      Theme.of(this).textTheme.bodySmall ?? const TextStyle();
 
   // Label styles
   TextStyle get labelLarge =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.labelLarge);
+      Theme.of(this).textTheme.labelLarge ?? const TextStyle();
 
   TextStyle get labelMedium =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.labelMedium);
+      Theme.of(this).textTheme.labelMedium ?? const TextStyle();
 
   TextStyle get labelSmall =>
-      AccessibleTextStyles.enhance(this, ResponsiveTextStyles.labelSmall);
+      Theme.of(this).textTheme.labelSmall ?? const TextStyle();
 }
 
 /// Extension methods for TextStyle to make typography adjustments easier.
+@Deprecated(
+  'Avoid ad-hoc typography mutations in feature code. Prefer adding new roles to the type ramp instead.',
+)
 extension TextStyleExtensions on TextStyle {
   /// Creates a bolder version of this text style
   TextStyle get bolder {

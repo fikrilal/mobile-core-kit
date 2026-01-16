@@ -12,8 +12,8 @@ What’s already strong:
 
 What’s not yet enterprise-grade:
 
-- “Responsive” naming + docs claim breakpoint-driven typography, but the implementation is currently **static** (no breakpoint logic).
-- There are **too many entrypoints** to typography (TextThemeBuilder, ResponsiveTextStyles, BuildContext extensions, AppText/Heading/Paragraph). This increases drift and makes it hard to enforce rules.
+- “Responsive” naming suggests breakpoint-driven typography, but the ramp is currently **static** (no breakpoint logic). That’s fine for now, but the naming should not over-promise.
+- Legacy entrypoints still exist, but the system should continue converging on **one canonical API** (`Theme.of(context).textTheme.*`) with everything else as thin wrappers or deprecated compatibility.
 - The “design system widgets” (`AppText`, `Heading`, `Paragraph`) have an extremely large API surface (nearly mirroring `Text`/`SelectableText`), which is high-maintenance and weakens governance.
 
 If you do one thing next: pick a **single canonical API** and demote everything else to either “thin wrapper” or “advanced escape hatch”.
@@ -35,22 +35,19 @@ If you do one thing next: pick a **single canonical API** and demote everything 
 
 ### Tokens → Components
 
-Independently of `ThemeData.textTheme`, there’s a parallel “component styles” pipeline:
+There are some compatibility helpers around typography, but the intent is a single source of truth:
 
-- `lib/core/theme/typography/styles/responsive_text_styles.dart` → returns tokenized `TextStyle`s (currently ignores `BuildContext`)
+- Canonical: `Theme.of(context).textTheme.*` (from `TextThemeBuilder`)
+- Compatibility:
+  - `lib/core/theme/typography/styles/responsive_text_styles.dart` → deprecated proxy to `Theme.of(context).textTheme.*`
+  - `lib/core/theme/typography/utils/typography_extensions.dart` → deprecated convenience getters that proxy to `textTheme`
 - `lib/core/theme/typography/styles/accessible_text_style.dart` → currently a pass-through (correct, because scaling is handled at root)
-- `lib/core/theme/typography/utils/typography_extensions.dart` → `context.displayLarge`, `context.bodyMedium`, etc. implemented via `ResponsiveTextStyles` + `AccessibleTextStyles`
 - Components:
   - `lib/core/theme/typography/components/text.dart` (`AppText.*`)
   - `lib/core/theme/typography/components/heading.dart` (`Heading.h1` … `Heading.h6`)
   - `lib/core/theme/typography/components/paragraph.dart` (`Paragraph`, with optional width constraining)
 
-This means you currently have (at least) two parallel sources of truth:
-
-1) `Theme.of(context).textTheme.*` (from `TextThemeBuilder`)
-2) `context.*` typography extensions / `AppText.*` (from `ResponsiveTextStyles`)
-
-Even if both are identical today, they will diverge over time unless you intentionally eliminate duplication.
+The remaining work is not “style drift” (the styles already flow through `textTheme`), but governance + maintainability: reduce wrapper surface area and keep one obvious path for developers.
 
 ## What already aligns with enterprise best practice
 
@@ -82,12 +79,12 @@ The `TypeScale` values match a well-known ramp shape (close to Material 3’s ba
 
 ### 1) “Responsive” is currently a misnomer (implementation vs docs)
 
-`ResponsiveTextStyles.*(BuildContext _)` does not use context today, and there is no breakpoint-derived ramp.
+The type ramp is static today (no breakpoint-derived ramp). The deprecated `ResponsiveTextStyles` name is a leftover from the earlier direction.
 
 Consequences:
 
 - Developers read “responsive” and assume typography changes with device class; it does not.
-- `lib/core/theme/typography/typography-guide.md` claims breakpoint behavior that isn’t implemented (risk: false confidence, bad debugging).
+- Docs must not claim breakpoint behavior that isn’t implemented.
 
 Enterprise standard here is: **either implement the behavior, or rename and document the truth**.
 
@@ -228,4 +225,3 @@ If you keep the current implementation for now, the least confusing ruleset is:
   - `TextStyle(fontSize: ...)` in UI layers
   - `TextScaler.linear(...)` usage in widgets
   - large-scale use of `TextStyleExtensions.larger/smaller`
-

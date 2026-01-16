@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 /// Canonical typography in this repo is `Theme.of(context).textTheme.*`.
 /// This class now simply proxies to the theme so there is a single source of
 /// truth for the type ramp.
+@Deprecated(
+  'Use Theme.of(context).textTheme.* as the canonical typography API. This is a legacy compatibility wrapper.',
+)
 class ResponsiveTextStyles {
   // Private constructor to prevent instantiation
   ResponsiveTextStyles._();

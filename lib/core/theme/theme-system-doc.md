@@ -196,7 +196,8 @@ For app UI, prefer consuming the roles (`ColorScheme` + `SemanticColors`).
 
 ### Typography Components
 
-Use semantic typography components instead of raw Text widgets:
+Prefer semantic typography components for common cases. For advanced cases,
+use Flutter `Text`/`SelectableText` with `Theme.of(context).textTheme.*`.
 
 #### Headings
 
@@ -223,11 +224,11 @@ Heading.h1(
 ```dart
 // Optimized for reading
 Paragraph.large('Large paragraph text for emphasis')
-Paragraph.medium('Standard paragraph text')
+Paragraph('Standard paragraph text')
 Paragraph.small('Small paragraph text for captions')
 
 // With paragraph spacing
-Paragraph.medium(
+Paragraph(
   'Text with spacing',
   paragraphSpacing: 16.0,
 )
@@ -246,7 +247,7 @@ AppText.labelMedium('Label text')
 // Custom text
 AppText.custom(
   'Custom styled text',
-  getStyle: (context) => ResponsiveTextStyles.bodyMedium(context),
+  getStyle: (context) => Theme.of(context).textTheme.bodyMedium ?? const TextStyle(),
   color: Theme.of(context).colorScheme.error,
   selectable: true,
 )
@@ -468,7 +469,7 @@ class CustomTheme {
 
 ```dart
 Heading.h1('Page Title')
-Paragraph.medium('Body content')
+Paragraph('Body content')
 ```
 
 ❌ **Avoid**: Raw Text widgets with manual styling

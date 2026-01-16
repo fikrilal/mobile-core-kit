@@ -2,7 +2,51 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import '../styles/accessible_text_style.dart';
-import '../styles/responsive_text_styles.dart';
+
+TextStyle _textThemeDisplayLarge(BuildContext context) =>
+    Theme.of(context).textTheme.displayLarge ?? const TextStyle();
+
+TextStyle _textThemeDisplayMedium(BuildContext context) =>
+    Theme.of(context).textTheme.displayMedium ?? const TextStyle();
+
+TextStyle _textThemeDisplaySmall(BuildContext context) =>
+    Theme.of(context).textTheme.displaySmall ?? const TextStyle();
+
+TextStyle _textThemeHeadlineLarge(BuildContext context) =>
+    Theme.of(context).textTheme.headlineLarge ?? const TextStyle();
+
+TextStyle _textThemeHeadlineMedium(BuildContext context) =>
+    Theme.of(context).textTheme.headlineMedium ?? const TextStyle();
+
+TextStyle _textThemeHeadlineSmall(BuildContext context) =>
+    Theme.of(context).textTheme.headlineSmall ?? const TextStyle();
+
+TextStyle _textThemeTitleLarge(BuildContext context) =>
+    Theme.of(context).textTheme.titleLarge ?? const TextStyle();
+
+TextStyle _textThemeTitleMedium(BuildContext context) =>
+    Theme.of(context).textTheme.titleMedium ?? const TextStyle();
+
+TextStyle _textThemeTitleSmall(BuildContext context) =>
+    Theme.of(context).textTheme.titleSmall ?? const TextStyle();
+
+TextStyle _textThemeBodyLarge(BuildContext context) =>
+    Theme.of(context).textTheme.bodyLarge ?? const TextStyle();
+
+TextStyle _textThemeBodyMedium(BuildContext context) =>
+    Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
+
+TextStyle _textThemeBodySmall(BuildContext context) =>
+    Theme.of(context).textTheme.bodySmall ?? const TextStyle();
+
+TextStyle _textThemeLabelLarge(BuildContext context) =>
+    Theme.of(context).textTheme.labelLarge ?? const TextStyle();
+
+TextStyle _textThemeLabelMedium(BuildContext context) =>
+    Theme.of(context).textTheme.labelMedium ?? const TextStyle();
+
+TextStyle _textThemeLabelSmall(BuildContext context) =>
+    Theme.of(context).textTheme.labelSmall ?? const TextStyle();
 
 /// A reusable text component that provides responsive and accessible typography.
 ///
@@ -131,7 +175,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.displayLarge;
+  }) : getStyle = _textThemeDisplayLarge;
 
   /// Constructor for display medium text
   const AppText.displayMedium(
@@ -190,7 +234,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.displayMedium;
+  }) : getStyle = _textThemeDisplayMedium;
 
   /// Constructor for display small text
   const AppText.displaySmall(
@@ -249,7 +293,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.displaySmall;
+  }) : getStyle = _textThemeDisplaySmall;
 
   /// Constructor for headline large text
   const AppText.headlineLarge(
@@ -308,7 +352,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.headlineLarge;
+  }) : getStyle = _textThemeHeadlineLarge;
 
   /// Constructor for headline medium text
   const AppText.headlineMedium(
@@ -367,7 +411,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.headlineMedium;
+  }) : getStyle = _textThemeHeadlineMedium;
 
   /// Constructor for headline small text
   const AppText.headlineSmall(
@@ -426,7 +470,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.headlineSmall;
+  }) : getStyle = _textThemeHeadlineSmall;
 
   /// Constructor for title large text
   const AppText.titleLarge(
@@ -485,7 +529,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.titleLarge;
+  }) : getStyle = _textThemeTitleLarge;
 
   /// Constructor for title medium text
   const AppText.titleMedium(
@@ -544,7 +588,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.titleMedium;
+  }) : getStyle = _textThemeTitleMedium;
 
   /// Constructor for title small text
   const AppText.titleSmall(
@@ -603,7 +647,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.titleSmall;
+  }) : getStyle = _textThemeTitleSmall;
 
   /// Constructor for body large text
   const AppText.bodyLarge(
@@ -662,7 +706,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodyLarge;
+  }) : getStyle = _textThemeBodyLarge;
 
   /// Constructor for body medium text
   const AppText.bodyMedium(
@@ -721,7 +765,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodyMedium;
+  }) : getStyle = _textThemeBodyMedium;
 
   /// Constructor for body small text
   const AppText.bodySmall(
@@ -780,7 +824,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.bodySmall;
+  }) : getStyle = _textThemeBodySmall;
 
   /// Constructor for label large text
   const AppText.labelLarge(
@@ -839,7 +883,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.labelLarge;
+  }) : getStyle = _textThemeLabelLarge;
 
   /// Constructor for label medium text
   const AppText.labelMedium(
@@ -898,7 +942,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.labelMedium;
+  }) : getStyle = _textThemeLabelMedium;
 
   /// Constructor for label small text
   const AppText.labelSmall(
@@ -957,7 +1001,7 @@ class AppText extends StatelessWidget {
     this.cursorColor,
     this.cursorWidth,
     this.cursorRadius,
-  }) : getStyle = ResponsiveTextStyles.labelSmall;
+  }) : getStyle = _textThemeLabelSmall;
 
   /// Custom constructor for any text style
   const AppText.custom(
