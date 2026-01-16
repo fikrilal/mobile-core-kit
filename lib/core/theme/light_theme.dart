@@ -40,7 +40,7 @@ final ThemeData lightTheme = (() {
       labelStyle: TextStyle(color: scheme.onSurfaceVariant),
       floatingLabelStyle: TextStyle(color: scheme.primary),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: scheme.outlineVariant),
+        borderSide: BorderSide(color: scheme.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: scheme.primary, width: 1.5),
@@ -67,7 +67,7 @@ final ThemeData lightTheme = (() {
     chipTheme: ChipThemeData(
       backgroundColor: scheme.surface,
       selectedColor: scheme.primaryContainer,
-      side: BorderSide(color: scheme.outlineVariant),
+      side: BorderSide(color: scheme.outline),
       labelStyle: TextStyle(color: scheme.onSurfaceVariant),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(

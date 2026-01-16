@@ -80,7 +80,7 @@ class FieldStyles {
             alpha: StateOpacities.disabledContainer,
           );
         case FieldState.enabled:
-          return colorScheme.outlineVariant;
+          return colorScheme.outline;
       }
     }
 
