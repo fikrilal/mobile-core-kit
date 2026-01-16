@@ -44,6 +44,11 @@ This is a common source of accessibility regressions. Use the right one:
 
 - `context.hairline` is for **very subtle** dividers (purely decorative).
 
+### 2.1) Shadows and scrims
+
+- Shadows: prefer `context.cs.shadow` (optionally with alpha) over hardcoded blacks.
+- Scrims / modal barriers: prefer `context.cs.scrim` (optionally with alpha) over hardcoded overlays.
+
 ### 3) Contrast policy (enforced)
 
 Automated tests enforce:
@@ -141,7 +146,7 @@ return DecoratedBox(
 
 ### 1) Lint: `hardcoded_ui_colors` (IDE + CI)
 
-We enforce “no hardcoded UI colors” in app/feature layers:
+We enforce “no hardcoded UI colors” in shared widgets + feature layers:
 
 - Disallowed: `Color(...)`, `Color.fromARGB(...)`, `Colors.*`, `CupertinoColors.*`
 - Allowed (sentinel): `Colors.transparent`

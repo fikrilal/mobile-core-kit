@@ -119,7 +119,7 @@ class ButtonStyles {
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
       elevation: isDisabled ? 0 : 1,
-      shadowColor: Colors.black12,
+      shadowColor: scheme.shadow,
     );
   }
 
@@ -151,7 +151,7 @@ class ButtonStyles {
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
       elevation: isDisabled ? 0 : 1,
-      shadowColor: Colors.black12,
+      shadowColor: scheme.shadow,
     );
   }
 
@@ -182,7 +182,7 @@ class ButtonStyles {
       side: BorderSide(
         color: isDisabled
             ? disabledBorder
-            : borderColor ?? scheme.surfaceContainerHigh,
+            : borderColor ?? scheme.outline,
         width: 1,
       ),
     );
@@ -216,7 +216,7 @@ class ButtonStyles {
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
       elevation: isDisabled ? 0 : 1,
-      shadowColor: Colors.black12,
+      shadowColor: scheme.shadow,
     );
   }
 }

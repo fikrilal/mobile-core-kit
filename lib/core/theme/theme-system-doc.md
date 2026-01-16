@@ -247,7 +247,7 @@ AppText.labelMedium('Label text')
 AppText.custom(
   'Custom styled text',
   getStyle: (context) => ResponsiveTextStyles.bodyMedium(context),
-  color: Colors.red,
+  color: Theme.of(context).colorScheme.error,
   selectable: true,
 )
 ```

@@ -18,30 +18,23 @@ class TextThemeBuilder {
 
   // Deprecated context-based builders removed to keep theme construction context-free.
 
-  /// Context-free light TextTheme using static token sizes.
+  /// Context-free TextTheme using static token sizes.
   ///
-  /// This variant avoids accessing MediaQuery or breakpoints at theme creation
-  /// time to keep ThemeData construction deterministic and safe.
-  static TextTheme buildLightTextThemeStatic() {
-    const baseTextColor = Color(0xFF1D1D1D); // Almost black
-    return _buildStaticTextTheme(baseTextColor);
-  }
-
-  /// Context-free dark TextTheme using static token sizes.
-  static TextTheme buildDarkTextThemeStatic() {
-    const baseTextColor = Color(0xFFF5F5F5); // Almost white
-    return _buildStaticTextTheme(baseTextColor);
+  /// Uses the provided [scheme] so text colors stay aligned with the current
+  /// role-based theme (`scheme.onSurface`) without any hardcoded values.
+  static TextTheme buildTextThemeStatic(ColorScheme scheme) {
+    return _buildStaticTextTheme(scheme.onSurface);
   }
 
   // Backward-compatible wrappers (deprecated) to keep tests/builds green
-  @Deprecated('Use buildLightTextThemeStatic() instead; no BuildContext needed')
+  @Deprecated('Use buildTextThemeStatic(Theme.of(context).colorScheme) instead')
   static TextTheme buildLightTextTheme(BuildContext context) {
-    return buildLightTextThemeStatic();
+    return buildTextThemeStatic(Theme.of(context).colorScheme);
   }
 
-  @Deprecated('Use buildDarkTextThemeStatic() instead; no BuildContext needed')
+  @Deprecated('Use buildTextThemeStatic(Theme.of(context).colorScheme) instead')
   static TextTheme buildDarkTextTheme(BuildContext context) {
-    return buildDarkTextThemeStatic();
+    return buildTextThemeStatic(Theme.of(context).colorScheme);
   }
 
   /// Internal method to build a responsive TextTheme with the specified text color

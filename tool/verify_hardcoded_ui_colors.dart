@@ -13,7 +13,7 @@ Future<int> main(List<String> argv) async {
       [
         'verify_hardcoded_ui_colors.dart',
         '',
-        'Fails if hardcoded UI colors are used in app/feature layers.',
+        'Fails if hardcoded UI colors are used in UI code.',
         '',
         'Rationale:',
         '- UI must consume semantic roles (ColorScheme + SemanticColors).',
@@ -39,9 +39,9 @@ Future<int> main(List<String> argv) async {
     return 2;
   }
 
-  // Only enforce in app/feature layers. Core may contain implementation details
-  // (e.g. shadows) that will be tightened in a later sweep.
+  // Enforce in UI code (shared widgets + feature layers).
   final includePrefixes = <String>[
+    'lib/core/widgets/',
     'lib/features/',
     'lib/navigation/',
     'lib/presentation/',
@@ -225,4 +225,3 @@ class _Violation {
   final String patternName;
   final String preview;
 }
-

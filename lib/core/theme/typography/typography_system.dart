@@ -25,9 +25,9 @@ class TypographySystem {
   /// Uses static token sizes so ThemeData creation remains deterministic and
   /// safe outside of any MediaQuery or breakpoint context.
   static ThemeData applyTypography(ThemeData baseTheme, [BuildContext? _]) {
-    final textTheme = baseTheme.brightness == Brightness.light
-        ? TextThemeBuilder.buildLightTextThemeStatic()
-        : TextThemeBuilder.buildDarkTextThemeStatic();
+    final textTheme = TextThemeBuilder.buildTextThemeStatic(
+      baseTheme.colorScheme,
+    );
 
     return baseTheme.copyWith(
       textTheme: textTheme,

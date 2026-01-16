@@ -50,19 +50,13 @@ class AccessibleTextStyles {
     final needsHighContrast = MediaQuery.highContrastOf(context);
 
     if (needsHighContrast) {
-      // Calculate if the current contrast is sufficient
-      // This is a simplified version - in a real app, you would
-      // use a proper contrast calculation algorithm
-      // final foreground = style.color ?? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-
-      // For simplicity, we're just ensuring black or white text
-      // based on background brightness
+      final scheme = Theme.of(context).colorScheme;
       final backgroundBrightness = ThemeData.estimateBrightnessForColor(
         backgroundColor,
       );
       final highContrastColor = backgroundBrightness == Brightness.light
-          ? Colors.black
-          : Colors.white;
+          ? scheme.onSurface
+          : scheme.onInverseSurface;
 
       // Return the style with improved contrast
       return style.copyWith(color: highContrastColor);

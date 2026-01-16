@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../theme/extensions/theme_extensions_utils.dart';
 import '../snackbar/snackbar.dart';
 import '../common/app_haptic_feedback.dart';
 import 'app_textfield.dart';
@@ -139,8 +140,8 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
                 'Validation: $_validationMessage',
                 style: TextStyle(
                   color: _validationMessage.contains('✅')
-                      ? Colors.green
-                      : Colors.red,
+                      ? context.semanticColors.success
+                      : Theme.of(context).colorScheme.error,
                 ),
               ),
             ],
@@ -499,6 +500,7 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
   }
 
   Widget _buildAdvancedFeaturesSection() {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -510,10 +512,10 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
         AppTextField(
           labelText: 'Custom Styling',
           hintText: 'Custom colors and styling',
-          fillColor: Colors.blue.shade50,
-          borderColor: Colors.blue,
-          textColor: Colors.blue.shade800,
-          cursorColor: Colors.blue,
+          fillColor: scheme.primaryContainer.withValues(alpha: 0.2),
+          borderColor: scheme.primary,
+          textColor: scheme.onPrimaryContainer,
+          cursorColor: scheme.primary,
         ),
         const SizedBox(height: 16),
         // Focus animations are handled internally by the design system.

@@ -20,6 +20,7 @@ custom_lint:
       config: tool/lints/architecture_lints.yaml
     - hardcoded_ui_colors:
       include:
+        - lib/core/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
