@@ -104,7 +104,7 @@ class AppConfirmationDialog extends StatelessWidget {
               AppText.titleMedium(
                 title,
                 color: scheme.onSurface,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                fontWeight: FontWeight.w700,
                 textAlign: centerContent ? TextAlign.center : TextAlign.left,
               ),
               const SizedBox(height: AppSpacing.space8),
@@ -222,7 +222,7 @@ class AppConfirmationDialog extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                fontWeight: FontWeight.w700,
                 color: scheme.onSurface,
               ),
               const SizedBox(height: AppSpacing.space8),

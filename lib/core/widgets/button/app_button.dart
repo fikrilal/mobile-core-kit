@@ -388,21 +388,21 @@ class AppButton extends StatelessWidget {
           text,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
       case ButtonSize.medium:
         return AppText.labelMedium(
           text,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
       case ButtonSize.large:
         return AppText.labelLarge(
           text,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
     }
   }
@@ -415,21 +415,21 @@ class AppButton extends StatelessWidget {
           customText,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
       case ButtonSize.medium:
         return AppText.labelMedium(
           customText,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
       case ButtonSize.large:
         return AppText.labelLarge(
           customText,
           color: textColor,
           textAlign: TextAlign.center,
-          style: fontWeight != null ? TextStyle(fontWeight: fontWeight) : null,
+          fontWeight: fontWeight,
         );
     }
   }

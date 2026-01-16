@@ -49,7 +49,7 @@ SnackBar _buildSnackBar(
     content: AppText.bodyMedium(
       message,
       color: colors.foreground,
-      style: const TextStyle(fontWeight: FontWeight.w600),
+      fontWeight: FontWeight.w600,
     ),
     action: (actionLabel != null && onAction != null)
         ? SnackBarAction(

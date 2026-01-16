@@ -228,9 +228,9 @@ Paragraph('Standard paragraph text')
 Paragraph.small('Small paragraph text for captions')
 
 // With paragraph spacing
-Paragraph(
-  'Text with spacing',
-  paragraphSpacing: 16.0,
+Padding(
+  padding: const EdgeInsets.only(bottom: 16.0),
+  child: Paragraph('Text with spacing'),
 )
 ```
 
@@ -244,12 +244,13 @@ AppText.titleLarge('Title text')
 AppText.bodyLarge('Body text')
 AppText.labelMedium('Label text')
 
-// Custom text
-AppText.custom(
+// Custom text (advanced): use Flutter Text directly with `textTheme`
+final t = Theme.of(context).textTheme;
+final scheme = Theme.of(context).colorScheme;
+
+SelectableText(
   'Custom styled text',
-  getStyle: (context) => Theme.of(context).textTheme.bodyMedium ?? const TextStyle(),
-  color: Theme.of(context).colorScheme.error,
-  selectable: true,
+  style: t.bodyMedium?.copyWith(color: scheme.error),
 )
 ```
 

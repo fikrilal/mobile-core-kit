@@ -176,7 +176,7 @@ class _TopSnackBarCard extends StatelessWidget {
               child: AppText.bodyMedium(
                 message,
                 color: colors.foreground,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                fontWeight: FontWeight.w600,
               ),
             ),
             if (actionLabel != null && onAction != null)
@@ -192,7 +192,7 @@ class _TopSnackBarCard extends StatelessWidget {
                 child: AppText.labelMedium(
                   actionLabel!,
                   color: colors.foreground,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
           ],

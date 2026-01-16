@@ -152,7 +152,7 @@ class _LoadingCard extends StatelessWidget {
                   message!,
                   color: scheme.onSurface,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
                 ),
               ],
             ],

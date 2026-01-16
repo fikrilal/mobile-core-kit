@@ -223,7 +223,7 @@ class _RoleSwatch extends StatelessWidget {
                 AppText.labelMedium(
                   name,
                   color: fg,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  fontWeight: FontWeight.w700,
                 ),
                 const SizedBox(height: 6),
                 AppText.bodySmall(

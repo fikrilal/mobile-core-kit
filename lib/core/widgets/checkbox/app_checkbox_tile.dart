@@ -91,7 +91,7 @@ class AppCheckboxTile extends StatelessWidget {
     final labelWidget = AppText.bodyMedium(
       label,
       color: labelColor,
-      style: const TextStyle(fontWeight: FontWeight.w600),
+      fontWeight: FontWeight.w600,
     );
 
     final helperWidget = helperText == null
