@@ -16,24 +16,39 @@ At runtime, responsive/adaptive UI comes from only two sources:
 `AdaptiveScope` turns those raw inputs into a **stable contract** (`AdaptiveSpec`) and publishes it.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart LR
   subgraph Inputs["Runtime inputs"]
-    LB["LayoutBuilder\nBoxConstraints"]
-    MQ["MediaQueryData\n(padding, viewInsets, textScaler,\nboldText, a11y flags,\ndisplayFeatures, ...)"]
-    Plat["TargetPlatform\n(defaultTargetPlatform)"]
+    LB["`LayoutBuilder
+BoxConstraints`"]
+    MQ["`MediaQueryData
+(padding, viewInsets, textScaler,
+boldText, a11y flags,
+displayFeatures, ...)`"]
+    Plat["`TargetPlatform
+(defaultTargetPlatform)`"]
   end
 
   subgraph Scope["AdaptiveScope (root)"]
-    Clamp["Apply TextScalePolicy\nMediaQuery.copyWith(textScaler: ...)"]
+    Clamp["`Apply TextScalePolicy
+MediaQuery.copyWith(textScaler: ...)`"]
     Build["AdaptiveSpecBuilder.build(...)"]
-    Model["AdaptiveModel\nInheritedModel<AdaptiveAspect>\n(AdaptiveSpec)"]
-    Policies["AdaptivePolicies\nInheritedWidget\n(ModalPolicy)"]
-    Mouse["MouseConnectionListener\n(rebuild on mouse connect/disconnect)"]
+    Model["`AdaptiveModel
+InheritedModel<AdaptiveAspect>
+(AdaptiveSpec)`"]
+    Policies["`AdaptivePolicies
+InheritedWidget
+(ModalPolicy)`"]
+    Mouse["`MouseConnectionListener
+(rebuild on mouse connect/disconnect)`"]
   end
 
   subgraph Consumers["Consumers"]
-    Ctx["BuildContext accessors\ncontext.adaptiveLayout / ..."]
-    Widgets["Screens + core widgets\n(AppPageContainer, AdaptiveScaffold,\nAdaptiveSplitView, modals, ...)"]
+    Ctx["`BuildContext accessors
+context.adaptiveLayout / ...`"]
+    Widgets["`Screens + core widgets
+(AppPageContainer, AdaptiveScaffold,
+AdaptiveSplitView, modals, ...)`"]
   end
 
   MQ --> Clamp
@@ -44,8 +59,12 @@ flowchart LR
   Policies --> Widgets
 
   subgraph Local["Local scopes (nested constraints)"]
-    Region["AdaptiveRegion\nre-derive LayoutSpec\n(nav=none)"]
-    Overrides["AdaptiveOverrides\nre-derive LayoutSpec\n(override navigation policy)"]
+    Region["`AdaptiveRegion
+re-derive LayoutSpec
+(nav=none)`"]
+    Overrides["`AdaptiveOverrides
+re-derive LayoutSpec
+(override navigation policy)`"]
   end
 
   Model --> Region --> Widgets
@@ -179,4 +198,3 @@ When you’re debugging, inspect these layers in order:
 5) Local scopes: is there an `AdaptiveRegion` / `AdaptiveOverrides` above you?
 
 If you need stronger guarantees over time, extend the golden matrix under `test/core/adaptive/goldens/`.
-

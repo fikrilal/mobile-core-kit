@@ -1,200 +1,158 @@
-# Color System Review (Current State → Industry Standard)
+# Color System: Rationale, Guardrails, and Extension Guide
 **Scope:** `lib/core/theme/**`  
-**Goal:** identify misalignments, risks, and a best-practice target architecture (breaking changes are acceptable)  
-**Last updated:** 2026-01-15
+**Goal:** keep colors accessible, consistent, and governable at enterprise scale  
+**Last updated:** 2026-01-16
 
-> Status update (2026-01-16): the repo has moved to a **seed-driven, role-based** system
-> (`ColorScheme` + `SemanticColors`) and removed legacy palette token files.
->
-> Start here for usage rules: `docs/explainers/core/theme/color_usage_guide.md`
-> (seeds live in `lib/core/theme/system/app_color_seeds.dart`).
+This repo uses a **seed-driven, role-based** system:
 
----
+- `ColorScheme` (Material roles) is the canonical UI API.
+- `SemanticColors` (success/info/warning) is the canonical status API.
+- WCAG contrast is **gated by tests**.
 
-## 1) Executive summary
+Start here for day-to-day usage:
+- `docs/explainers/core/theme/color_usage_guide.md`
 
-The current color system is structurally close to the right shape (token palettes + `ColorScheme` + `ThemeExtension`), but it is **not enterprise-grade yet** because:
-
-1) **Accessibility is not enforced**: key `on*` pairs fail WCAG contrast (including semantic status colors).
-2) **Dark mode mapping is incorrect for neutrals**: `ColorScheme.dark.surface` is currently white (inverted), which is a major conceptual/visual bug.
-3) **Token semantics are inconsistent**: the dark palettes are an *exact reversal* of the light palettes, which makes numeric steps (`100…1000`) mean opposite things across themes and invites mistakes.
-4) **`ColorScheme` is incomplete**: many roles (tertiary roles, error roles, background roles, etc.) are left to defaults, which guarantees drift and inconsistency at scale.
-
-If we want “top org / enterprise” quality, the system needs to be rebuilt around **semantic roles** with **contrast gating** and a **deterministic derivation** strategy (Material 3 tonal mapping or equivalent).
+See pipeline details:
+- `docs/explainers/core/theme/color_system_under_the_hood.md`
 
 ---
 
-## 2) Current implementation inventory
+## 1) What we optimize for (enterprise defaults)
 
-### 2.1 Base token palettes (ThemeExtensions)
+1) **Accessibility**: predictable, test-enforced contrast for text and core controls.
+2) **Consistency**: the same roles mean the same thing across the app (no per-feature color forks).
+3) **Scalability**: adding new surfaces/components doesn’t require inventing new colors.
+4) **Platform parity**: roles map cleanly to Material widgets while remaining brandable on iOS too.
 
-Located under `lib/core/theme/tokens/*_colors.dart`:
-
-- `PrimaryColors`, `SecondaryColors`, `TertiaryColors`
-- `GreyColors`
-- `GreenColors`, `RedColors`, `YellowColors`, `BlueColors`
-
-Each palette defines steps `100…1000`.
-
-**Important observation:** every `*.dark` palette is an exact reversal of `*.light`.
-
-Example pattern (true for all palettes):
-- `XColors.dark.x100 == XColors.light.x1000`
-- `XColors.dark.x1000 == XColors.light.x100`
-
-This is the opposite of how most mature design systems model palettes (see §4).
-
-### 2.2 Theme roles
-
-- `ThemeData` is built in `lib/core/theme/light_theme.dart` and `lib/core/theme/dark_theme.dart`.
-- Roles are partially configured using `ColorScheme.light(...)` / `ColorScheme.dark(...)`.
-- Additional non-M3 semantic roles are exposed via `SemanticColors` (`ThemeExtension`) in `lib/core/theme/extensions/semantic_colors.dart`.
-- Accessors are provided by `ThemeColorAccess` and `ThemeRoleColors` in `lib/core/theme/extensions/theme_extensions_utils.dart`.
-
-### 2.3 Documentation mismatch
-
-`lib/core/theme/theme-system-doc.md` describes a `50–900` scale, but code uses `100–1000`. This suggests the docs and implementation have already diverged.
+This is intentionally not “a palette library”. It’s a **contract**.
 
 ---
 
-## 3) What’s wrong (with evidence)
+## 2) The contract (what UI code is allowed to use)
 
-### 3.1 Dark mode neutrals are inverted (major bug)
+UI code consumes **roles**, not palette steps:
 
-In `lib/core/theme/dark_theme.dart`, the scheme is currently:
-- `surface: GreyColors.dark.grey1000` (this is **white**)
-- `onSurface: GreyColors.dark.grey100` (this is **near-black**)
+- `Theme.of(context).colorScheme` / `context.cs.*`
+- `context.semanticColors.*`
+- Convenience aliases in `ThemeRoleColors` (e.g. `context.textPrimary`, `context.bgSurface`, `context.border`)
 
-This produces light surfaces in dark mode and flips expected semantics. It also makes `context.bgSurface` and `CardTheme.color` inconsistent with the app’s dark scaffold background.
+Hard rules:
 
-This is not an “opinion” issue; it’s a mapping error.
-
-### 3.2 Key `on*` pairs fail WCAG contrast
-
-Contrast ratios (computed from current hex values; WCAG AA for normal text is **≥ 4.5:1**):
-
-**Light theme**
-
-| Pair | Value | Result |
-|---|---:|---|
-| `primary` / `onPrimary` | `#4F7CA8` / `#FFFFFF` | **4.39:1** (fails for normal text) |
-| `secondary` / `onSecondary` | `#718682` / `#FFFFFF` | **3.86:1** (fails) |
-
-**Semantic status colors**
-
-| Pair | Value | Result |
-|---|---:|---|
-| `success` / `onSuccess` | `#02C82B` / `#EFFCF0` | **2.13:1** (fails badly) |
-| `info` / `onInfo` | `#4FA4FF` / `#F3F9FF` | **2.45:1** (fails badly) |
-| `warning` / `onWarning` | `#FFCD00` / `#FEEDB1` | **1.28:1** (fails badly) |
-
-Even in dark mode, the current semantic pairs are still often below 4.5:1.
-
-**Why this matters:** at enterprise scale these failures show up as accessibility defects, unreadable badges/toasts, and inconsistent component behavior across surfaces.
-
-### 3.3 Numeric steps are not stable semantics
-
-Because `.dark` is an exact reversal of `.light`, a numeric token changes meaning across themes:
-
-- `context.grey.grey200` is a very light neutral in light mode, but a very dark neutral in dark mode.
-
-This can be workable only if numeric steps are treated as **relative** (“step 200 of the current theme”), but then:
-- the naming should not look like a universal palette, and
-- mapping mistakes become extremely likely (as in §3.1).
-
-Industry practice is to keep palettes stable and derive role mapping per theme (see §4).
-
-### 3.4 The neutral ramps are not fit for Material 3 surfaces
-
-Material 3 expects subtle elevation deltas between:
-- `surface`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh`, `surfaceContainerHighest`
-
-In `light_theme.dart`, `surfaceContainerHighest` is currently `grey300 = #92979C` which is far too dark to be a surface container on a light surface. This alone guarantees “muddy” elevation and poor text hierarchy unless every component hardcodes overrides.
-
-### 3.5 `ColorScheme` is only partially defined
-
-The themes set a subset of roles (`primary`, `secondary`, some `surface*`, `outline*`, etc.). Many roles are left to defaults:
-- `tertiary`, `onTertiary`, `tertiaryContainer`, `onTertiaryContainer`
-- `error`, `onError`, `errorContainer`, `onErrorContainer`
-- background roles, surfaceTint, etc.
-
-This is a drift vector: Material components will use defaults and your brand tokens will be bypassed unpredictably.
+- No hardcoded hex values in UI (`Color(0xFF...)`, `Colors.*`) except debug tooling.
+- No palette-step usage in UI (e.g. “neutral/200”, “green/500”). If design hands off ramps, translate intent to roles.
 
 ---
 
-## 4) What “industry standard” looks like (practical)
+## 3) Seeds: the only “inputs” we keep in code
 
-Top orgs generally converge on this pattern:
+Seeds are the source of truth for color derivation:
 
-1) **Role tokens are the contract**  
-   - `ColorScheme` (Material roles) + a small extension for extra semantic roles (success/warning/info) if needed.
-2) **Palette tokens are a primitive, not the API**  
-   - Palettes exist for charts/illustrations/marketing, but app UI consumes roles.
-3) **Tonal mapping across light/dark**  
-   - Light and dark themes pick different tones from the same palette rather than reversing the palette.
-   - Material 3’s tonal approach is a proven default.
-4) **Contrast is gated**  
-   - `onPrimary` etc are selected to meet contrast targets.
-   - This is verified with automated checks (tests or a verify tool).
+- Brand: `brandPrimarySeed` (required)
+- Neutral: `neutralSeed` (recommended for neutral surfaces)
+- Status: `successSeed`, `infoSeed`, `warningSeed`
 
-This is the difference between “looks okay locally” and “stays correct for years.”
+Seeds live in:
+- `lib/core/theme/system/app_color_seeds.dart`
 
----
+Design guidance:
 
-## 5) Recommended target architecture (breaking-change friendly)
-
-### 5.1 Canonical API
-
-- Treat `Theme.of(context).colorScheme` as the canonical UI API.
-- Keep `SemanticColors` but rebuild it using the same principles as `ColorScheme`:
-  - `success`, `onSuccess`, `successContainer`, `onSuccessContainer`
-  - `warning`, `onWarning`, `warningContainer`, `onWarningContainer`
-  - `info`, `onInfo`, `infoContainer`, `onInfoContainer`
-
-Feature code should not use `context.green.green500` etc for UI.
-
-### 5.2 Palette model
-
-Pick one:
-
-**Option A (fastest, high quality, no external deps):** `ColorScheme.fromSeed`
-
-- Define one or more brand seed colors.
-- Generate full `ColorScheme` for light/dark via Flutter’s built-in Material 3 algorithm:
-  - `ColorScheme.fromSeed(seedColor: brandPrimary, brightness: Brightness.light)`
-  - `ColorScheme.fromSeed(seedColor: brandPrimary, brightness: Brightness.dark)`
-
-For semantic success/warning/info:
-- generate mini-schemes from their seed colors and map `primary` → `success`, etc.
-
-Pros: proven, accessible defaults, complete schemes, minimal custom code.  
-Cons: derived secondary/tertiary may not match strict brand requirements without overrides.
-
-**Option B (max control): internal tonal palettes + tone mapping**
-
-- Implement an in-house `TonalPalette` representation (tone 0–100).
-- Define tone mapping tables for light/dark roles (Material-like).
-- Derive `ColorScheme` + `SemanticColors` from those tones.
-
-Pros: maximum brand control, perfect determinism.  
-Cons: requires implementing/owning a perceptual color model (HCT/OKLCH-like) and validation tooling.
-
-### 5.3 Enforce contrast
-
-Add an automated check that fails CI if:
-- any `on*` role falls below 4.5:1 against its background for normal text
-- semantic colors fail the same constraints (at least for default text sizes)
-
-This is non-negotiable for enterprise quality.
+- Prefer a **neutral** seed that yields surfaces without tint.
+- Prefer a **brand** seed that can generate accents with stable `onPrimary` contrast.
+- Status seeds should represent intent, not a final “badge background” color (the roles handle that).
 
 ---
 
-## 6) Suggested next steps (if you want a hard reset)
+## 4) Derivation strategy (why this is the best default)
 
-1) Fix the dark neutral mapping immediately (stop shipping inverted dark surfaces).
-2) Decide target architecture: Option A (fromSeed) vs Option B (tonal palettes).
-3) Regenerate/redefine:
-   - `ColorScheme` for light/dark (complete, explicit roles)
-   - `SemanticColors` with correct `on*` pairings
-4) Add contrast verification (tests or `tool/verify_colors.dart`).
-5) Only then consider whether raw palettes are still needed as ThemeExtensions.
+We use Flutter’s built-in Material 3 tonal mapping via `ColorScheme.fromSeed`:
+
+- It produces a **complete scheme** (reduces drift).
+- It maps tones to roles (`primary`, `onPrimary`, `surface`, `outline`, etc.) consistently across light/dark.
+- It tracks platform evolution without pulling in third-party packages.
+
+We intentionally generate:
+
+- a **brand scheme** (accent roles)
+- a **neutral scheme** (surface + outline roles)
+- **status schemes** (success/info/warning → `SemanticColors`)
+
+Derivation happens in:
+- `lib/core/theme/system/app_color_scheme_builder.dart`
+
+---
+
+## 5) Contrast policy (what we guarantee)
+
+We do not rely on “looks okay” judgment calls. We gate contrast via automated tests:
+
+- **Text-bearing pairs**: ≥ **4.5:1** (WCAG AA normal text)
+- **Control boundaries** (`outline` on `surface`): ≥ **3.0:1** (WCAG 1.4.11 non-text)
+
+Enforced in:
+- `test/core/theme/color_contrast_test.dart`
+
+If the gate fails:
+
+- Fix by adjusting seeds (preferred), or add a narrowly-scoped override in the builder.
+- Do not patch widget-level colors to “make it pass” (that creates drift).
+
+---
+
+## 6) Extension rules (how we avoid color sprawl)
+
+### 6.1 Adding a new semantic role
+
+Add a role only if it is:
+
+- cross-cutting (used by multiple features), and
+- has clear accessibility expectations (on-color + container variants), and
+- can be enforced in tests.
+
+Examples that might qualify:
+- “danger” / “negative” (distinct from `error` usage)
+- “brandSecondary” only if design requires strict separation from generated `secondary`
+
+Prefer extending `SemanticColors` over introducing new ad-hoc `ThemeExtension`s.
+
+### 6.2 Charts, illustrations, and marketing colors
+
+If you need palette ramps, keep them **out of app UI**:
+
+- define them as non-UI primitives (e.g. `lib/core/charts/...`), or
+- define them in a design-exported asset mapping, not as theme roles.
+
+The theme layer remains role-first.
+
+---
+
+## 7) Figma handoff (recommended naming)
+
+Design can keep ramps for exploration, but handoff should be role-based.
+
+Suggested variable groups:
+
+- `seed/brand/primary`
+- `seed/neutral/base`
+- `seed/status/success`, `seed/status/info`, `seed/status/warning`
+- `role/surface`, `role/on-surface`, `role/outline`, `role/primary`, `role/on-primary`
+- `role/status/success-container`, `role/status/on-success-container`, etc.
+
+Rule: if a spec mentions a ramp step (e.g. `neutral/200`), it must include intent (“divider”, “border”, “surface”) so engineering can map to roles.
+
+---
+
+## 8) Change protocol (safe updates over time)
+
+1) Update seeds: `lib/core/theme/system/app_color_seeds.dart`
+2) Run:
+   - `tool/agent/flutterw --no-stdin analyze`
+   - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+3) Manual QA:
+   - light/dark: surfaces and text hierarchy
+   - status UI: success/info/warning readability on both themes
+   - high contrast mode (if relevant to your product)
+
+If design ever rejects the tonal output for strict brand reasons, the controlled escalation path is:
+
+1) add minimal overrides in the builder (reviewable diffs)
+2) only then consider moving to an in-house tonal palette/mapping system

@@ -23,8 +23,7 @@ class AccessibleTextStyles {
     double minScaleFactor = 1.0,
     double maxScaleFactor = 2.5,
   }) {
-    // Parameters are retained for backward compatibility with the previous API.
-    // Effective clamping is enforced at `AdaptiveScope`.
+    // Parameters are currently unused; clamping is enforced at `AdaptiveScope`.
     return baseStyle;
   }
 

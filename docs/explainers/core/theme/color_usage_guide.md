@@ -15,8 +15,8 @@ In this repo, the roles are generated from seeds in:
 
 ## Prohibited (what not to use)
 
-- Do not use palette-step tokens like `context.grey.grey300` / `PrimaryColors.*`.
-  - The theme does not register those `ThemeExtension`s anymore; using them will fail at runtime.
+- Do not use palette-step colors (e.g. `neutral/200`, `green/500`) in app UI.
+  - If design hands off palette ramps, translate the intent to roles (see rules below).
 - Do not hardcode brand/status hex values in widgets (`Color(0xFF...)`, `Colors.*`) unless you are building a debug-only tool.
 
 ## Rules (enterprise defaults)
@@ -25,7 +25,7 @@ In this repo, the roles are generated from seeds in:
 
 Feature code should treat `ColorScheme` + `SemanticColors` as the public API.
 
-If a design asks for “grey-200”, translate it to a role:
+If a design asks for a palette step (e.g. “neutral/200”), translate it to a role:
 - “divider/hairline” → `context.hairline`
 - “control border” → `context.border`
 - “surface background” → `context.bgSurface` / `context.bgContainer*`
@@ -132,4 +132,3 @@ return DecoratedBox(
 2) Run the contrast gate:
    - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
 3) If the gate fails, do not “pick prettier `on*` colors” in widgets; adjust seeds (or discuss a move to a custom tonal mapping strategy).
-

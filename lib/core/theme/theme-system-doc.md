@@ -1,15 +1,9 @@
-# Orymu Mobile Theme System Documentation
+# Mobile Core Kit Theme System
 
-> Note: Parts of this doc describe the **legacy palette-token system**
-> (e.g. `context.grey.grey300`, `PrimaryColors`, etc).
->
-> The current system is role-based and seed-driven:
-> - Use `ColorScheme` via `context.cs.*`
-> - Use status roles via `context.semanticColors.*`
->
-> Start here: `docs/explainers/core/theme/color_usage_guide.md`
+This is the guide to using the theme system in this template.
 
-A comprehensive guide to using the theme system in the Orymu Mobile Flutter application.
+Start here for color rules + examples:
+- `docs/explainers/core/theme/color_usage_guide.md`
 
 ## Table of Contents
 
@@ -22,17 +16,17 @@ A comprehensive guide to using the theme system in the Orymu Mobile Flutter appl
 7. [Components](#components)
 8. [Usage Examples](#usage-examples)
 9. [Best Practices](#best-practices)
-10. [Migration Guide](#migration-guide)
+10. [Refactoring Recipes](#refactoring-recipes)
 
 ## Overview
 
-The Orymu Mobile theme system provides a unified, responsive, and accessible design foundation for the Flutter application. It includes:
+The theme system provides a unified, responsive, and accessible design foundation for the Flutter application. It includes:
 
-- **Unified Color Palette**: Consistent color tokens across light and dark themes
+- **Role-based colors**: `ColorScheme` + `SemanticColors` derived from seeds (contrast is gated by tests)
 - **Typography System**: Token-based type ramp with accessibility-correct text scaling (via `TextScaler`)
 - **Adaptive Layout System**: Constraint-first responsive + adaptive layout decisions (`lib/core/adaptive/`)
 - **Component Theming**: Pre-styled components with consistent design patterns
-- **Accessibility Support**: Built-in accessibility features and WCAG compliance
+- **Accessibility Support**: built-in text scaling support + WCAG contrast enforcement via `test/core/theme/color_contrast_test.dart`
 
 ## Quick Start
 
@@ -46,7 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Orymu Mobile',
+      title: 'Mobile Core Kit',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
@@ -70,7 +64,7 @@ class ExamplePage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Heading.h1('Welcome to Orymu'),
+          Heading.h1('Welcome'),
           Heading.h2('Getting Started'),
           Paragraph.large('This is a large paragraph with proper typography.'),
           AppText.bodyMedium('Regular body text'),
@@ -191,7 +185,7 @@ This theme derives its role colors from a small set of seeds (single hex inputs)
 - Seeds live in `lib/core/theme/system/app_color_seeds.dart`
 - Roles are generated in `lib/core/theme/system/app_color_scheme_builder.dart`
 
-For regular app UI, still prefer consuming the roles (`ColorScheme` + `SemanticColors`), not any palette steps.
+For app UI, prefer consuming the roles (`ColorScheme` + `SemanticColors`).
 
 ## Typography System
 
@@ -384,7 +378,7 @@ class ExamplePage extends StatelessWidget {
               // Hero section
               SizedBox(
                 height: 160,
-                child: Center(child: Heading.h1('Welcome to Orymu')),
+                child: Center(child: Heading.h1('Welcome')),
               ),
 
               const SizedBox(height: AppSpacing.space32),
@@ -394,7 +388,7 @@ class ExamplePage extends StatelessWidget {
               const SizedBox(height: AppSpacing.space16),
 
               Paragraph.large(
-                'This is an example of how to use the Orymu theme + adaptive layout system. '
+                'This is an example of how to use the theme + adaptive layout system. '
                 'Layout adapts via size classes and surface tokens; text scaling follows system settings.',
               ),
 
@@ -528,11 +522,11 @@ AdaptiveGrid.builder(
 - Ensure sufficient color contrast (provided by the color tokens)
 - Use meaningful widget semantics
 
-## Migration Guide
+## Refactoring Recipes
 
-### From Raw Text Widgets
+### Prefer semantic typography components
 
-**Before:**
+**Avoid:**
 
 ```dart
 Text(
@@ -544,15 +538,15 @@ Text(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 Heading.h2('Heading')
 ```
 
-### From Fixed Layouts
+### Prefer constraint-aware layout primitives
 
-**Before:**
+**Avoid:**
 
 ```dart
 Container(
@@ -562,15 +556,15 @@ Container(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 AppPageContainer(child: child)
 ```
 
-### From Hardcoded Colors
+### Prefer role colors (no hardcoded hex)
 
-**Before:**
+**Avoid:**
 
 ```dart
 Container(
@@ -579,7 +573,7 @@ Container(
 )
 ```
 
-**After:**
+**Prefer:**
 
 ```dart
 Container(
@@ -655,4 +649,4 @@ For questions or issues with the theme system:
 3. Check the `typography-guide.md` for typography-specific guidance
 4. Refer to component examples in the codebase
 
-The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the Orymu Mobile application.
+The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the application.
