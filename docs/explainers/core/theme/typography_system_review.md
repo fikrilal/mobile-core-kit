@@ -38,7 +38,6 @@ If you do one thing next: pick a **single canonical API** and demote everything 
 There are some compatibility helpers around typography, but the intent is a single source of truth:
 
 - Canonical: `Theme.of(context).textTheme.*` (from `TextThemeBuilder`)
-- `lib/core/theme/typography/styles/accessible_text_style.dart` → currently a pass-through (correct, because scaling is handled at root)
 - Components:
   - `lib/core/theme/typography/components/text.dart` (`AppText.*`)
   - `lib/core/theme/typography/components/heading.dart` (`Heading.h1` … `Heading.h6`)
@@ -109,13 +108,14 @@ Status: fixed. `AppText`, `Heading`, and `Paragraph` are now intentionally thin 
 
 ### 4) Accessibility responsibilities are blurred
 
-- `AccessibleTextStyles.ensureContrast(...)` exists but is not used by the canonical component path.
-- Contrast is primarily a **color system concern** (roles + contrast gates/tests), not a per-Text widget concern.
+Contrast is primarily a **color system concern** (roles + contrast gates/tests), not a per-Text widget concern.
 
 In enterprise systems, “automatic contrast fixes in widgets” often become a trap:
 
 - it hides token/role regressions
 - it produces inconsistent UI color decisions at runtime
+
+Status: fixed by removing widget-level contrast helpers and enforcing contrast at the color role layer.
 
 ### 5) `TextStyleExtensions` are powerful but dangerous
 

@@ -4,11 +4,11 @@ import 'light_theme.dart'; // Direct import of theme files
 import 'dark_theme.dart'; // Direct import of theme files
 import 'typography/typography_system.dart';
 
-/// App theme with responsive typography integration.
+/// App theme with a deterministic typography system.
 ///
-/// This class provides access to the app's themes with
-/// responsive typography that adapts to different screen sizes and
-/// accessibility preferences.
+/// `ThemeData` and its `TextTheme` are built context-free (no MediaQuery reads).
+/// Accessibility adaptation (text scaling clamp, etc.) is handled at the app
+/// root via `AdaptiveScope`.
 class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();

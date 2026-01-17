@@ -124,23 +124,24 @@ lib/core/theme/
 │   ├── spacing.dart          # Spacing scale
 │   └── sizing.dart           # Component sizing
 └── typography/               # Typography system
-    ├── typography_system.dart # Main typography entry
-    ├── components/           # Typography components
-    │   ├── app_heading.dart
-    │   ├── app_paragraph.dart
-    │   ├── app_text.dart
-    │   ├── heading.dart
-    │   ├── paragraph.dart
-    │   └── text.dart
-    ├── styles/               # Text styles
-    │   ├── accessible_text_style.dart
-    │   └── text_theme_builder.dart
-    ├── tokens/               # Typography tokens
-    │   ├── type_metrics.dart
-    │   ├── type_scale.dart
-    │   └── type_weights.dart
-    └── utils/                # Typography utilities
-        └── line_height_calculator.dart
+	    ├── typography_system.dart # Main typography entry
+	    ├── typography-guide.md   # Day-to-day usage rules
+	    ├── components/           # Typography components
+	    │   ├── app_heading.dart
+	    │   ├── app_paragraph.dart
+	    │   ├── app_text.dart
+	    │   ├── heading.dart
+	    │   ├── paragraph.dart
+	    │   └── text.dart
+	    ├── showcase/             # Dev-only typography verification
+	    │   └── typography_showcase_screen.dart
+	    ├── styles/               # Text styles
+	    │   └── text_theme_builder.dart
+	    └── tokens/               # Typography tokens
+	        ├── type_metrics.dart
+	        ├── type_scale.dart
+	        ├── type_weights.dart
+	        └── typefaces.dart
 ```
 
 ## Color System
