@@ -62,7 +62,7 @@ class _ProfileContent extends StatelessWidget {
       surface: SurfaceKind.settings,
       safeArea: true,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
+        padding: EdgeInsets.zero,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -92,13 +92,16 @@ class _ProfileContent extends StatelessWidget {
                 onTap: () {},
               ),
               SizedBox(height: sectionSpacing),
-          
+
               // Settings Section
               const AppText.headlineMedium('Settings'),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.shieldCheck, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.shieldCheck,
+                    size: 24,
+                  ),
                 ),
                 title: 'Security and privacy',
                 subtitle: 'Change your security and privacy settings',
@@ -106,7 +109,10 @@ class _ProfileContent extends StatelessWidget {
               ),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.bellRinging, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.bellRinging,
+                    size: 24,
+                  ),
                 ),
                 title: 'Notifications',
                 subtitle: 'Customise how you get updates',
@@ -156,9 +162,17 @@ class _ProfileContent extends StatelessWidget {
                   subtitle: 'View ColorScheme + SemanticColors roles',
                   onTap: () => context.push(DevToolsRoutes.themeRoles),
                 ),
+                AppListTile(
+                  leading: AppIconBadge(
+                    icon: PhosphorIcon(PhosphorIconsRegular.cube, size: 24),
+                  ),
+                  title: 'Widget Showcases',
+                  subtitle: 'Buttons, fields, typography & more',
+                  onTap: () => context.push(DevToolsRoutes.widgetShowcases),
+                ),
               ],
               SizedBox(height: sectionSpacing),
-          
+
               // Logout Button
               AppButton(
                 text: 'Log out',
@@ -177,7 +191,7 @@ class _ProfileContent extends StatelessWidget {
                           cancelLabel: 'Cancel',
                           variant: AppConfirmationDialogVariant.standard,
                         );
-          
+
                         if (confirmed != true) return;
                         if (!context.mounted) return;
                         await context.read<LogoutCubit>().logout();
