@@ -56,26 +56,6 @@ if ! command -v wslpath >/dev/null 2>&1; then
   exit 1
 fi
 
-escape_windows_arg() {
-  local value="$1"
-  if [[ -z "$value" ]]; then
-    printf '""'
-    return
-  fi
-
-  local needs_quotes=0
-  if [[ "$value" == *" "* || "$value" == *'"'* || "$value" == *"&"* ]]; then
-    needs_quotes=1
-  fi
-
-  if [[ $needs_quotes -eq 0 ]]; then
-    printf '%s' "$value"
-    return
-  fi
-
-  printf '"%s"' "${value//\"/\\\"}"
-}
-
 win_cwd="$(wslpath -w "$PWD")"
 
 exe="$1"
@@ -85,14 +65,10 @@ if [[ -e "$exe" ]]; then
   exe="$(wslpath -w "$exe")"
 fi
 
-cmd="cd /d $(escape_windows_arg "$win_cwd") && $(escape_windows_arg "$exe")"
-for arg in "$@"; do
-  cmd="$cmd $(escape_windows_arg "$arg")"
-done
+cmd_args=(/C cd /d "$win_cwd" "&&" "$exe" "$@")
 
 if [[ $no_stdin -eq 1 ]]; then
-  exec cmd.exe /C "$cmd" < /dev/null
+  exec cmd.exe "${cmd_args[@]}" < /dev/null
 else
-  exec cmd.exe /C "$cmd"
+  exec cmd.exe "${cmd_args[@]}"
 fi
-
