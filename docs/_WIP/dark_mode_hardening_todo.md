@@ -10,6 +10,12 @@ This checklist implements `docs/_WIP/dark_mode_hardening_proposal.md` in a low-r
 - New component defaults are guarded by a small “theme contract” test set.
 - Minimal docs exist so developers don’t misuse roles (outline vs outlineVariant).
 
+## Status
+
+- P0: done
+- P1: done
+- P2: pending
+
 ## P0 — Ship dark mode safely (must-do)
 
 ### 0.1 Enable dark mode at the app shell
