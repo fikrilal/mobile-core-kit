@@ -118,9 +118,8 @@ class ButtonStyles {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
-      elevation: isDisabled ? 0 : 1,
-      shadowColor: scheme.shadow,
-    );
+      splashFactory: InkSparkle.splashFactory,
+    ).copyWith(elevation: WidgetStateProperty.all(0));
   }
 
   static ButtonStyle _secondaryStyle({
@@ -150,9 +149,8 @@ class ButtonStyles {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
-      elevation: isDisabled ? 0 : 1,
-      shadowColor: scheme.shadow,
-    );
+      splashFactory: InkSparkle.splashFactory,
+    ).copyWith(elevation: WidgetStateProperty.all(0));
   }
 
   static ButtonStyle _outlineStyle({
@@ -180,11 +178,10 @@ class ButtonStyles {
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
       side: BorderSide(
-        color: isDisabled
-            ? disabledBorder
-            : borderColor ?? scheme.outline,
+        color: isDisabled ? disabledBorder : borderColor ?? scheme.outline,
         width: 1,
       ),
+      splashFactory: InkSparkle.splashFactory,
     );
   }
 
@@ -215,8 +212,7 @@ class ButtonStyles {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.space24),
       ),
-      elevation: isDisabled ? 0 : 1,
-      shadowColor: scheme.shadow,
-    );
+      splashFactory: InkSparkle.splashFactory,
+    ).copyWith(elevation: WidgetStateProperty.all(0));
   }
 }

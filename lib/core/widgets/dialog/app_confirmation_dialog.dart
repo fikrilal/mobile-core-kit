@@ -346,6 +346,7 @@ Future<bool?> showAppConfirmationDialog({
   return showAdaptiveModal<bool>(
     context: context,
     barrierDismissible: effectiveBarrierDismissible,
+    bottomSheetStyle: AdaptiveBottomSheetStyle.edgeToEdge,
     showDragHandle: false,
     dialogInsetPadding: dialogInsetPadding,
     dialogShape: dialogShape,

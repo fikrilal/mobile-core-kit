@@ -204,42 +204,71 @@ class _ThemeModePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void selectThemeMode(ThemeMode mode) => Navigator.of(context).pop(mode);
+
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.space16),
       child: RadioGroup<ThemeMode>(
         groupValue: initialThemeMode,
-        onChanged: (value) => Navigator.of(context).pop(value),
+        onChanged: (value) {
+          if (value == null) return;
+          selectThemeMode(value);
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Expanded(child: AppText.titleLarge('Theme')),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
-                  tooltip: 'Close',
-                ),
-              ],
-            ),
+            const AppText.titleLarge('Theme'),
             const SizedBox(height: AppSpacing.space8),
-            const RadioListTile<ThemeMode>(
+            _ThemeModeOptionTile(
+              title: 'System',
+              subtitle: 'Follow device appearance',
               value: ThemeMode.system,
-              title: Text('System'),
-              subtitle: Text('Follow device appearance'),
+              groupValue: initialThemeMode,
+              onSelected: selectThemeMode,
             ),
-            const RadioListTile<ThemeMode>(
+            _ThemeModeOptionTile(
+              title: 'Light',
               value: ThemeMode.light,
-              title: Text('Light'),
+              groupValue: initialThemeMode,
+              onSelected: selectThemeMode,
             ),
-            const RadioListTile<ThemeMode>(
+            _ThemeModeOptionTile(
+              title: 'Dark',
               value: ThemeMode.dark,
-              title: Text('Dark'),
+              groupValue: initialThemeMode,
+              onSelected: selectThemeMode,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ThemeModeOptionTile extends StatelessWidget {
+  const _ThemeModeOptionTile({
+    required this.title,
+    required this.value,
+    required this.groupValue,
+    required this.onSelected,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final ThemeMode value;
+  final ThemeMode groupValue;
+  final ValueChanged<ThemeMode> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppListTile(
+      title: title,
+      subtitle: subtitle,
+      showChevron: false,
+      onTap: () => onSelected(value),
+      trailing: Radio<ThemeMode>(value: value),
     );
   }
 }

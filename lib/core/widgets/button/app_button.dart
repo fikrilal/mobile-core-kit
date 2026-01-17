@@ -292,7 +292,7 @@ class AppButton extends StatelessWidget {
 
     // Add subtle zoom interaction on tap for enabled buttons.
     if (!isButtonDisabled) {
-      button = ZoomTapAnimation(begin: 1.0, end: 0.98, child: button);
+      button = ZoomTapAnimation(begin: 1.0, end: 0.99, child: button);
     }
 
     // Apply margin if specified
