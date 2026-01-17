@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
@@ -11,6 +13,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/adaptive/adaptive_context.dart';
 import '../../../../core/adaptive/tokens/surface_tokens.dart';
 import '../../../../core/adaptive/widgets/app_page_container.dart';
+import '../../../../core/adaptive/widgets/adaptive_modal.dart';
 import '../../../../core/theme/typography/components/text.dart';
 import '../../../../core/widgets/button/app_button.dart';
 import '../../../../core/widgets/button/button_variants.dart';
@@ -53,6 +56,7 @@ class _ProfileContent extends StatelessWidget {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
     final showDevTools = BuildConfig.env == BuildEnv.dev;
+    final themeModeController = locator<ThemeModeController>();
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
@@ -108,6 +112,30 @@ class _ProfileContent extends StatelessWidget {
                 subtitle: 'Customise how you get updates',
                 onTap: () {},
               ),
+              ValueListenableBuilder<ThemeMode>(
+                valueListenable: themeModeController,
+                builder: (context, themeMode, _) {
+                  return AppListTile(
+                    leading: AppIconBadge(
+                      icon: PhosphorIcon(
+                        PhosphorIconsRegular.moonStars,
+                        size: 24,
+                      ),
+                    ),
+                    title: 'Appearance',
+                    subtitle: _themeModeLabel(themeMode),
+                    onTap: () async {
+                      final selected = await showAdaptiveModal<ThemeMode>(
+                        context: context,
+                        builder: (_) =>
+                            _ThemeModePicker(initialThemeMode: themeMode),
+                      );
+                      if (selected == null) return;
+                      await themeModeController.setThemeMode(selected);
+                    },
+                  );
+                },
+              ),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),
@@ -157,6 +185,59 @@ class _ProfileContent extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+String _themeModeLabel(ThemeMode mode) => switch (mode) {
+  ThemeMode.system => 'System',
+  ThemeMode.light => 'Light',
+  ThemeMode.dark => 'Dark',
+};
+
+class _ThemeModePicker extends StatelessWidget {
+  const _ThemeModePicker({required this.initialThemeMode});
+
+  final ThemeMode initialThemeMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: RadioGroup<ThemeMode>(
+        groupValue: initialThemeMode,
+        onChanged: (value) => Navigator.of(context).pop(value),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Expanded(child: AppText.titleLarge('Theme')),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close_rounded),
+                  tooltip: 'Close',
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.space8),
+            const RadioListTile<ThemeMode>(
+              value: ThemeMode.system,
+              title: Text('System'),
+              subtitle: Text('Follow device appearance'),
+            ),
+            const RadioListTile<ThemeMode>(
+              value: ThemeMode.light,
+              title: Text('Light'),
+            ),
+            const RadioListTile<ThemeMode>(
+              value: ThemeMode.dark,
+              title: Text('Dark'),
+            ),
+          ],
         ),
       ),
     );
