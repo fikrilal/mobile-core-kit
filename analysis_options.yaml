@@ -26,6 +26,18 @@ custom_lint:
         - lib/presentation/**
       allow:
         - Colors.transparent
+    - hardcoded_font_sizes:
+      include:
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
+    - manual_text_scaling:
+      include:
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
 
 linter:
   # The lint rules applied to this project can be customized in the

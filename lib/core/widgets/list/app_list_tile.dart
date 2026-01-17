@@ -145,7 +145,7 @@ class AppListTile extends StatelessWidget {
                 AppText.bodyLarge(
                   title,
                   maxLines: titleMaxLines,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w600,
                 ),
                 if (subtitle != null) ...[
                   const SizedBox(height: AppSpacing.space2),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'tokens/type_metrics.dart';
 import 'tokens/typefaces.dart';
 import 'styles/text_theme_builder.dart';
 
@@ -24,7 +23,7 @@ class TypographySystem {
   ///
   /// Uses static token sizes so ThemeData creation remains deterministic and
   /// safe outside of any MediaQuery or breakpoint context.
-  static ThemeData applyTypography(ThemeData baseTheme, [BuildContext? _]) {
+  static ThemeData applyTypography(ThemeData baseTheme) {
     final textTheme = TextThemeBuilder.buildTextThemeStatic(
       baseTheme.colorScheme,
     );
@@ -45,22 +44,5 @@ class TypographySystem {
       ),
       // Add more component theming as needed
     );
-  }
-
-  // Typography utility methods
-
-  /// Calculate optimal line height for a given font size
-  static double lineHeight(double fontSize, {String category = 'body'}) {
-    return fontSize * TypeMetrics.getLineHeight(category);
-  }
-
-  /// Get appropriate letter spacing for a text category
-  static double letterSpacing(String category) {
-    return TypeMetrics.getLetterSpacing(category);
-  }
-
-  /// Calculate ideal text container width for a font size
-  static double idealWidth(double fontSize) {
-    return TypeMetrics.getIdealTextContainerWidth(fontSize);
   }
 }

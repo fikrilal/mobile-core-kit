@@ -578,13 +578,13 @@ class _FieldShowcaseScreenState extends State<FieldShowcaseScreen> {
         const SizedBox(height: 16),
         Text('Tips:', style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           '• Try different field variants and sizes\n'
           '• Test validation by entering invalid data\n'
           '• Experience haptic feedback on supported devices\n'
           '• Notice focus animations and state changes\n'
           '• Test accessibility features with screen readers',
-          style: TextStyle(fontSize: 12),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );

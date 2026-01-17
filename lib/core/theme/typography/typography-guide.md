@@ -1,255 +1,67 @@
-# Typography System Implementation Guide
+# Typography Guide (How to use in this repo)
 
-This document explains how to use the new responsive typography system in your Flutter project. The system follows industry best practices used by top tech companies like Google, Apple, and leading design-focused organizations.
+This is the “day-to-day” typography guide for the core kit.
 
-## Overview
+Canonical docs live in:
 
-The typography system is organized into several components:
+- `docs/explainers/core/theme/typography_system_proposal.md`
+- `docs/explainers/core/theme/typography_system_review.md`
 
-1. **Typography Tokens**: Fixed values and definitions
-2. **Responsive Styles**: Styles that adapt to different screen sizes
-3. **Accessible Styles**: Styles that respect user accessibility preferences
-4. **Text Components**: Ready-to-use UI components
-5. **Utilities**: Helper methods and extensions
+## Canonical API (what to use)
 
-## Getting Started
-
-1. Apply the typography system to your app's theme:
+Use **`Theme.of(context).textTheme.*`** as the source of truth for the type ramp:
 
 ```dart
-// In your main.dart or theme configuration
-import 'core/theme/theme.dart';
+final t = Theme.of(context).textTheme;
 
-return MaterialApp(
-  theme: AppTheme.light(),
-  darkTheme: AppTheme.dark(),
-  themeMode: ThemeMode.system,
-  // ...
-);
+Text('Title', style: t.titleLarge);
+Text('Body', style: t.bodyMedium);
 ```
 
-## Using Typography Components
-
-### Headings
-
-Use semantic headings for titles and section headers:
+Use **role colors** (do not hardcode):
 
 ```dart
-// Level 1 (most prominent)
-Heading.h1('Page Title')
-
-// Level 2
-Heading.h2('Section Title')
-
-// Level 3
-Heading.h3('Subsection Title')
-
-// With customization
-Heading.h2(
-  'Section Title', 
-  color: Theme.of(context).colorScheme.primary,
-  textAlign: TextAlign.center,
-)
+Text('Body', style: t.bodyMedium?.copyWith(color: context.textPrimary));
 ```
 
-### Text
+## Convenience widgets (allowed)
 
-Use the `AppText` component for general text:
+Use these when you want less boilerplate:
 
-```dart
-// Standard text variants
-AppText.displayLarge('Large Display Text')
-AppText.headlineMedium('Medium Headline')
-AppText.bodyMedium('Regular body text for content')
-AppText.labelSmall('Small label text')
+- `AppText.*` for most text
+- `Heading.*` for semantic headings
+- `Paragraph.*` for readable multi-line body text
 
-// With customization
-AppText.titleLarge(
-  'Title Text',
-  color: Theme.of(context).colorScheme.primary,
-  maxLines: 2,
-)
-```
+These convenience widgets must remain **thin wrappers** over `textTheme`.
 
-### Paragraphs
+## Accessibility rules (non-negotiable)
 
-Use the `Paragraph` component for multi-line body text:
+1) Never “scale fonts manually”.
+   - Text scaling is applied at the app root via `AdaptiveScope` using `TextScaler.clamp(...)`.
+2) Do not pass `textScaler:` to text widgets in feature code.
+3) Do not invent font sizes in feature code (`TextStyle(fontSize: ...)`).
 
-```dart
-// Regular paragraph
-Paragraph(
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.',
-)
+## Guardrails (lint)
 
-// Large paragraph
-Paragraph.large(
-  'This is a larger paragraph text with better readability for important content.',
-)
+This repo enforces typography guardrails via custom lints:
 
-// With customization
-Paragraph(
-  'Custom paragraph with alignment and selection.',
-  textAlign: TextAlign.center,
-  selectable: true,
-)
-```
+- `hardcoded_font_sizes` — blocks `TextStyle(fontSize: ...)`, `copyWith(fontSize: ...)`, and `apply(fontSizeFactor/fontSizeDelta: ...)` in UI layers.
+- `manual_text_scaling` — blocks `TextScaler.linear(...)` and per-widget `textScaler:` usage in UI layers.
 
-### Recommended Usage (Keep it Simple)
+Suppressions are allowed but should be rare and justified:
 
-In everyday code, prefer a small, consistent set of parameters:
+- File: `// ignore_for_file: <rule_name>`
+- Line: `// ignore: <rule_name>`
 
-```dart
-// Page titles and section headings
-Heading.h1(
-  'Page Title',
-  color: context.brand,
-);
+## Phone/tablet guidance
 
-Heading.h2(
-  'Section Title',
-  color: context.textPrimary,
-  textAlign: TextAlign.left,
-);
+We use a single type ramp for phone + tablet. Tablet readability is handled via:
 
-// Body copy
-AppText.bodyMedium(
-  'Body text goes here',
-  color: context.textPrimary,
-  maxLines: 3,
-);
+- layout (split views, gutters, max content widths)
+- `Paragraph` width constraints for long-form reading
 
-// Small labels
-AppText.labelSmall(
-  'Label',
-  color: context.textSecondary,
-);
-```
+Do not inflate font sizes by default to “make tablet look bigger”.
 
-Stick to `text`, `color`, `textAlign`, `maxLines`, and occasionally `padding`/`margin` and `selectable`.  
-For complex cases (custom selection behavior, drag, etc.), use Flutter's `Text` / `SelectableText` directly with `context.bodyMedium` styles.
+## When to use raw `Text` / `SelectableText`
 
-## Using Style Extensions
-
-Extension methods make it easy to access typography styles directly from a BuildContext:
-
-```dart
-// In a widget build method
-Text(
-  'Styled text',
-  style: context.headlineLarge,
-)
-
-// With modifications
-Text(
-  'Emphasized title',
-  style: context.titleMedium.emphasized,
-)
-
-// Chaining modifiers
-Text(
-  'Custom styled text',
-  style: context.bodyMedium.bolder.wide,
-)
-```
-
-Available text style modifiers:
-- `.bolder` - Increases font weight
-- `.lighter` - Decreases font weight
-- `.emphasized` - Adds italics
-- `.tight` - Tightens letter spacing
-- `.wide` - Widens letter spacing
-- `.compact` - Reduces line height
-- `.relaxed` - Increases line height
-- `.larger` - Increases font size
-- `.smaller` - Decreases font size
-
-## Responsive Behavior
-
-The typography system is designed to adapt to different screen sizes:
-
-- Font sizes adjust slightly at different breakpoints
-- Line heights and spacing maintain proper proportions
-- Components like `Paragraph` automatically manage ideal line lengths
-
-## Accessibility Support
-
-The typography system respects user accessibility preferences:
-
-- Text scales appropriately based on system text size settings
-- By default, text scale is respected in the range 1.0x–2.5x to balance readability and layout stability
-- Headings use proper semantic markup for screen readers
-- Contrast can be automatically enhanced for better readability
-
-## Advanced Usage
-
-### Using the Typography System Directly
-
-For advanced customization, you can access the typography system directly:
-
-```dart
-// Get appropriate line height for a font size
-double lineHeight = TypographySystem.lineHeight(16.0, category: 'body');
-
-// Calculate ideal width for text container
-double width = TypographySystem.idealWidth(fontSize);
-```
-
-### Creating Custom Text Components
-
-You can create custom text components that leverage the typography system:
-
-```dart
-class CustomLabel extends StatelessWidget {
-  final String text;
-  final Color? color;
-  
-  const CustomLabel(this.text, {this.color});
-  
-  @override
-  Widget build(BuildContext context) {
-    return AppText.labelMedium(
-      text.toUpperCase(),
-      color: color ?? Theme.of(context).colorScheme.primary,
-    );
-  }
-}
-```
-
-## Typography Metrics
-
-The typography system uses carefully defined metrics:
-
-- **Line heights**: Display (1.2), Headline (1.3), Title (1.4), Body (1.5), Label (1.4)
-- **Letter spacing**: Varies by text category for optimal readability
-- **Paragraph width**: Limited to 40-75 characters for comfortable reading
-
-## Best Practices
-
-1. **Use semantic components** - Use `Heading` for section titles, `Paragraph` for long text, etc.
-
-2. **Maintain hierarchy** - Follow proper heading levels (h1 → h2 → h3) for information hierarchy
-
-3. **Respect accessibility** - Allow text to scale with user preferences
-
-4. **Avoid fixed pixel sizes** - Use the typography system instead of hardcoding font sizes
-
-5. **Use extensions** - Leverage the extension methods for concise code
-
-6. **Be consistent** - Stick to the defined type scale rather than using arbitrary font sizes
-
-## Troubleshooting
-
-- If text appears too large or small, ensure you're using the correct type scale component
-- If text doesn't adapt to screen size, check that you're using the responsive components
-- If paragraph width seems wrong, verify that `constrainWidth` is set appropriately
-
-## Implementation Details
-
-The typography system is built around the Material Design type scale but with custom metrics for optimal readability and responsiveness. It includes:
-
-- 15 text styles (displayLarge to labelSmall)
-- 3 component types (Heading, Text, Paragraph)
-- Responsive adjustments for 3 breakpoints (mobile, tablet, desktop)
-- Accessibility adjustments that respect user preferences
-
-This approach aligns with design practices used by Google (Material Design), Apple (Human Interface Guidelines), and other industry leaders in digital typography.
+If you need advanced behavior that the convenience widgets don’t support cleanly, use Flutter primitives directly with `textTheme` styles.

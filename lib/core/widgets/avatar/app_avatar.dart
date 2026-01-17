@@ -178,10 +178,13 @@ class AppAvatar extends StatelessWidget {
   }) {
     final fallback = Center(
       child: initials != null
-          ? Text(
-              initials,
-              textAlign: TextAlign.center,
-              style: _initialsStyle(context, diameter, foreground),
+          ? FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                initials,
+                textAlign: TextAlign.center,
+                style: _initialsStyle(context, foreground),
+              ),
             )
           : PhosphorIcon(
               PhosphorIcons.user(),
@@ -256,11 +259,9 @@ class AppAvatar extends StatelessWidget {
     );
   }
 
-  TextStyle _initialsStyle(BuildContext context, double diameter, Color color) {
-    final base = Theme.of(context).textTheme.titleLarge ?? const TextStyle();
-    final fontSize = (diameter * 0.42).clamp(10.0, 32.0);
+  TextStyle _initialsStyle(BuildContext context, Color color) {
+    final base = Theme.of(context).textTheme.displayLarge ?? const TextStyle();
     return base.copyWith(
-      fontSize: fontSize,
       fontWeight: FontWeight.w700,
       color: color,
       height: 1.0,

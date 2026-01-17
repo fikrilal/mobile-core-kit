@@ -124,22 +124,24 @@ lib/core/theme/
 │   ├── spacing.dart          # Spacing scale
 │   └── sizing.dart           # Component sizing
 └── typography/               # Typography system
-    ├── typography_system.dart # Main typography entry
-    ├── components/           # Typography components
-    │   ├── heading.dart
-    │   ├── paragraph.dart
-    │   └── text.dart
-    ├── styles/               # Text styles
-    │   ├── accessible_text_style.dart
-    │   ├── responsive_text_styles.dart
-    │   └── text_theme_builder.dart
-    ├── tokens/               # Typography tokens
-    │   ├── type_metrics.dart
-    │   ├── type_scale.dart
-    │   └── type_weights.dart
-    └── utils/                # Typography utilities
-        ├── line_height_calculator.dart
-        └── typography_extensions.dart
+	    ├── typography_system.dart # Main typography entry
+	    ├── typography-guide.md   # Day-to-day usage rules
+	    ├── components/           # Typography components
+	    │   ├── app_heading.dart
+	    │   ├── app_paragraph.dart
+	    │   ├── app_text.dart
+	    │   ├── heading.dart
+	    │   ├── paragraph.dart
+	    │   └── text.dart
+	    ├── showcase/             # Dev-only typography verification
+	    │   └── typography_showcase_screen.dart
+	    ├── styles/               # Text styles
+	    │   └── text_theme_builder.dart
+	    └── tokens/               # Typography tokens
+	        ├── type_metrics.dart
+	        ├── type_scale.dart
+	        ├── type_weights.dart
+	        └── typefaces.dart
 ```
 
 ## Color System
@@ -196,7 +198,8 @@ For app UI, prefer consuming the roles (`ColorScheme` + `SemanticColors`).
 
 ### Typography Components
 
-Use semantic typography components instead of raw Text widgets:
+Prefer semantic typography components for common cases. For advanced cases,
+use Flutter `Text`/`SelectableText` with `Theme.of(context).textTheme.*`.
 
 #### Headings
 
@@ -223,13 +226,13 @@ Heading.h1(
 ```dart
 // Optimized for reading
 Paragraph.large('Large paragraph text for emphasis')
-Paragraph.medium('Standard paragraph text')
+Paragraph('Standard paragraph text')
 Paragraph.small('Small paragraph text for captions')
 
 // With paragraph spacing
-Paragraph.medium(
-  'Text with spacing',
-  paragraphSpacing: 16.0,
+Padding(
+  padding: const EdgeInsets.only(bottom: 16.0),
+  child: Paragraph('Text with spacing'),
 )
 ```
 
@@ -243,12 +246,13 @@ AppText.titleLarge('Title text')
 AppText.bodyLarge('Body text')
 AppText.labelMedium('Label text')
 
-// Custom text
-AppText.custom(
+// Custom text (advanced): use Flutter Text directly with `textTheme`
+final t = Theme.of(context).textTheme;
+final scheme = Theme.of(context).colorScheme;
+
+SelectableText(
   'Custom styled text',
-  getStyle: (context) => ResponsiveTextStyles.bodyMedium(context),
-  color: Theme.of(context).colorScheme.error,
-  selectable: true,
+  style: t.bodyMedium?.copyWith(color: scheme.error),
 )
 ```
 
@@ -468,7 +472,7 @@ class CustomTheme {
 
 ```dart
 Heading.h1('Page Title')
-Paragraph.medium('Body content')
+Paragraph('Body content')
 ```
 
 ❌ **Avoid**: Raw Text widgets with manual styling
@@ -651,7 +655,7 @@ For questions or issues with the theme system:
 
 1. Check the existing documentation in each module
 2. Review `lib/core/adaptive/README.md` for adaptive layout guidance
-3. Check the `typography-guide.md` for typography-specific guidance
+3. Check `lib/core/theme/typography/typography-guide.md` (and `docs/explainers/core/theme/*`) for typography guidance
 4. Refer to component examples in the codebase
 
 The theme system is designed to be comprehensive yet flexible, providing a solid foundation for consistent, accessible, and responsive design throughout the application.
