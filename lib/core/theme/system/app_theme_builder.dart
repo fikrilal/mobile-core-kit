@@ -25,6 +25,11 @@ abstract final class AppThemeBuilder {
       useMaterial3: true,
       scaffoldBackgroundColor: scheme.surface,
       colorScheme: scheme,
+      dividerTheme: DividerThemeData(
+        // Decorative separators should be subtle; interactive boundaries should
+        // use `scheme.outline` directly.
+        color: scheme.outlineVariant,
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: scheme.primary,
@@ -75,7 +80,18 @@ abstract final class AppThemeBuilder {
       cardTheme: CardThemeData(
         elevation: 0,
         margin: const EdgeInsets.all(0),
-        color: scheme.surface,
+        // Default “raised” surface for cards/containers.
+        color: scheme.surfaceContainerLow,
+      ),
+      dialogTheme: DialogThemeData(
+        // Overlay surfaces should read as a layer above containers.
+        backgroundColor: scheme.surfaceContainerHigh,
+        surfaceTintColor: scheme.surfaceTint,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surfaceContainerHigh,
+        modalBackgroundColor: scheme.surfaceContainerHigh,
+        surfaceTintColor: scheme.surfaceTint,
       ),
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surface,
@@ -95,4 +111,3 @@ abstract final class AppThemeBuilder {
     );
   }
 }
-
