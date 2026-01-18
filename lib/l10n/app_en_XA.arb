@@ -94,5 +94,253 @@
   "errorsValidation": "⟪Ƥŀḗåşḗ ƒīẋ ŧħḗ ħīğħŀīğħŧḗḓ ḗŗŗǿŗş.⟫",
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "validationInvalidEmail": "⟪Ƥŀḗåşḗ ḗñŧḗŗ å ṽåŀīḓ ḗḿåīŀ åḓḓŗḗşş⟫",
+  "@validationInvalidEmail": {
+    "description": "Validation message shown when an email address is invalid."
+  },
+  "validationRequired": "⟪Ŧħīş ƒīḗŀḓ çåññǿŧ ƀḗ ḗḿρŧẏ⟫",
+  "@validationRequired": {
+    "description": "Validation message shown when a required field is empty."
+  },
+  "validationPasswordTooShort": "⟪Ƥåşşẇǿŗḓ ḿüşŧ ƀḗ åŧ ŀḗåşŧ 8 çħåŗåçŧḗŗş⟫",
+  "@validationPasswordTooShort": {
+    "description": "Validation message shown when the password is too short."
+  },
+  "validationPasswordsDoNotMatch": "⟪Ƥåşşẇǿŗḓş ḓǿ ñǿŧ ḿåŧçħ⟫",
+  "@validationPasswordsDoNotMatch": {
+    "description": "Validation message shown when a password confirmation does not match."
+  },
+  "validationNameTooShort": "⟪Ḿüşŧ ƀḗ åŧ ŀḗåşŧ 2 çħåŗåçŧḗŗş⟫",
+  "@validationNameTooShort": {
+    "description": "Validation message shown when a name field is too short."
+  },
+  "validationNameTooLong": "⟪Çåññǿŧ ḗẋçḗḗḓ 50 çħåŗåçŧḗŗş⟫",
+  "@validationNameTooLong": {
+    "description": "Validation message shown when a name field is too long."
+  },
+  "authErrorsInvalidCredentials": "⟪Īñṽåŀīḓ ḗḿåīŀ ǿŗ ρåşşẇǿŗḓ⟫",
+  "@authErrorsInvalidCredentials": {
+    "description": "Message shown when the user enters invalid login credentials."
+  },
+  "authErrorsEmailTaken": "⟪Ḗḿåīŀ åŀŗḗåḓẏ īñ üşḗ⟫",
+  "@authErrorsEmailTaken": {
+    "description": "Message shown when a user attempts to register with an email that already exists."
+  },
+  "authErrorsEmailNotVerified": "⟪Ƥŀḗåşḗ ṽḗŗīƒẏ ẏǿüŗ ḗḿåīŀ ƀḗƒǿŗḗ çǿñŧīñüīñğ⟫",
+  "@authErrorsEmailNotVerified": {
+    "description": "Message shown when the user must verify their email before continuing."
+  },
+  "authErrorsLogoutFailed": "⟪Ƒåīŀḗḓ ŧǿ ŀǿğ ǿüŧ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
+  "@authErrorsLogoutFailed": {
+    "description": "Message shown when the app cannot complete a logout flow."
+  },
+  "commonEmail": "⟪Ḗḿåīŀ⟫",
+  "@commonEmail": {
+    "description": "Generic field label for an email address."
+  },
+  "commonPassword": "⟪Ƥåşşẇǿŗḓ⟫",
+  "@commonPassword": {
+    "description": "Generic field label for a password."
+  },
+  "commonFirstName": "⟪Ƒīŗşŧ Ńåḿḗ⟫",
+  "@commonFirstName": {
+    "description": "Generic field label for a user's first name."
+  },
+  "commonLastName": "⟪Ļåşŧ Ńåḿḗ⟫",
+  "@commonLastName": {
+    "description": "Generic field label for a user's last name."
+  },
+  "commonHome": "⟪Ħǿḿḗ⟫",
+  "@commonHome": {
+    "description": "Navigation label for the home tab/screen."
+  },
+  "commonProfile": "⟪Ƥŗǿƒīŀḗ⟫",
+  "@commonProfile": {
+    "description": "Navigation label for the profile tab/screen."
+  },
+  "commonSettings": "⟪Şḗŧŧīñğş⟫",
+  "@commonSettings": {
+    "description": "Section heading for settings."
+  },
+  "commonContinue": "⟪Çǿñŧīñüḗ⟫",
+  "@commonContinue": {
+    "description": "Generic CTA label for progressing to the next step."
+  },
+  "commonLanguage": "⟪Ļåñğüåğḗ⟫",
+  "@commonLanguage": {
+    "description": "Settings label for language/locale selection."
+  },
+  "commonAppearance": "⟪Åρρḗåŗåñçḗ⟫",
+  "@commonAppearance": {
+    "description": "Settings label for appearance/theme selection."
+  },
+  "commonTheme": "⟪Ŧħḗḿḗ⟫",
+  "@commonTheme": {
+    "description": "Title for theme selection UI."
+  },
+  "commonSystem": "⟪Şẏşŧḗḿ⟫",
+  "@commonSystem": {
+    "description": "Option label meaning the app follows the system/device setting."
+  },
+  "commonLight": "⟪Ļīğħŧ⟫",
+  "@commonLight": {
+    "description": "Option label for light theme."
+  },
+  "commonDark": "⟪Ḓåŗķ⟫",
+  "@commonDark": {
+    "description": "Option label for dark theme."
+  },
+  "commonDeveloper": "⟪Ḓḗṽḗŀǿρḗŗ⟫",
+  "@commonDeveloper": {
+    "description": "Section heading for developer-only tools."
+  },
+  "commonLogout": "⟪Ļǿğ ǿüŧ⟫",
+  "@commonLogout": {
+    "description": "Action label to log out/sign out."
+  },
+  "authSignIn": "⟪Şīğñ Īñ⟫",
+  "@authSignIn": {
+    "description": "Title/button label for signing in."
+  },
+  "authCreateAccount": "⟪Çŗḗåŧḗ Åççǿüñŧ⟫",
+  "@authCreateAccount": {
+    "description": "Title/button label for creating a new account."
+  },
+  "authContinueWithGoogle": "⟪Çǿñŧīñüḗ ẇīŧħ Ĝǿǿğŀḗ⟫",
+  "@authContinueWithGoogle": {
+    "description": "Button label for continuing sign-in with Google."
+  },
+  "authSemanticSignIn": "⟪Şīğñ īñ ŧǿ ẏǿüŗ åççǿüñŧ⟫",
+  "@authSemanticSignIn": {
+    "description": "Accessibility label for the primary sign-in action."
+  },
+  "authSemanticCreateAccount": "⟪Çŗḗåŧḗ å ñḗẇ åççǿüñŧ⟫",
+  "@authSemanticCreateAccount": {
+    "description": "Accessibility label for the create account action."
+  },
+  "authNoAccountCta": "⟪Ḓǿñ’ŧ ħåṽḗ åñ åççǿüñŧ? Çŗḗåŧḗ ǿñḗ⟫",
+  "@authNoAccountCta": {
+    "description": "CTA text linking from sign-in to registration."
+  },
+  "authHaveAccountCta": "⟪Åŀŗḗåḓẏ ħåṽḗ åñ åççǿüñŧ? Şīğñ īñ⟫",
+  "@authHaveAccountCta": {
+    "description": "CTA text linking from registration back to sign-in."
+  },
+  "onboardingWelcomeTitle": "⟪Ẇḗŀçǿḿḗ⟫",
+  "@onboardingWelcomeTitle": {
+    "description": "Title shown on the onboarding screen."
+  },
+  "onboardingPlaceholderBody": "⟪Ŧħīş īş ŧħḗ ǿñƀǿåŗḓīñğ ρŀåçḗħǿŀḓḗŗ. Ƥŗǿĵḗçŧş çåñ ŗḗρŀåçḗ ŧħīş ẇīŧħ å ƀŗåñḓḗḓ ǿñƀǿåŗḓīñğ ƒŀǿẇ.⟫",
+  "@onboardingPlaceholderBody": {
+    "description": "Placeholder body copy explaining onboarding can be replaced by product teams."
+  },
+  "onboardingSemanticContinue": "⟪Çǿñŧīñüḗ ǿñƀǿåŗḓīñğ⟫",
+  "@onboardingSemanticContinue": {
+    "description": "Accessibility label for continuing from onboarding."
+  },
+  "profileYourAccountHeading": "⟪Ẏǿüŗ åççǿüñŧ⟫",
+  "@profileYourAccountHeading": {
+    "description": "Profile screen heading for the account section."
+  },
+  "profileInbox": "⟪Īñƀǿẋ⟫",
+  "@profileInbox": {
+    "description": "Profile screen list item label for inbox."
+  },
+  "profileHelp": "⟪Ħḗŀρ⟫",
+  "@profileHelp": {
+    "description": "Profile screen list item label for help/support."
+  },
+  "profileStatementsAndReports": "⟪Şŧåŧḗḿḗñŧş åñḓ ŗḗρǿŗŧş⟫",
+  "@profileStatementsAndReports": {
+    "description": "Profile screen list item label for statements and reports."
+  },
+  "profileSecurityAndPrivacy": "⟪Şḗçüŗīŧẏ åñḓ ρŗīṽåçẏ⟫",
+  "@profileSecurityAndPrivacy": {
+    "description": "Profile/settings list item label for security and privacy."
+  },
+  "profileSecurityAndPrivacySubtitle": "⟪Çħåñğḗ ẏǿüŗ şḗçüŗīŧẏ åñḓ ρŗīṽåçẏ şḗŧŧīñğş⟫",
+  "@profileSecurityAndPrivacySubtitle": {
+    "description": "Subtitle describing security and privacy settings."
+  },
+  "profileNotifications": "⟪Ńǿŧīƒīçåŧīǿñş⟫",
+  "@profileNotifications": {
+    "description": "Profile/settings list item label for notifications."
+  },
+  "profileNotificationsSubtitle": "⟪Çüşŧǿḿīşḗ ħǿẇ ẏǿü ğḗŧ üρḓåŧḗş⟫",
+  "@profileNotificationsSubtitle": {
+    "description": "Subtitle describing notification preferences."
+  },
+  "profilePaymentMethods": "⟪Ƥåẏḿḗñŧ ḿḗŧħǿḓş⟫",
+  "@profilePaymentMethods": {
+    "description": "Profile/settings list item label for payment methods."
+  },
+  "profilePaymentMethodsSubtitle": "⟪Ḿåñåğḗ şåṽḗḓ çåŗḓş åñḓ ƀåñķ åççǿüñŧş⟫",
+  "@profilePaymentMethodsSubtitle": {
+    "description": "Subtitle describing payment method management."
+  },
+  "profileThemeRoles": "⟪Ŧħḗḿḗ ŗǿŀḗş⟫",
+  "@profileThemeRoles": {
+    "description": "Developer tool navigation label for theme roles."
+  },
+  "profileThemeRolesSubtitle": "⟪Ṽīḗẇ ColorScheme + SemanticColors ŗǿŀḗş⟫",
+  "@profileThemeRolesSubtitle": {
+    "description": "Developer tool subtitle describing theme roles screen."
+  },
+  "profileWidgetShowcases": "⟪Ẇīḓğḗŧ Şħǿẇçåşḗş⟫",
+  "@profileWidgetShowcases": {
+    "description": "Developer tool navigation label for widget showcases."
+  },
+  "profileWidgetShowcasesSubtitle": "⟪Ƀüŧŧǿñş, ƒīḗŀḓş, ŧẏρǿğŗåρħẏ & ḿǿŗḗ⟫",
+  "@profileWidgetShowcasesSubtitle": {
+    "description": "Developer tool subtitle describing widget showcase content."
+  },
+  "profileLoggingOut": "⟪Ļǿğğīñğ ǿüŧ...⟫",
+  "@profileLoggingOut": {
+    "description": "Loading overlay message shown while logging out."
+  },
+  "profileLogoutDialogTitle": "⟪Ļǿğ ǿüŧ?⟫",
+  "@profileLogoutDialogTitle": {
+    "description": "Confirmation dialog title when the user attempts to log out."
+  },
+  "profileLogoutDialogMessage": "⟪Ẏǿü ẇīŀŀ ñḗḗḓ ŧǿ şīğñ īñ åğåīñ ŧǿ çǿñŧīñüḗ. Ŧħīş ẇīŀŀ åŀşǿ ŗḗṽǿķḗ ẏǿüŗ şḗşşīǿñş ǿñ ǿŧħḗŗ ḓḗṽīçḗş.⟫",
+  "@profileLogoutDialogMessage": {
+    "description": "Confirmation dialog message describing the effects of logging out."
+  },
+  "settingsFollowDeviceAppearance": "⟪Ƒǿŀŀǿẇ ḓḗṽīçḗ åρρḗåŗåñçḗ⟫",
+  "@settingsFollowDeviceAppearance": {
+    "description": "Subtitle for the system theme option."
+  },
+  "settingsFollowDeviceLanguage": "⟪Ƒǿŀŀǿẇ ḓḗṽīçḗ ŀåñğüåğḗ⟫",
+  "@settingsFollowDeviceLanguage": {
+    "description": "Subtitle for the system language option."
+  },
+  "languageEnglish": "⟪Ḗñğŀīşħ⟫",
+  "@languageEnglish": {
+    "description": "Language name shown in the language picker."
+  },
+  "languageIndonesian": "⟪Ƀåħåşå Īñḓǿñḗşīå⟫",
+  "@languageIndonesian": {
+    "description": "Language name shown in the language picker."
+  },
+  "devDeveloperQa": "⟪Ḓḗṽḗŀǿρḗŗ ɊÅ⟫",
+  "@devDeveloperQa": {
+    "description": "Heading for developer-only QA options."
+  },
+  "devPseudoLocaleEnXa": "⟪Ḗñğŀīşħ (en-XA)⟫",
+  "@devPseudoLocaleEnXa": {
+    "description": "Developer-only pseudo-locale option label for en-XA."
+  },
+  "devPseudoLocaleEnXaSubtitle": "⟪Ƥşḗüḓǿ-ŀǿçåŀḗ (åççḗñŧḗḓ/ḗẋρåñḓḗḓ)⟫",
+  "@devPseudoLocaleEnXaSubtitle": {
+    "description": "Developer-only subtitle describing the en-XA pseudo-locale."
+  },
+  "devPseudoLocaleArXb": "⟪RTL (ar-XB)⟫",
+  "@devPseudoLocaleArXb": {
+    "description": "Developer-only pseudo-locale option label for ar-XB."
+  },
+  "devPseudoLocaleArXbSubtitle": "⟪Ƥşḗüḓǿ-ŀǿçåŀḗ (ƒǿŗçḗḓ RTL)⟫",
+  "@devPseudoLocaleArXbSubtitle": {
+    "description": "Developer-only subtitle describing the ar-XB pseudo-locale."
   }
 }

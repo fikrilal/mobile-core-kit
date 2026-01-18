@@ -94,5 +94,253 @@
   "errorsValidation": "Silakan perbaiki kesalahan yang ditandai.",
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "validationInvalidEmail": "Masukkan alamat email yang valid",
+  "@validationInvalidEmail": {
+    "description": "Validation message shown when an email address is invalid."
+  },
+  "validationRequired": "Kolom ini tidak boleh kosong",
+  "@validationRequired": {
+    "description": "Validation message shown when a required field is empty."
+  },
+  "validationPasswordTooShort": "Kata sandi minimal 8 karakter",
+  "@validationPasswordTooShort": {
+    "description": "Validation message shown when the password is too short."
+  },
+  "validationPasswordsDoNotMatch": "Kata sandi tidak sama",
+  "@validationPasswordsDoNotMatch": {
+    "description": "Validation message shown when a password confirmation does not match."
+  },
+  "validationNameTooShort": "Minimal 2 karakter",
+  "@validationNameTooShort": {
+    "description": "Validation message shown when a name field is too short."
+  },
+  "validationNameTooLong": "Maksimal 50 karakter",
+  "@validationNameTooLong": {
+    "description": "Validation message shown when a name field is too long."
+  },
+  "authErrorsInvalidCredentials": "Email atau kata sandi salah",
+  "@authErrorsInvalidCredentials": {
+    "description": "Message shown when the user enters invalid login credentials."
+  },
+  "authErrorsEmailTaken": "Email sudah digunakan",
+  "@authErrorsEmailTaken": {
+    "description": "Message shown when a user attempts to register with an email that already exists."
+  },
+  "authErrorsEmailNotVerified": "Silakan verifikasi email Anda sebelum melanjutkan",
+  "@authErrorsEmailNotVerified": {
+    "description": "Message shown when the user must verify their email before continuing."
+  },
+  "authErrorsLogoutFailed": "Gagal keluar. Silakan coba lagi.",
+  "@authErrorsLogoutFailed": {
+    "description": "Message shown when the app cannot complete a logout flow."
+  },
+  "commonEmail": "Email",
+  "@commonEmail": {
+    "description": "Generic field label for an email address."
+  },
+  "commonPassword": "Kata sandi",
+  "@commonPassword": {
+    "description": "Generic field label for a password."
+  },
+  "commonFirstName": "Nama depan",
+  "@commonFirstName": {
+    "description": "Generic field label for a user's first name."
+  },
+  "commonLastName": "Nama belakang",
+  "@commonLastName": {
+    "description": "Generic field label for a user's last name."
+  },
+  "commonHome": "Beranda",
+  "@commonHome": {
+    "description": "Navigation label for the home tab/screen."
+  },
+  "commonProfile": "Profil",
+  "@commonProfile": {
+    "description": "Navigation label for the profile tab/screen."
+  },
+  "commonSettings": "Pengaturan",
+  "@commonSettings": {
+    "description": "Section heading for settings."
+  },
+  "commonContinue": "Lanjutkan",
+  "@commonContinue": {
+    "description": "Generic CTA label for progressing to the next step."
+  },
+  "commonLanguage": "Bahasa",
+  "@commonLanguage": {
+    "description": "Settings label for language/locale selection."
+  },
+  "commonAppearance": "Tampilan",
+  "@commonAppearance": {
+    "description": "Settings label for appearance/theme selection."
+  },
+  "commonTheme": "Tema",
+  "@commonTheme": {
+    "description": "Title for theme selection UI."
+  },
+  "commonSystem": "Sistem",
+  "@commonSystem": {
+    "description": "Option label meaning the app follows the system/device setting."
+  },
+  "commonLight": "Terang",
+  "@commonLight": {
+    "description": "Option label for light theme."
+  },
+  "commonDark": "Gelap",
+  "@commonDark": {
+    "description": "Option label for dark theme."
+  },
+  "commonDeveloper": "Pengembang",
+  "@commonDeveloper": {
+    "description": "Section heading for developer-only tools."
+  },
+  "commonLogout": "Keluar",
+  "@commonLogout": {
+    "description": "Action label to log out/sign out."
+  },
+  "authSignIn": "Masuk",
+  "@authSignIn": {
+    "description": "Title/button label for signing in."
+  },
+  "authCreateAccount": "Buat akun",
+  "@authCreateAccount": {
+    "description": "Title/button label for creating a new account."
+  },
+  "authContinueWithGoogle": "Lanjutkan dengan Google",
+  "@authContinueWithGoogle": {
+    "description": "Button label for continuing sign-in with Google."
+  },
+  "authSemanticSignIn": "Masuk ke akun Anda",
+  "@authSemanticSignIn": {
+    "description": "Accessibility label for the primary sign-in action."
+  },
+  "authSemanticCreateAccount": "Buat akun baru",
+  "@authSemanticCreateAccount": {
+    "description": "Accessibility label for the create account action."
+  },
+  "authNoAccountCta": "Belum punya akun? Buat akun",
+  "@authNoAccountCta": {
+    "description": "CTA text linking from sign-in to registration."
+  },
+  "authHaveAccountCta": "Sudah punya akun? Masuk",
+  "@authHaveAccountCta": {
+    "description": "CTA text linking from registration back to sign-in."
+  },
+  "onboardingWelcomeTitle": "Selamat datang",
+  "@onboardingWelcomeTitle": {
+    "description": "Title shown on the onboarding screen."
+  },
+  "onboardingPlaceholderBody": "Ini adalah placeholder onboarding. Proyek dapat menggantinya dengan alur onboarding yang sesuai brand.",
+  "@onboardingPlaceholderBody": {
+    "description": "Placeholder body copy explaining onboarding can be replaced by product teams."
+  },
+  "onboardingSemanticContinue": "Lanjutkan onboarding",
+  "@onboardingSemanticContinue": {
+    "description": "Accessibility label for continuing from onboarding."
+  },
+  "profileYourAccountHeading": "Akun Anda",
+  "@profileYourAccountHeading": {
+    "description": "Profile screen heading for the account section."
+  },
+  "profileInbox": "Kotak masuk",
+  "@profileInbox": {
+    "description": "Profile screen list item label for inbox."
+  },
+  "profileHelp": "Bantuan",
+  "@profileHelp": {
+    "description": "Profile screen list item label for help/support."
+  },
+  "profileStatementsAndReports": "Ringkasan dan laporan",
+  "@profileStatementsAndReports": {
+    "description": "Profile screen list item label for statements and reports."
+  },
+  "profileSecurityAndPrivacy": "Keamanan dan privasi",
+  "@profileSecurityAndPrivacy": {
+    "description": "Profile/settings list item label for security and privacy."
+  },
+  "profileSecurityAndPrivacySubtitle": "Ubah pengaturan keamanan dan privasi",
+  "@profileSecurityAndPrivacySubtitle": {
+    "description": "Subtitle describing security and privacy settings."
+  },
+  "profileNotifications": "Notifikasi",
+  "@profileNotifications": {
+    "description": "Profile/settings list item label for notifications."
+  },
+  "profileNotificationsSubtitle": "Atur cara Anda menerima pembaruan",
+  "@profileNotificationsSubtitle": {
+    "description": "Subtitle describing notification preferences."
+  },
+  "profilePaymentMethods": "Metode pembayaran",
+  "@profilePaymentMethods": {
+    "description": "Profile/settings list item label for payment methods."
+  },
+  "profilePaymentMethodsSubtitle": "Kelola kartu dan rekening bank yang tersimpan",
+  "@profilePaymentMethodsSubtitle": {
+    "description": "Subtitle describing payment method management."
+  },
+  "profileThemeRoles": "Peran tema",
+  "@profileThemeRoles": {
+    "description": "Developer tool navigation label for theme roles."
+  },
+  "profileThemeRolesSubtitle": "Lihat peran ColorScheme + SemanticColors",
+  "@profileThemeRolesSubtitle": {
+    "description": "Developer tool subtitle describing theme roles screen."
+  },
+  "profileWidgetShowcases": "Contoh widget",
+  "@profileWidgetShowcases": {
+    "description": "Developer tool navigation label for widget showcases."
+  },
+  "profileWidgetShowcasesSubtitle": "Tombol, kolom, tipografi, dan lainnya",
+  "@profileWidgetShowcasesSubtitle": {
+    "description": "Developer tool subtitle describing widget showcase content."
+  },
+  "profileLoggingOut": "Sedang keluar...",
+  "@profileLoggingOut": {
+    "description": "Loading overlay message shown while logging out."
+  },
+  "profileLogoutDialogTitle": "Keluar?",
+  "@profileLogoutDialogTitle": {
+    "description": "Confirmation dialog title when the user attempts to log out."
+  },
+  "profileLogoutDialogMessage": "Anda harus masuk lagi untuk melanjutkan. Ini juga akan mencabut sesi Anda di perangkat lain.",
+  "@profileLogoutDialogMessage": {
+    "description": "Confirmation dialog message describing the effects of logging out."
+  },
+  "settingsFollowDeviceAppearance": "Ikuti tampilan perangkat",
+  "@settingsFollowDeviceAppearance": {
+    "description": "Subtitle for the system theme option."
+  },
+  "settingsFollowDeviceLanguage": "Ikuti bahasa perangkat",
+  "@settingsFollowDeviceLanguage": {
+    "description": "Subtitle for the system language option."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Language name shown in the language picker."
+  },
+  "languageIndonesian": "Bahasa Indonesia",
+  "@languageIndonesian": {
+    "description": "Language name shown in the language picker."
+  },
+  "devDeveloperQa": "QA Pengembang",
+  "@devDeveloperQa": {
+    "description": "Heading for developer-only QA options."
+  },
+  "devPseudoLocaleEnXa": "English (en-XA)",
+  "@devPseudoLocaleEnXa": {
+    "description": "Developer-only pseudo-locale option label for en-XA."
+  },
+  "devPseudoLocaleEnXaSubtitle": "Pseudo-locale (aksen/diperluas)",
+  "@devPseudoLocaleEnXaSubtitle": {
+    "description": "Developer-only subtitle describing the en-XA pseudo-locale."
+  },
+  "devPseudoLocaleArXb": "RTL (ar-XB)",
+  "@devPseudoLocaleArXb": {
+    "description": "Developer-only pseudo-locale option label for ar-XB."
+  },
+  "devPseudoLocaleArXbSubtitle": "Pseudo-locale (RTL dipaksa)",
+  "@devPseudoLocaleArXbSubtitle": {
+    "description": "Developer-only subtitle describing the ar-XB pseudo-locale."
   }
 }
