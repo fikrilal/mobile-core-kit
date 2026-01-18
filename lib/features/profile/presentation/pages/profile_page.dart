@@ -7,6 +7,7 @@ import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
@@ -74,6 +75,19 @@ class _ProfileContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [AppAvatar(onChangePhoto: () {})],
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
+                    AppText.headlineMedium('Ahmad Fikril Al Muzakki'),
+                  ],
+                ),
+              ),
               AppText.headlineMedium(context.l10n.profileYourAccountHeading),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
