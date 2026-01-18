@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/tokens/spacing.dart';
-import '../avatar/avatar_size.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/avatar_size.dart';
 
 /// Circular icon container with an optional notification dot (top-right).
 ///

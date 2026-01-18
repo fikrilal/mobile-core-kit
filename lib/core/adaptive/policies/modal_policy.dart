@@ -1,5 +1,5 @@
-import '../adaptive_spec.dart';
-import '../size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// Primary modal presentation decision.
 enum AdaptiveModalPresentation { bottomSheet, dialog }
@@ -23,7 +23,9 @@ sealed class ModalPolicy {
   AdaptiveModalPresentation modalPresentation({required LayoutSpec layout});
 
   /// Chooses side sheet vs modal fallback given the current [LayoutSpec].
-  AdaptiveSideSheetPresentation sideSheetPresentation({required LayoutSpec layout});
+  AdaptiveSideSheetPresentation sideSheetPresentation({
+    required LayoutSpec layout,
+  });
 }
 
 class _StandardModalPolicy extends ModalPolicy {
@@ -38,7 +40,9 @@ class _StandardModalPolicy extends ModalPolicy {
   }
 
   @override
-  AdaptiveSideSheetPresentation sideSheetPresentation({required LayoutSpec layout}) {
+  AdaptiveSideSheetPresentation sideSheetPresentation({
+    required LayoutSpec layout,
+  }) {
     if (layout.widthClass == WindowWidthClass.compact) {
       return AdaptiveSideSheetPresentation.modalFallback;
     }

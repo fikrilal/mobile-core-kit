@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_context.dart';
-import '../tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 
 /// Default screen wrapper for adaptive page layout.
 ///

@@ -13,4 +13,3 @@ abstract final class ValidationErrorCodes {
   static const invalidFirstName = 'invalid_first_name';
   static const invalidLastName = 'invalid_last_name';
 }
-

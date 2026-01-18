@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
-import '../../configs/api_host.dart';
-import '../../utilities/log_utils.dart';
-import '../../services/connectivity/connectivity_service.dart';
-import '../../services/connectivity/connectivity_service_impl.dart';
-import 'api_paginated_result.dart';
-import 'api_response.dart';
-import 'no_data.dart';
-import '../exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/network/api/api_paginated_result.dart';
+import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/network/api/no_data.dart';
+import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/services/connectivity/connectivity_service_impl.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 typedef JsonParser<R> = R Function(Map<String, dynamic> json);
 typedef ItemParser<R> = JsonParser<R>;

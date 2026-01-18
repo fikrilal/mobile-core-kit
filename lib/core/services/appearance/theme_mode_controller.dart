@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../utilities/log_utils.dart';
-import 'theme_mode_store.dart';
+import 'package:mobile_core_kit/core/services/appearance/theme_mode_store.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 /// In-memory theme mode preference with SharedPreferences persistence.
 ///
@@ -46,10 +45,7 @@ class ThemeModeController extends ValueNotifier<ThemeMode> {
     try {
       await _store.write(mode);
     } catch (e, st) {
-      Log.warning(
-        'Failed to persist theme mode preference',
-        name: 'ThemeMode',
-      );
+      Log.warning('Failed to persist theme mode preference', name: 'ThemeMode');
       Log.error('Theme mode persist error', e, st, false, 'ThemeMode');
     }
   }

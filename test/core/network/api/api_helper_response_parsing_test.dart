@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/configs/api_host.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/api/api_paginated_result.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
 import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockConnectivityService extends Mock implements ConnectivityService {}
 

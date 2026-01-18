@@ -10,13 +10,7 @@ LinearGradient _defaultShimmerGradient(ColorScheme scheme) {
   return LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.centerRight,
-    colors: <Color>[
-      base,
-      base,
-      highlight,
-      base,
-      base,
-    ],
+    colors: <Color>[base, base, highlight, base, base],
     stops: const <double>[0.0, 0.35, 0.5, 0.65, 1.0],
   );
 }

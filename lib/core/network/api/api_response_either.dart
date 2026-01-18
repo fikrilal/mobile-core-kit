@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
-import 'api_response.dart';
-import '../exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
 
 extension ApiResponseEitherX<T> on ApiResponse<T> {
   /// Converts `ApiResponse<T>` into `Either<ApiFailure, T>`.

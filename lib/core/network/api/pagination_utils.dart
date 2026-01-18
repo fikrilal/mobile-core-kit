@@ -1,4 +1,4 @@
-import 'api_paginated_result.dart';
+import 'package:mobile_core_kit/core/network/api/api_paginated_result.dart';
 
 /// Cursor-oriented domain pagination view.
 class DomainCursorPagination {

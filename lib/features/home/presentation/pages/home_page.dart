@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
-
-import '../../../../core/adaptive/tokens/surface_tokens.dart';
-import '../../../../core/adaptive/widgets/app_page_container.dart';
-import '../../../../core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

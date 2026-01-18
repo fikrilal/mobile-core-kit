@@ -1,6 +1,6 @@
 import 'package:app_links/app_links.dart';
 
-import 'deep_link_source.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_source.dart';
 
 class AppLinksDeepLinkSource implements DeepLinkSource {
   AppLinksDeepLinkSource({AppLinks? appLinks})

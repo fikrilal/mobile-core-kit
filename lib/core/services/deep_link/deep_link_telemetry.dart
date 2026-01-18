@@ -1,6 +1,6 @@
-import '../../services/analytics/analytics_tracker.dart';
-import '../../utilities/log_utils.dart';
-import 'deep_link_intent.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_intent.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class DeepLinkTelemetry {
   DeepLinkTelemetry({

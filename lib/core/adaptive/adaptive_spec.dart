@@ -6,9 +6,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'foldables/foldable_spec.dart';
-import 'size_classes.dart';
-import 'tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/foldable_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 
 enum InputMode { touch, pointer, mixed }
 

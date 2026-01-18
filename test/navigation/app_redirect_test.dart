@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
@@ -15,6 +14,7 @@ import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockAppLaunchService extends Mock implements AppLaunchService {}

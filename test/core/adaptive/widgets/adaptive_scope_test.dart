@@ -17,9 +17,9 @@ void main() {
 
       await tester.pumpWidget(
         MediaQuery(
-          data: MediaQueryData.fromView(tester.view).copyWith(
-            textScaler: TextScaler.linear(3.0),
-          ),
+          data: MediaQueryData.fromView(
+            tester.view,
+          ).copyWith(textScaler: TextScaler.linear(3.0)),
           child: Directionality(
             textDirection: TextDirection.ltr,
             child: Align(
@@ -32,8 +32,9 @@ void main() {
                   child: Builder(
                     builder: (context) {
                       spec = context.adaptive;
-                      clampedScale =
-                          MediaQuery.of(context).textScaler.scale(1.0);
+                      clampedScale = MediaQuery.of(
+                        context,
+                      ).textScaler.scale(1.0);
                       return const SizedBox.shrink();
                     },
                   ),
@@ -57,43 +58,44 @@ void main() {
       expect(spec!.text.textScaler.scale(1.0), 2.0);
     });
 
-    testWidgets('falls back to MediaQuery size when constraints are unbounded', (
-      tester,
-    ) async {
-      tester.view.devicePixelRatio = 1.0;
-      tester.view.physicalSize = const Size(800, 600);
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
+    testWidgets(
+      'falls back to MediaQuery size when constraints are unbounded',
+      (tester) async {
+        tester.view.devicePixelRatio = 1.0;
+        tester.view.physicalSize = const Size(800, 600);
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
 
-      AdaptiveSpec? spec;
+        AdaptiveSpec? spec;
 
-      await tester.pumpWidget(
-        MediaQuery(
-          data: MediaQueryData.fromView(tester.view),
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: UnconstrainedBox(
-              child: AdaptiveScope(
-                navigationPolicy: const NavigationPolicy.none(),
-                child: Builder(
-                  builder: (context) {
-                    spec = context.adaptive;
-                    return const SizedBox.shrink();
-                  },
+        await tester.pumpWidget(
+          MediaQuery(
+            data: MediaQueryData.fromView(tester.view),
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: UnconstrainedBox(
+                child: AdaptiveScope(
+                  navigationPolicy: const NavigationPolicy.none(),
+                  child: Builder(
+                    builder: (context) {
+                      spec = context.adaptive;
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      expect(spec, isNotNull);
+        expect(spec, isNotNull);
 
-      expect(spec!.layout.size, const Size(800, 600));
-      expect(spec!.layout.widthClass, WindowWidthClass.medium);
-      expect(spec!.layout.heightClass, WindowHeightClass.medium);
-    });
+        expect(spec!.layout.size, const Size(800, 600));
+        expect(spec!.layout.widthClass, WindowWidthClass.medium);
+        expect(spec!.layout.heightClass, WindowHeightClass.medium);
+      },
+    );
   });
 }

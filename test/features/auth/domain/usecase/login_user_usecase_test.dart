@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
@@ -10,6 +9,7 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 

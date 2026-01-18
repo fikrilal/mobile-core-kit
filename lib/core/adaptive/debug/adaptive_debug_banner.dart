@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 
 /// Debug-only banner that prints a short summary of the current `AdaptiveSpec`.
 ///

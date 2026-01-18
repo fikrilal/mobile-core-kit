@@ -35,10 +35,7 @@ void main() {
       expect(spec.hingeRect, feature.bounds);
       expect(spec.hingeAxis, Axis.horizontal);
 
-      expect(
-        () => spec.displayFeatures.add(feature),
-        throwsUnsupportedError,
-      );
+      expect(() => spec.displayFeatures.add(feature), throwsUnsupportedError);
     });
 
     test('derives spanned posture when any feature has non-zero thickness', () {
@@ -55,19 +52,24 @@ void main() {
       expect(spec.hingeAxis, Axis.vertical);
     });
 
-    test('derives unknown posture when features are present but not hinge-like', () {
-      final feature = _displayFeature(
-        bounds: const Rect.fromLTWH(0, 0, 200, 0),
-        state: DisplayFeatureState.unknown,
-      );
+    test(
+      'derives unknown posture when features are present but not hinge-like',
+      () {
+        final feature = _displayFeature(
+          bounds: const Rect.fromLTWH(0, 0, 200, 0),
+          state: DisplayFeatureState.unknown,
+        );
 
-      final spec = FoldableSpec.fromDisplayFeatures(<DisplayFeature>[feature]);
+        final spec = FoldableSpec.fromDisplayFeatures(<DisplayFeature>[
+          feature,
+        ]);
 
-      expect(spec.posture, DisplayPosture.unknown);
-      expect(spec.isSpanned, isFalse);
-      expect(spec.hingeRect, isNull);
-      expect(spec.hingeAxis, isNull);
-    });
+        expect(spec.posture, DisplayPosture.unknown);
+        expect(spec.isSpanned, isFalse);
+        expect(spec.hingeRect, isNull);
+        expect(spec.hingeAxis, isNull);
+      },
+    );
   });
 }
 
@@ -78,5 +80,9 @@ DisplayFeature _displayFeature({
   // The constructor signature for DisplayFeature is part of `dart:ui` and may
   // include additional fields depending on the engine version. Keep this helper
   // centralized so tests remain easy to update if needed.
-  return DisplayFeature(bounds: bounds, state: state, type: DisplayFeatureType.hinge);
+  return DisplayFeature(
+    bounds: bounds,
+    state: state,
+    type: DisplayFeatureType.hinge,
+  );
 }

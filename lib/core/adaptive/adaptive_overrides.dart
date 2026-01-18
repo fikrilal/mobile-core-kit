@@ -5,9 +5,9 @@
 // narrowly scoped override without forking the whole contract.
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_scope.dart';
-import 'adaptive_spec_builder.dart';
-import 'policies/navigation_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec_builder.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
 
 /// A governed escape hatch for rare, per-screen adaptive overrides.
 ///
@@ -17,7 +17,11 @@ import 'policies/navigation_policy.dart';
 /// This widget **does not** change size classes; it re-derives `LayoutSpec`
 /// using the nearest `AdaptiveModel`'s classification and window size.
 class AdaptiveOverrides extends StatelessWidget {
-  const AdaptiveOverrides({super.key, required this.child, this.navigationPolicy});
+  const AdaptiveOverrides({
+    super.key,
+    required this.child,
+    this.navigationPolicy,
+  });
 
   final Widget child;
 
@@ -49,6 +53,9 @@ class AdaptiveOverrides extends StatelessWidget {
       navigation: navigation,
     );
 
-    return AdaptiveModel(spec: parent.copyWith(layout: layout), child: child);
+    return AdaptiveModel(
+      spec: parent.copyWith(layout: layout),
+      child: child,
+    );
   }
 }

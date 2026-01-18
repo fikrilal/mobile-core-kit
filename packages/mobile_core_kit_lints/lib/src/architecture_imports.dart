@@ -17,8 +17,7 @@ class ArchitectureImportsLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'architecture_imports',
-    problemMessage:
-        'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
+    problemMessage: 'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
     correctionMessage:
         'Refactor to comply, or add an explicit exception in tool/lints/architecture_lints.yaml.',
     errorSeverity: ErrorSeverity.ERROR,
@@ -60,9 +59,11 @@ class ArchitectureImportsLint extends DartLintRule {
           '$configPath@${configLoadResult.mtime?.millisecondsSinceEpoch ?? 'missing'}';
       context.registry.addCompilationUnit((unit) {
         if (!_reportedConfigErrors.add(key)) return;
-        reporter.atNode(unit, _configErrorCode, arguments: [
-          configLoadResult.error!,
-        ]);
+        reporter.atNode(
+          unit,
+          _configErrorCode,
+          arguments: [configLoadResult.error!],
+        );
       });
       return;
     }
@@ -305,10 +306,7 @@ class ArchitectureImportsConfig {
         return null;
       }
     }
-    return tryParseYaml(
-      yaml: yaml,
-      fallbackPackageName: fallbackPackageName,
-    );
+    return tryParseYaml(yaml: yaml, fallbackPackageName: fallbackPackageName);
   }
 
   static ArchitectureImportsConfig? tryParseYaml({
@@ -411,7 +409,10 @@ class ArchitectureImportsConfig {
     }
 
     return (
-      config: ArchitectureImportsConfig._(packageName: packageName, rules: rules),
+      config: ArchitectureImportsConfig._(
+        packageName: packageName,
+        rules: rules,
+      ),
       error: null,
     );
   }
@@ -463,7 +464,10 @@ class _ImportRuleException {
 }
 
 class ArchitectureImportViolation {
-  const ArchitectureImportViolation({required this.ruleId, required this.reason});
+  const ArchitectureImportViolation({
+    required this.ruleId,
+    required this.reason,
+  });
 
   final String ruleId;
   final String reason;

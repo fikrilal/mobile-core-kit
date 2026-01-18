@@ -2,17 +2,17 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_spec.dart';
-import 'foldables/foldable_spec.dart';
-import 'policies/input_policy.dart';
-import 'policies/motion_policy.dart';
-import 'policies/navigation_policy.dart';
-import 'policies/platform_policy.dart';
-import 'policies/text_scale_policy.dart';
-import 'size_classes.dart';
-import 'tokens/grid_tokens.dart';
-import 'tokens/layout_tokens.dart';
-import 'tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/foldable_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/input_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/motion_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/platform_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/grid_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/layout_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 
 /// Derives the [AdaptiveSpec] contract from constraints + runtime capabilities.
 ///

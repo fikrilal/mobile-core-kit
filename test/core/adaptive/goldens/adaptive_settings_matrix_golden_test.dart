@@ -20,16 +20,13 @@ void main() {
 
       await tester.pumpWidget(
         MediaQuery(
-          data: MediaQueryData.fromView(tester.view).copyWith(
-            textScaler: TextScaler.linear(textScale),
-          ),
+          data: MediaQueryData.fromView(
+            tester.view,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: const Directionality(
             textDirection: TextDirection.ltr,
             child: DefaultTextStyle(
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF111111),
-              ),
+              style: TextStyle(fontSize: 16, color: Color(0xFF111111)),
               child: AdaptiveScope(
                 navigationPolicy: NavigationPolicy.none(),
                 child: _GoldenSettingsSurface(),

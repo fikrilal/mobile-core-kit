@@ -10,9 +10,7 @@ void main() {
 
   group('ApiFailureLocalizer', () {
     test('maps offline/timeout/auth/server cases', () async {
-      final l10n = await AppLocalizations.delegate.load(
-        const Locale('en'),
-      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
       expect(
         messageFor(ApiFailure(message: 'x', statusCode: -1), l10n),
@@ -41,9 +39,7 @@ void main() {
     });
 
     test('prefers mapping by error code when present', () async {
-      final l10n = await AppLocalizations.delegate.load(
-        const Locale('en'),
-      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
       expect(
         messageFor(
@@ -59,18 +55,13 @@ void main() {
     });
 
     test('falls back to unexpected for unknown cases', () async {
-      final l10n = await AppLocalizations.delegate.load(
-        const Locale('en'),
-      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
       expect(
         messageFor(ApiFailure(message: 'x', statusCode: 418), l10n),
         l10n.errorsUnexpected,
       );
-      expect(
-        messageFor(ApiFailure(message: 'x'), l10n),
-        l10n.errorsUnexpected,
-      );
+      expect(messageFor(ApiFailure(message: 'x'), l10n), l10n.errorsUnexpected);
     });
   });
 }

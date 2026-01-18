@@ -1,4 +1,4 @@
-import '../../../navigation/app_routes.dart';
+import 'package:mobile_core_kit/navigation/app_routes.dart';
 
 /// Parses and validates external deep links (e.g. HTTPS universal links) into
 /// internal GoRouter locations.

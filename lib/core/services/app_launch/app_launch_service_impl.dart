@@ -1,5 +1,5 @@
+import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'app_launch_service.dart';
 
 class AppLaunchServiceImpl implements AppLaunchService {
   static const int _kOnboardingVersion = 1;

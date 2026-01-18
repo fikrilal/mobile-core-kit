@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
@@ -9,6 +8,7 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockLogoutRemoteUseCase extends Mock implements LogoutRemoteUseCase {}
 

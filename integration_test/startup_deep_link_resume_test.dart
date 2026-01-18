@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
@@ -13,7 +13,6 @@ import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';

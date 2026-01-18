@@ -104,17 +104,20 @@ void main() {
       );
     });
 
-    test('falls back to errorsValidation when both code and message are empty', () async {
-      const locale = Locale('en');
-      final l10n = await AppLocalizations.delegate.load(locale);
+    test(
+      'falls back to errorsValidation when both code and message are empty',
+      () async {
+        const locale = Locale('en');
+        final l10n = await AppLocalizations.delegate.load(locale);
 
-      expect(
-        messageForValidationError(
-          const ValidationError(field: 'email', message: '', code: 'unknown'),
-          l10n,
-        ),
-        l10n.errorsValidation,
-      );
-    });
+        expect(
+          messageForValidationError(
+            const ValidationError(field: 'email', message: '', code: 'unknown'),
+            l10n,
+          ),
+          l10n.errorsValidation,
+        );
+      },
+    );
   });
 }

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 
 part 'auth_tokens_model.freezed.dart';
 part 'auth_tokens_model.g.dart';

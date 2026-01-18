@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/utilities/log_utils.dart';
-import '../../../domain/usecase/logout_flow_usecase.dart';
-import 'logout_state.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 
 class LogoutCubit extends Cubit<LogoutState> {
   LogoutCubit(this._logoutFlow) : super(LogoutState.initial());

@@ -1,8 +1,8 @@
 // lib/core/theme/theme.dart
 import 'package:flutter/material.dart';
-import 'light_theme.dart'; // Direct import of theme files
-import 'dark_theme.dart'; // Direct import of theme files
-import 'typography/typography_system.dart';
+import 'package:mobile_core_kit/core/theme/dark_theme.dart'; // Direct import of theme files
+import 'package:mobile_core_kit/core/theme/light_theme.dart'; // Direct import of theme files
+import 'package:mobile_core_kit/core/theme/typography/typography_system.dart';
 
 /// App theme with a deterministic typography system.
 ///

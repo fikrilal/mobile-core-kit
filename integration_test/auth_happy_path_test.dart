@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';

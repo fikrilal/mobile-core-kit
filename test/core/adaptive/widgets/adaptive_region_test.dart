@@ -4,7 +4,9 @@ import 'package:mobile_core_kit/core/adaptive/adaptive.dart';
 
 void main() {
   group('AdaptiveRegion', () {
-    testWidgets('overrides layout based on subtree constraints', (tester) async {
+    testWidgets('overrides layout based on subtree constraints', (
+      tester,
+    ) async {
       tester.view.devicePixelRatio = 1.0;
       tester.view.physicalSize = const Size(900, 700);
       addTearDown(() {

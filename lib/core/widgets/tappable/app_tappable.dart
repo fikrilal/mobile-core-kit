@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
+import 'package:mobile_core_kit/core/widgets/tappable/tappable_style.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
-
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../common/app_haptic_feedback.dart';
-import 'tappable_style.dart';
 
 /// A customizable tappable wrapper with smooth touch feedback.
 ///

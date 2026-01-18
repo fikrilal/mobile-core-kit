@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_context.dart';
-import '../adaptive_policies.dart';
-import '../policies/modal_policy.dart';
-import 'adaptive_modal.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_policies.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
 
 /// Adaptive side sheet entrypoint (side sheet on medium+, fallback on compact).
 ///

@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
-import '../../../auth/domain/failure/auth_failure.dart';
-import '../entity/user_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
 abstract class UserRepository {
   Future<Either<AuthFailure, UserEntity>> getMe();

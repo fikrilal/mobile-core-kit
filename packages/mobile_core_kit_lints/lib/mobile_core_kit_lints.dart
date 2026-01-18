@@ -1,9 +1,9 @@
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 
-import 'src/architecture_imports.dart';
-import 'src/hardcoded_font_sizes.dart';
-import 'src/hardcoded_ui_colors.dart';
-import 'src/manual_text_scaling.dart';
+import 'package:mobile_core_kit_lints/src/architecture_imports.dart';
+import 'package:mobile_core_kit_lints/src/hardcoded_font_sizes.dart';
+import 'package:mobile_core_kit_lints/src/hardcoded_ui_colors.dart';
+import 'package:mobile_core_kit_lints/src/manual_text_scaling.dart';
 
 PluginBase createPlugin() => _MobileCoreKitLintsPlugin();
 

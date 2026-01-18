@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockLogoutFlowUseCase extends Mock implements LogoutFlowUseCase {}
 

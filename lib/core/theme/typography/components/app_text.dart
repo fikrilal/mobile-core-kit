@@ -254,22 +254,22 @@ class AppText extends StatelessWidget {
   TextStyle _resolveBaseStyle(BuildContext context) {
     final t = Theme.of(context).textTheme;
     return switch (_role) {
-      _AppTextRole.displayLarge => t.displayLarge,
-      _AppTextRole.displayMedium => t.displayMedium,
-      _AppTextRole.displaySmall => t.displaySmall,
-      _AppTextRole.headlineLarge => t.headlineLarge,
-      _AppTextRole.headlineMedium => t.headlineMedium,
-      _AppTextRole.headlineSmall => t.headlineSmall,
-      _AppTextRole.titleLarge => t.titleLarge,
-      _AppTextRole.titleMedium => t.titleMedium,
-      _AppTextRole.titleSmall => t.titleSmall,
-      _AppTextRole.bodyLarge => t.bodyLarge,
-      _AppTextRole.bodyMedium => t.bodyMedium,
-      _AppTextRole.bodySmall => t.bodySmall,
-      _AppTextRole.labelLarge => t.labelLarge,
-      _AppTextRole.labelMedium => t.labelMedium,
-      _AppTextRole.labelSmall => t.labelSmall,
-    } ??
+          _AppTextRole.displayLarge => t.displayLarge,
+          _AppTextRole.displayMedium => t.displayMedium,
+          _AppTextRole.displaySmall => t.displaySmall,
+          _AppTextRole.headlineLarge => t.headlineLarge,
+          _AppTextRole.headlineMedium => t.headlineMedium,
+          _AppTextRole.headlineSmall => t.headlineSmall,
+          _AppTextRole.titleLarge => t.titleLarge,
+          _AppTextRole.titleMedium => t.titleMedium,
+          _AppTextRole.titleSmall => t.titleSmall,
+          _AppTextRole.bodyLarge => t.bodyLarge,
+          _AppTextRole.bodyMedium => t.bodyMedium,
+          _AppTextRole.bodySmall => t.bodySmall,
+          _AppTextRole.labelLarge => t.labelLarge,
+          _AppTextRole.labelMedium => t.labelMedium,
+          _AppTextRole.labelSmall => t.labelSmall,
+        } ??
         const TextStyle();
   }
 }

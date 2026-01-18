@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
@@ -14,6 +13,7 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_useca
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_state.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockRegisterUserUseCase extends Mock implements RegisterUserUseCase {}
 

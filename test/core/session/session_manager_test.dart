@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
@@ -13,6 +12,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_enti
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockSessionRepository extends Mock implements SessionRepository {}
 

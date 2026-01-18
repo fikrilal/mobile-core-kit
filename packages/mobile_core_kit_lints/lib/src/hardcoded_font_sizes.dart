@@ -87,7 +87,8 @@ class _HardcodedFontSizesVisitor extends RecursiveAstVisitor<void> {
         _report(arg, _shorten(arg.toSource()));
       }
 
-      if (name == 'apply' && (key == 'fontSizeFactor' || key == 'fontSizeDelta')) {
+      if (name == 'apply' &&
+          (key == 'fontSizeFactor' || key == 'fontSizeDelta')) {
         _report(arg, _shorten(arg.toSource()));
       }
     }
@@ -123,9 +124,10 @@ class _PathConfig {
 
 List<Glob> _readGlobList(Object? raw, {required List<String> fallback}) {
   if (raw is List) {
-    final values = raw.whereType<String>().map((v) => v.trim()).where(
-      (v) => v.isNotEmpty,
-    );
+    final values = raw
+        .whereType<String>()
+        .map((v) => v.trim())
+        .where((v) => v.isNotEmpty);
     return [for (final v in values) Glob(v)];
   }
   return [for (final v in fallback) Glob(v)];
@@ -154,4 +156,3 @@ class _ProjectRootFinder {
     }
   }
 }
-

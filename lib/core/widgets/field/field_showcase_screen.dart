@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../snackbar/snackbar.dart';
-import '../common/app_haptic_feedback.dart';
-import 'app_textfield.dart';
-import 'field_variants.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
+import 'package:mobile_core_kit/core/widgets/field/app_textfield.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_variants.dart';
+import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
 
 class FieldShowcaseScreen extends StatefulWidget {
   const FieldShowcaseScreen({super.key});

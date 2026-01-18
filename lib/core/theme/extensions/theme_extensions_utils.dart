@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'semantic_colors.dart';
+import 'package:mobile_core_kit/core/theme/extensions/semantic_colors.dart';
 
 extension ThemeColorAccess on BuildContext {
   // Semantic status colors (non-M3)

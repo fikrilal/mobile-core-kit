@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 
-import '../../../core/network/api/api_helper.dart';
-import '../data/datasource/remote/user_remote_datasource.dart';
-import '../data/repository/user_repository_impl.dart';
-import '../domain/repository/user_repository.dart';
-import '../domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 
 class UserModule {
   static void register(GetIt getIt) {

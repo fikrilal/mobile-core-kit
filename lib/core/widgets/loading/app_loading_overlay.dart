@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../localization/l10n.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 
 /// A blocking, modal-style loading overlay.
 ///
@@ -61,10 +61,9 @@ class AppLoadingOverlay extends StatelessWidget {
       return effectiveChild;
     }
 
-    final effectiveSemanticsLabel =
-        message == null || message!.trim().isEmpty
-            ? context.l10n.commonLoading
-            : message!;
+    final effectiveSemanticsLabel = message == null || message!.trim().isEmpty
+        ? context.l10n.commonLoading
+        : message!;
 
     final scheme = Theme.of(context).colorScheme;
     final effectiveBarrierColor =

@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'value_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 /// A human name field used for registration/profile (e.g., first/last name).
 class PersonName {

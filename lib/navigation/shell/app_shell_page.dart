@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_scaffold.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
-
-import '../../core/adaptive/widgets/adaptive_scaffold.dart';
 
 class AppShellPage extends StatelessWidget {
   const AppShellPage({super.key, required this.navigationShell});

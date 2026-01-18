@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
@@ -15,6 +14,7 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_state.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockLoginUserUseCase extends Mock implements LoginUserUseCase {}
 
@@ -82,7 +82,10 @@ void main() {
       expect(emitted.length, 1);
       expect(emitted.single.status, LoginStatus.initial);
       expect(emitted.single.failure, isNull);
-      expect(emitted.single.emailError?.code, ValidationErrorCodes.invalidEmail);
+      expect(
+        emitted.single.emailError?.code,
+        ValidationErrorCodes.invalidEmail,
+      );
       expect(emitted.single.passwordError?.code, ValidationErrorCodes.required);
 
       verifyNever(() => loginUser(any()));

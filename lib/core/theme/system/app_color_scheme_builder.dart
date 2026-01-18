@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../extensions/semantic_colors.dart';
-import 'app_color_seeds.dart';
+import 'package:mobile_core_kit/core/theme/extensions/semantic_colors.dart';
+import 'package:mobile_core_kit/core/theme/system/app_color_seeds.dart';
 
 @immutable
 class AppColorSystem {
   final ColorScheme scheme;
   final SemanticColors semantic;
 
-  const AppColorSystem({
-    required this.scheme,
-    required this.semantic,
-  });
+  const AppColorSystem({required this.scheme, required this.semantic});
 }
 
 /// Builds the app's color roles from a small set of seed inputs.
@@ -82,9 +79,6 @@ abstract final class AppColorSchemeBuilder {
       scheme = scheme.copyWith(outlineVariant: scheme.outline);
     }
 
-    return AppColorSystem(
-      scheme: scheme,
-      semantic: semantic,
-    );
+    return AppColorSystem(scheme: scheme, semantic: semantic);
   }
 }

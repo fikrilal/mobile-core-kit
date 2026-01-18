@@ -1,15 +1,16 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
-import '../../features/auth/domain/entity/refresh_request_entity.dart';
-import '../../features/auth/domain/entity/auth_session_entity.dart';
-import '../../features/auth/domain/entity/auth_tokens_entity.dart';
-import '../../features/auth/domain/failure/auth_failure.dart';
-import '../../features/auth/domain/usecase/refresh_token_usecase.dart';
-import '../../features/user/domain/entity/user_entity.dart';
-import '../events/app_event.dart';
-import '../events/app_event_bus.dart';
-import '../utilities/log_utils.dart';
-import 'session_repository.dart';
+import 'package:mobile_core_kit/core/events/app_event.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
 class SessionManager {
   SessionManager(

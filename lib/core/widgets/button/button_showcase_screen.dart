@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../common/app_haptic_feedback.dart';
-import 'app_button.dart';
-import 'button_variants.dart';
+import 'package:mobile_core_kit/core/widgets/button/app_button.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_variants.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
 
 /// A lightweight playground to verify AppButton variants, sizes, and states.
 ///

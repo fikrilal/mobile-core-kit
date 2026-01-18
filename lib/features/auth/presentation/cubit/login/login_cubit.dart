@@ -4,18 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
-
-import '../../../analytics/auth_analytics_screens.dart';
-import '../../../analytics/auth_analytics_targets.dart';
-import '../../../domain/entity/login_request_entity.dart';
-import '../../../domain/entity/auth_session_entity.dart';
-import '../../../domain/failure/auth_failure.dart';
-import '../../../domain/usecase/google_sign_in_usecase.dart';
-import '../../../domain/usecase/login_user_usecase.dart';
-import '../../../domain/value/email_address.dart';
-import '../../../domain/value/login_password.dart';
-import '../../../domain/value/value_failure.dart';
-import 'login_state.dart';
+import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
+import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(

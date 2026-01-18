@@ -6,14 +6,17 @@ void main() {
   group('MotionPolicy.standard', () {
     const policy = MotionPolicy.standard();
 
-    test('reduceMotion is false when animations and navigation are enabled', () {
-      const media = MediaQueryData(
-        disableAnimations: false,
-        accessibleNavigation: false,
-      );
+    test(
+      'reduceMotion is false when animations and navigation are enabled',
+      () {
+        const media = MediaQueryData(
+          disableAnimations: false,
+          accessibleNavigation: false,
+        );
 
-      expect(policy.derive(media: media).reduceMotion, false);
-    });
+        expect(policy.derive(media: media).reduceMotion, false);
+      },
+    );
 
     test('reduceMotion is true when animations are disabled', () {
       const media = MediaQueryData(
@@ -43,4 +46,3 @@ void main() {
     });
   });
 }
-

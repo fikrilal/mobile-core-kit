@@ -1,10 +1,10 @@
-import '../../features/auth/data/datasource/local/auth_local_datasource.dart';
-import '../../features/auth/domain/entity/auth_session_entity.dart';
-import '../../features/auth/domain/entity/auth_tokens_entity.dart';
-import '../../features/user/domain/entity/user_entity.dart';
-import '../services/startup_metrics/startup_metrics.dart';
-import '../storage/secure/token_secure_storage.dart';
-import 'session_repository.dart';
+import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
+import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
+import 'package:mobile_core_kit/features/auth/data/datasource/local/auth_local_datasource.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
   final AuthLocalDataSource _local;

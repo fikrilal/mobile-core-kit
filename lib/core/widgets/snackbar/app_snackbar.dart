@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 
 part 'app_snackbar_styles.dart';
 part 'top_snackbar_overlay.dart';

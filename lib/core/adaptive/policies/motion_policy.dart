@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
 
 /// Policy for motion preferences (reduce motion).
 ///

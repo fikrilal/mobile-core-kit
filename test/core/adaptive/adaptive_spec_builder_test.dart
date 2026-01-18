@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive_spec_builder.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/input_policy.dart';

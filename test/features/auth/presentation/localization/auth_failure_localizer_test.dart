@@ -59,7 +59,11 @@ void main() {
 
       expect(
         messageForAuthFieldError(
-          const ValidationError(field: 'email', message: '', code: 'email_taken'),
+          const ValidationError(
+            field: 'email',
+            message: '',
+            code: 'email_taken',
+          ),
           l10n,
         ),
         l10n.authErrorsEmailTaken,

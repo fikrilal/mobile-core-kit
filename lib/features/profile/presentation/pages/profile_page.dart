@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
+import 'package:mobile_core_kit/core/widgets/button/app_button.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_variants.dart';
+import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/core/widgets/snackbar/app_snackbar.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
-import '../../../../core/adaptive/adaptive_context.dart';
-import '../../../../core/adaptive/tokens/surface_tokens.dart';
-import '../../../../core/adaptive/widgets/app_page_container.dart';
-import '../../../../core/adaptive/widgets/adaptive_modal.dart';
-import '../../../../core/theme/typography/components/text.dart';
-import '../../../../core/widgets/button/app_button.dart';
-import '../../../../core/widgets/button/button_variants.dart';
-import '../../../../core/widgets/dialog/app_confirmation_dialog.dart';
-import '../../../../core/widgets/loading/loading.dart';
-import '../../../../core/widgets/snackbar/app_snackbar.dart';
-import '../../../auth/presentation/cubit/logout/logout_cubit.dart';
-import '../../../auth/presentation/cubit/logout/logout_state.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

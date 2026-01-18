@@ -1,7 +1,6 @@
+import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
+import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-
-import 'api_error_codes.dart';
-import 'api_failure.dart';
 
 /// Localizes network-layer [ApiFailure] into safe, user-friendly copy.
 ///
@@ -51,4 +50,3 @@ String messageFor(ApiFailure failure, AppLocalizations l10n) {
       return l10n.errorsUnexpected;
   }
 }
-

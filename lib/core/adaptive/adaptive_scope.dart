@@ -2,16 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_aspect.dart';
-import 'adaptive_policies.dart';
-import 'adaptive_spec.dart';
-import 'adaptive_spec_builder.dart';
-import 'policies/input_policy.dart';
-import 'policies/modal_policy.dart';
-import 'policies/motion_policy.dart';
-import 'policies/navigation_policy.dart';
-import 'policies/platform_policy.dart';
-import 'policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_aspect.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_policies.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec_builder.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/input_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/motion_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/platform_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
 
 /// Root provider for the adaptive contract.
 ///

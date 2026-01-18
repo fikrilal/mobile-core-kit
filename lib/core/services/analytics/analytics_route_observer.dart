@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'analytics_tracker.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 
 /// Navigator observer that reports screen transitions to analytics.
 class AnalyticsRouteObserver extends NavigatorObserver {

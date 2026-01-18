@@ -16,16 +16,14 @@ void main() {
 
       await tester.pumpWidget(
         MediaQuery(
-          data: MediaQueryData.fromView(tester.view).copyWith(
-            padding: const EdgeInsets.only(top: 10),
-          ),
+          data: MediaQueryData.fromView(
+            tester.view,
+          ).copyWith(padding: const EdgeInsets.only(top: 10)),
           child: Directionality(
             textDirection: TextDirection.ltr,
             child: AdaptiveScope(
               navigationPolicy: const NavigationPolicy.none(),
-              child: const AppPageContainer(
-                child: SizedBox.shrink(),
-              ),
+              child: const AppPageContainer(child: SizedBox.shrink()),
             ),
           ),
         ),
@@ -75,4 +73,3 @@ void main() {
     });
   });
 }
-

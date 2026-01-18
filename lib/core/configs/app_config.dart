@@ -1,5 +1,5 @@
-import 'api_host.dart';
-import 'build_config.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/configs/build_config.dart';
 
 class AppConfig {
   final String accessToken;

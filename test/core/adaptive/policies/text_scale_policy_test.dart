@@ -1,6 +1,6 @@
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
-import 'package:flutter/painting.dart';
 
 void main() {
   group('TextScalePolicy', () {

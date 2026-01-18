@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import '../../../firebase_options.dart';
-import 'google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/firebase_options.dart';
 
 class GoogleFederatedAuthServiceImpl implements GoogleFederatedAuthService {
   GoogleFederatedAuthServiceImpl({

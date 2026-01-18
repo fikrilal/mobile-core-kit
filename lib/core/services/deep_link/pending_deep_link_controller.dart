@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import 'deep_link_intent.dart';
-import 'deep_link_parser.dart';
-import 'deep_link_telemetry.dart';
-import 'pending_deep_link_store.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_intent.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_telemetry.dart';
+import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
 
 /// Holds a single "pending deep link" intent and exposes it as a [Listenable]
 /// so GoRouter can refresh redirect decisions when it changes.

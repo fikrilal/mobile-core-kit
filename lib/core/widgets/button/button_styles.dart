@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../../theme/tokens/sizing.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/system/state_opacities.dart';
-import 'button_variants.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_variants.dart';
 
 class ButtonStyles {
   static ButtonStyle getStyle({

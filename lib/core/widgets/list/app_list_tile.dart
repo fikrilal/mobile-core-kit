@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/typography/components/text.dart';
-import '../common/app_haptic_feedback.dart';
-import '../tappable/app_tappable.dart';
-import '../tappable/tappable_style.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
+import 'package:mobile_core_kit/core/widgets/tappable/app_tappable.dart';
+import 'package:mobile_core_kit/core/widgets/tappable/tappable_style.dart';
 
 /// A reusable list tile component with leading, title, subtitle, and trailing.
 ///

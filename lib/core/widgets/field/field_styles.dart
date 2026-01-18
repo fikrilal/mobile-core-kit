@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
 
-import 'field_variants.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_variants.dart';
 
 class FieldStyles {
   FieldStyles._();
@@ -217,10 +217,7 @@ class FieldStyles {
         );
 
       case FieldVariant.filled:
-        final baseBorderSide = BorderSide(
-          color: getBorderColor(),
-          width: 1.0,
-        );
+        final baseBorderSide = BorderSide(color: getBorderColor(), width: 1.0);
 
         return decoration.copyWith(
           border: OutlineInputBorder(

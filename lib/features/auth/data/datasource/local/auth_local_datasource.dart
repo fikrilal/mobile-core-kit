@@ -1,7 +1,7 @@
-import '../../../../../core/database/app_database.dart';
-import '../../model/local/user_local_model.dart';
-import '../../../../user/domain/entity/user_entity.dart';
-import 'dao/user_dao.dart';
+import 'package:mobile_core_kit/core/database/app_database.dart';
+import 'package:mobile_core_kit/features/auth/data/datasource/local/dao/user_dao.dart';
+import 'package:mobile_core_kit/features/auth/data/model/local/user_local_model.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 
 class AuthLocalDataSource {
   const AuthLocalDataSource();

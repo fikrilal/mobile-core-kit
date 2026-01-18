@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-import 'connectivity_service.dart';
-import 'network_status.dart';
+import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 
 class ConnectivityServiceImpl implements ConnectivityService {
   final Connectivity _connectivity;

@@ -3,8 +3,8 @@ import 'dart:ui' show DisplayFeature, Rect;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'display_feature_utils.dart';
-import 'display_posture.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/display_feature_utils.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/display_posture.dart';
 
 /// Foldable/dual-screen contract derived from `MediaQueryData.displayFeatures`.
 ///

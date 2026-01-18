@@ -9,11 +9,10 @@ import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_state.dart';
+import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
-
-import '../cubit/register/register_cubit.dart';
-import '../cubit/register/register_state.dart';
-import '../localization/auth_failure_localizer.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});

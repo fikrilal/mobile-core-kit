@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import '../size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// Token table for computing safe grid columns.
 ///
