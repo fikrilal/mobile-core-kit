@@ -1,0 +1,66 @@
+{
+  "appTitle": "⟪RTL⟫ Mobile Core Kit",
+  "@appTitle": {
+    "description": "Application name shown in Flutter-side UI (e.g., Android recents, web title)."
+  },
+  "commonOk": "⟪RTL⟫ OK",
+  "@commonOk": {
+    "description": "Generic confirmation action label."
+  },
+  "commonCancel": "⟪RTL⟫ Cancel",
+  "@commonCancel": {
+    "description": "Generic cancel action label."
+  },
+  "commonConfirm": "⟪RTL⟫ Confirm",
+  "@commonConfirm": {
+    "description": "Generic confirm action label (used when confirming an action)."
+  },
+  "commonLoading": "⟪RTL⟫ Loading",
+  "@commonLoading": {
+    "description": "Generic accessibility label for in-progress/loading UI."
+  },
+  "commonStartingUp": "⟪RTL⟫ Starting up",
+  "@commonStartingUp": {
+    "description": "Accessibility label shown while the app is starting up."
+  },
+  "commonShowPassword": "⟪RTL⟫ Show password",
+  "@commonShowPassword": {
+    "description": "Tooltip/action label for revealing the password text in a password field."
+  },
+  "commonHidePassword": "⟪RTL⟫ Hide password",
+  "@commonHidePassword": {
+    "description": "Tooltip/action label for hiding the password text in a password field."
+  },
+  "fieldSearchHint": "⟪RTL⟫ Search...",
+  "@fieldSearchHint": {
+    "description": "Placeholder/hint text for search input fields."
+  },
+  "commonAvatar": "⟪RTL⟫ Avatar",
+  "@commonAvatar": {
+    "description": "Fallback semantics label for an avatar when the user's name is not known."
+  },
+  "commonAvatarFor": "⟪RTL⟫ Avatar for {name}",
+  "@commonAvatarFor": {
+    "description": "Semantics label for an avatar when the user's display name is available.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ari"
+      }
+    }
+  },
+  "commonChangeProfilePhoto": "⟪RTL⟫ Change profile photo",
+  "@commonChangeProfilePhoto": {
+    "description": "Accessibility label for the action that changes the profile photo/avatar."
+  },
+  "commonItemsCount": "{count, plural, =0{⟪RTL⟫ No items} one{⟪RTL⟫ 1 item} other{⟪RTL⟫ {count} items}}",
+  "@commonItemsCount": {
+    "description": "Human-friendly label for an item count with proper pluralization.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  }
+}

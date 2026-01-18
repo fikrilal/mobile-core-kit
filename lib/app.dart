@@ -7,6 +7,7 @@ import 'core/adaptive/policies/text_scale_policy.dart';
 import 'core/localization/l10n.dart';
 import 'core/services/app_startup/app_startup_controller.dart';
 import 'core/services/appearance/theme_mode_controller.dart';
+import 'core/services/localization/locale_controller.dart';
 import 'core/theme/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'core/services/navigation/navigation_service.dart';
@@ -24,45 +25,57 @@ class MyApp extends StatelessWidget {
     final navigation = locator<NavigationService>();
     final startup = locator<AppStartupController>();
     final themeModeController = locator<ThemeModeController>()..load();
+    final localeController = locator<LocaleController>()..load();
 
     return AppEventListener(
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: themeModeController,
         builder: (context, themeMode, _) {
-          return MaterialApp.router(
-            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: themeMode,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: _router,
-            scaffoldMessengerKey: navigation.scaffoldMessengerKey,
-            builder: (context, child) {
-              final app = AdaptiveScope(
-                navigationPolicy: const NavigationPolicy.standard(),
-                textScalePolicy: const TextScalePolicy.clamp(
-                  minScaleFactor: 1.0,
-                  maxScaleFactor: 2.0,
-                ),
-                child: AppStartupGate(
-                  listenable: startup,
-                  isReady: () => startup.isReady,
-                  overlayBuilder: (context) =>
-                      AppStartupOverlay(title: context.l10n.appTitle),
-                  child: child ?? const SizedBox.shrink(),
-                ),
+          return ValueListenableBuilder<Locale?>(
+            valueListenable: localeController,
+            builder: (context, localeOverride, _) {
+              final supportedLocales = localeController.supportedLocales;
+
+              return MaterialApp.router(
+                onGenerateTitle: (context) =>
+                    AppLocalizations.of(context).appTitle,
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.light(),
+                darkTheme: AppTheme.dark(),
+                themeMode: themeMode,
+                locale: localeOverride,
+                localeListResolutionCallback: (deviceLocales, supported) =>
+                    _resolveLocale(deviceLocales, supported),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: supportedLocales,
+                routerConfig: _router,
+                scaffoldMessengerKey: navigation.scaffoldMessengerKey,
+                builder: (context, child) {
+                  final app = AdaptiveScope(
+                    navigationPolicy: const NavigationPolicy.standard(),
+                    textScalePolicy: const TextScalePolicy.clamp(
+                      minScaleFactor: 1.0,
+                      maxScaleFactor: 2.0,
+                    ),
+                    child: AppStartupGate(
+                      listenable: startup,
+                      isReady: () => startup.isReady,
+                      overlayBuilder: (context) =>
+                          AppStartupOverlay(title: context.l10n.appTitle),
+                      child: child ?? const SizedBox.shrink(),
+                    ),
+                  );
+
+                  if (!MediaQuery.highContrastOf(context)) return app;
+
+                  final brightness = Theme.of(context).brightness;
+                  final theme = brightness == Brightness.dark
+                      ? AppTheme.darkHighContrast()
+                      : AppTheme.lightHighContrast();
+
+                  return Theme(data: theme, child: app);
+                },
               );
-
-              if (!MediaQuery.highContrastOf(context)) return app;
-
-              final brightness = Theme.of(context).brightness;
-              final theme = brightness == Brightness.dark
-                  ? AppTheme.darkHighContrast()
-                  : AppTheme.lightHighContrast();
-
-              return Theme(data: theme, child: app);
             },
           );
         },
@@ -70,3 +83,37 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+Locale? _resolveLocale(List<Locale>? deviceLocales, Iterable<Locale> supported) {
+  if (deviceLocales == null || deviceLocales.isEmpty) {
+    return _fallbackLocale(supported);
+  }
+
+  // 1) Prefer exact matches (including pseudo-locales).
+  for (final device in deviceLocales) {
+    for (final candidate in supported) {
+      if (_isSameLocale(device, candidate)) return candidate;
+    }
+  }
+
+  // 2) Prefer language matches, but never auto-resolve into pseudo-locales.
+  for (final device in deviceLocales) {
+    for (final candidate in supported) {
+      if (isPseudoLocale(candidate)) continue;
+      if (candidate.languageCode == device.languageCode) return candidate;
+    }
+  }
+
+  return _fallbackLocale(supported);
+}
+
+Locale? _fallbackLocale(Iterable<Locale> supported) {
+  for (final candidate in supported) {
+    if (isPseudoLocale(candidate)) continue;
+    return candidate;
+  }
+  return supported.isEmpty ? null : supported.first;
+}
+
+bool _isSameLocale(Locale a, Locale b) =>
+    a.languageCode == b.languageCode && (a.countryCode ?? '') == (b.countryCode ?? '');

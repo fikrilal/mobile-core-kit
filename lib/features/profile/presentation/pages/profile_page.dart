@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
@@ -57,6 +58,7 @@ class _ProfileContent extends StatelessWidget {
     final sectionSpacing = layout.gutter * 3;
     final showDevTools = BuildConfig.env == BuildEnv.dev;
     final themeModeController = locator<ThemeModeController>();
+    final localeController = locator<LocaleController>();
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
@@ -142,6 +144,37 @@ class _ProfileContent extends StatelessWidget {
                   );
                 },
               ),
+              ValueListenableBuilder<Locale?>(
+                valueListenable: localeController,
+                builder: (context, localeOverride, _) {
+                  return AppListTile(
+                    leading: AppIconBadge(
+                      icon: PhosphorIcon(
+                        PhosphorIconsRegular.translate,
+                        size: 24,
+                      ),
+                    ),
+                    title: 'Language',
+                    subtitle: _localeLabel(localeOverride),
+                    onTap: () async {
+                      final selected = await showAdaptiveModal<_LocaleOption>(
+                        context: context,
+                        builder: (_) => _LocalePicker(
+                          initialOption: _localeToOption(
+                            localeOverride,
+                            includePseudo: showDevTools,
+                          ),
+                          includePseudo: showDevTools,
+                        ),
+                      );
+                      if (selected == null) return;
+                      await localeController.setLocale(
+                        _localeFromOption(selected),
+                      );
+                    },
+                  );
+                },
+              ),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),
@@ -210,6 +243,21 @@ String _themeModeLabel(ThemeMode mode) => switch (mode) {
   ThemeMode.light => 'Light',
   ThemeMode.dark => 'Dark',
 };
+
+String _localeLabel(Locale? locale) {
+  if (locale == null) return 'System';
+
+  final language = locale.languageCode.toLowerCase();
+  final country = locale.countryCode?.toUpperCase();
+
+  return switch ((language, country)) {
+    ('en', null) => 'English',
+    ('id', null) => 'Bahasa Indonesia',
+    ('en', 'XA') => 'English (Pseudo)',
+    ('ar', 'XB') => 'Arabic (RTL Pseudo)',
+    _ => 'System',
+  };
+}
 
 class _ThemeModePicker extends StatelessWidget {
   const _ThemeModePicker({required this.initialThemeMode});
@@ -283,6 +331,136 @@ class _ThemeModeOptionTile extends StatelessWidget {
       showChevron: false,
       onTap: () => onSelected(value),
       trailing: Radio<ThemeMode>(value: value),
+    );
+  }
+}
+
+enum _LocaleOption { system, en, id, enXa, arXb }
+
+Locale? _localeFromOption(_LocaleOption option) => switch (option) {
+  _LocaleOption.system => null,
+  _LocaleOption.en => const Locale('en'),
+  _LocaleOption.id => const Locale('id'),
+  _LocaleOption.enXa => const Locale('en', 'XA'),
+  _LocaleOption.arXb => const Locale('ar', 'XB'),
+};
+
+_LocaleOption _localeToOption(Locale? locale, {required bool includePseudo}) {
+  if (locale == null) return _LocaleOption.system;
+
+  final language = locale.languageCode.toLowerCase();
+  final country = locale.countryCode?.toUpperCase();
+
+  if (language == 'en' && (country == null || country.isEmpty)) {
+    return _LocaleOption.en;
+  }
+  if (language == 'id' && (country == null || country.isEmpty)) {
+    return _LocaleOption.id;
+  }
+
+  if (!includePseudo) return _LocaleOption.system;
+
+  if (language == 'en' && country == 'XA') return _LocaleOption.enXa;
+  if (language == 'ar' && country == 'XB') return _LocaleOption.arXb;
+
+  return _LocaleOption.system;
+}
+
+class _LocalePicker extends StatelessWidget {
+  const _LocalePicker({
+    required this.initialOption,
+    required this.includePseudo,
+  });
+
+  final _LocaleOption initialOption;
+  final bool includePseudo;
+
+  @override
+  Widget build(BuildContext context) {
+    void select(_LocaleOption option) => Navigator.of(context).pop(option);
+
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: RadioGroup<_LocaleOption>(
+        groupValue: initialOption,
+        onChanged: (value) {
+          if (value == null) return;
+          select(value);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AppText.titleLarge('Language'),
+            const SizedBox(height: AppSpacing.space8),
+            _LocaleOptionTile(
+              title: 'System',
+              subtitle: 'Follow device language',
+              value: _LocaleOption.system,
+              groupValue: initialOption,
+              onSelected: select,
+            ),
+            _LocaleOptionTile(
+              title: 'English',
+              value: _LocaleOption.en,
+              groupValue: initialOption,
+              onSelected: select,
+            ),
+            _LocaleOptionTile(
+              title: 'Bahasa Indonesia',
+              value: _LocaleOption.id,
+              groupValue: initialOption,
+              onSelected: select,
+            ),
+            if (includePseudo) ...[
+              const SizedBox(height: AppSpacing.space8),
+              const AppText.labelLarge('Developer QA'),
+              const SizedBox(height: AppSpacing.space8),
+              _LocaleOptionTile(
+                title: 'English (en-XA)',
+                subtitle: 'Pseudo-locale (accented/expanded)',
+                value: _LocaleOption.enXa,
+                groupValue: initialOption,
+                onSelected: select,
+              ),
+              _LocaleOptionTile(
+                title: 'RTL (ar-XB)',
+                subtitle: 'Pseudo-locale (forced RTL)',
+                value: _LocaleOption.arXb,
+                groupValue: initialOption,
+                onSelected: select,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocaleOptionTile extends StatelessWidget {
+  const _LocaleOptionTile({
+    required this.title,
+    required this.value,
+    required this.groupValue,
+    required this.onSelected,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final _LocaleOption value;
+  final _LocaleOption groupValue;
+  final ValueChanged<_LocaleOption> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppListTile(
+      title: title,
+      subtitle: subtitle,
+      showChevron: false,
+      onTap: () => onSelected(value),
+      trailing: Radio<_LocaleOption>(value: value),
     );
   }
 }

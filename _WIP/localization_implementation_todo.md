@@ -92,9 +92,9 @@ This is the execution checklist for `_WIP/localization_engineering_proposal.md`.
 
 ### A) User language override (persisted)
 
-- [ ] Add `LocaleStore` (SharedPreferences) + `LocaleController` (ValueNotifier) mirroring `ThemeModeStore/Controller`
-- [ ] Wire `MaterialApp.router(locale: ...)` with `null` meaning “system default”
-- [ ] Add a minimal UI entrypoint (settings/dev tools) to switch locale
+- [x] Add `LocaleStore` (SharedPreferences) + `LocaleController` (ValueNotifier) mirroring `ThemeModeStore/Controller`
+- [x] Wire `MaterialApp.router(locale: ...)` with `null` meaning “system default”
+- [x] Add a minimal UI entrypoint (settings) to switch locale
 
 ### B) Backend error codes → localized messages
 
@@ -105,10 +105,10 @@ This is the execution checklist for `_WIP/localization_engineering_proposal.md`.
 
 ### C) Pseudo-locales / RTL QA
 
-- [ ] Decide implementation approach:
-  - [ ] Add `lib/l10n/app_en_XA.arb` and `lib/l10n/app_ar_XB.arb`, or
+- [x] Decide implementation approach:
+  - [x] Add `lib/l10n/app_en_XA.arb` and `lib/l10n/app_ar_XB.arb`, or
   - [ ] Add a tiny script under `tool/` to generate pseudo ARBs for dev builds
-- [ ] Ensure pseudo-locales are enabled only for dev/debug builds (avoid shipping them unintentionally)
+- [x] Ensure pseudo-locales are enabled only for dev/debug builds (avoid shipping them unintentionally)
 
 ## Done criteria (definition of “implemented”)
 

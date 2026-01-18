@@ -1,0 +1,67 @@
+{
+  "appTitle": "⟪Ḿǿƀīŀḗ Ḉǿŗḗ Ḳīŧ⟫",
+  "@appTitle": {
+    "description": "Application name shown in Flutter-side UI (e.g., Android recents, web title)."
+  },
+  "commonOk": "⟪ÖK⟫",
+  "@commonOk": {
+    "description": "Generic confirmation action label."
+  },
+  "commonCancel": "⟪Çåñçḗŀ⟫",
+  "@commonCancel": {
+    "description": "Generic cancel action label."
+  },
+  "commonConfirm": "⟪Çǿñƒīŗḿ⟫",
+  "@commonConfirm": {
+    "description": "Generic confirm action label (used when confirming an action)."
+  },
+  "commonLoading": "⟪Ļǿåḓīñğ⟫",
+  "@commonLoading": {
+    "description": "Generic accessibility label for in-progress/loading UI."
+  },
+  "commonStartingUp": "⟪Şŧåŗŧīñğ üρ⟫",
+  "@commonStartingUp": {
+    "description": "Accessibility label shown while the app is starting up."
+  },
+  "commonShowPassword": "⟪Şħǿẇ ρåşşẇǿŗḓ⟫",
+  "@commonShowPassword": {
+    "description": "Tooltip/action label for revealing the password text in a password field."
+  },
+  "commonHidePassword": "⟪Ħīḓḗ ρåşşẇǿŗḓ⟫",
+  "@commonHidePassword": {
+    "description": "Tooltip/action label for hiding the password text in a password field."
+  },
+  "fieldSearchHint": "⟪Şḗåŗçħ...⟫",
+  "@fieldSearchHint": {
+    "description": "Placeholder/hint text for search input fields."
+  },
+  "commonAvatar": "⟪Åṽåŧåŗ⟫",
+  "@commonAvatar": {
+    "description": "Fallback semantics label for an avatar when the user's name is not known."
+  },
+  "commonAvatarFor": "⟪Åṽåŧåŗ ƒǿŗ {name}⟫",
+  "@commonAvatarFor": {
+    "description": "Semantics label for an avatar when the user's display name is available.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ari"
+      }
+    }
+  },
+  "commonChangeProfilePhoto": "⟪Çħåñğḗ ρŗǿƒīŀḗ ρħǿŧǿ⟫",
+  "@commonChangeProfilePhoto": {
+    "description": "Accessibility label for the action that changes the profile photo/avatar."
+  },
+  "commonItemsCount": "{count, plural, =0{⟪Ńǿ īŧḗḿş⟫} one{⟪1 īŧḗḿ⟫} other{⟪{count} īŧḗḿş⟫}}",
+  "@commonItemsCount": {
+    "description": "Human-friendly label for an item count with proper pluralization.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  }
+}
+

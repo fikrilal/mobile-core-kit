@@ -20,6 +20,8 @@ import '../services/app_launch/app_launch_service_impl.dart';
 import '../services/app_startup/app_startup_controller.dart';
 import '../services/appearance/theme_mode_controller.dart';
 import '../services/appearance/theme_mode_store.dart';
+import '../services/localization/locale_controller.dart';
+import '../services/localization/locale_store.dart';
 import '../services/deep_link/app_links_deep_link_source.dart';
 import '../services/deep_link/deep_link_parser.dart';
 import '../services/deep_link/deep_link_listener.dart';
@@ -85,6 +87,16 @@ void registerLocator() {
   if (!locator.isRegistered<ThemeModeController>()) {
     locator.registerLazySingleton<ThemeModeController>(
       () => ThemeModeController(store: locator<ThemeModeStore>()),
+    );
+  }
+
+  if (!locator.isRegistered<LocaleStore>()) {
+    locator.registerLazySingleton<LocaleStore>(() => LocaleStore());
+  }
+
+  if (!locator.isRegistered<LocaleController>()) {
+    locator.registerLazySingleton<LocaleController>(
+      () => LocaleController(store: locator<LocaleStore>()),
     );
   }
 
