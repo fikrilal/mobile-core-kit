@@ -26,6 +26,27 @@ void main() {
 
         expect(l10n.commonChangeProfilePhoto, isNotEmpty);
 
+        expect(l10n.errorsUnexpected, isNotEmpty);
+        expect(l10n.errorsOffline, isNotEmpty);
+        expect(l10n.errorsTimeout, isNotEmpty);
+        expect(l10n.errorsUnauthenticated, isNotEmpty);
+        expect(l10n.errorsForbidden, isNotEmpty);
+        expect(l10n.errorsTooManyRequests, isNotEmpty);
+        expect(l10n.errorsServer, isNotEmpty);
+        expect(l10n.errorsValidation, isNotEmpty);
+
+        expect(l10n.validationInvalidEmail, isNotEmpty);
+        expect(l10n.validationRequired, isNotEmpty);
+        expect(l10n.validationPasswordTooShort, isNotEmpty);
+        expect(l10n.validationPasswordsDoNotMatch, isNotEmpty);
+        expect(l10n.validationNameTooShort, isNotEmpty);
+        expect(l10n.validationNameTooLong, isNotEmpty);
+
+        expect(l10n.authErrorsInvalidCredentials, isNotEmpty);
+        expect(l10n.authErrorsEmailTaken, isNotEmpty);
+        expect(l10n.authErrorsEmailNotVerified, isNotEmpty);
+        expect(l10n.authErrorsLogoutFailed, isNotEmpty);
+
         expect(l10n.commonItemsCount(count: 0), isNotEmpty);
         expect(l10n.commonItemsCount(count: 1), isNotEmpty);
         expect(l10n.commonItemsCount(count: 2), isNotEmpty);
@@ -33,4 +54,3 @@ void main() {
     }
   });
 }
-

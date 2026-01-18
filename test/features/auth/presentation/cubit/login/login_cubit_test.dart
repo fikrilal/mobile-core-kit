@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
@@ -80,8 +81,9 @@ void main() {
 
       expect(emitted.length, 1);
       expect(emitted.single.status, LoginStatus.initial);
-      expect(emitted.single.emailError, 'Please enter a valid email address');
-      expect(emitted.single.passwordError, 'This field cannot be empty');
+      expect(emitted.single.failure, isNull);
+      expect(emitted.single.emailError?.code, ValidationErrorCodes.invalidEmail);
+      expect(emitted.single.passwordError?.code, ValidationErrorCodes.required);
 
       verifyNever(() => loginUser(any()));
       verifyNever(() => sessionManager.login(any()));
@@ -164,13 +166,13 @@ void main() {
 
         expect(emitted.length, 4);
         expect(emitted[3].status, LoginStatus.failure);
-        expect(emitted[3].errorMessage, 'Invalid email or password');
+        expect(emitted[3].failure, const AuthFailure.invalidCredentials());
 
         cubit.emailChanged('user@example.com');
         await pumpEventQueue();
 
         expect(emitted.last.status, LoginStatus.initial);
-        expect(emitted.last.errorMessage, isNull);
+        expect(emitted.last.failure, isNull);
 
         verifyNever(() => sessionManager.login(any()));
         verifyNever(() => analytics.trackLogin(method: any(named: 'method')));

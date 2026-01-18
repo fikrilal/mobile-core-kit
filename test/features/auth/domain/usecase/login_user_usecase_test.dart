@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
@@ -35,13 +36,13 @@ void main() {
             const AuthFailure.validation([
               ValidationError(
                 field: 'email',
-                message: 'Please enter a valid email address',
-                code: 'invalid_email',
+                message: '',
+                code: ValidationErrorCodes.invalidEmail,
               ),
               ValidationError(
                 field: 'password',
-                message: 'This field cannot be empty',
-                code: 'required',
+                message: '',
+                code: ValidationErrorCodes.required,
               ),
             ]),
           );
@@ -101,8 +102,8 @@ void main() {
             const AuthFailure.validation([
               ValidationError(
                 field: 'email',
-                message: 'Please enter a valid email address',
-                code: 'invalid_email',
+                message: '',
+                code: ValidationErrorCodes.invalidEmail,
               ),
             ]),
           );

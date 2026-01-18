@@ -47,7 +47,7 @@ void main() {
       expect(emitted.length, 2);
       expect(emitted[0].status, LogoutStatus.submitting);
       expect(emitted[1].status, LogoutStatus.initial);
-      expect(emitted[1].errorMessage, isNotNull);
+      expect(emitted[1].failure, LogoutFailure.failed);
 
       verify(() => logoutFlow(reason: 'manual_logout')).called(1);
 
