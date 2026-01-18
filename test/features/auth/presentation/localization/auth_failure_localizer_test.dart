@@ -34,6 +34,10 @@ void main() {
         l10n.errorsTooManyRequests,
       );
       expect(
+        messageForAuthFailure(const AuthFailure.userSuspended(), l10n),
+        l10n.authErrorsUserSuspended,
+      );
+      expect(
         messageForAuthFailure(const AuthFailure.serverError(), l10n),
         l10n.errorsServer,
       );
@@ -72,4 +76,3 @@ void main() {
     });
   });
 }
-

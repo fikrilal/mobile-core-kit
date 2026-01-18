@@ -220,6 +220,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       },
       invalidCredentials: (_) => _emitFailure(failure),
       tooManyRequests: (_) => _emitFailure(failure),
+      userSuspended: (_) => _emitFailure(failure),
       serverError: (_) => _emitFailure(failure),
       unexpected: (_) => _emitFailure(failure),
     );

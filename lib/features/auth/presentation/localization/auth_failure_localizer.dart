@@ -5,6 +5,12 @@ import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import '../../domain/failure/auth_failure.dart';
 import '../cubit/logout/logout_state.dart';
 
+/// User-facing localization for the auth feature.
+///
+/// Note: [AuthFailure.serverError] / [AuthFailure.unexpected] may carry an
+/// optional message payload (typically raw backend text). This template does
+/// not surface that payload in UI by default; prefer mapping to typed failures
+/// and localizable error codes instead.
 String messageForAuthFailure(AuthFailure failure, AppLocalizations l10n) {
   return failure.when(
     network: () => l10n.errorsOffline,
@@ -15,6 +21,7 @@ String messageForAuthFailure(AuthFailure failure, AppLocalizations l10n) {
     validation: (_) => l10n.errorsValidation,
     invalidCredentials: () => l10n.authErrorsInvalidCredentials,
     tooManyRequests: () => l10n.errorsTooManyRequests,
+    userSuspended: () => l10n.authErrorsUserSuspended,
     serverError: (_) => l10n.errorsServer,
     unexpected: (_) => l10n.errorsUnexpected,
   );
@@ -29,4 +36,3 @@ String messageForAuthFieldError(ValidationError error, AppLocalizations l10n) {
 String messageForLogoutFailure(LogoutFailure failure, AppLocalizations l10n) {
   return switch (failure) { LogoutFailure.failed => l10n.authErrorsLogoutFailed };
 }
-

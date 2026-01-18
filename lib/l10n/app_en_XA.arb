@@ -131,6 +131,10 @@
   "@authErrorsEmailNotVerified": {
     "description": "Message shown when the user must verify their email before continuing."
   },
+  "authErrorsUserSuspended": "⟪Ẏǿüŗ åççǿüñŧ īş şüşρḗñḓḗḓ. Ƥŀḗåşḗ çǿñŧåçŧ şüρρǿŗŧ.⟫",
+  "@authErrorsUserSuspended": {
+    "description": "Message shown when the user's account is suspended or blocked."
+  },
   "authErrorsLogoutFailed": "⟪Ƒåīŀḗḓ ŧǿ ŀǿğ ǿüŧ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."

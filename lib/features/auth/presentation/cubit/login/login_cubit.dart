@@ -205,6 +205,7 @@ class LoginCubit extends Cubit<LoginState> {
       },
       invalidCredentials: (_) => _emitFailure(failure),
       tooManyRequests: (_) => _emitFailure(failure),
+      userSuspended: (_) => _emitFailure(failure),
       serverError: (_) => _emitFailure(failure),
       unexpected: (_) => _emitFailure(failure),
     );

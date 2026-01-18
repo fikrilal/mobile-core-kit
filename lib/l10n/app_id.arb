@@ -131,6 +131,10 @@
   "@authErrorsEmailNotVerified": {
     "description": "Message shown when the user must verify their email before continuing."
   },
+  "authErrorsUserSuspended": "Akun Anda ditangguhkan. Silakan hubungi dukungan.",
+  "@authErrorsUserSuspended": {
+    "description": "Message shown when the user's account is suspended or blocked."
+  },
   "authErrorsLogoutFailed": "Gagal keluar. Silakan coba lagi.",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."

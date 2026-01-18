@@ -45,6 +45,7 @@ void main() {
         expect(l10n.authErrorsInvalidCredentials, isNotEmpty);
         expect(l10n.authErrorsEmailTaken, isNotEmpty);
         expect(l10n.authErrorsEmailNotVerified, isNotEmpty);
+        expect(l10n.authErrorsUserSuspended, isNotEmpty);
         expect(l10n.authErrorsLogoutFailed, isNotEmpty);
 
         expect(l10n.commonItemsCount(count: 0), isNotEmpty);

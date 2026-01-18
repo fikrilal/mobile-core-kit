@@ -131,6 +131,10 @@
   "@authErrorsEmailNotVerified": {
     "description": "Message shown when the user must verify their email before continuing."
   },
+  "authErrorsUserSuspended": "Your account is suspended. Please contact support.",
+  "@authErrorsUserSuspended": {
+    "description": "Message shown when the user's account is suspended or blocked."
+  },
   "authErrorsLogoutFailed": "Failed to log out. Please try again.",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."
