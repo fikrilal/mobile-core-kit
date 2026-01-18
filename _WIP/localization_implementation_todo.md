@@ -74,11 +74,11 @@ This is the execution checklist for `_WIP/localization_engineering_proposal.md`.
 
 ## Phase 3 — Template migration (high-impact strings first)
 
-- [ ] Migrate app-level strings
+- [x] Migrate app-level strings
   - [x] App title (`lib/app.dart`)
-  - [ ] Any shared widget default copy that’s user-visible (loading labels, empty states, etc.)
-- [ ] Create a convention for new strings:
-  - [ ] New UI copy must be added to ARB (PR review rule).
+  - [x] Any shared widget default copy that’s user-visible (loading labels, empty states, etc.)
+- [x] Create a convention for new strings:
+  - [x] New UI copy must be added to ARB (PR review rule).
 
 ## Phase 4 — Tests (contract-level)
 

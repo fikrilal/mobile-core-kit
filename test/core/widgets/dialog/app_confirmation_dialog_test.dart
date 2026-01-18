@@ -4,6 +4,7 @@ import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
 import 'package:mobile_core_kit/core/theme/theme.dart';
 import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart';
+import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
 Future<BuildContext> _pumpHost(WidgetTester tester, Size size) async {
   tester.view.devicePixelRatio = 1.0;
@@ -18,6 +19,9 @@ Future<BuildContext> _pumpHost(WidgetTester tester, Size size) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.light(),
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: AdaptiveScope(
         navigationPolicy: const NavigationPolicy.standard(),
         child: Builder(

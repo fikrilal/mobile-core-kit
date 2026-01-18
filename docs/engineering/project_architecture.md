@@ -15,6 +15,7 @@ Important: We use Bloc/Cubit only in presentation. No GetX.
 5. Evolvability. Scales to extracting large features into local packages.
 6. Presentation uses Bloc/Cubit with a single source of truth per screen.
 7. Enforced boundaries. Import rules are enforced via `custom_lint` (see `docs/engineering/architecture_linting.md`).
+8. Localization-first. User-facing copy lives in ARB (see `docs/engineering/localization.md`).
 
 ---
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../localization/l10n.dart';
 import '../common/app_haptic_feedback.dart';
 import 'field_styles.dart';
 import 'field_variants.dart';
@@ -322,7 +323,7 @@ class AppTextField extends StatefulWidget {
     this.enabled = true,
     this.readOnly = false,
     this.labelText,
-    this.hintText = 'Search...',
+    this.hintText,
     this.helperText,
     this.errorText,
     this.validator,
@@ -484,7 +485,9 @@ class _AppTextFieldState extends State<AppTextField> {
         size: FieldStyles.getSizeConfig(widget.size).iconSize,
       ),
       onPressed: _toggleObscureText,
-      tooltip: _obscureText ? 'Show password' : 'Hide password',
+      tooltip: _obscureText
+          ? context.l10n.commonShowPassword
+          : context.l10n.commonHidePassword,
     );
   }
 
@@ -556,6 +559,12 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveHintText =
+        widget.fieldType == FieldType.search &&
+                (widget.hintText == null || widget.hintText!.trim().isEmpty)
+            ? context.l10n.fieldSearchHint
+            : widget.hintText;
+
     final decoration = FieldStyles.getInputDecoration(
       context: context,
       variant: widget.variant,
@@ -564,7 +573,7 @@ class _AppTextFieldState extends State<AppTextField> {
       labelText: widget.labelPosition == LabelPosition.floating
           ? widget.labelText
           : null,
-      hintText: widget.hintText,
+      hintText: effectiveHintText,
       helperText: widget.helperText,
       errorText: widget.errorText,
       prefixIcon: widget.prefixIcon,

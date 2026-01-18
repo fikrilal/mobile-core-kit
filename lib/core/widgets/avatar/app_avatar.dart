@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../localization/l10n.dart';
 import '../../theme/tokens/spacing.dart';
 import 'avatar_size.dart';
 
@@ -76,7 +78,7 @@ class AppAvatar extends StatelessWidget {
     final fallbackFg = foregroundColor ?? defaultFg;
 
     final effectiveLabel =
-        semanticsLabel ?? _defaultSemanticsLabel(displayName);
+        semanticsLabel ?? _defaultSemanticsLabel(context, displayName);
     final surfaceTap = onTap ?? onChangePhoto;
 
     return Align(
@@ -230,7 +232,7 @@ class AppAvatar extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Change profile photo',
+      label: context.l10n.commonChangeProfilePhoto,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onChangePhoto,
@@ -268,10 +270,10 @@ class AppAvatar extends StatelessWidget {
     );
   }
 
-  String _defaultSemanticsLabel(String? displayName) {
+  String _defaultSemanticsLabel(BuildContext context, String? displayName) {
     final name = displayName?.trim();
-    if (name == null || name.isEmpty) return 'Avatar';
-    return 'Avatar for $name';
+    if (name == null || name.isEmpty) return context.l10n.commonAvatar;
+    return context.l10n.commonAvatarFor(name: name);
   }
 
   String? _normalizeInitials(String? initials) {

@@ -10,5 +10,47 @@
   "commonCancel": "Batal",
   "@commonCancel": {
     "description": "Generic cancel action label."
+  },
+  "commonConfirm": "Konfirmasi",
+  "@commonConfirm": {
+    "description": "Generic confirm action label (used when confirming an action)."
+  },
+  "commonLoading": "Memuat",
+  "@commonLoading": {
+    "description": "Generic accessibility label for in-progress/loading UI."
+  },
+  "commonStartingUp": "Sedang memulai",
+  "@commonStartingUp": {
+    "description": "Accessibility label shown while the app is starting up."
+  },
+  "commonShowPassword": "Tampilkan kata sandi",
+  "@commonShowPassword": {
+    "description": "Tooltip/action label for revealing the password text in a password field."
+  },
+  "commonHidePassword": "Sembunyikan kata sandi",
+  "@commonHidePassword": {
+    "description": "Tooltip/action label for hiding the password text in a password field."
+  },
+  "fieldSearchHint": "Cari...",
+  "@fieldSearchHint": {
+    "description": "Placeholder/hint text for search input fields."
+  },
+  "commonAvatar": "Avatar",
+  "@commonAvatar": {
+    "description": "Fallback semantics label for an avatar when the user's name is not known."
+  },
+  "commonAvatarFor": "Avatar untuk {name}",
+  "@commonAvatarFor": {
+    "description": "Semantics label for an avatar when the user's display name is available.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ari"
+      }
+    }
+  },
+  "commonChangeProfilePhoto": "Ubah foto profil",
+  "@commonChangeProfilePhoto": {
+    "description": "Accessibility label for the action that changes the profile photo/avatar."
   }
 }

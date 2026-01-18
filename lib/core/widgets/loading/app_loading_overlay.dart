@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/l10n.dart';
 import '../../theme/tokens/spacing.dart';
 import '../../theme/typography/components/text.dart';
 
@@ -60,6 +61,11 @@ class AppLoadingOverlay extends StatelessWidget {
       return effectiveChild;
     }
 
+    final effectiveSemanticsLabel =
+        message == null || message!.trim().isEmpty
+            ? context.l10n.commonLoading
+            : message!;
+
     final scheme = Theme.of(context).colorScheme;
     final effectiveBarrierColor =
         barrierColor ?? scheme.scrim.withValues(alpha: 0.45);
@@ -72,7 +78,7 @@ class AppLoadingOverlay extends StatelessWidget {
         effectiveChild,
         Positioned.fill(
           child: Semantics(
-            label: message ?? 'Loading',
+            label: effectiveSemanticsLabel,
             liveRegion: true,
             child: ModalBarrier(
               dismissible: false,

@@ -10,5 +10,47 @@
   "commonCancel": "Cancel",
   "@commonCancel": {
     "description": "Generic cancel action label."
+  },
+  "commonConfirm": "Confirm",
+  "@commonConfirm": {
+    "description": "Generic confirm action label (used when confirming an action)."
+  },
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "Generic accessibility label for in-progress/loading UI."
+  },
+  "commonStartingUp": "Starting up",
+  "@commonStartingUp": {
+    "description": "Accessibility label shown while the app is starting up."
+  },
+  "commonShowPassword": "Show password",
+  "@commonShowPassword": {
+    "description": "Tooltip/action label for revealing the password text in a password field."
+  },
+  "commonHidePassword": "Hide password",
+  "@commonHidePassword": {
+    "description": "Tooltip/action label for hiding the password text in a password field."
+  },
+  "fieldSearchHint": "Search...",
+  "@fieldSearchHint": {
+    "description": "Placeholder/hint text for search input fields."
+  },
+  "commonAvatar": "Avatar",
+  "@commonAvatar": {
+    "description": "Fallback semantics label for an avatar when the user's name is not known."
+  },
+  "commonAvatarFor": "Avatar for {name}",
+  "@commonAvatarFor": {
+    "description": "Semantics label for an avatar when the user's display name is available.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ari"
+      }
+    }
+  },
+  "commonChangeProfilePhoto": "Change profile photo",
+  "@commonChangeProfilePhoto": {
+    "description": "Accessibility label for the action that changes the profile photo/avatar."
   }
 }
