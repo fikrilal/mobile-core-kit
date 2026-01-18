@@ -1,4 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+
+import '../../../domain/failure/auth_failure.dart';
 
 part 'login_state.freezed.dart';
 
@@ -11,9 +14,9 @@ abstract class LoginState with _$LoginState {
   const factory LoginState({
     @Default('') String email,
     @Default('') String password,
-    String? emailError,
-    String? passwordError,
-    String? errorMessage,
+    ValidationError? emailError,
+    ValidationError? passwordError,
+    AuthFailure? failure,
     @Default(LoginStatus.initial) LoginStatus status,
     LoginSubmitMethod? submittingMethod,
   }) = _LoginState;

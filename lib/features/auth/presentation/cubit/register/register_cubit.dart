@@ -27,13 +27,16 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void firstNameChanged(String value) {
     final result = PersonName.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'firstName', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         firstName: value,
         firstNameError: error,
-        errorMessage: null,
+        failure: null,
         status: state.status == RegisterStatus.failure
             ? RegisterStatus.initial
             : state.status,
@@ -43,13 +46,16 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void lastNameChanged(String value) {
     final result = PersonName.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'lastName', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         lastName: value,
         lastNameError: error,
-        errorMessage: null,
+        failure: null,
         status: state.status == RegisterStatus.failure
             ? RegisterStatus.initial
             : state.status,
@@ -59,13 +65,16 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'email', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         email: value,
         emailError: error,
-        errorMessage: null,
+        failure: null,
         status: state.status == RegisterStatus.failure
             ? RegisterStatus.initial
             : state.status,
@@ -75,13 +84,16 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void passwordChanged(String value) {
     final result = Password.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'password', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         password: value,
         passwordError: error,
-        errorMessage: null,
+        failure: null,
         status: state.status == RegisterStatus.failure
             ? RegisterStatus.initial
             : state.status,
@@ -106,16 +118,19 @@ class RegisterCubit extends Cubit<RegisterState> {
     final passwordResult = Password.create(state.password);
 
     final firstNameError = firstNameResult.fold(
-      (f) => f.userMessage,
+      (f) => ValidationError(field: 'firstName', message: '', code: f.code),
       (_) => null,
     );
     final lastNameError = lastNameResult.fold(
-      (f) => f.userMessage,
+      (f) => ValidationError(field: 'lastName', message: '', code: f.code),
       (_) => null,
     );
-    final emailError = emailResult.fold((f) => f.userMessage, (_) => null);
+    final emailError = emailResult.fold(
+      (f) => ValidationError(field: 'email', message: '', code: f.code),
+      (_) => null,
+    );
     final passwordError = passwordResult.fold(
-      (f) => f.userMessage,
+      (f) => ValidationError(field: 'password', message: '', code: f.code),
       (_) => null,
     );
 
@@ -130,12 +145,13 @@ class RegisterCubit extends Cubit<RegisterState> {
           emailError: emailError,
           passwordError: passwordError,
           status: RegisterStatus.initial,
+          failure: null,
         ),
       );
       return;
     }
 
-    emit(state.copyWith(status: RegisterStatus.submitting, errorMessage: null));
+    emit(state.copyWith(status: RegisterStatus.submitting, failure: null));
 
     final result = await _registerUser(
       RegisterRequestEntity(
@@ -154,34 +170,40 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void _handleFailure(AuthFailure failure) {
     failure.map(
-      network: (_) => _emitError(failure.userMessage),
-      cancelled: (_) => _emitError(failure.userMessage),
-      unauthenticated: (_) => _emitError(failure.userMessage),
+      network: (_) => _emitFailure(failure),
+      cancelled: (_) => _emitFailure(failure),
+      unauthenticated: (_) => _emitFailure(failure),
       emailTaken: (_) {
+        final emailTakenError = ValidationError(
+          field: 'email',
+          message: '',
+          code: 'email_taken',
+        );
+
         emit(
           state.copyWith(
-            emailError: failure.userMessage,
+            emailError: emailTakenError,
             status: RegisterStatus.failure,
-            errorMessage: failure.userMessage,
+            failure: failure,
           ),
         );
       },
-      emailNotVerified: (_) => _emitError(failure.userMessage),
+      emailNotVerified: (_) => _emitFailure(failure),
       validation: (v) {
-        String? firstNameError;
-        String? lastNameError;
-        String? emailError;
-        String? passwordError;
+        ValidationError? firstNameError;
+        ValidationError? lastNameError;
+        ValidationError? emailError;
+        ValidationError? passwordError;
 
         for (final ValidationError err in v.errors) {
           if (err.field == 'firstName' && firstNameError == null) {
-            firstNameError = err.message;
+            firstNameError = err;
           } else if (err.field == 'lastName' && lastNameError == null) {
-            lastNameError = err.message;
+            lastNameError = err;
           } else if (err.field == 'email' && emailError == null) {
-            emailError = err.message;
+            emailError = err;
           } else if (err.field == 'password' && passwordError == null) {
-            passwordError = err.message;
+            passwordError = err;
           }
         }
 
@@ -192,23 +214,23 @@ class RegisterCubit extends Cubit<RegisterState> {
             emailError: emailError ?? state.emailError,
             passwordError: passwordError ?? state.passwordError,
             status: RegisterStatus.failure,
-            errorMessage: failure.userMessage,
+            failure: failure,
           ),
         );
       },
-      invalidCredentials: (_) => _emitError(failure.userMessage),
-      tooManyRequests: (_) => _emitError(failure.userMessage),
-      serverError: (_) => _emitError(failure.userMessage),
-      unexpected: (_) => _emitError(failure.userMessage),
+      invalidCredentials: (_) => _emitFailure(failure),
+      tooManyRequests: (_) => _emitFailure(failure),
+      serverError: (_) => _emitFailure(failure),
+      unexpected: (_) => _emitFailure(failure),
     );
   }
 
   Future<void> _handleSuccess(AuthSessionEntity session) async {
     await _sessionManager.login(session);
-    emit(state.copyWith(status: RegisterStatus.success, errorMessage: null));
+    emit(state.copyWith(status: RegisterStatus.success, failure: null));
   }
 
-  void _emitError(String message) {
-    emit(state.copyWith(status: RegisterStatus.failure, errorMessage: message));
+  void _emitFailure(AuthFailure failure) {
+    emit(state.copyWith(status: RegisterStatus.failure, failure: failure));
   }
 }

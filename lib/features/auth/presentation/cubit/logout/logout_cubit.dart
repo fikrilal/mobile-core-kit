@@ -12,18 +12,18 @@ class LogoutCubit extends Cubit<LogoutState> {
   Future<void> logout({String reason = 'manual_logout'}) async {
     if (state.isSubmitting) return;
 
-    emit(state.copyWith(status: LogoutStatus.submitting, errorMessage: null));
+    emit(state.copyWith(status: LogoutStatus.submitting, failure: null));
 
     try {
       await _logoutFlow(reason: reason);
       // Navigation is handled by the global router gate when the session clears.
-      emit(state.copyWith(status: LogoutStatus.initial, errorMessage: null));
+      emit(state.copyWith(status: LogoutStatus.initial, failure: null));
     } catch (e, st) {
       Log.error('Logout failed', e, st, true, 'LogoutCubit');
       emit(
         state.copyWith(
           status: LogoutStatus.initial,
-          errorMessage: 'Failed to log out. Please try again.',
+          failure: LogoutFailure.failed,
         ),
       );
     }

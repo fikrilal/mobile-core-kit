@@ -32,14 +32,17 @@ class LoginCubit extends Cubit<LoginState> {
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'email', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         email: value,
         emailError: error,
         // clear generic error when user edits
-        errorMessage: null,
+        failure: null,
         status: state.status == LoginStatus.failure
             ? LoginStatus.initial
             : state.status,
@@ -49,13 +52,16 @@ class LoginCubit extends Cubit<LoginState> {
 
   void passwordChanged(String value) {
     final result = LoginPassword.create(value);
-    final error = result.fold((f) => f.userMessage, (_) => null);
+    final error = result.fold(
+      (f) => ValidationError(field: 'password', message: '', code: f.code),
+      (_) => null,
+    );
 
     emit(
       state.copyWith(
         password: value,
         passwordError: error,
-        errorMessage: null,
+        failure: null,
         status: state.status == LoginStatus.failure
             ? LoginStatus.initial
             : state.status,
@@ -80,9 +86,12 @@ class LoginCubit extends Cubit<LoginState> {
     final emailResult = EmailAddress.create(state.email);
     final passwordResult = LoginPassword.create(state.password);
 
-    final emailError = emailResult.fold((f) => f.userMessage, (_) => null);
+    final emailError = emailResult.fold(
+      (f) => ValidationError(field: 'email', message: '', code: f.code),
+      (_) => null,
+    );
     final passwordError = passwordResult.fold(
-      (f) => f.userMessage,
+      (f) => ValidationError(field: 'password', message: '', code: f.code),
       (_) => null,
     );
 
@@ -92,6 +101,7 @@ class LoginCubit extends Cubit<LoginState> {
           emailError: emailError,
           passwordError: passwordError,
           status: LoginStatus.initial,
+          failure: null,
         ),
       );
       return;
@@ -101,7 +111,7 @@ class LoginCubit extends Cubit<LoginState> {
       state.copyWith(
         status: LoginStatus.submitting,
         submittingMethod: LoginSubmitMethod.emailPassword,
-        errorMessage: null,
+        failure: null,
       ),
     );
 
@@ -133,7 +143,7 @@ class LoginCubit extends Cubit<LoginState> {
       state.copyWith(
         status: LoginStatus.submitting,
         submittingMethod: LoginSubmitMethod.google,
-        errorMessage: null,
+        failure: null,
       ),
     );
 
@@ -150,7 +160,7 @@ class LoginCubit extends Cubit<LoginState> {
             state.copyWith(
               status: LoginStatus.initial,
               submittingMethod: null,
-              errorMessage: null,
+              failure: null,
             ),
           );
           return;
@@ -166,20 +176,20 @@ class LoginCubit extends Cubit<LoginState> {
 
   void _handleFailure(AuthFailure failure) {
     failure.map(
-      network: (_) => _emitError(failure.userMessage),
-      cancelled: (_) => _emitError(failure.userMessage),
-      unauthenticated: (_) => _emitError(failure.userMessage),
-      emailTaken: (_) => _emitError(failure.userMessage),
-      emailNotVerified: (_) => _emitError(failure.userMessage),
+      network: (_) => _emitFailure(failure),
+      cancelled: (_) => _emitFailure(failure),
+      unauthenticated: (_) => _emitFailure(failure),
+      emailTaken: (_) => _emitFailure(failure),
+      emailNotVerified: (_) => _emitFailure(failure),
       validation: (v) {
-        String? emailError;
-        String? passwordError;
+        ValidationError? emailError;
+        ValidationError? passwordError;
 
         for (final ValidationError err in v.errors) {
           if (err.field == 'email' && emailError == null) {
-            emailError = err.message;
+            emailError = err;
           } else if (err.field == 'password' && passwordError == null) {
-            passwordError = err.message;
+            passwordError = err;
           }
         }
 
@@ -188,14 +198,15 @@ class LoginCubit extends Cubit<LoginState> {
             emailError: emailError ?? state.emailError,
             passwordError: passwordError ?? state.passwordError,
             status: LoginStatus.failure,
-            errorMessage: failure.userMessage,
+            failure: failure,
+            submittingMethod: null,
           ),
         );
       },
-      invalidCredentials: (_) => _emitError(failure.userMessage),
-      tooManyRequests: (_) => _emitError(failure.userMessage),
-      serverError: (_) => _emitError(failure.userMessage),
-      unexpected: (_) => _emitError(failure.userMessage),
+      invalidCredentials: (_) => _emitFailure(failure),
+      tooManyRequests: (_) => _emitFailure(failure),
+      serverError: (_) => _emitFailure(failure),
+      unexpected: (_) => _emitFailure(failure),
     );
   }
 
@@ -213,17 +224,17 @@ class LoginCubit extends Cubit<LoginState> {
     emit(
       state.copyWith(
         status: LoginStatus.success,
-        errorMessage: null,
+        failure: null,
         submittingMethod: null,
       ),
     );
   }
 
-  void _emitError(String message) {
+  void _emitFailure(AuthFailure failure) {
     emit(
       state.copyWith(
         status: LoginStatus.failure,
-        errorMessage: message,
+        failure: failure,
         submittingMethod: null,
       ),
     );

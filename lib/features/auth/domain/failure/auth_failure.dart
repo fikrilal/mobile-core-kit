@@ -22,24 +22,7 @@ sealed class AuthFailure with _$AuthFailure {
   // Login
   const factory AuthFailure.invalidCredentials() = _InvalidCredentials;
   const factory AuthFailure.tooManyRequests() = _RateLimited;
+  const factory AuthFailure.userSuspended() = _UserSuspendedFailure;
   const factory AuthFailure.serverError([String? message]) = _ServerError;
   const factory AuthFailure.unexpected({String? message}) = _UnexpectedFailure;
-}
-
-extension AuthFailureX on AuthFailure {
-  /// Human-readable message for generic snackbars, dialogs, etc.
-  String get userMessage => when(
-    network: () => 'Please check your internet connection and try again.',
-    cancelled: () => 'Sign-in cancelled.',
-    unauthenticated: () => 'Session expired. Please sign in again.',
-    emailTaken: () => 'Email already in use.',
-    emailNotVerified: () => 'Please verify your email before continuing.',
-    validation: (_) => 'Please fix the highlighted errors',
-    invalidCredentials: () => 'Invalid email or password',
-    tooManyRequests: () => 'Too many requests. Please try again later.',
-    serverError: (message) =>
-        message ?? 'Server error. Please try again later.',
-    unexpected: (message) =>
-        message ?? 'Something went wrong. Please try again.',
-  );
 }

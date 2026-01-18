@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -34,13 +36,16 @@ class ProfilePage extends StatelessWidget {
     );
     return BlocListener<LogoutCubit, LogoutState>(
       listenWhen: (prev, curr) =>
-          prev.errorMessage != curr.errorMessage && curr.errorMessage != null,
+          prev.failure != curr.failure && curr.failure != null,
       listener: (context, state) {
-        AppSnackBar.showError(context, message: state.errorMessage!);
+        AppSnackBar.showError(
+          context,
+          message: messageForLogoutFailure(state.failure!, context.l10n),
+        );
       },
       child: AppLoadingOverlay(
         isLoading: isLoggingOut,
-        message: 'Logging out...',
+        message: context.l10n.profileLoggingOut,
         child: _ProfileContent(isLoggingOut: isLoggingOut),
       ),
     );
@@ -69,34 +74,34 @@ class _ProfileContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const AppText.headlineMedium('Your account'),
+              AppText.headlineMedium(context.l10n.profileYourAccountHeading),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.bell, size: 24),
                   showDot: true,
                 ),
-                title: 'Inbox',
+                title: context.l10n.profileInbox,
                 onTap: () {},
               ),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.question, size: 24),
                 ),
-                title: 'Help',
+                title: context.l10n.profileHelp,
                 onTap: () {},
               ),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.fileText, size: 24),
                 ),
-                title: 'Statements and reports',
+                title: context.l10n.profileStatementsAndReports,
                 onTap: () {},
               ),
               SizedBox(height: sectionSpacing),
 
               // Settings Section
-              const AppText.headlineMedium('Settings'),
+              AppText.headlineMedium(context.l10n.commonSettings),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
@@ -105,8 +110,8 @@ class _ProfileContent extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                title: 'Security and privacy',
-                subtitle: 'Change your security and privacy settings',
+                title: context.l10n.profileSecurityAndPrivacy,
+                subtitle: context.l10n.profileSecurityAndPrivacySubtitle,
                 onTap: () {},
               ),
               AppListTile(
@@ -116,8 +121,8 @@ class _ProfileContent extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                title: 'Notifications',
-                subtitle: 'Customise how you get updates',
+                title: context.l10n.profileNotifications,
+                subtitle: context.l10n.profileNotificationsSubtitle,
                 onTap: () {},
               ),
               ValueListenableBuilder<ThemeMode>(
@@ -130,8 +135,8 @@ class _ProfileContent extends StatelessWidget {
                         size: 24,
                       ),
                     ),
-                    title: 'Appearance',
-                    subtitle: _themeModeLabel(themeMode),
+                    title: context.l10n.commonAppearance,
+                    subtitle: _themeModeLabel(context, themeMode),
                     onTap: () async {
                       final selected = await showAdaptiveModal<ThemeMode>(
                         context: context,
@@ -154,8 +159,8 @@ class _ProfileContent extends StatelessWidget {
                         size: 24,
                       ),
                     ),
-                    title: 'Language',
-                    subtitle: _localeLabel(localeOverride),
+                    title: context.l10n.commonLanguage,
+                    subtitle: _localeLabel(context, localeOverride),
                     onTap: () async {
                       final selected = await showAdaptiveModal<_LocaleOption>(
                         context: context,
@@ -179,28 +184,28 @@ class _ProfileContent extends StatelessWidget {
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),
                 ),
-                title: 'Payment methods',
-                subtitle: 'Manage saved cards and bank accounts',
+                title: context.l10n.profilePaymentMethods,
+                subtitle: context.l10n.profilePaymentMethodsSubtitle,
                 onTap: () {},
               ),
               if (showDevTools) ...[
                 SizedBox(height: sectionSpacing),
-                const AppText.headlineMedium('Developer'),
+                AppText.headlineMedium(context.l10n.commonDeveloper),
                 const SizedBox(height: AppSpacing.space8),
                 AppListTile(
                   leading: AppIconBadge(
                     icon: PhosphorIcon(PhosphorIconsRegular.palette, size: 24),
                   ),
-                  title: 'Theme roles',
-                  subtitle: 'View ColorScheme + SemanticColors roles',
+                  title: context.l10n.profileThemeRoles,
+                  subtitle: context.l10n.profileThemeRolesSubtitle,
                   onTap: () => context.push(DevToolsRoutes.themeRoles),
                 ),
                 AppListTile(
                   leading: AppIconBadge(
                     icon: PhosphorIcon(PhosphorIconsRegular.cube, size: 24),
                   ),
-                  title: 'Widget Showcases',
-                  subtitle: 'Buttons, fields, typography & more',
+                  title: context.l10n.profileWidgetShowcases,
+                  subtitle: context.l10n.profileWidgetShowcasesSubtitle,
                   onTap: () => context.push(DevToolsRoutes.widgetShowcases),
                 ),
               ],
@@ -208,7 +213,7 @@ class _ProfileContent extends StatelessWidget {
 
               // Logout Button
               AppButton(
-                text: 'Log out',
+                text: context.l10n.commonLogout,
                 variant: ButtonVariant.danger,
                 isLoading: isLoggingOut,
                 isDisabled: isLoggingOut,
@@ -217,11 +222,10 @@ class _ProfileContent extends StatelessWidget {
                     : () async {
                         final confirmed = await showAppConfirmationDialog(
                           context: context,
-                          title: 'Log out?',
-                          message:
-                              'You will need to sign in again to continue. This will also revoke your sessions on other devices.',
-                          confirmLabel: 'Log out',
-                          cancelLabel: 'Cancel',
+                          title: context.l10n.profileLogoutDialogTitle,
+                          message: context.l10n.profileLogoutDialogMessage,
+                          confirmLabel: context.l10n.commonLogout,
+                          cancelLabel: context.l10n.commonCancel,
                           variant: AppConfirmationDialogVariant.standard,
                         );
 
@@ -238,24 +242,24 @@ class _ProfileContent extends StatelessWidget {
   }
 }
 
-String _themeModeLabel(ThemeMode mode) => switch (mode) {
-  ThemeMode.system => 'System',
-  ThemeMode.light => 'Light',
-  ThemeMode.dark => 'Dark',
+String _themeModeLabel(BuildContext context, ThemeMode mode) => switch (mode) {
+  ThemeMode.system => context.l10n.commonSystem,
+  ThemeMode.light => context.l10n.commonLight,
+  ThemeMode.dark => context.l10n.commonDark,
 };
 
-String _localeLabel(Locale? locale) {
-  if (locale == null) return 'System';
+String _localeLabel(BuildContext context, Locale? locale) {
+  if (locale == null) return context.l10n.commonSystem;
 
   final language = locale.languageCode.toLowerCase();
   final country = locale.countryCode?.toUpperCase();
 
   return switch ((language, country)) {
-    ('en', null) => 'English',
-    ('id', null) => 'Bahasa Indonesia',
-    ('en', 'XA') => 'English (Pseudo)',
-    ('ar', 'XB') => 'Arabic (RTL Pseudo)',
-    _ => 'System',
+    ('en', null) => context.l10n.languageEnglish,
+    ('id', null) => context.l10n.languageIndonesian,
+    ('en', 'XA') => context.l10n.devPseudoLocaleEnXa,
+    ('ar', 'XB') => context.l10n.devPseudoLocaleArXb,
+    _ => context.l10n.commonSystem,
   };
 }
 
@@ -280,23 +284,23 @@ class _ThemeModePicker extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppText.titleLarge('Theme'),
+            AppText.titleLarge(context.l10n.commonTheme),
             const SizedBox(height: AppSpacing.space8),
             _ThemeModeOptionTile(
-              title: 'System',
-              subtitle: 'Follow device appearance',
+              title: context.l10n.commonSystem,
+              subtitle: context.l10n.settingsFollowDeviceAppearance,
               value: ThemeMode.system,
               groupValue: initialThemeMode,
               onSelected: selectThemeMode,
             ),
             _ThemeModeOptionTile(
-              title: 'Light',
+              title: context.l10n.commonLight,
               value: ThemeMode.light,
               groupValue: initialThemeMode,
               onSelected: selectThemeMode,
             ),
             _ThemeModeOptionTile(
-              title: 'Dark',
+              title: context.l10n.commonDark,
               value: ThemeMode.dark,
               groupValue: initialThemeMode,
               onSelected: selectThemeMode,
@@ -391,41 +395,41 @@ class _LocalePicker extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppText.titleLarge('Language'),
+            AppText.titleLarge(context.l10n.commonLanguage),
             const SizedBox(height: AppSpacing.space8),
             _LocaleOptionTile(
-              title: 'System',
-              subtitle: 'Follow device language',
+              title: context.l10n.commonSystem,
+              subtitle: context.l10n.settingsFollowDeviceLanguage,
               value: _LocaleOption.system,
               groupValue: initialOption,
               onSelected: select,
             ),
             _LocaleOptionTile(
-              title: 'English',
+              title: context.l10n.languageEnglish,
               value: _LocaleOption.en,
               groupValue: initialOption,
               onSelected: select,
             ),
             _LocaleOptionTile(
-              title: 'Bahasa Indonesia',
+              title: context.l10n.languageIndonesian,
               value: _LocaleOption.id,
               groupValue: initialOption,
               onSelected: select,
             ),
             if (includePseudo) ...[
               const SizedBox(height: AppSpacing.space8),
-              const AppText.labelLarge('Developer QA'),
+              AppText.labelLarge(context.l10n.devDeveloperQa),
               const SizedBox(height: AppSpacing.space8),
               _LocaleOptionTile(
-                title: 'English (en-XA)',
-                subtitle: 'Pseudo-locale (accented/expanded)',
+                title: context.l10n.devPseudoLocaleEnXa,
+                subtitle: context.l10n.devPseudoLocaleEnXaSubtitle,
                 value: _LocaleOption.enXa,
                 groupValue: initialOption,
                 onSelected: select,
               ),
               _LocaleOptionTile(
-                title: 'RTL (ar-XB)',
-                subtitle: 'Pseudo-locale (forced RTL)',
+                title: context.l10n.devPseudoLocaleArXb,
+                subtitle: context.l10n.devPseudoLocaleArXbSubtitle,
                 value: _LocaleOption.arXb,
                 groupValue: initialOption,
                 onSelected: select,

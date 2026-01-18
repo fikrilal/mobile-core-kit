@@ -33,8 +33,8 @@ class RegisterUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'email',
-          message: f.userMessage,
-          code: 'invalid_email',
+          message: '',
+          code: f.code,
         ),
       ),
       (_) {},
@@ -45,8 +45,8 @@ class RegisterUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'password',
-          message: f.userMessage,
-          code: 'weak_password',
+          message: '',
+          code: f.code,
         ),
       ),
       (value) => normalizedPassword = value.value,
@@ -56,8 +56,8 @@ class RegisterUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'firstName',
-          message: f.userMessage,
-          code: 'invalid_first_name',
+          message: '',
+          code: f.code,
         ),
       ),
       (value) => normalizedFirstName = value.value,
@@ -67,8 +67,8 @@ class RegisterUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'lastName',
-          message: f.userMessage,
-          code: 'invalid_last_name',
+          message: '',
+          code: f.code,
         ),
       ),
       (value) => normalizedLastName = value.value,
