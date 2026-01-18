@@ -1,0 +1,14 @@
+{
+  "appTitle": "Mobile Core Kit",
+  "@appTitle": {
+    "description": "Application name shown in Flutter-side UI (e.g., Android recents, web title)."
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Generic confirmation action label."
+  },
+  "commonCancel": "Batal",
+  "@commonCancel": {
+    "description": "Generic cancel action label."
+  }
+}

@@ -1,0 +1,15 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+
+# Generate into lib/ for a stable import path (avoid relying on flutter_gen).
+output-dir: lib/l10n/gen
+
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+
+# Enterprise toggles (low complexity / high leverage)
+required-resource-attributes: true
+untranslated-messages-file: tool/untranslated_messages.json
+preferred-supported-locales: [en, id]
+use-named-parameters: true

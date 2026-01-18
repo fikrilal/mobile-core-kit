@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'core/di/service_locator.dart';
 import 'core/adaptive/adaptive_scope.dart';
 import 'core/adaptive/policies/navigation_policy.dart';
 import 'core/adaptive/policies/text_scale_policy.dart';
+import 'core/localization/l10n.dart';
 import 'core/services/app_startup/app_startup_controller.dart';
 import 'core/services/appearance/theme_mode_controller.dart';
 import 'core/theme/theme.dart';
@@ -28,11 +30,13 @@ class MyApp extends StatelessWidget {
         valueListenable: themeModeController,
         builder: (context, themeMode, _) {
           return MaterialApp.router(
-            title: 'Mobile Core Kit',
+            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: themeMode,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             routerConfig: _router,
             scaffoldMessengerKey: navigation.scaffoldMessengerKey,
             builder: (context, child) {
@@ -45,8 +49,8 @@ class MyApp extends StatelessWidget {
                 child: AppStartupGate(
                   listenable: startup,
                   isReady: () => startup.isReady,
-                  overlayBuilder: (_) =>
-                      const AppStartupOverlay(title: 'Mobile Core Kit'),
+                  overlayBuilder: (context) =>
+                      AppStartupOverlay(title: context.l10n.appTitle),
                   child: child ?? const SizedBox.shrink(),
                 ),
               );
