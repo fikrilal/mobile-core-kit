@@ -19,45 +19,44 @@ class ButtonStyles {
     final scheme = theme.colorScheme;
     final height = _getHeight(size);
     final padding = _getPadding(size);
+    final labelStyle = _getLabelTextStyle(theme, size);
 
-    switch (variant) {
-      case ButtonVariant.primary:
-        return _primaryStyle(
-          scheme: scheme,
-          height: height,
-          padding: padding,
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          isDisabled: isDisabled,
-        );
-      case ButtonVariant.secondary:
-        return _secondaryStyle(
-          scheme: scheme,
-          height: height,
-          padding: padding,
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          isDisabled: isDisabled,
-        );
-      case ButtonVariant.outline:
-        return _outlineStyle(
-          scheme: scheme,
-          height: height,
-          padding: padding,
-          borderColor: borderColor,
-          foregroundColor: foregroundColor,
-          isDisabled: isDisabled,
-        );
-      case ButtonVariant.danger:
-        return _dangerStyle(
-          scheme: scheme,
-          height: height,
-          padding: padding,
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          isDisabled: isDisabled,
-        );
-    }
+    final style = switch (variant) {
+      ButtonVariant.primary => _primaryStyle(
+        scheme: scheme,
+        height: height,
+        padding: padding,
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        isDisabled: isDisabled,
+      ),
+      ButtonVariant.secondary => _secondaryStyle(
+        scheme: scheme,
+        height: height,
+        padding: padding,
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        isDisabled: isDisabled,
+      ),
+      ButtonVariant.outline => _outlineStyle(
+        scheme: scheme,
+        height: height,
+        padding: padding,
+        borderColor: borderColor,
+        foregroundColor: foregroundColor,
+        isDisabled: isDisabled,
+      ),
+      ButtonVariant.danger => _dangerStyle(
+        scheme: scheme,
+        height: height,
+        padding: padding,
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        isDisabled: isDisabled,
+      ),
+    };
+
+    return style.copyWith(textStyle: WidgetStatePropertyAll(labelStyle));
   }
 
   static double _getHeight(ButtonSize size) {
@@ -89,6 +88,16 @@ class ButtonStyles {
           vertical: AppSpacing.space12,
         );
     }
+  }
+
+  static TextStyle _getLabelTextStyle(ThemeData theme, ButtonSize size) {
+    final t = theme.textTheme;
+    return switch (size) {
+          ButtonSize.small => t.labelSmall,
+          ButtonSize.medium => t.labelMedium,
+          ButtonSize.large => t.labelLarge,
+        } ??
+        const TextStyle();
   }
 
   static ButtonStyle _primaryStyle({
