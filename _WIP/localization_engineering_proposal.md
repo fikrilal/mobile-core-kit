@@ -284,7 +284,7 @@ Implementation options:
 
 To keep CI deterministic:
 
-1. Add a step in `tool/verify.dart` after `flutter pub get` and before `flutter analyze`:
+1. Add a step after `flutter pub get` and before `flutter analyze` (both in `tool/verify.dart` and the shipped GitHub Actions workflow):
    - `flutter gen-l10n`
 2. Keep `flutter analyze` after generation so imports like
    - `package:mobile_core_kit/l10n/gen/app_localizations.dart`

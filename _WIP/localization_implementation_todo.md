@@ -63,17 +63,19 @@ This is the execution checklist for `_WIP/localization_engineering_proposal.md`.
 
 ## Phase 2 — Tooling / CI (deterministic generation)
 
-- [ ] Update `tool/verify.dart`
-  - [ ] Add step `flutter gen-l10n` after `flutter pub get` and before `flutter analyze`
-  - [ ] Ensure `verify.dart` fails if generation fails (non-zero exit)
-- [ ] Confirm local workflows:
-  - [ ] `tool/agent/flutterw --no-stdin gen-l10n`
-  - [ ] `dart run tool/verify.dart --env dev`
+- [x] Update `tool/verify.dart`
+  - [x] Add step `flutter gen-l10n` after `flutter pub get` and before `flutter analyze`
+  - [x] Ensure `verify.dart` fails if generation fails (non-zero exit)
+- [x] Update CI workflow `.github/workflows/android.yml`
+  - [x] Add `flutter gen-l10n` before `flutter analyze` in both Android + iOS jobs
+- [x] Confirm local workflows:
+  - [x] `tool/agent/flutterw --no-stdin gen-l10n`
+  - [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 3 — Template migration (high-impact strings first)
 
 - [ ] Migrate app-level strings
-  - [ ] App title (`lib/app.dart`)
+  - [x] App title (`lib/app.dart`)
   - [ ] Any shared widget default copy that’s user-visible (loading labels, empty states, etc.)
 - [ ] Create a convention for new strings:
   - [ ] New UI copy must be added to ARB (PR review rule).
