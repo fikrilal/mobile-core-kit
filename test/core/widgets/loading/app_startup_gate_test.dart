@@ -3,11 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mobile_core_kit/core/theme/theme.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
 void main() {
   Widget wrap(Widget child) {
     return MaterialApp(
       theme: AppTheme.light(),
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: Center(child: child)),
     );
   }
@@ -19,6 +23,9 @@ void main() {
   }) {
     return MaterialApp(
       theme: AppTheme.light(),
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: MediaQuery(
         data: MediaQueryData(size: size, textScaler: textScaler),
         child: Scaffold(

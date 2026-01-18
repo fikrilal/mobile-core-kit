@@ -16,8 +16,6 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
     switch (code) {
       case ApiErrorCodes.validationFailed:
         return AuthFailure.validation(failure.validationErrors ?? const []);
-      case ApiErrorCodes.conflict:
-        return AuthFailure.unexpected(message: failure.message);
       case AuthErrorCodes.invalidCredentials:
       case AuthErrorCodes.legacyInvalidCredentials:
         return const AuthFailure.invalidCredentials();
@@ -33,7 +31,7 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       case AuthErrorCodes.oidcEmailNotVerified:
         return const AuthFailure.emailNotVerified();
       case AuthErrorCodes.userSuspended:
-        return AuthFailure.unexpected(message: failure.message);
+        return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.unauthenticated();
       case ApiErrorCodes.rateLimited:
@@ -98,13 +96,11 @@ AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
       case AuthErrorCodes.oidcTokenInvalid:
         return const AuthFailure.invalidCredentials();
       case AuthErrorCodes.userSuspended:
-        return AuthFailure.unexpected(message: failure.message);
+        return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.invalidCredentials();
-      case ApiErrorCodes.forbidden:
-      case ApiErrorCodes.conflict:
       case ApiErrorCodes.internal:
-        return AuthFailure.unexpected(message: failure.message);
+        return const AuthFailure.serverError();
       case ApiErrorCodes.rateLimited:
         return const AuthFailure.tooManyRequests();
     }
@@ -115,7 +111,7 @@ AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
       return const AuthFailure.invalidCredentials();
     case 403:
     case 409:
-      return AuthFailure.unexpected(message: failure.message);
+      return const AuthFailure.unexpected();
     case 400:
       return AuthFailure.validation(failure.validationErrors ?? const []);
     case 429:

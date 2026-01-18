@@ -26,8 +26,8 @@ class LoginUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'email',
-          message: f.userMessage,
-          code: 'invalid_email',
+          message: '',
+          code: f.code,
         ),
       ),
       (_) {},
@@ -40,8 +40,8 @@ class LoginUserUseCase {
       (f) => errors.add(
         ValidationError(
           field: 'password',
-          message: f.userMessage,
-          code: 'required',
+          message: '',
+          code: f.code,
         ),
       ),
       (value) => normalizedPassword = value.value,

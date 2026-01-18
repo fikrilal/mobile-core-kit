@@ -69,6 +69,10 @@ silenced with `git config core.autocrlf true`.
 
 - Prioritize clean, readable code. Keep widgets small and focused; extract private helpers for
   clarity.
+- Before adding new UI constants or bespoke widgets, search `lib/core/` for existing tokens,
+  theme extensions (`context.*`), adaptive specs, core widgets, and shared services. Avoid
+  hardcoded spacing/sizing/colors/typography; if a token/component is missing, add it to
+  `lib/core/` and use it from there.
 - Follow the feature BLoC builder pattern consistently:
     - Use a `BlocBuilder` with a `switch (state.status)` returning dedicated methods:
         - `initial/loading` -> `_buildLoadingState()` (or feature-specific)

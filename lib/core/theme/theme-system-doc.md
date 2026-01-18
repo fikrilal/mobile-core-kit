@@ -4,6 +4,7 @@ This is the guide to using the theme system in this template.
 
 Start here for color rules + examples:
 - `docs/explainers/core/theme/color_usage_guide.md`
+- `docs/explainers/core/theme/dark_mode_usage_guide.md`
 
 ## Table of Contents
 

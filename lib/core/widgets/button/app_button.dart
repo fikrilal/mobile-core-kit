@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
-import '../../theme/typography/components/text.dart';
 import '../common/app_haptic_feedback.dart';
 import 'button_variants.dart';
 import 'button_styles.dart';
@@ -292,7 +291,7 @@ class AppButton extends StatelessWidget {
 
     // Add subtle zoom interaction on tap for enabled buttons.
     if (!isButtonDisabled) {
-      button = ZoomTapAnimation(begin: 1.0, end: 0.98, child: button);
+      button = ZoomTapAnimation(begin: 1.0, end: 0.99, child: button);
     }
 
     // Apply margin if specified
@@ -322,22 +321,13 @@ class AppButton extends StatelessWidget {
     final effectiveIconSpacing = iconSpacing ?? 8.0;
 
     if (isLoading) {
+      final indicatorSize = loadingIndicatorSize ?? effectiveIconSize;
       final indicator =
           loadingIndicator ??
-          SizedBox(
-            width: loadingIndicatorSize ?? effectiveIconSize,
-            height: loadingIndicatorSize ?? effectiveIconSize,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                textColor ?? _getDefaultTextColor(context),
-              ),
-            ),
-          );
+          _buildDefaultLoadingIndicator(size: indicatorSize);
 
-      final textWidget = loadingText != null
-          ? _buildTextWidget(context, loadingText!)
-          : _buildText(context);
+      final label = loadingText ?? text;
+      final textWidget = _buildLabel(context, label);
 
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -365,7 +355,7 @@ class AppButton extends StatelessWidget {
             ),
             SizedBox(width: effectiveIconSpacing),
           ],
-          Flexible(child: _buildText(context)),
+          Flexible(child: _buildLabel(context, text)),
           if (suffixIcon != null) ...[
             SizedBox(width: effectiveIconSpacing),
             SizedBox(
@@ -378,60 +368,34 @@ class AppButton extends StatelessWidget {
       );
     }
 
-    return Center(child: _buildText(context));
+    return Center(child: _buildLabel(context, text));
   }
 
-  Widget _buildText(BuildContext context) {
-    switch (size) {
-      case ButtonSize.small:
-        return AppText.labelSmall(
-          text,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-      case ButtonSize.medium:
-        return AppText.labelMedium(
-          text,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-      case ButtonSize.large:
-        return AppText.labelLarge(
-          text,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-    }
+  Widget _buildLabel(BuildContext context, String label) {
+    return Text(
+      label,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: fontWeight == null ? null : TextStyle(fontWeight: fontWeight),
+    );
   }
 
-  // Helper method to build text widget with custom text
-  Widget _buildTextWidget(BuildContext context, String customText) {
-    switch (size) {
-      case ButtonSize.small:
-        return AppText.labelSmall(
-          customText,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-      case ButtonSize.medium:
-        return AppText.labelMedium(
-          customText,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-      case ButtonSize.large:
-        return AppText.labelLarge(
-          customText,
-          color: textColor,
-          textAlign: TextAlign.center,
-          fontWeight: fontWeight,
-        );
-    }
+  Widget _buildDefaultLoadingIndicator({required double size}) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Builder(
+        builder: (context) {
+          final resolved =
+              IconTheme.of(context).color ??
+              DefaultTextStyle.of(context).style.color ??
+              _getDefaultTextColor(context);
+
+          return CircularProgressIndicator(strokeWidth: 2, color: resolved);
+        },
+      ),
+    );
   }
 
   // Build the base button widget based on variant

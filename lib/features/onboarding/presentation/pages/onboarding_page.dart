@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
@@ -23,16 +24,14 @@ class OnboardingPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: AppSpacing.space24),
-              const AppText.headlineSmall('Welcome'),
+              AppText.headlineSmall(context.l10n.onboardingWelcomeTitle),
               const SizedBox(height: AppSpacing.space8),
-              const AppText.bodyMedium(
-                'This is the onboarding placeholder. Projects can replace this with a branded onboarding flow.',
-              ),
+              AppText.bodyMedium(context.l10n.onboardingPlaceholderBody),
               const Spacer(),
               AppButton.primary(
-                text: 'Continue',
+                text: context.l10n.commonContinue,
                 isExpanded: true,
-                semanticLabel: 'Continue onboarding',
+                semanticLabel: context.l10n.onboardingSemanticContinue,
                 onPressed: () async {
                   await locator<AppStartupController>().completeOnboarding();
                   if (!context.mounted) return;

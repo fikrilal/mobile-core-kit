@@ -13,6 +13,9 @@ Use semantic roles:
 In this repo, the roles are generated from seeds in:
 - `lib/core/theme/system/app_color_seeds.dart:1`
 
+Design/engineering handoff for seeds:
+- `docs/explainers/core/theme/color_seed_intake.md`
+
 ## Prohibited (what not to use)
 
 - Do not use palette-step colors (e.g. `neutral/200`, `green/500`) in app UI.

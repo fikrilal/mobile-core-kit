@@ -98,6 +98,9 @@ jobs:
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
 
+      - name: Flutter gen-l10n
+        run: flutter gen-l10n
+
       - name: Flutter analyze
         run: flutter analyze
 
@@ -215,6 +218,9 @@ jobs:
 
       - name: Generate build config (prod env)
         run: dart run tool/gen_config.dart --env prod
+
+      - name: Flutter gen-l10n
+        run: flutter gen-l10n
 
       - name: Flutter analyze
         run: flutter analyze

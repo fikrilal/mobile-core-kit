@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 import '../cubit/register/register_cubit.dart';
 import '../cubit/register/register_state.dart';
+import '../localization/auth_failure_localizer.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -19,13 +21,17 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const AppText.titleMedium('Create Account')),
+      appBar: AppBar(
+        title: AppText.titleMedium(context.l10n.authCreateAccount),
+      ),
       body: BlocListener<RegisterCubit, RegisterState>(
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
-          if (state.status == RegisterStatus.failure &&
-              state.errorMessage != null) {
-            AppSnackBar.showError(context, message: state.errorMessage!);
+          if (state.status == RegisterStatus.failure && state.failure != null) {
+            AppSnackBar.showError(
+              context,
+              message: messageForAuthFailure(state.failure!, context.l10n),
+            );
           }
         },
         child: const _RegisterForm(),
@@ -55,8 +61,13 @@ class _RegisterForm extends StatelessWidget {
                     const SizedBox(height: AppSpacing.space24),
                     AppTextField(
                       fieldType: FieldType.text,
-                      labelText: 'First Name',
-                      errorText: state.firstNameError,
+                      labelText: context.l10n.commonFirstName,
+                      errorText: state.firstNameError == null
+                          ? null
+                          : messageForAuthFieldError(
+                              state.firstNameError!,
+                              context.l10n,
+                            ),
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.givenName],
@@ -65,8 +76,13 @@ class _RegisterForm extends StatelessWidget {
                     const SizedBox(height: AppSpacing.space16),
                     AppTextField(
                       fieldType: FieldType.text,
-                      labelText: 'Last Name',
-                      errorText: state.lastNameError,
+                      labelText: context.l10n.commonLastName,
+                      errorText: state.lastNameError == null
+                          ? null
+                          : messageForAuthFieldError(
+                              state.lastNameError!,
+                              context.l10n,
+                            ),
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.familyName],
@@ -75,8 +91,13 @@ class _RegisterForm extends StatelessWidget {
                     const SizedBox(height: AppSpacing.space16),
                     AppTextField(
                       fieldType: FieldType.email,
-                      labelText: 'Email',
-                      errorText: state.emailError,
+                      labelText: context.l10n.commonEmail,
+                      errorText: state.emailError == null
+                          ? null
+                          : messageForAuthFieldError(
+                              state.emailError!,
+                              context.l10n,
+                            ),
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.email],
                       onChanged: context.read<RegisterCubit>().emailChanged,
@@ -84,19 +105,24 @@ class _RegisterForm extends StatelessWidget {
                     const SizedBox(height: AppSpacing.space16),
                     AppTextField(
                       fieldType: FieldType.password,
-                      labelText: 'Password',
-                      errorText: state.passwordError,
+                      labelText: context.l10n.commonPassword,
+                      errorText: state.passwordError == null
+                          ? null
+                          : messageForAuthFieldError(
+                              state.passwordError!,
+                              context.l10n,
+                            ),
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.newPassword],
                       onChanged: context.read<RegisterCubit>().passwordChanged,
                     ),
                     const SizedBox(height: AppSpacing.space24),
                     AppButton.primary(
-                      text: 'Create Account',
+                      text: context.l10n.authCreateAccount,
                       isExpanded: true,
                       isLoading: state.isSubmitting,
                       isDisabled: !state.canSubmit,
-                      semanticLabel: 'Create a new account',
+                      semanticLabel: context.l10n.authSemanticCreateAccount,
                       onPressed: state.canSubmit
                           ? () => context.read<RegisterCubit>().submit()
                           : null,
@@ -106,8 +132,8 @@ class _RegisterForm extends StatelessWidget {
                       onPressed: state.isSubmitting
                           ? null
                           : () => context.go(AuthRoutes.signIn),
-                      child: const AppText.bodyMedium(
-                        'Already have an account? Sign in',
+                      child: AppText.bodyMedium(
+                        context.l10n.authHaveAccountCta,
                         textAlign: TextAlign.center,
                       ),
                     ),

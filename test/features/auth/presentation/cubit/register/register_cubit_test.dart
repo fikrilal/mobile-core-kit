@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
@@ -73,10 +74,17 @@ void main() {
 
       expect(emitted.length, 1);
       expect(emitted.single.status, RegisterStatus.initial);
-      expect(emitted.single.firstNameError, 'This field cannot be empty');
-      expect(emitted.single.lastNameError, 'This field cannot be empty');
-      expect(emitted.single.emailError, 'Please enter a valid email address');
-      expect(emitted.single.passwordError, 'This field cannot be empty');
+      expect(emitted.single.failure, isNull);
+      expect(
+        emitted.single.firstNameError?.code,
+        ValidationErrorCodes.required,
+      );
+      expect(emitted.single.lastNameError?.code, ValidationErrorCodes.required);
+      expect(
+        emitted.single.emailError?.code,
+        ValidationErrorCodes.invalidEmail,
+      );
+      expect(emitted.single.passwordError?.code, ValidationErrorCodes.required);
 
       verifyNever(() => registerUser(any()));
       verifyNever(() => sessionManager.login(any()));
@@ -158,13 +166,14 @@ void main() {
         expect(emitted.length, 6);
         expect(emitted[4].status, RegisterStatus.submitting);
         expect(emitted[5].status, RegisterStatus.failure);
-        expect(emitted[5].emailError, 'Email already in use.');
+        expect(emitted[5].failure, const AuthFailure.emailTaken());
+        expect(emitted[5].emailError?.code, 'email_taken');
 
         cubit.emailChanged('user@example.com');
         await pumpEventQueue();
 
         expect(emitted.last.status, RegisterStatus.initial);
-        expect(emitted.last.errorMessage, isNull);
+        expect(emitted.last.failure, isNull);
 
         verifyNever(() => sessionManager.login(any()));
 

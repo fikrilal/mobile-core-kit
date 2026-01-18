@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 
 import '../../core/adaptive/widgets/adaptive_scaffold.dart';
 
@@ -18,16 +19,16 @@ class AppShellPage extends StatelessWidget {
           initialLocation: index == navigationShell.currentIndex,
         );
       },
-      destinations: const [
+      destinations: [
         AdaptiveScaffoldDestination(
-          label: 'Home',
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
+          label: context.l10n.commonHome,
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
         ),
         AdaptiveScaffoldDestination(
-          label: 'Profile',
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person),
+          label: context.l10n.commonProfile,
+          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person),
         ),
       ],
       body: navigationShell,

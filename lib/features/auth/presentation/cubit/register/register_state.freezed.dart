@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RegisterState {
 
- String get firstName; String get lastName; String get email; String get password; String? get firstNameError; String? get lastNameError; String? get emailError; String? get passwordError; String? get errorMessage; RegisterStatus get status;
+ String get firstName; String get lastName; String get email; String get password; ValidationError? get firstNameError; ValidationError? get lastNameError; ValidationError? get emailError; ValidationError? get passwordError; AuthFailure? get failure; RegisterStatus get status;
 /// Create a copy of RegisterState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RegisterStateCopyWith<RegisterState> get copyWith => _$RegisterStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterState&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstNameError, firstNameError) || other.firstNameError == firstNameError)&&(identical(other.lastNameError, lastNameError) || other.lastNameError == lastNameError)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.passwordError, passwordError) || other.passwordError == passwordError)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterState&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstNameError, firstNameError) || other.firstNameError == firstNameError)&&(identical(other.lastNameError, lastNameError) || other.lastNameError == lastNameError)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.passwordError, passwordError) || other.passwordError == passwordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,email,password,firstNameError,lastNameError,emailError,passwordError,errorMessage,status);
+int get hashCode => Object.hash(runtimeType,firstName,lastName,email,password,firstNameError,lastNameError,emailError,passwordError,failure,status);
 
 @override
 String toString() {
-  return 'RegisterState(firstName: $firstName, lastName: $lastName, email: $email, password: $password, firstNameError: $firstNameError, lastNameError: $lastNameError, emailError: $emailError, passwordError: $passwordError, errorMessage: $errorMessage, status: $status)';
+  return 'RegisterState(firstName: $firstName, lastName: $lastName, email: $email, password: $password, firstNameError: $firstNameError, lastNameError: $lastNameError, emailError: $emailError, passwordError: $passwordError, failure: $failure, status: $status)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $RegisterStateCopyWith<$Res>  {
   factory $RegisterStateCopyWith(RegisterState value, $Res Function(RegisterState) _then) = _$RegisterStateCopyWithImpl;
 @useResult
 $Res call({
- String firstName, String lastName, String email, String password, String? firstNameError, String? lastNameError, String? emailError, String? passwordError, String? errorMessage, RegisterStatus status
+ String firstName, String lastName, String email, String password, ValidationError? firstNameError, ValidationError? lastNameError, ValidationError? emailError, ValidationError? passwordError, AuthFailure? failure, RegisterStatus status
 });
 
 
-
+$AuthFailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -62,22 +62,34 @@ class _$RegisterStateCopyWithImpl<$Res>
 
 /// Create a copy of RegisterState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? firstName = null,Object? lastName = null,Object? email = null,Object? password = null,Object? firstNameError = freezed,Object? lastNameError = freezed,Object? emailError = freezed,Object? passwordError = freezed,Object? errorMessage = freezed,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? firstName = null,Object? lastName = null,Object? email = null,Object? password = null,Object? firstNameError = freezed,Object? lastNameError = freezed,Object? emailError = freezed,Object? passwordError = freezed,Object? failure = freezed,Object? status = null,}) {
   return _then(_self.copyWith(
 firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String,firstNameError: freezed == firstNameError ? _self.firstNameError : firstNameError // ignore: cast_nullable_to_non_nullable
-as String?,lastNameError: freezed == lastNameError ? _self.lastNameError : lastNameError // ignore: cast_nullable_to_non_nullable
-as String?,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
-as String?,passwordError: freezed == passwordError ? _self.passwordError : passwordError // ignore: cast_nullable_to_non_nullable
-as String?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as ValidationError?,lastNameError: freezed == lastNameError ? _self.lastNameError : lastNameError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,passwordError: freezed == passwordError ? _self.passwordError : passwordError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as AuthFailure?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RegisterStatus,
   ));
 }
+/// Create a copy of RegisterState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AuthFailureCopyWith<$Res>? get failure {
+    if (_self.failure == null) {
+    return null;
+  }
 
+  return $AuthFailureCopyWith<$Res>(_self.failure!, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 
@@ -159,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String firstName,  String lastName,  String email,  String password,  String? firstNameError,  String? lastNameError,  String? emailError,  String? passwordError,  String? errorMessage,  RegisterStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String firstName,  String lastName,  String email,  String password,  ValidationError? firstNameError,  ValidationError? lastNameError,  ValidationError? emailError,  ValidationError? passwordError,  AuthFailure? failure,  RegisterStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RegisterState() when $default != null:
-return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.errorMessage,_that.status);case _:
+return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.failure,_that.status);case _:
   return orElse();
 
 }
@@ -180,10 +192,10 @@ return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String firstName,  String lastName,  String email,  String password,  String? firstNameError,  String? lastNameError,  String? emailError,  String? passwordError,  String? errorMessage,  RegisterStatus status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String firstName,  String lastName,  String email,  String password,  ValidationError? firstNameError,  ValidationError? lastNameError,  ValidationError? emailError,  ValidationError? passwordError,  AuthFailure? failure,  RegisterStatus status)  $default,) {final _that = this;
 switch (_that) {
 case _RegisterState():
-return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.errorMessage,_that.status);case _:
+return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.failure,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +212,10 @@ return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String firstName,  String lastName,  String email,  String password,  String? firstNameError,  String? lastNameError,  String? emailError,  String? passwordError,  String? errorMessage,  RegisterStatus status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String firstName,  String lastName,  String email,  String password,  ValidationError? firstNameError,  ValidationError? lastNameError,  ValidationError? emailError,  ValidationError? passwordError,  AuthFailure? failure,  RegisterStatus status)?  $default,) {final _that = this;
 switch (_that) {
 case _RegisterState() when $default != null:
-return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.errorMessage,_that.status);case _:
+return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.firstNameError,_that.lastNameError,_that.emailError,_that.passwordError,_that.failure,_that.status);case _:
   return null;
 
 }
@@ -215,18 +227,18 @@ return $default(_that.firstName,_that.lastName,_that.email,_that.password,_that.
 
 
 class _RegisterState extends RegisterState {
-  const _RegisterState({this.firstName = '', this.lastName = '', this.email = '', this.password = '', this.firstNameError, this.lastNameError, this.emailError, this.passwordError, this.errorMessage, this.status = RegisterStatus.initial}): super._();
+  const _RegisterState({this.firstName = '', this.lastName = '', this.email = '', this.password = '', this.firstNameError, this.lastNameError, this.emailError, this.passwordError, this.failure, this.status = RegisterStatus.initial}): super._();
   
 
 @override@JsonKey() final  String firstName;
 @override@JsonKey() final  String lastName;
 @override@JsonKey() final  String email;
 @override@JsonKey() final  String password;
-@override final  String? firstNameError;
-@override final  String? lastNameError;
-@override final  String? emailError;
-@override final  String? passwordError;
-@override final  String? errorMessage;
+@override final  ValidationError? firstNameError;
+@override final  ValidationError? lastNameError;
+@override final  ValidationError? emailError;
+@override final  ValidationError? passwordError;
+@override final  AuthFailure? failure;
 @override@JsonKey() final  RegisterStatus status;
 
 /// Create a copy of RegisterState
@@ -239,16 +251,16 @@ _$RegisterStateCopyWith<_RegisterState> get copyWith => __$RegisterStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterState&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstNameError, firstNameError) || other.firstNameError == firstNameError)&&(identical(other.lastNameError, lastNameError) || other.lastNameError == lastNameError)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.passwordError, passwordError) || other.passwordError == passwordError)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterState&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstNameError, firstNameError) || other.firstNameError == firstNameError)&&(identical(other.lastNameError, lastNameError) || other.lastNameError == lastNameError)&&(identical(other.emailError, emailError) || other.emailError == emailError)&&(identical(other.passwordError, passwordError) || other.passwordError == passwordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,email,password,firstNameError,lastNameError,emailError,passwordError,errorMessage,status);
+int get hashCode => Object.hash(runtimeType,firstName,lastName,email,password,firstNameError,lastNameError,emailError,passwordError,failure,status);
 
 @override
 String toString() {
-  return 'RegisterState(firstName: $firstName, lastName: $lastName, email: $email, password: $password, firstNameError: $firstNameError, lastNameError: $lastNameError, emailError: $emailError, passwordError: $passwordError, errorMessage: $errorMessage, status: $status)';
+  return 'RegisterState(firstName: $firstName, lastName: $lastName, email: $email, password: $password, firstNameError: $firstNameError, lastNameError: $lastNameError, emailError: $emailError, passwordError: $passwordError, failure: $failure, status: $status)';
 }
 
 
@@ -259,11 +271,11 @@ abstract mixin class _$RegisterStateCopyWith<$Res> implements $RegisterStateCopy
   factory _$RegisterStateCopyWith(_RegisterState value, $Res Function(_RegisterState) _then) = __$RegisterStateCopyWithImpl;
 @override @useResult
 $Res call({
- String firstName, String lastName, String email, String password, String? firstNameError, String? lastNameError, String? emailError, String? passwordError, String? errorMessage, RegisterStatus status
+ String firstName, String lastName, String email, String password, ValidationError? firstNameError, ValidationError? lastNameError, ValidationError? emailError, ValidationError? passwordError, AuthFailure? failure, RegisterStatus status
 });
 
 
-
+@override $AuthFailureCopyWith<$Res>? get failure;
 
 }
 /// @nodoc
@@ -276,23 +288,35 @@ class __$RegisterStateCopyWithImpl<$Res>
 
 /// Create a copy of RegisterState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? firstName = null,Object? lastName = null,Object? email = null,Object? password = null,Object? firstNameError = freezed,Object? lastNameError = freezed,Object? emailError = freezed,Object? passwordError = freezed,Object? errorMessage = freezed,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? firstName = null,Object? lastName = null,Object? email = null,Object? password = null,Object? firstNameError = freezed,Object? lastNameError = freezed,Object? emailError = freezed,Object? passwordError = freezed,Object? failure = freezed,Object? status = null,}) {
   return _then(_RegisterState(
 firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String,firstNameError: freezed == firstNameError ? _self.firstNameError : firstNameError // ignore: cast_nullable_to_non_nullable
-as String?,lastNameError: freezed == lastNameError ? _self.lastNameError : lastNameError // ignore: cast_nullable_to_non_nullable
-as String?,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
-as String?,passwordError: freezed == passwordError ? _self.passwordError : passwordError // ignore: cast_nullable_to_non_nullable
-as String?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as ValidationError?,lastNameError: freezed == lastNameError ? _self.lastNameError : lastNameError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,emailError: freezed == emailError ? _self.emailError : emailError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,passwordError: freezed == passwordError ? _self.passwordError : passwordError // ignore: cast_nullable_to_non_nullable
+as ValidationError?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as AuthFailure?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RegisterStatus,
   ));
 }
 
+/// Create a copy of RegisterState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AuthFailureCopyWith<$Res>? get failure {
+    if (_self.failure == null) {
+    return null;
+  }
 
+  return $AuthFailureCopyWith<$Res>(_self.failure!, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 import 'core/configs/app_config.dart';
 import 'core/di/service_locator.dart';
+import 'core/services/appearance/theme_mode_controller.dart';
+import 'core/services/localization/locale_controller.dart';
 import 'core/services/early_errors/early_error_buffer.dart';
 import 'core/services/startup_metrics/startup_metrics.dart';
 import 'core/utilities/log_utils.dart';
@@ -24,6 +26,14 @@ Future<void> main() async {
       // as soon as possible (reduces time spent on the native launch screen).
       registerLocator();
       startupMetrics.mark(StartupMilestone.diRegistered);
+
+      // Load theme mode preference before first frame to avoid a light↔dark flash
+      // when users override system appearance.
+      await locator<ThemeModeController>().load();
+
+      // Load locale override before first frame to avoid a language flash when
+      // users override system locale.
+      await locator<LocaleController>().load();
 
       startupMetrics.mark(StartupMilestone.runAppCalled);
       runApp(MyApp());

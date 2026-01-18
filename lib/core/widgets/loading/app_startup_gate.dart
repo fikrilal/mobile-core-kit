@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../localization/l10n.dart';
 import '../../theme/tokens/spacing.dart';
 import '../../theme/system/motion_durations.dart';
 import '../../theme/typography/components/text.dart';
@@ -319,18 +320,22 @@ class AppStartupOverlay extends StatelessWidget {
   const AppStartupOverlay({
     super.key,
     this.title,
-    this.semanticLabel = 'Starting up',
+    this.semanticLabel,
   });
 
   final String? title;
-  final String semanticLabel;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final effectiveSemanticLabel =
+        semanticLabel == null || semanticLabel!.trim().isEmpty
+            ? context.l10n.commonStartingUp
+            : semanticLabel!;
 
     return Semantics(
-      label: semanticLabel,
+      label: effectiveSemanticLabel,
       liveRegion: true,
       child: ColoredBox(
         color: scheme.surface,

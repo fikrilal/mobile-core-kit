@@ -1,4 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+
+import '../../../domain/failure/auth_failure.dart';
 
 part 'register_state.freezed.dart';
 
@@ -11,11 +14,11 @@ abstract class RegisterState with _$RegisterState {
     @Default('') String lastName,
     @Default('') String email,
     @Default('') String password,
-    String? firstNameError,
-    String? lastNameError,
-    String? emailError,
-    String? passwordError,
-    String? errorMessage,
+    ValidationError? firstNameError,
+    ValidationError? lastNameError,
+    ValidationError? emailError,
+    ValidationError? passwordError,
+    AuthFailure? failure,
     @Default(RegisterStatus.initial) RegisterStatus status,
   }) = _RegisterState;
 

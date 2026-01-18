@@ -40,6 +40,9 @@ Future<int> main(List<String> argv) async {
   ]);
   if (exitCode != 0) return exitCode;
 
+  exitCode = await step('Flutter gen-l10n', ['flutter', 'gen-l10n']);
+  if (exitCode != 0) return exitCode;
+
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
   if (exitCode != 0) return exitCode;
 

@@ -55,3 +55,7 @@ app.*.map.json
 .env/*.yaml
 !.env/*.example.yaml
 lib/core/configs/build_config_values.dart
+
+# Localization (gen-l10n)
+lib/l10n/gen/
+tool/untranslated_messages.json

@@ -10,3 +10,7 @@ Reading order:
 4) `enterprise_responsive_adaptive_implementation_guide.md` — how to build/extend the module
 5) `height_class_adaptation.md` — how to apply `WindowHeightClass` in screens
 6) `enterprise_responsive_adaptive_proposal.md` — goals, rationale, and the contract
+
+Appendix:
+
+- `adaptive_system_review.md` — historical review + follow-up status

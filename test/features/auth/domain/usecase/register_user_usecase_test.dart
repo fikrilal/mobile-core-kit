@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -47,23 +48,23 @@ void main() {
             const AuthFailure.validation([
               ValidationError(
                 field: 'email',
-                message: 'Please enter a valid email address',
-                code: 'invalid_email',
+                message: '',
+                code: ValidationErrorCodes.invalidEmail,
               ),
               ValidationError(
                 field: 'password',
-                message: 'Password must be at least 8 characters',
-                code: 'weak_password',
+                message: '',
+                code: ValidationErrorCodes.passwordTooShort,
               ),
               ValidationError(
                 field: 'firstName',
-                message: 'This field cannot be empty',
-                code: 'invalid_first_name',
+                message: '',
+                code: ValidationErrorCodes.required,
               ),
               ValidationError(
                 field: 'lastName',
-                message: 'Must be at least 2 characters',
-                code: 'invalid_last_name',
+                message: '',
+                code: ValidationErrorCodes.nameTooShort,
               ),
             ]),
           );

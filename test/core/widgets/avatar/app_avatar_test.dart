@@ -4,10 +4,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/avatar.dart';
+import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 Widget _wrap(Widget child) {
   return MaterialApp(
+    locale: const Locale('en'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: Center(child: child)),
   );
 }
@@ -142,13 +146,11 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 360,
-              child: Row(
-                children: [Expanded(child: AppAvatar(onChangePhoto: () {}))],
-              ),
+        _wrap(
+          SizedBox(
+            width: 360,
+            child: Row(
+              children: [Expanded(child: AppAvatar(onChangePhoto: () {}))],
             ),
           ),
         ),

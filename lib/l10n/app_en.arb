@@ -1,0 +1,350 @@
+{
+  "appTitle": "Mobile Core Kit",
+  "@appTitle": {
+    "description": "Application name shown in Flutter-side UI (e.g., Android recents, web title)."
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Generic confirmation action label."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic cancel action label."
+  },
+  "commonConfirm": "Confirm",
+  "@commonConfirm": {
+    "description": "Generic confirm action label (used when confirming an action)."
+  },
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "Generic accessibility label for in-progress/loading UI."
+  },
+  "commonStartingUp": "Starting up",
+  "@commonStartingUp": {
+    "description": "Accessibility label shown while the app is starting up."
+  },
+  "commonShowPassword": "Show password",
+  "@commonShowPassword": {
+    "description": "Tooltip/action label for revealing the password text in a password field."
+  },
+  "commonHidePassword": "Hide password",
+  "@commonHidePassword": {
+    "description": "Tooltip/action label for hiding the password text in a password field."
+  },
+  "fieldSearchHint": "Search...",
+  "@fieldSearchHint": {
+    "description": "Placeholder/hint text for search input fields."
+  },
+  "commonAvatar": "Avatar",
+  "@commonAvatar": {
+    "description": "Fallback semantics label for an avatar when the user's name is not known."
+  },
+  "commonAvatarFor": "Avatar for {name}",
+  "@commonAvatarFor": {
+    "description": "Semantics label for an avatar when the user's display name is available.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ari"
+      }
+    }
+  },
+  "commonChangeProfilePhoto": "Change profile photo",
+  "@commonChangeProfilePhoto": {
+    "description": "Accessibility label for the action that changes the profile photo/avatar."
+  },
+  "commonItemsCount": "{count, plural, =0{No items} one{1 item} other{{count} items}}",
+  "@commonItemsCount": {
+    "description": "Human-friendly label for an item count with proper pluralization.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "errorsUnexpected": "Something went wrong. Please try again.",
+  "@errorsUnexpected": {
+    "description": "Fallback message for an unknown/unexpected error."
+  },
+  "errorsOffline": "No internet connection. Please try again.",
+  "@errorsOffline": {
+    "description": "Message shown when the device is offline or the network is unreachable."
+  },
+  "errorsTimeout": "Request timed out. Please try again.",
+  "@errorsTimeout": {
+    "description": "Message shown when a network request times out."
+  },
+  "errorsUnauthenticated": "Session expired. Please sign in again.",
+  "@errorsUnauthenticated": {
+    "description": "Message shown when the user is not authenticated (401) and needs to sign in again."
+  },
+  "errorsForbidden": "You don’t have permission to perform this action.",
+  "@errorsForbidden": {
+    "description": "Message shown when the user is authenticated but not authorized (403)."
+  },
+  "errorsTooManyRequests": "Too many requests. Please try again later.",
+  "@errorsTooManyRequests": {
+    "description": "Message shown when the user is being rate limited (429)."
+  },
+  "errorsServer": "Server error. Please try again later.",
+  "@errorsServer": {
+    "description": "Message shown when the backend/server fails (5xx)."
+  },
+  "errorsValidation": "Please fix the highlighted errors.",
+  "@errorsValidation": {
+    "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "validationInvalidEmail": "Please enter a valid email address",
+  "@validationInvalidEmail": {
+    "description": "Validation message shown when an email address is invalid."
+  },
+  "validationRequired": "This field cannot be empty",
+  "@validationRequired": {
+    "description": "Validation message shown when a required field is empty."
+  },
+  "validationPasswordTooShort": "Password must be at least 8 characters",
+  "@validationPasswordTooShort": {
+    "description": "Validation message shown when the password is too short."
+  },
+  "validationPasswordsDoNotMatch": "Passwords do not match",
+  "@validationPasswordsDoNotMatch": {
+    "description": "Validation message shown when a password confirmation does not match."
+  },
+  "validationNameTooShort": "Must be at least 2 characters",
+  "@validationNameTooShort": {
+    "description": "Validation message shown when a name field is too short."
+  },
+  "validationNameTooLong": "Cannot exceed 50 characters",
+  "@validationNameTooLong": {
+    "description": "Validation message shown when a name field is too long."
+  },
+  "authErrorsInvalidCredentials": "Invalid email or password",
+  "@authErrorsInvalidCredentials": {
+    "description": "Message shown when the user enters invalid login credentials."
+  },
+  "authErrorsEmailTaken": "Email already in use",
+  "@authErrorsEmailTaken": {
+    "description": "Message shown when a user attempts to register with an email that already exists."
+  },
+  "authErrorsEmailNotVerified": "Please verify your email before continuing",
+  "@authErrorsEmailNotVerified": {
+    "description": "Message shown when the user must verify their email before continuing."
+  },
+  "authErrorsUserSuspended": "Your account is suspended. Please contact support.",
+  "@authErrorsUserSuspended": {
+    "description": "Message shown when the user's account is suspended or blocked."
+  },
+  "authErrorsLogoutFailed": "Failed to log out. Please try again.",
+  "@authErrorsLogoutFailed": {
+    "description": "Message shown when the app cannot complete a logout flow."
+  },
+  "commonEmail": "Email",
+  "@commonEmail": {
+    "description": "Generic field label for an email address."
+  },
+  "commonPassword": "Password",
+  "@commonPassword": {
+    "description": "Generic field label for a password."
+  },
+  "commonFirstName": "First Name",
+  "@commonFirstName": {
+    "description": "Generic field label for a user's first name."
+  },
+  "commonLastName": "Last Name",
+  "@commonLastName": {
+    "description": "Generic field label for a user's last name."
+  },
+  "commonHome": "Home",
+  "@commonHome": {
+    "description": "Navigation label for the home tab/screen."
+  },
+  "commonProfile": "Profile",
+  "@commonProfile": {
+    "description": "Navigation label for the profile tab/screen."
+  },
+  "commonSettings": "Settings",
+  "@commonSettings": {
+    "description": "Section heading for settings."
+  },
+  "commonContinue": "Continue",
+  "@commonContinue": {
+    "description": "Generic CTA label for progressing to the next step."
+  },
+  "commonLanguage": "Language",
+  "@commonLanguage": {
+    "description": "Settings label for language/locale selection."
+  },
+  "commonAppearance": "Appearance",
+  "@commonAppearance": {
+    "description": "Settings label for appearance/theme selection."
+  },
+  "commonTheme": "Theme",
+  "@commonTheme": {
+    "description": "Title for theme selection UI."
+  },
+  "commonSystem": "System",
+  "@commonSystem": {
+    "description": "Option label meaning the app follows the system/device setting."
+  },
+  "commonLight": "Light",
+  "@commonLight": {
+    "description": "Option label for light theme."
+  },
+  "commonDark": "Dark",
+  "@commonDark": {
+    "description": "Option label for dark theme."
+  },
+  "commonDeveloper": "Developer",
+  "@commonDeveloper": {
+    "description": "Section heading for developer-only tools."
+  },
+  "commonLogout": "Log out",
+  "@commonLogout": {
+    "description": "Action label to log out/sign out."
+  },
+  "authSignIn": "Sign In",
+  "@authSignIn": {
+    "description": "Title/button label for signing in."
+  },
+  "authCreateAccount": "Create Account",
+  "@authCreateAccount": {
+    "description": "Title/button label for creating a new account."
+  },
+  "authContinueWithGoogle": "Continue with Google",
+  "@authContinueWithGoogle": {
+    "description": "Button label for continuing sign-in with Google."
+  },
+  "authSemanticSignIn": "Sign in to your account",
+  "@authSemanticSignIn": {
+    "description": "Accessibility label for the primary sign-in action."
+  },
+  "authSemanticCreateAccount": "Create a new account",
+  "@authSemanticCreateAccount": {
+    "description": "Accessibility label for the create account action."
+  },
+  "authNoAccountCta": "Don’t have an account? Create one",
+  "@authNoAccountCta": {
+    "description": "CTA text linking from sign-in to registration."
+  },
+  "authHaveAccountCta": "Already have an account? Sign in",
+  "@authHaveAccountCta": {
+    "description": "CTA text linking from registration back to sign-in."
+  },
+  "onboardingWelcomeTitle": "Welcome",
+  "@onboardingWelcomeTitle": {
+    "description": "Title shown on the onboarding screen."
+  },
+  "onboardingPlaceholderBody": "This is the onboarding placeholder. Projects can replace this with a branded onboarding flow.",
+  "@onboardingPlaceholderBody": {
+    "description": "Placeholder body copy explaining onboarding can be replaced by product teams."
+  },
+  "onboardingSemanticContinue": "Continue onboarding",
+  "@onboardingSemanticContinue": {
+    "description": "Accessibility label for continuing from onboarding."
+  },
+  "profileYourAccountHeading": "Your account",
+  "@profileYourAccountHeading": {
+    "description": "Profile screen heading for the account section."
+  },
+  "profileInbox": "Inbox",
+  "@profileInbox": {
+    "description": "Profile screen list item label for inbox."
+  },
+  "profileHelp": "Help",
+  "@profileHelp": {
+    "description": "Profile screen list item label for help/support."
+  },
+  "profileStatementsAndReports": "Statements and reports",
+  "@profileStatementsAndReports": {
+    "description": "Profile screen list item label for statements and reports."
+  },
+  "profileSecurityAndPrivacy": "Security and privacy",
+  "@profileSecurityAndPrivacy": {
+    "description": "Profile/settings list item label for security and privacy."
+  },
+  "profileSecurityAndPrivacySubtitle": "Change your security and privacy settings",
+  "@profileSecurityAndPrivacySubtitle": {
+    "description": "Subtitle describing security and privacy settings."
+  },
+  "profileNotifications": "Notifications",
+  "@profileNotifications": {
+    "description": "Profile/settings list item label for notifications."
+  },
+  "profileNotificationsSubtitle": "Customise how you get updates",
+  "@profileNotificationsSubtitle": {
+    "description": "Subtitle describing notification preferences."
+  },
+  "profilePaymentMethods": "Payment methods",
+  "@profilePaymentMethods": {
+    "description": "Profile/settings list item label for payment methods."
+  },
+  "profilePaymentMethodsSubtitle": "Manage saved cards and bank accounts",
+  "@profilePaymentMethodsSubtitle": {
+    "description": "Subtitle describing payment method management."
+  },
+  "profileThemeRoles": "Theme roles",
+  "@profileThemeRoles": {
+    "description": "Developer tool navigation label for theme roles."
+  },
+  "profileThemeRolesSubtitle": "View ColorScheme + SemanticColors roles",
+  "@profileThemeRolesSubtitle": {
+    "description": "Developer tool subtitle describing theme roles screen."
+  },
+  "profileWidgetShowcases": "Widget Showcases",
+  "@profileWidgetShowcases": {
+    "description": "Developer tool navigation label for widget showcases."
+  },
+  "profileWidgetShowcasesSubtitle": "Buttons, fields, typography & more",
+  "@profileWidgetShowcasesSubtitle": {
+    "description": "Developer tool subtitle describing widget showcase content."
+  },
+  "profileLoggingOut": "Logging out...",
+  "@profileLoggingOut": {
+    "description": "Loading overlay message shown while logging out."
+  },
+  "profileLogoutDialogTitle": "Log out?",
+  "@profileLogoutDialogTitle": {
+    "description": "Confirmation dialog title when the user attempts to log out."
+  },
+  "profileLogoutDialogMessage": "You will need to sign in again to continue. This will also revoke your sessions on other devices.",
+  "@profileLogoutDialogMessage": {
+    "description": "Confirmation dialog message describing the effects of logging out."
+  },
+  "settingsFollowDeviceAppearance": "Follow device appearance",
+  "@settingsFollowDeviceAppearance": {
+    "description": "Subtitle for the system theme option."
+  },
+  "settingsFollowDeviceLanguage": "Follow device language",
+  "@settingsFollowDeviceLanguage": {
+    "description": "Subtitle for the system language option."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Language name shown in the language picker."
+  },
+  "languageIndonesian": "Bahasa Indonesia",
+  "@languageIndonesian": {
+    "description": "Language name shown in the language picker."
+  },
+  "devDeveloperQa": "Developer QA",
+  "@devDeveloperQa": {
+    "description": "Heading for developer-only QA options."
+  },
+  "devPseudoLocaleEnXa": "English (en-XA)",
+  "@devPseudoLocaleEnXa": {
+    "description": "Developer-only pseudo-locale option label for en-XA."
+  },
+  "devPseudoLocaleEnXaSubtitle": "Pseudo-locale (accented/expanded)",
+  "@devPseudoLocaleEnXaSubtitle": {
+    "description": "Developer-only subtitle describing the en-XA pseudo-locale."
+  },
+  "devPseudoLocaleArXb": "RTL (ar-XB)",
+  "@devPseudoLocaleArXb": {
+    "description": "Developer-only pseudo-locale option label for ar-XB."
+  },
+  "devPseudoLocaleArXbSubtitle": "Pseudo-locale (forced RTL)",
+  "@devPseudoLocaleArXbSubtitle": {
+    "description": "Developer-only subtitle describing the ar-XB pseudo-locale."
+  }
+}

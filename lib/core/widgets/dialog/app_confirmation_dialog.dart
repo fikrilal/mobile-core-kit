@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
 
 import '../../adaptive/widgets/adaptive_modal.dart';
+import '../../localization/l10n.dart';
 import '../../theme/tokens/spacing.dart';
 import '../../theme/typography/components/text.dart';
 import '../button/button.dart';
@@ -295,8 +296,8 @@ Future<bool?> showAppConfirmationDialog({
   required BuildContext context,
   required String title,
   required String message,
-  String confirmLabel = 'Confirm',
-  String cancelLabel = 'Cancel',
+  String? confirmLabel,
+  String? cancelLabel,
   bool isLoading = false,
   String? loadingLabel,
   String? errorText,
@@ -315,6 +316,16 @@ Future<bool?> showAppConfirmationDialog({
   EdgeInsets? insetPadding,
   bool? barrierDismissible,
 }) {
+  final l10n = context.l10n;
+  final effectiveConfirmLabel =
+      confirmLabel == null || confirmLabel.trim().isEmpty
+          ? l10n.commonConfirm
+          : confirmLabel;
+  final effectiveCancelLabel =
+      cancelLabel == null || cancelLabel.trim().isEmpty
+          ? l10n.commonCancel
+          : cancelLabel;
+
   final canDismiss = isCancelEnabled && !isLoading;
   final effectiveBarrierDismissible = barrierDismissible ?? canDismiss;
 
@@ -346,6 +357,7 @@ Future<bool?> showAppConfirmationDialog({
   return showAdaptiveModal<bool>(
     context: context,
     barrierDismissible: effectiveBarrierDismissible,
+    bottomSheetStyle: AdaptiveBottomSheetStyle.edgeToEdge,
     showDragHandle: false,
     dialogInsetPadding: dialogInsetPadding,
     dialogShape: dialogShape,
@@ -355,8 +367,8 @@ Future<bool?> showAppConfirmationDialog({
     builder: (dialogContext) => AppConfirmationDialog(
       title: title,
       message: message,
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: effectiveConfirmLabel,
+      cancelLabel: effectiveCancelLabel,
       isLoading: isLoading,
       loadingLabel: loadingLabel,
       errorText: errorText,
