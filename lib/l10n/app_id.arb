@@ -52,5 +52,15 @@
   "commonChangeProfilePhoto": "Ubah foto profil",
   "@commonChangeProfilePhoto": {
     "description": "Accessibility label for the action that changes the profile photo/avatar."
+  },
+  "commonItemsCount": "{count, plural, =0{Tidak ada item} other{{count} item}}",
+  "@commonItemsCount": {
+    "description": "Human-friendly label for an item count with proper pluralization.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
   }
 }

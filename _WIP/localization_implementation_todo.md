@@ -82,11 +82,11 @@ This is the execution checklist for `_WIP/localization_engineering_proposal.md`.
 
 ## Phase 4 — Tests (contract-level)
 
-- [ ] Add `test/core/localization/app_localizations_smoke_test.dart`
-  - [ ] Load `AppLocalizations` for each supported locale
-  - [ ] Assert a handful of keys are present (no hardcoding of translations beyond sanity)
-- [ ] Add `test/core/localization/pluralization_test.dart`
-  - [ ] Validate at least one pluralized message for 2 locales (where rules differ), if/when added.
+- [x] Add `test/core/localization/app_localizations_smoke_test.dart`
+  - [x] Load `AppLocalizations` for each supported locale
+  - [x] Assert a handful of keys are present (no hardcoding of translations beyond sanity)
+- [x] Add `test/core/localization/pluralization_test.dart`
+  - [x] Validate at least one pluralized message for 2 locales (where rules differ)
 
 ## Phase 5 — Enterprise extensions (optional, staged)
 
