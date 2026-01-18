@@ -62,5 +62,37 @@
         "example": "2"
       }
     }
+  },
+  "errorsUnexpected": "⟪RTL⟫ Something went wrong. Please try again.",
+  "@errorsUnexpected": {
+    "description": "Fallback message for an unknown/unexpected error."
+  },
+  "errorsOffline": "⟪RTL⟫ No internet connection. Please try again.",
+  "@errorsOffline": {
+    "description": "Message shown when the device is offline or the network is unreachable."
+  },
+  "errorsTimeout": "⟪RTL⟫ Request timed out. Please try again.",
+  "@errorsTimeout": {
+    "description": "Message shown when a network request times out."
+  },
+  "errorsUnauthenticated": "⟪RTL⟫ Session expired. Please sign in again.",
+  "@errorsUnauthenticated": {
+    "description": "Message shown when the user is not authenticated (401) and needs to sign in again."
+  },
+  "errorsForbidden": "⟪RTL⟫ You don’t have permission to perform this action.",
+  "@errorsForbidden": {
+    "description": "Message shown when the user is authenticated but not authorized (403)."
+  },
+  "errorsTooManyRequests": "⟪RTL⟫ Too many requests. Please try again later.",
+  "@errorsTooManyRequests": {
+    "description": "Message shown when the user is being rate limited (429)."
+  },
+  "errorsServer": "⟪RTL⟫ Server error. Please try again later.",
+  "@errorsServer": {
+    "description": "Message shown when the backend/server fails (5xx)."
+  },
+  "errorsValidation": "⟪RTL⟫ Please fix the highlighted errors.",
+  "@errorsValidation": {
+    "description": "Message shown when the request failed validation (e.g., field errors)."
   }
 }

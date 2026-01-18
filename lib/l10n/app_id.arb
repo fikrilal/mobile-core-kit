@@ -62,5 +62,37 @@
         "example": "2"
       }
     }
+  },
+  "errorsUnexpected": "Terjadi kesalahan. Silakan coba lagi.",
+  "@errorsUnexpected": {
+    "description": "Fallback message for an unknown/unexpected error."
+  },
+  "errorsOffline": "Tidak ada koneksi internet. Silakan coba lagi.",
+  "@errorsOffline": {
+    "description": "Message shown when the device is offline or the network is unreachable."
+  },
+  "errorsTimeout": "Permintaan melebihi batas waktu. Silakan coba lagi.",
+  "@errorsTimeout": {
+    "description": "Message shown when a network request times out."
+  },
+  "errorsUnauthenticated": "Sesi berakhir. Silakan masuk lagi.",
+  "@errorsUnauthenticated": {
+    "description": "Message shown when the user is not authenticated (401) and needs to sign in again."
+  },
+  "errorsForbidden": "Anda tidak memiliki izin untuk melakukan tindakan ini.",
+  "@errorsForbidden": {
+    "description": "Message shown when the user is authenticated but not authorized (403)."
+  },
+  "errorsTooManyRequests": "Terlalu banyak permintaan. Silakan coba lagi nanti.",
+  "@errorsTooManyRequests": {
+    "description": "Message shown when the user is being rate limited (429)."
+  },
+  "errorsServer": "Terjadi kesalahan pada server. Silakan coba lagi nanti.",
+  "@errorsServer": {
+    "description": "Message shown when the backend/server fails (5xx)."
+  },
+  "errorsValidation": "Silakan perbaiki kesalahan yang ditandai.",
+  "@errorsValidation": {
+    "description": "Message shown when the request failed validation (e.g., field errors)."
   }
 }

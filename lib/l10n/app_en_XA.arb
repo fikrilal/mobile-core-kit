@@ -62,6 +62,37 @@
         "example": "2"
       }
     }
+  },
+  "errorsUnexpected": "⟪Şǿḿḗŧħīñğ ẇḗñŧ ẇŗǿñğ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
+  "@errorsUnexpected": {
+    "description": "Fallback message for an unknown/unexpected error."
+  },
+  "errorsOffline": "⟪Ńǿ īñŧḗŗñḗŧ çǿññḗçŧīǿñ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
+  "@errorsOffline": {
+    "description": "Message shown when the device is offline or the network is unreachable."
+  },
+  "errorsTimeout": "⟪Ŗḗɋüḗşŧ ŧīḿḗḓ ǿüŧ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
+  "@errorsTimeout": {
+    "description": "Message shown when a network request times out."
+  },
+  "errorsUnauthenticated": "⟪Şḗşşīǿñ ḗẋρīŗḗḓ. Ƥŀḗåşḗ şīğñ īñ åğåīñ.⟫",
+  "@errorsUnauthenticated": {
+    "description": "Message shown when the user is not authenticated (401) and needs to sign in again."
+  },
+  "errorsForbidden": "⟪Ẏǿü ɗǿñ’ŧ ħåṽḗ ρḗŗḿīşşīǿñ ŧǿ ρḗŗƒǿŗḿ ŧħīş åçŧīǿñ.⟫",
+  "@errorsForbidden": {
+    "description": "Message shown when the user is authenticated but not authorized (403)."
+  },
+  "errorsTooManyRequests": "⟪Ŧǿǿ ḿåñẏ ŗḗɋüḗşŧş. Ƥŀḗåşḗ ŧŗẏ åğåīñ ŀåŧḗŗ.⟫",
+  "@errorsTooManyRequests": {
+    "description": "Message shown when the user is being rate limited (429)."
+  },
+  "errorsServer": "⟪Şḗŗṽḗŗ ḗŗŗǿŗ. Ƥŀḗåşḗ ŧŗẏ åğåīñ ŀåŧḗŗ.⟫",
+  "@errorsServer": {
+    "description": "Message shown when the backend/server fails (5xx)."
+  },
+  "errorsValidation": "⟪Ƥŀḗåşḗ ƒīẋ ŧħḗ ħīğħŀīğħŧḗḓ ḗŗŗǿŗş.⟫",
+  "@errorsValidation": {
+    "description": "Message shown when the request failed validation (e.g., field errors)."
   }
 }
-
