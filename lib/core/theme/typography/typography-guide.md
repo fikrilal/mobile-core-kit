@@ -34,6 +34,20 @@ Use these when you want less boilerplate:
 
 These convenience widgets must remain **thin wrappers** over `textTheme`.
 
+## Using alternate font families
+
+If you need to render a specific piece of UI in another registered font
+family (example: `SpaceGrotesk`), override `fontFamily`:
+
+```dart
+import 'package:mobile_core_kit/core/theme/typography/tokens/typefaces.dart';
+
+AppText.titleLarge(
+  'Space Grotesk title',
+  fontFamily: Typefaces.secondary,
+);
+```
+
 ## Accessibility rules (non-negotiable)
 
 1) Never “scale fonts manually”.

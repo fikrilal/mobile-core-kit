@@ -18,6 +18,7 @@ class AppText extends StatelessWidget {
   final int? maxLines;
   final Color? color;
   final FontWeight? fontWeight;
+  final String? fontFamily;
   final bool selectable;
   final String? semanticsLabel;
   final bool excludeFromSemantics;
@@ -30,6 +31,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -43,6 +45,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -56,6 +59,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -69,6 +73,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -82,6 +87,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -95,6 +101,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -108,6 +115,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -121,6 +129,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -134,6 +143,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -147,6 +157,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -160,6 +171,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -173,6 +185,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -186,6 +199,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -199,6 +213,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -212,6 +227,7 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.fontWeight,
+    this.fontFamily,
     this.selectable = false,
     this.semanticsLabel,
     this.excludeFromSemantics = false,
@@ -223,6 +239,7 @@ class AppText extends StatelessWidget {
     final effectiveStyle = base.copyWith(
       color: color ?? base.color,
       fontWeight: fontWeight ?? base.fontWeight,
+      fontFamily: fontFamily ?? base.fontFamily,
     );
 
     Widget child;

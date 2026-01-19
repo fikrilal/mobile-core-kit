@@ -87,7 +87,8 @@ class _ProfileContent extends StatelessWidget {
                   ],
                 ),
               ),
-              AppText.headlineMedium(context.l10n.profileYourAccountHeading),
+              SizedBox(height: sectionSpacing),
+              AppText.titleLarge(context.l10n.profileYourAccountHeading),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
@@ -114,7 +115,7 @@ class _ProfileContent extends StatelessWidget {
               SizedBox(height: sectionSpacing),
 
               // Settings Section
-              AppText.headlineMedium(context.l10n.commonSettings),
+              AppText.titleLarge(context.l10n.commonSettings),
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
@@ -203,7 +204,7 @@ class _ProfileContent extends StatelessWidget {
               ),
               if (showDevTools) ...[
                 SizedBox(height: sectionSpacing),
-                AppText.headlineMedium(context.l10n.commonDeveloper),
+                AppText.titleLarge(context.l10n.commonDeveloper),
                 const SizedBox(height: AppSpacing.space8),
                 AppListTile(
                   leading: AppIconBadge(
