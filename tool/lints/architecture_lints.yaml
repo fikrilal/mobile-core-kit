@@ -41,3 +41,41 @@ rules:
           - lib/features/user/domain/usecase/**
           - lib/features/auth/domain/failure/**
 
+  # Clean Architecture boundaries inside features.
+  - id: feature_domain_no_data_or_presentation
+    reason: Domain must not depend on data/presentation (or navigation).
+    from: lib/features/*/domain/**
+    deny:
+      - lib/features/*/data/**
+      - lib/features/*/presentation/**
+      - lib/navigation/**
+
+  - id: feature_presentation_no_data
+    reason: Presentation must not depend on data directly; go through usecases/repos.
+    from: lib/features/*/presentation/**
+    deny:
+      - lib/features/*/data/**
+
+  - id: feature_data_no_presentation_or_navigation
+    reason: Data must not depend on presentation or navigation.
+    from: lib/features/*/data/**
+    deny:
+      - lib/features/*/presentation/**
+      - lib/navigation/**
+
+  - id: navigation_no_feature_domain_or_data
+    reason: Navigation composes UI only; it must not reach into feature domain/data.
+    from: lib/navigation/**
+    deny:
+      - lib/features/*/domain/**
+      - lib/features/*/data/**
+
+  - id: feature_di_only_composed_from_core_di
+    reason: Feature DI modules should only be imported by core DI composition.
+    from: lib/**
+    deny:
+      - lib/features/*/di/**
+    exceptions:
+      - from: lib/core/di/**
+        allow:
+          - lib/features/*/di/**

@@ -1,3 +1,5 @@
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+
 /// Style presets for [AppTappable] widget.
 ///
 /// Each preset provides a different intensity of touch feedback:
@@ -36,11 +38,11 @@ extension TappableStyleConfig on TappableStyle {
   Duration get animationDuration {
     switch (this) {
       case TappableStyle.subtle:
-        return const Duration(milliseconds: 100);
+        return MotionDurations.quick;
       case TappableStyle.standard:
-        return const Duration(milliseconds: 150);
+        return MotionDurations.short;
       case TappableStyle.bold:
-        return const Duration(milliseconds: 200);
+        return MotionDurations.medium;
     }
   }
 

@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+
 /// AppDotWave
 ///
 /// Smooth, continuous dot wave loader using a sine-based animation.
@@ -12,7 +14,7 @@ class AppDotWave extends StatefulWidget {
     this.count = 3,
     this.dotSize = 8,
     this.spacing = 6,
-    this.period = const Duration(milliseconds: 1200),
+    this.period = MotionDurations.dotWavePeriod,
     this.minScale = 0.6,
     this.maxScale = 1.0,
     this.fade = true,

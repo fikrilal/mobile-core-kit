@@ -7,6 +7,27 @@
 class MotionDurations {
   MotionDurations._();
 
+  /// Fast motion for subtle UI feedback.
+  static const Duration quick = Duration(milliseconds: 100);
+
+  /// Default motion for most interactions.
+  static const Duration short = Duration(milliseconds: 150);
+
+  /// Standard motion for UI transitions.
+  static const Duration medium = Duration(milliseconds: 200);
+
+  /// Emphasized motion for larger UI transitions.
+  static const Duration long = Duration(milliseconds: 250);
+
+  /// Side sheet transition duration (slide-in/out).
+  static const Duration sideSheetTransition = Duration(milliseconds: 220);
+
+  /// Period for shimmer animations.
+  static const Duration shimmerPeriod = Duration(milliseconds: 1500);
+
+  /// Period for dot-wave loading animations.
+  static const Duration dotWavePeriod = Duration(milliseconds: 1200);
+
   /// Delay before showing the app startup gate overlay.
   ///
   /// Used by: `AppStartupGate` in `lib/core/widgets/loading/app_startup_gate.dart`.

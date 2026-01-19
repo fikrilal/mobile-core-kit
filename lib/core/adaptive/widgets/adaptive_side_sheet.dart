@@ -4,6 +4,7 @@ import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive_policies.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
 
 /// Adaptive side sheet entrypoint (side sheet on medium+, fallback on compact).
 ///
@@ -16,7 +17,7 @@ Future<T?> showAdaptiveSideSheet<T>({
   bool barrierDismissible = true,
   bool useRootNavigator = true,
   double width = 360,
-  Duration transitionDuration = const Duration(milliseconds: 220),
+  Duration transitionDuration = MotionDurations.sideSheetTransition,
 }) {
   final layout = context.adaptiveLayout;
   final policy = modalPolicy ?? AdaptivePolicies.of(context).modalPolicy;

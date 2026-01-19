@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+
 part 'shimmer_render.dart';
 part 'shimmer_shapes.dart';
 
@@ -37,7 +39,7 @@ class ShimmerComponent extends StatefulWidget {
     required this.child,
     this.gradient,
     this.direction = ShimmerDirection.ltr,
-    this.period = const Duration(milliseconds: 1500),
+    this.period = MotionDurations.shimmerPeriod,
     this.loop = 0,
     this.enabled = true,
   });
@@ -52,7 +54,7 @@ class ShimmerComponent extends StatefulWidget {
     required this.child,
     required Color baseColor,
     required Color highlightColor,
-    this.period = const Duration(milliseconds: 1500),
+    this.period = MotionDurations.shimmerPeriod,
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,

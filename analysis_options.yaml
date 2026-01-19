@@ -18,6 +18,11 @@ custom_lint:
     # Note: custom_lint reads rule options as sibling keys of the rule name.
     - architecture_imports:
       config: tool/lints/architecture_lints.yaml
+    - modal_entrypoints:
+      include:
+        - lib/**
+      allow_prefixes:
+        - lib/core/adaptive/widgets/
     - hardcoded_ui_colors:
       include:
         - lib/core/widgets/**
@@ -28,12 +33,35 @@ custom_lint:
         - Colors.transparent
     - hardcoded_font_sizes:
       include:
+        - lib/core/adaptive/widgets/**
         - lib/core/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - manual_text_scaling:
       include:
+        - lib/core/adaptive/widgets/**
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
+    - spacing_tokens:
+      include:
+        - lib/core/adaptive/widgets/**
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
+    - state_opacity_tokens:
+      include:
+        - lib/core/adaptive/widgets/**
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
+    - motion_durations:
+      include:
+        - lib/core/adaptive/widgets/**
         - lib/core/widgets/**
         - lib/features/**
         - lib/navigation/**

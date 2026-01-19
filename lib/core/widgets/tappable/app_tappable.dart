@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
 import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
 import 'package:mobile_core_kit/core/widgets/tappable/tappable_style.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -100,9 +101,11 @@ class AppTappable extends StatelessWidget {
 
     // Theme-aware colors
     final effectiveHighlight =
-        highlightColor ?? context.cs.onSurface.withValues(alpha: 0.08);
+        highlightColor ??
+        context.cs.onSurface.withValues(alpha: StateOpacities.hover);
     final effectiveSplash =
-        splashColor ?? context.cs.onSurface.withValues(alpha: 0.12);
+        splashColor ??
+        context.cs.onSurface.withValues(alpha: StateOpacities.pressed);
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
 
     Widget content = child;
