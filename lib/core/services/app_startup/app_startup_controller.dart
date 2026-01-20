@@ -172,9 +172,18 @@ class AppStartupController extends ChangeNotifier {
   Future<void> _hydrateUser() async {
     if (_isHydratingUser) return;
     _isHydratingUser = true;
+    final refreshTokenAtStart = _sessionManager.refreshToken;
 
     try {
       final result = await _getMe();
+
+      // Guard against races: if the session changed (logout, account switch,
+      // token rotation) while the request was in-flight, ignore the result.
+      if (refreshTokenAtStart == null ||
+          _sessionManager.refreshToken != refreshTokenAtStart) {
+        return;
+      }
+
       await result.match(
         (AuthFailure failure) async {
           final shouldLogout = failure.maybeWhen(

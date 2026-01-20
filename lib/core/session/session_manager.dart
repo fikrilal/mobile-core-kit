@@ -70,6 +70,7 @@ class SessionManager {
       _currentSession != null && _currentSession!.user == null;
   Stream<AuthSessionEntity?> get stream => _sessionController.stream;
   String? get accessToken => _currentSession?.tokens.accessToken;
+  String? get refreshToken => _currentSession?.tokens.refreshToken;
   DateTime? get accessTokenExpiresAt => _currentSession?.tokens.expiresAt;
 
   static const Duration _accessTokenExpiryLeeway = Duration(minutes: 1);

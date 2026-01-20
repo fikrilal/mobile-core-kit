@@ -34,6 +34,290 @@ void main() {
     );
   });
 
+  group('SessionManager.restoreCachedUserIfNeeded', () {
+    test('does nothing when signed out', () async {
+      final repo = _MockSessionRepository();
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.restoreCachedUserIfNeeded();
+
+      verifyNever(() => repo.loadCachedUser());
+
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('does nothing when user is already available', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        AuthSessionEntity(
+          tokens: const AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: const UserEntity(id: 'u1', email: 'user@example.com'),
+        ),
+      );
+
+      await manager.restoreCachedUserIfNeeded();
+
+      verifyNever(() => repo.loadCachedUser());
+
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('restores cached user when auth is pending', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+      when(
+        () => repo.loadCachedUser(),
+      ).thenAnswer(
+        (_) async => const UserEntity(id: 'u1', email: 'cached@example.com'),
+      );
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      await manager.restoreCachedUserIfNeeded();
+
+      expect(manager.session?.user?.id, 'u1');
+      expect(manager.session?.user?.email, 'cached@example.com');
+      verify(() => repo.loadCachedUser()).called(1);
+
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('dedupes concurrent restores (single-flight)', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+      final cachedUserCompleter = Completer<UserEntity?>();
+      when(
+        () => repo.loadCachedUser(),
+      ).thenAnswer((_) => cachedUserCompleter.future);
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      final f1 = manager.restoreCachedUserIfNeeded();
+      final f2 = manager.restoreCachedUserIfNeeded();
+
+      verify(() => repo.loadCachedUser()).called(1);
+
+      cachedUserCompleter.complete(
+        const UserEntity(id: 'u1', email: 'cached@example.com'),
+      );
+
+      await f1;
+      await f2;
+
+      expect(manager.session?.user?.email, 'cached@example.com');
+
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('ignores cached user if session changes mid-flight', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+
+      final cachedUserCompleter = Completer<UserEntity?>();
+      when(
+        () => repo.loadCachedUser(),
+      ).thenAnswer((_) => cachedUserCompleter.future);
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access_a',
+            refreshToken: 'refresh_a',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      final restoreFuture = manager.restoreCachedUserIfNeeded();
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access_b',
+            refreshToken: 'refresh_b',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      cachedUserCompleter.complete(
+        const UserEntity(id: 'u1', email: 'cached@example.com'),
+      );
+
+      await restoreFuture;
+
+      expect(manager.session?.tokens.accessToken, 'access_b');
+      expect(manager.session?.user, isNull);
+
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('ignores cached user if session is cleared mid-flight', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+      when(() => repo.clearSession()).thenAnswer((_) async {});
+
+      final cachedUserCompleter = Completer<UserEntity?>();
+      when(
+        () => repo.loadCachedUser(),
+      ).thenAnswer((_) => cachedUserCompleter.future);
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      final restoreFuture = manager.restoreCachedUserIfNeeded();
+
+      await manager.logout(reason: 'manual_logout');
+
+      cachedUserCompleter.complete(
+        const UserEntity(id: 'u1', email: 'cached@example.com'),
+      );
+
+      await restoreFuture;
+
+      expect(manager.session, isNull);
+
+      events.dispose();
+      manager.dispose();
+    });
+  });
+
+  group('SessionManager.logout', () {
+    test('clears session and publishes SessionCleared', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+      when(() => repo.clearSession()).thenAnswer((_) async {});
+
+      final refreshUsecase = _MockRefreshTokenUsecase();
+      final events = AppEventBus();
+      final emitted = <AppEvent>[];
+      final sub = events.stream.listen(emitted.add);
+
+      final manager = SessionManager(
+        repo,
+        refreshUsecase: refreshUsecase,
+        events: events,
+      );
+
+      await manager.login(
+        AuthSessionEntity(
+          tokens: const AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: const UserEntity(id: 'u1', email: 'user@example.com'),
+        ),
+      );
+
+      await manager.logout(reason: 'manual_logout');
+
+      verify(() => repo.clearSession()).called(1);
+      expect(manager.session, isNull);
+
+      await Future<void>.delayed(Duration.zero);
+      expect(emitted.whereType<SessionCleared>().length, 1);
+      expect(emitted.whereType<SessionCleared>().single.reason, 'manual_logout');
+
+      await sub.cancel();
+      events.dispose();
+      manager.dispose();
+    });
+  });
+
   group('SessionManager.refreshTokens', () {
     test(
       'logs out only when unauthenticated (e.g. invalid refresh token)',
