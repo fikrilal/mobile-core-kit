@@ -35,10 +35,10 @@ import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/di/auth_module.dart';
 import 'package:mobile_core_kit/features/user/di/user_module.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/firebase_options.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
@@ -190,7 +190,7 @@ void registerLocator() {
         appLaunch: locator<AppLaunchService>(),
         connectivity: locator<ConnectivityService>(),
         sessionManager: locator<SessionManager>(),
-        getMe: locator<GetMeUseCase>(),
+        currentUserFetcher: locator<CurrentUserFetcher>(),
       ),
       dispose: (controller) => controller.dispose(),
     );

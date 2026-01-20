@@ -5,23 +5,22 @@ import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 
 class SessionManager {
   SessionManager(
     this._repository, {
-    required RefreshTokenUsecase refreshUsecase,
+    required TokenRefresher tokenRefresher,
     required AppEventBus events,
-  }) : _refreshTokenUsecase = refreshUsecase,
+  }) : _tokenRefresher = tokenRefresher,
        _events = events;
 
   final SessionRepository _repository;
-  final RefreshTokenUsecase _refreshTokenUsecase;
+  final TokenRefresher _tokenRefresher;
   final StreamController<AuthSessionEntity?> _sessionController =
       StreamController<AuthSessionEntity?>.broadcast();
   final ValueNotifier<AuthSessionEntity?> _sessionNotifier =
@@ -166,16 +165,11 @@ class SessionManager {
     if (current == null) return false;
     final refreshTokenAtStart = current.tokens.refreshToken;
     Log.debug('Refreshing tokens…', name: 'SessionManager');
-    final result = await _refreshTokenUsecase(
-      RefreshRequestEntity(refreshToken: current.tokens.refreshToken),
-    );
+    final result = await _tokenRefresher.refresh(refreshTokenAtStart);
 
     return result.match(
-      (failure) async {
-        final shouldLogout = failure.maybeWhen(
-          unauthenticated: () => true,
-          orElse: () => false,
-        );
+      (SessionFailure failure) async {
+        final shouldLogout = failure.isUnauthenticated;
 
         if (shouldLogout) {
           Log.error(
@@ -191,7 +185,7 @@ class SessionManager {
         }
 
         Log.warning(
-          'Refresh failed (not logging out): ${failure.runtimeType}',
+          'Refresh failed (not logging out): ${failure.type}',
           name: 'SessionManager',
         );
         return false;

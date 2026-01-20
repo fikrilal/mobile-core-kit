@@ -6,21 +6,20 @@ import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSessionRepository extends Mock implements SessionRepository {}
 
-class _MockRefreshTokenUsecase extends Mock implements RefreshTokenUsecase {}
+class _MockTokenRefresher extends Mock implements TokenRefresher {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const RefreshRequestEntity(refreshToken: 'refresh'));
+    registerFallbackValue('refresh');
     registerFallbackValue(
       AuthSessionEntity(
         tokens: const AuthTokensEntity(
@@ -37,12 +36,12 @@ void main() {
   group('SessionManager.restoreCachedUserIfNeeded', () {
     test('does nothing when signed out', () async {
       final repo = _MockSessionRepository();
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -58,12 +57,12 @@ void main() {
       final repo = _MockSessionRepository();
       when(() => repo.saveSession(any())).thenAnswer((_) async {});
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -96,12 +95,12 @@ void main() {
         (_) async => const UserEntity(id: 'u1', email: 'cached@example.com'),
       );
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -134,12 +133,12 @@ void main() {
         () => repo.loadCachedUser(),
       ).thenAnswer((_) => cachedUserCompleter.future);
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -181,12 +180,12 @@ void main() {
         () => repo.loadCachedUser(),
       ).thenAnswer((_) => cachedUserCompleter.future);
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -237,12 +236,12 @@ void main() {
         () => repo.loadCachedUser(),
       ).thenAnswer((_) => cachedUserCompleter.future);
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -280,14 +279,14 @@ void main() {
       when(() => repo.saveSession(any())).thenAnswer((_) async {});
       when(() => repo.clearSession()).thenAnswer((_) async {});
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       final events = AppEventBus();
       final emitted = <AppEvent>[];
       final sub = events.stream.listen(emitted.add);
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -326,10 +325,10 @@ void main() {
         when(() => repo.saveSession(any())).thenAnswer((_) async {});
         when(() => repo.clearSession()).thenAnswer((_) async {});
 
-        final refreshUsecase = _MockRefreshTokenUsecase();
+        final tokenRefresher = _MockTokenRefresher();
         when(
-          () => refreshUsecase(any()),
-        ).thenAnswer((_) async => left(const AuthFailure.unauthenticated()));
+          () => tokenRefresher.refresh(any()),
+        ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
 
         final events = AppEventBus();
         final emitted = <AppEvent>[];
@@ -337,7 +336,7 @@ void main() {
 
         final manager = SessionManager(
           repo,
-          refreshUsecase: refreshUsecase,
+          tokenRefresher: tokenRefresher,
           events: events,
         );
 
@@ -384,10 +383,10 @@ void main() {
       when(() => repo.saveSession(any())).thenAnswer((_) async {});
       when(() => repo.clearSession()).thenAnswer((_) async {});
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       when(
-        () => refreshUsecase(any()),
-      ).thenAnswer((_) async => left(const AuthFailure.network()));
+        () => tokenRefresher.refresh(any()),
+      ).thenAnswer((_) async => left(const SessionFailure.network()));
 
       final events = AppEventBus();
       final emitted = <AppEvent>[];
@@ -395,7 +394,7 @@ void main() {
 
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -441,7 +440,7 @@ void main() {
       when(() => repo.saveSession(any())).thenAnswer((_) async {});
       when(() => repo.clearSession()).thenAnswer((_) async {});
 
-      final refreshUsecase = _MockRefreshTokenUsecase();
+      final tokenRefresher = _MockTokenRefresher();
       const newTokens = AuthTokensEntity(
         accessToken: 'access_new',
         refreshToken: 'refresh_new',
@@ -449,13 +448,13 @@ void main() {
         expiresIn: 900,
       );
       when(
-        () => refreshUsecase(any()),
+        () => tokenRefresher.refresh(any()),
       ).thenAnswer((_) async => right(newTokens));
 
       final events = AppEventBus();
       final manager = SessionManager(
         repo,
-        refreshUsecase: refreshUsecase,
+        tokenRefresher: tokenRefresher,
         events: events,
       );
 
@@ -502,16 +501,16 @@ void main() {
         when(() => repo.clearSession()).thenAnswer((_) async {});
 
         final refreshCompleter =
-            Completer<Either<AuthFailure, AuthTokensEntity>>();
-        final refreshUsecase = _MockRefreshTokenUsecase();
+            Completer<Either<SessionFailure, AuthTokensEntity>>();
+        final tokenRefresher = _MockTokenRefresher();
         when(
-          () => refreshUsecase(any()),
+          () => tokenRefresher.refresh(any()),
         ).thenAnswer((_) => refreshCompleter.future);
 
         final events = AppEventBus();
         final manager = SessionManager(
           repo,
-          refreshUsecase: refreshUsecase,
+          tokenRefresher: tokenRefresher,
           events: events,
         );
 

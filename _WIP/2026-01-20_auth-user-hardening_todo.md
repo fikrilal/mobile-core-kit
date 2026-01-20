@@ -8,9 +8,9 @@ This is the end-to-end checklist to harden **auth + user/session foundations** f
 
 ## Target outcomes (definition of done)
 
-- [ ] **Architecture boundaries are clean:** `tool/lints/architecture_lints.yaml` no longer needs the temporary exceptions under `core_no_features` for `lib/core/session/**` and `lib/core/services/app_startup/**`.
-- [ ] **Core is truly core:** `lib/core/**` imports **zero** `lib/features/**` (except `lib/core/di/**` importing `lib/features/*/di/**`).
-- [ ] **User feature owns “me” data end-to-end:** remote + local persistence live under `lib/features/user/**` (not `auth`).
+- [x] **Architecture boundaries are clean:** `tool/lints/architecture_lints.yaml` no longer needs the temporary exceptions under `core_no_features` for `lib/core/session/**` and `lib/core/services/app_startup/**`.
+- [x] **Core is truly core:** `lib/core/**` imports **zero** `lib/features/**` (except `lib/core/di/**` importing `lib/features/*/di/**`).
+- [x] **User feature owns “me” data end-to-end:** remote + local persistence live under `lib/features/user/**` (not `auth`).
 - [ ] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
 - [ ] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
 - [ ] **Core “current user” access is implemented:** `UserContextService` (and optional `UserDataSlice<T>`) exists, is wired, documented, and used by Profile UI.
@@ -61,7 +61,7 @@ Result (2026-01-20):
    - emits in-memory session via `sessionNotifier`/`stream`
 4) `SessionRepositoryImpl.saveSession(...)`:
    - writes tokens to secure storage (`TokenSecureStorage`)
-   - caches user to sqflite (`AuthLocalDataSource.cacheUserEntity` → `UserDao` → `users` table)
+   - caches user to sqflite (`CachedUserStore.write(user)` → `UserLocalDataSource` → `UserDao` → `users` table)
 
 #### Cold start (restore tokens, then user)
 
@@ -79,7 +79,7 @@ Result (2026-01-20):
 
 #### `GET /me` hydration (only if authenticated but user not yet available)
 
-1) `AppStartupController` calls `GetMeUseCase()`
+1) `AppStartupController` calls `CurrentUserFetcher.fetch()`
 2) `UserRepositoryImpl` → `UserRemoteDataSource.getMe()`
 3) On success: `SessionManager.setUser(user)` (persists + emits)
 4) On unauthenticated failure: `SessionManager.logout(reason: 'hydrate_unauthenticated')`
@@ -88,7 +88,7 @@ Result (2026-01-20):
 
 1) `AuthTokenInterceptor` triggers refresh when needed (and dedupes concurrent refresh)
 2) `SessionManager.refreshTokens()`:
-   - calls `RefreshTokenUsecase(RefreshRequestEntity(refreshToken))`
+   - calls `TokenRefresher.refresh(refreshToken)`
    - on `unauthenticated`: publishes `SessionExpired(reason: 'refresh_failed')` then `logout(...)`
    - on success: persists updated tokens and emits session
 
@@ -182,25 +182,25 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 ### 2.3 Refactor core to use only core types/interfaces
 
-- [ ] Update `lib/core/session/session_manager.dart`:
-  - [ ] Replace `RefreshTokenUsecase` dependency with `TokenRefresher`.
-  - [ ] Replace `AuthFailure` usage with `SessionFailure`.
-  - [ ] Ensure public API remains stable where possible (or provide a short migration guide).
-- [ ] Update `lib/core/session/session_repository_impl.dart`:
-  - [ ] Replace `AuthLocalDataSource` dependency with `CachedUserStore`.
-  - [ ] Ensure “tokens-only session persisted” still clears cached user to prevent stale profile.
-- [ ] Update `lib/core/services/app_startup/app_startup_controller.dart`:
-  - [ ] Remove direct imports of `GetMeUseCase` and `AuthFailure` by depending on `CurrentUserFetcher` + `SessionFailure`.
-- [ ] Move DI wiring to remove core → feature imports:
-  - [ ] `lib/core/di/service_locator.dart` no longer imports `lib/features/user/domain/usecase/get_me_usecase.dart`
-  - [ ] `AppStartupController` gets `CurrentUserFetcher` (core type) instead of `GetMeUseCase` (feature type)
-- [ ] Update architecture lint config:
-  - [ ] Remove the temporary allowlists in `tool/lints/architecture_lints.yaml` for:
-    - [ ] `lib/core/session/**` → `lib/features/auth/**`
-    - [ ] `lib/core/session/**` → `lib/features/user/domain/entity/**`
-    - [ ] `lib/core/services/app_startup/**` → `lib/features/user/domain/usecase/**`
-    - [ ] `lib/core/services/app_startup/**` → `lib/features/auth/domain/failure/**`
-    - [ ] `lib/core/di/**` → `lib/features/user/domain/usecase/**`
+- [x] Update `lib/core/session/session_manager.dart`:
+  - [x] Replace `RefreshTokenUsecase` dependency with `TokenRefresher`.
+  - [x] Replace `AuthFailure` usage with `SessionFailure`.
+  - [x] Update construction call sites (DI, tests, integration tests).
+- [x] Update `lib/core/session/session_repository_impl.dart`:
+  - [x] Replace `AuthLocalDataSource` dependency with `CachedUserStore`.
+  - [x] Ensure “tokens-only session persisted” still clears cached user to prevent stale profile.
+- [x] Update `lib/core/services/app_startup/app_startup_controller.dart`:
+  - [x] Remove direct imports of `GetMeUseCase` and `AuthFailure` by depending on `CurrentUserFetcher` + `SessionFailure`.
+- [x] Move DI wiring to remove core → feature imports:
+  - [x] `lib/core/di/service_locator.dart` no longer imports `lib/features/user/domain/usecase/get_me_usecase.dart`
+  - [x] `AppStartupController` gets `CurrentUserFetcher` (core type) instead of `GetMeUseCase` (feature type)
+- [x] Update architecture lint config:
+  - [x] Remove the temporary allowlists in `tool/lints/architecture_lints.yaml` for:
+    - [x] `lib/core/session/**` → `lib/features/auth/**`
+    - [x] `lib/core/session/**` → `lib/features/user/domain/entity/**`
+    - [x] `lib/core/services/app_startup/**` → `lib/features/user/domain/usecase/**`
+    - [x] `lib/core/services/app_startup/**` → `lib/features/auth/domain/failure/**`
+    - [x] `lib/core/di/**` → `lib/features/user/domain/usecase/**`
 
 ## Phase 3 — Session + auth flow hardening (behavior + tests)
 

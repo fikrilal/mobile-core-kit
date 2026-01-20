@@ -9,10 +9,10 @@ import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
 import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAppLaunchService extends Mock implements AppLaunchService {}
@@ -21,7 +21,7 @@ class _MockConnectivityService extends Mock implements ConnectivityService {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
-class _MockGetMeUseCase extends Mock implements GetMeUseCase {}
+class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
 
 void main() {
   setUpAll(() {
@@ -49,13 +49,13 @@ void main() {
         () => sessionManager.restoreCachedUserIfNeeded(),
       ).thenAnswer((_) => restoreCompleter.future);
 
-      final getMe = _MockGetMeUseCase();
+      final currentUserFetcher = _MockCurrentUserFetcher();
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
         sessionManager: sessionManager,
-        getMe: getMe,
+        currentUserFetcher: currentUserFetcher,
       );
 
       await controller.initialize();
@@ -90,13 +90,13 @@ void main() {
           () => sessionManager.init(),
         ).thenAnswer((_) => initCompleter.future);
 
-        final getMe = _MockGetMeUseCase();
+        final currentUserFetcher = _MockCurrentUserFetcher();
 
         final controller = AppStartupController(
           appLaunch: appLaunch,
           connectivity: connectivity,
           sessionManager: sessionManager,
-          getMe: getMe,
+          currentUserFetcher: currentUserFetcher,
           sessionInitTimeout: const Duration(milliseconds: 10),
           onboardingReadTimeout: const Duration(milliseconds: 10),
         );
@@ -142,13 +142,13 @@ void main() {
           () => sessionManager.restoreCachedUserIfNeeded(),
         ).thenAnswer((_) async {});
 
-        final getMe = _MockGetMeUseCase();
+        final currentUserFetcher = _MockCurrentUserFetcher();
 
         final controller = AppStartupController(
           appLaunch: appLaunch,
           connectivity: connectivity,
           sessionManager: sessionManager,
-          getMe: getMe,
+          currentUserFetcher: currentUserFetcher,
           sessionInitTimeout: const Duration(milliseconds: 10),
           onboardingReadTimeout: const Duration(milliseconds: 10),
         );
@@ -196,13 +196,13 @@ void main() {
         () => sessionManager.restoreCachedUserIfNeeded(),
       ).thenAnswer((_) => restoreCompleter.future);
 
-      final getMe = _MockGetMeUseCase();
+      final currentUserFetcher = _MockCurrentUserFetcher();
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
         sessionManager: sessionManager,
-        getMe: getMe,
+        currentUserFetcher: currentUserFetcher,
       );
 
       await controller.initialize();
@@ -211,7 +211,7 @@ void main() {
       restoreCompleter.complete();
 
       await Future<void>.delayed(Duration.zero);
-      verifyNever(() => getMe());
+      verifyNever(() => currentUserFetcher.fetch());
 
       controller.dispose();
       sessionNotifier.dispose();
@@ -237,22 +237,22 @@ void main() {
       when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
       when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
 
-      final getMe = _MockGetMeUseCase();
+      final currentUserFetcher = _MockCurrentUserFetcher();
       when(
-        () => getMe(),
-      ).thenAnswer((_) async => left(const AuthFailure.unauthenticated()));
+        () => currentUserFetcher.fetch(),
+      ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
         sessionManager: sessionManager,
-        getMe: getMe,
+        currentUserFetcher: currentUserFetcher,
       );
 
       await controller.initialize();
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => getMe()).called(1);
+      verify(() => currentUserFetcher.fetch()).called(1);
       verify(() => sessionManager.logout(reason: 'hydrate_unauthenticated')).called(1);
       verifyNever(() => sessionManager.setUser(any()));
 
@@ -281,21 +281,21 @@ void main() {
       String? refreshToken = 'refresh_1';
       when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
 
-      final getMeCompleter = Completer<Either<AuthFailure, UserEntity>>();
-      final getMe = _MockGetMeUseCase();
-      when(() => getMe()).thenAnswer((_) => getMeCompleter.future);
+      final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
+      final currentUserFetcher = _MockCurrentUserFetcher();
+      when(() => currentUserFetcher.fetch()).thenAnswer((_) => getMeCompleter.future);
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
         sessionManager: sessionManager,
-        getMe: getMe,
+        currentUserFetcher: currentUserFetcher,
       );
 
       await controller.initialize();
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => getMe()).called(1);
+      verify(() => currentUserFetcher.fetch()).called(1);
 
       refreshToken = null;
       getMeCompleter.complete(
@@ -332,21 +332,21 @@ void main() {
       String refreshToken = 'refresh_1';
       when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
 
-      final getMeCompleter = Completer<Either<AuthFailure, UserEntity>>();
-      final getMe = _MockGetMeUseCase();
-      when(() => getMe()).thenAnswer((_) => getMeCompleter.future);
+      final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
+      final currentUserFetcher = _MockCurrentUserFetcher();
+      when(() => currentUserFetcher.fetch()).thenAnswer((_) => getMeCompleter.future);
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
         sessionManager: sessionManager,
-        getMe: getMe,
+        currentUserFetcher: currentUserFetcher,
       );
 
       await controller.initialize();
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => getMe()).called(1);
+      verify(() => currentUserFetcher.fetch()).called(1);
 
       refreshToken = 'refresh_2';
       getMeCompleter.complete(

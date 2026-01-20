@@ -94,7 +94,7 @@ class AuthModule {
       getIt.registerLazySingleton<SessionManager>(
         () => SessionManager(
           getIt<SessionRepository>(),
-          refreshUsecase: getIt<RefreshTokenUsecase>(),
+          tokenRefresher: getIt<TokenRefresher>(),
           events: getIt<AppEventBus>(),
         ),
         dispose: (manager) => manager.dispose(),

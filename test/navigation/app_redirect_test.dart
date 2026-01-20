@@ -9,7 +9,7 @@ import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_contro
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
@@ -23,7 +23,7 @@ class _MockConnectivityService extends Mock implements ConnectivityService {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
-class _MockGetMeUseCase extends Mock implements GetMeUseCase {}
+class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
 
 AppStartupController _startupNotReady() {
   final appLaunch = _MockAppLaunchService();
@@ -42,13 +42,13 @@ AppStartupController _startupNotReady() {
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(false);
 
-  final getMe = _MockGetMeUseCase();
+  final currentUserFetcher = _MockCurrentUserFetcher();
 
   final controller = AppStartupController(
     appLaunch: appLaunch,
     connectivity: connectivity,
     sessionManager: sessionManager,
-    getMe: getMe,
+    currentUserFetcher: currentUserFetcher,
   );
 
   addTearDown(() {
@@ -83,13 +83,13 @@ Future<AppStartupController> _startup({
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(isAuthenticated);
 
-  final getMe = _MockGetMeUseCase();
+  final currentUserFetcher = _MockCurrentUserFetcher();
 
   final controller = AppStartupController(
     appLaunch: appLaunch,
     connectivity: connectivity,
     sessionManager: sessionManager,
-    getMe: getMe,
+    currentUserFetcher: currentUserFetcher,
     sessionInitTimeout: const Duration(milliseconds: 10),
     onboardingReadTimeout: const Duration(milliseconds: 10),
   );
