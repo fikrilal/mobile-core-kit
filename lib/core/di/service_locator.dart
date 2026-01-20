@@ -180,8 +180,8 @@ void registerLocator() {
   }
 
   // Feature modules
-  AuthModule.register(locator);
   UserModule.register(locator);
+  AuthModule.register(locator);
 
   // App orchestrators (depend on feature modules)
   if (!locator.isRegistered<AppStartupController>()) {

@@ -79,6 +79,7 @@ dev_dependencies:
     path: packages/mobile_core_kit_lints
   fake_async: ^1.3.3
   mocktail: ^1.0.4
+  sqflite_common_ffi: ^2.4.0+2
   build_runner: ^2.10.4
   freezed: ^3.2.3
   json_serializable: ^6.11.2

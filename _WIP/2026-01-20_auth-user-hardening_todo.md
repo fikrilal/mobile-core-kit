@@ -128,23 +128,25 @@ Status: ✅ implemented (2026-01-20)
 
 Goal: user feature owns “me” storage; auth feature owns auth flows; session orchestration remains template-level.
 
-- [ ] Create local persistence under user feature:
-  - [ ] Move `lib/features/auth/data/datasource/local/dao/user_dao.dart` → `lib/features/user/data/datasource/local/dao/user_dao.dart`
-  - [ ] Move `lib/features/auth/data/model/local/user_local_model.dart` → `lib/features/user/data/model/local/user_local_model.dart`
-  - [ ] Create `lib/features/user/data/datasource/local/user_local_datasource.dart`:
-    - [ ] `Future<UserEntity?> getCachedMe()`
-    - [ ] `Future<void> cacheMe(UserEntity user)`
-    - [ ] `Future<void> clearMe()`
-- [ ] Move DB table registration from auth to user:
-  - [ ] Remove `AppDatabase.registerOnCreate((db) async => UserDao(db).createTable())` from `lib/features/auth/di/auth_module.dart`
-  - [ ] Add it to `lib/features/user/di/user_module.dart`
-- [ ] Replace `AuthLocalDataSource` (auth-owned user persistence) with user-owned local datasource:
-  - [ ] Delete or rename `lib/features/auth/data/datasource/local/auth_local_datasource.dart` (recommended: delete; auth shouldn’t own user DB).
-  - [ ] Update all call sites (session repository impl, if still used) to use the new user local datasource.
-- [ ] Add tests for local persistence:
-  - [ ] “cacheMe then getCachedMe returns entity”
-  - [ ] “clearMe removes entity”
-  - [ ] “schema is created via AppDatabase onCreate tasks” (or explicitly document why createTable is still called defensively)
+Status: ✅ implemented (2026-01-20)
+
+- [x] Create local persistence under user feature:
+  - [x] Move `lib/features/auth/data/datasource/local/dao/user_dao.dart` → `lib/features/user/data/datasource/local/dao/user_dao.dart`
+  - [x] Move `lib/features/auth/data/model/local/user_local_model.dart` → `lib/features/user/data/model/local/user_local_model.dart`
+  - [x] Create `lib/features/user/data/datasource/local/user_local_datasource.dart`:
+    - [x] `Future<UserEntity?> getCachedMe()`
+    - [x] `Future<void> cacheMe(UserEntity user)`
+    - [x] `Future<void> clearMe()`
+- [x] Move DB table registration from auth to user:
+  - [x] Remove `AppDatabase.registerOnCreate((db) async => UserDao(db).createTable())` from `lib/features/auth/di/auth_module.dart`
+  - [x] Add it to `lib/features/user/di/user_module.dart`
+- [x] Replace `AuthLocalDataSource` (auth-owned user persistence) with user-owned local datasource:
+  - [x] Delete `lib/features/auth/data/datasource/local/auth_local_datasource.dart`
+  - [x] Update `lib/core/session/session_repository_impl.dart` to write/read via `CachedUserStore` (core seam) implemented by user feature.
+- [x] Add tests for local persistence:
+  - [x] “cacheMe then getCachedMe returns entity”
+  - [x] “clearMe removes entity”
+  - [x] “schema is created via AppDatabase onCreate tasks”
 
 ## Phase 2 — Decouple core from features (remove `core_no_features` exceptions)
 

@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 typedef DbTask = Future<void> Function(Database db);
+typedef DbBasePathProvider = Future<String> Function();
 
 class DatabaseMigration {
   const DatabaseMigration({
@@ -23,6 +24,9 @@ class DatabaseMigration {
 class AppDatabase {
   static const _dbName = 'mobile_core_kit.db';
   static const _dbVersion = 1;
+
+  /// Override used by tests to avoid platform-channel directory lookups.
+  static DbBasePathProvider? basePathOverride;
 
   AppDatabase._internal();
   static final AppDatabase _instance = AppDatabase._internal();
@@ -45,8 +49,16 @@ class AppDatabase {
   }
 
   Future<Database> _initDB() async {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final String path = join(dir.path, _dbName);
+    final String basePath;
+    final override = basePathOverride;
+    if (override != null) {
+      basePath = await override();
+    } else {
+      final Directory dir = await getApplicationDocumentsDirectory();
+      basePath = dir.path;
+    }
+
+    final String path = join(basePath, _dbName);
     return openDatabase(
       path,
       version: _dbVersion,
@@ -90,9 +102,21 @@ class AppDatabase {
   }
 
   Future<void> deleteDb() async {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final String path = join(dir.path, _dbName);
+    final String basePath;
+    final override = basePathOverride;
+    if (override != null) {
+      basePath = await override();
+    } else {
+      final Directory dir = await getApplicationDocumentsDirectory();
+      basePath = dir.path;
+    }
+
+    final String path = join(basePath, _dbName);
+    final existing = _db;
     _db = null;
+    if (existing != null) {
+      await existing.close();
+    }
     await deleteDatabase(path);
   }
 }

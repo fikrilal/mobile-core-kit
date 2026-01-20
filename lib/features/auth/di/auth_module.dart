@@ -1,14 +1,12 @@
 import 'package:get_it/get_it.dart';
-import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
-import 'package:mobile_core_kit/features/auth/data/datasource/local/auth_local_datasource.dart';
-import 'package:mobile_core_kit/features/auth/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
@@ -24,19 +22,10 @@ import 'package:mobile_core_kit/features/auth/presentation/cubit/register/regist
 
 class AuthModule {
   static void register(GetIt getIt) {
-    // Database table registration
-    AppDatabase.registerOnCreate((db) async => UserDao(db).createTable());
-
     // Data sources
     if (!getIt.isRegistered<AuthRemoteDataSource>()) {
       getIt.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(getIt<ApiHelper>()),
-      );
-    }
-
-    if (!getIt.isRegistered<AuthLocalDataSource>()) {
-      getIt.registerLazySingleton<AuthLocalDataSource>(
-        () => const AuthLocalDataSource(),
       );
     }
 
@@ -52,7 +41,8 @@ class AuthModule {
 
     if (!getIt.isRegistered<SessionRepository>()) {
       getIt.registerLazySingleton<SessionRepository>(
-        () => SessionRepositoryImpl(local: getIt<AuthLocalDataSource>()),
+        () =>
+            SessionRepositoryImpl(cachedUserStore: getIt<CachedUserStore>()),
       );
     }
 

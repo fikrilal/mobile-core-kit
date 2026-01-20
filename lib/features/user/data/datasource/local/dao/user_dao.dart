@@ -1,4 +1,4 @@
-import 'package:mobile_core_kit/features/auth/data/model/local/user_local_model.dart';
+import 'package:mobile_core_kit/features/user/data/model/local/user_local_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDao {
