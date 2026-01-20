@@ -33,6 +33,177 @@ void main() {
     );
   });
 
+  group('SessionManager.init', () {
+    test('restores session and emits via stream + notifier', () async {
+      final repo = _MockSessionRepository();
+      const restored = AuthSessionEntity(
+        tokens: AuthTokensEntity(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+        ),
+      );
+
+      when(() => repo.loadSession()).thenAnswer((_) async => restored);
+      when(() => repo.loadCachedUser()).thenAnswer((_) async => null);
+
+      final tokenRefresher = _MockTokenRefresher();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        tokenRefresher: tokenRefresher,
+        events: events,
+      );
+
+      final emitted = <AuthSessionEntity?>[];
+      final sub = manager.stream.listen(emitted.add);
+      var notifierCallCount = 0;
+      manager.sessionNotifier.addListener(() => notifierCallCount++);
+
+      await manager.init();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(manager.session, restored);
+      expect(manager.sessionNotifier.value, restored);
+      expect(notifierCallCount, 1);
+      expect(emitted, [restored]);
+
+      await sub.cancel();
+      events.dispose();
+      manager.dispose();
+    });
+
+    test('dedupes concurrent init calls (single-flight)', () async {
+      final repo = _MockSessionRepository();
+      final loadCompleter = Completer<AuthSessionEntity?>();
+      when(() => repo.loadSession()).thenAnswer((_) => loadCompleter.future);
+      when(() => repo.loadCachedUser()).thenAnswer((_) async => null);
+
+      final tokenRefresher = _MockTokenRefresher();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        tokenRefresher: tokenRefresher,
+        events: events,
+      );
+
+      final f1 = manager.init();
+      final f2 = manager.init();
+
+      verify(() => repo.loadSession()).called(1);
+
+      loadCompleter.complete(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      await f1;
+      await f2;
+
+      events.dispose();
+      manager.dispose();
+    });
+  });
+
+  group('SessionManager.login', () {
+    test('persists session and computes expiresAt when missing', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+
+      final tokenRefresher = _MockTokenRefresher();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        tokenRefresher: tokenRefresher,
+        events: events,
+      );
+
+      final session = AuthSessionEntity(
+        tokens: const AuthTokensEntity(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          tokenType: 'Bearer',
+          expiresIn: 60,
+        ),
+        user: const UserEntity(id: 'u1', email: 'user@example.com'),
+      );
+
+      final before = DateTime.now();
+      await manager.login(session);
+      final after = DateTime.now();
+
+      final saved = verify(() => repo.saveSession(captureAny())).captured.single
+          as AuthSessionEntity;
+      final expiresAt = saved.tokens.expiresAt;
+
+      expect(manager.session, saved);
+      expect(expiresAt, isNotNull);
+
+      final min = before.add(const Duration(seconds: 60));
+      final max = after.add(const Duration(seconds: 60));
+      expect(
+        expiresAt!.isAfter(min) || expiresAt.isAtSameMomentAs(min),
+        true,
+      );
+      expect(
+        expiresAt.isBefore(max) || expiresAt.isAtSameMomentAs(max),
+        true,
+      );
+
+      events.dispose();
+      manager.dispose();
+    });
+  });
+
+  group('SessionManager.setUser', () {
+    test('persists user update when session exists', () async {
+      final repo = _MockSessionRepository();
+      when(() => repo.saveSession(any())).thenAnswer((_) async {});
+
+      final tokenRefresher = _MockTokenRefresher();
+      final events = AppEventBus();
+
+      final manager = SessionManager(
+        repo,
+        tokenRefresher: tokenRefresher,
+        events: events,
+      );
+
+      await manager.login(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+
+      const user = UserEntity(id: 'u1', email: 'user@example.com');
+      await manager.setUser(user);
+
+      final captured = verify(() => repo.saveSession(captureAny())).captured;
+      expect(captured.length, 2); // login + setUser
+      final last = captured.last as AuthSessionEntity;
+      expect(last.user, user);
+      expect(manager.session?.user, user);
+
+      events.dispose();
+      manager.dispose();
+    });
+  });
+
   group('SessionManager.restoreCachedUserIfNeeded', () {
     test('does nothing when signed out', () async {
       final repo = _MockSessionRepository();

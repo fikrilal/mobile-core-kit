@@ -206,33 +206,37 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 ### 3.1 Session restoration & caching semantics
 
-- [ ] Add unit tests for `SessionManager` (beyond refresh tests):
-  - [ ] `init()` restores tokens and emits session
-  - [ ] `restoreCachedUserIfNeeded()` loads cached user only when:
-    - [ ] session exists
-    - [ ] user is null
-    - [ ] access token hasn’t changed mid-flight
-  - [ ] `login()` persists tokens + cached user
-  - [ ] `setUser()` persists updated cached user
-  - [ ] `logout()` clears tokens + cached user and publishes `SessionCleared`
-- [ ] Add unit tests for `SessionRepositoryImpl` with fakes:
-  - [ ] “saveSession writes secure tokens”
-  - [ ] “saveSession clears cached user when user is null”
-  - [ ] “loadSession returns null when any required token field is missing”
-  - [ ] “loadCachedUser delegates to cached user store”
+- [x] Add unit tests for `SessionManager` (beyond refresh tests):
+  - [x] `init()` restores tokens and emits session
+  - [x] `restoreCachedUserIfNeeded()` loads cached user only when:
+    - [x] session exists
+    - [x] user is null
+    - [x] access token hasn’t changed mid-flight
+  - [x] `login()` persists tokens (and user when present)
+  - [x] `setUser()` persists updated cached user
+  - [x] `logout()` clears tokens + cached user and publishes `SessionCleared`
+- [x] Add unit tests for `SessionRepositoryImpl` with fakes:
+  - [x] “saveSession writes secure tokens”
+  - [x] “saveSession clears cached user when user is null”
+  - [x] “loadSession returns null when any required token field is missing”
+  - [x] “loadCachedUser delegates to cached user store”
+  - [x] “clearSession clears secure tokens + cached user store”
 - [ ] Decide (and document) whether we support:
   - [ ] multi-account on the same device (switch user) — if yes, add explicit “session key” concept for race guards
   - [ ] guest mode — if yes, define whether user cache persists
 
 ### 3.2 Auth feature focus & correctness
 
-- [ ] Ensure auth feature stays focused on auth:
-  - [ ] No DB user persistence code under `features/auth`
-  - [ ] Auth use cases remain pure: login/register/logout/refresh/google sign-in
-- [ ] Add auth flow tests that assert cached user behavior:
-  - [ ] After login, cached user exists (via session persistence)
-  - [ ] After logout, cached user is cleared
-  - [ ] Refresh failure unauthenticated triggers logout and clears cached user
+- [x] Ensure auth feature stays focused on auth:
+  - [x] No DB user persistence code under `features/auth`
+  - [x] Auth use cases remain pure: login/register/logout/refresh/google sign-in
+- [x] Add auth flow tests that assert cached user behavior:
+  - [x] After login, cached user exists (via session persistence)
+    - Covered by: `test/features/auth/presentation/cubit/login/login_cubit_persistence_test.dart`
+  - [x] After logout, cached user is cleared
+    - Covered by: `test/features/auth/domain/usecase/logout_flow_usecase_test.dart`
+  - [x] Refresh failure unauthenticated triggers logout and clears cached user
+    - Covered by: `test/core/session/session_manager_refresh_logout_persistence_test.dart`
 
 ## Phase 4 — Startup hydration hardening (template-level reliability)
 
