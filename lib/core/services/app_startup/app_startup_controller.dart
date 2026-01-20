@@ -33,8 +33,14 @@ class AppStartupController extends ChangeNotifier {
     _sessionManager.sessionNotifier.addListener(_sessionListener);
 
     _connectivitySub = _connectivity.networkStatusStream.listen((status) {
+      final wasOffline = _lastNetworkStatus == NetworkStatus.offline;
+      _lastNetworkStatus = status;
+
       if (status == NetworkStatus.online) {
-        _maybeHydrateUser(force: true);
+        // If connectivity flaps and emits repeated `online` values, apply the
+        // cooldown to avoid request spam. Only bypass the cooldown when we
+        // observed an offline -> online transition.
+        _maybeHydrateUser(force: wasOffline);
       }
     });
   }
@@ -47,6 +53,7 @@ class AppStartupController extends ChangeNotifier {
   final Duration _onboardingReadTimeout;
   late final VoidCallback _sessionListener;
   StreamSubscription<NetworkStatus>? _connectivitySub;
+  NetworkStatus? _lastNetworkStatus;
 
   AppStartupStatus _status = AppStartupStatus.idle;
   bool? _shouldShowOnboarding;

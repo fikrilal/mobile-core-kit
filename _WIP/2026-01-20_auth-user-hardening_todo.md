@@ -240,12 +240,17 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 ## Phase 4 — Startup hydration hardening (template-level reliability)
 
-- [ ] Expand `AppStartupController` test coverage:
-  - [ ] When onboarding is incomplete, hydration never runs
-  - [ ] When `isAuthPending` is true and device goes online, hydration runs (and is cooldown-throttled)
-  - [ ] On unauthenticated hydration failure, session is cleared
-  - [ ] On transient hydration failure, session remains (no logout)
-- [ ] Add explicit “single-flight hydration” guard if needed (similar to token refresh policy).
+- [x] Expand `AppStartupController` test coverage:
+  - [x] When onboarding is incomplete, hydration never runs
+    - Covered by: `test/core/services/app_startup/app_startup_controller_test.dart`
+  - [x] When `isAuthPending` is true and device goes online, hydration runs (and is cooldown-throttled)
+    - Covered by: `test/core/services/app_startup/app_startup_controller_test.dart`
+  - [x] On unauthenticated hydration failure, session is cleared
+    - Covered by: `test/core/services/app_startup/app_startup_controller_test.dart`
+  - [x] On transient hydration failure, session remains (no logout)
+    - Covered by: `test/core/services/app_startup/app_startup_controller_test.dart`
+- [x] Add explicit “single-flight hydration” guard if needed (similar to token refresh policy).
+  - Implemented via `_isHydratingUser` and covered by: `test/core/services/app_startup/app_startup_controller_test.dart`
 
 ## Phase 5 — Implement the core “current user” layer (after hardening is done)
 

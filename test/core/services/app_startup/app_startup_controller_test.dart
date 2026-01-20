@@ -174,6 +174,49 @@ void main() {
   });
 
   group('AppStartupController hydration', () {
+    test('does not hydrate when onboarding is required', () async {
+      final appLaunch = _MockAppLaunchService();
+      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => true);
+
+      final connectivity = _MockConnectivityService();
+      final networkController = StreamController<NetworkStatus>.broadcast();
+      when(
+        () => connectivity.networkStatusStream,
+      ).thenAnswer((_) => networkController.stream);
+
+      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+      final sessionManager = _MockSessionManager();
+      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+      when(() => sessionManager.init()).thenAnswer((_) async {});
+      when(() => sessionManager.isAuthPending).thenReturn(true);
+      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+
+      final currentUserFetcher = _MockCurrentUserFetcher();
+      when(() => currentUserFetcher.fetch()).thenAnswer(
+        (_) async => right(const UserEntity(id: 'u1', email: 'user@example.com')),
+      );
+
+      final controller = AppStartupController(
+        appLaunch: appLaunch,
+        connectivity: connectivity,
+        sessionManager: sessionManager,
+        currentUserFetcher: currentUserFetcher,
+      );
+
+      await controller.initialize();
+
+      networkController.add(NetworkStatus.online);
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(() => currentUserFetcher.fetch());
+      verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
+      verifyNever(() => sessionManager.setUser(any()));
+
+      await networkController.close();
+      controller.dispose();
+      sessionNotifier.dispose();
+    });
+
     test('does not call GetMe if cached user restoration resolves auth pending', () async {
       final appLaunch = _MockAppLaunchService();
       when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
@@ -213,6 +256,132 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       verifyNever(() => currentUserFetcher.fetch());
 
+      controller.dispose();
+      sessionNotifier.dispose();
+    });
+
+    test(
+      'hydrates on connectivity online when auth is pending and throttles repeated online events',
+      () async {
+        final appLaunch = _MockAppLaunchService();
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
+
+        final connectivity = _MockConnectivityService();
+        final networkController = StreamController<NetworkStatus>.broadcast();
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => networkController.stream);
+
+        final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        final sessionManager = _MockSessionManager();
+        when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+        when(() => sessionManager.init()).thenAnswer((_) async {});
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
+        when(() => sessionManager.refreshToken).thenReturn('refresh_1');
+        when(
+          () => sessionManager.logout(reason: any(named: 'reason')),
+        ).thenAnswer((_) async {});
+        when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
+
+        var isAuthPending = false;
+        when(
+          () => sessionManager.isAuthPending,
+        ).thenAnswer((_) => isAuthPending);
+
+        final currentUserFetcher = _MockCurrentUserFetcher();
+        when(
+          () => currentUserFetcher.fetch(),
+        ).thenAnswer((_) async => left(const SessionFailure.network()));
+
+        final controller = AppStartupController(
+          appLaunch: appLaunch,
+          connectivity: connectivity,
+          sessionManager: sessionManager,
+          currentUserFetcher: currentUserFetcher,
+        );
+
+        await controller.initialize();
+
+        // Flip to auth pending after startup so the auto-hydration path doesn't
+        // interfere with this connectivity-driven test.
+        isAuthPending = true;
+
+        networkController.add(NetworkStatus.online);
+        await Future<void>.delayed(Duration.zero);
+
+        verify(() => currentUserFetcher.fetch()).called(1);
+        verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
+        verifyNever(() => sessionManager.setUser(any()));
+
+        // Repeated "online" events should be cooldown-throttled.
+        clearInteractions(currentUserFetcher);
+        networkController.add(NetworkStatus.online);
+        await Future<void>.delayed(Duration.zero);
+
+        verifyNever(() => currentUserFetcher.fetch());
+
+        await networkController.close();
+        controller.dispose();
+        sessionNotifier.dispose();
+      },
+    );
+
+    test('dedupes in-flight hydration attempts (single-flight)', () async {
+      final appLaunch = _MockAppLaunchService();
+      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+
+      final connectivity = _MockConnectivityService();
+      final networkController = StreamController<NetworkStatus>.broadcast();
+      when(
+        () => connectivity.networkStatusStream,
+      ).thenAnswer((_) => networkController.stream);
+
+      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+      final sessionManager = _MockSessionManager();
+      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+      when(() => sessionManager.init()).thenAnswer((_) async {});
+      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+
+      var isAuthPending = false;
+      when(() => sessionManager.isAuthPending).thenAnswer((_) => isAuthPending);
+      when(() => sessionManager.refreshToken).thenReturn('refresh_1');
+      when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
+      when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
+
+      final fetchCompleter = Completer<Either<SessionFailure, UserEntity>>();
+      final currentUserFetcher = _MockCurrentUserFetcher();
+      when(() => currentUserFetcher.fetch()).thenAnswer((_) => fetchCompleter.future);
+
+      final controller = AppStartupController(
+        appLaunch: appLaunch,
+        connectivity: connectivity,
+        sessionManager: sessionManager,
+        currentUserFetcher: currentUserFetcher,
+      );
+
+      await controller.initialize();
+      isAuthPending = true;
+
+      networkController.add(NetworkStatus.online);
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => currentUserFetcher.fetch()).called(1);
+
+      // While the request is in-flight, further triggers must not start another.
+      clearInteractions(currentUserFetcher);
+      networkController.add(NetworkStatus.online);
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(() => currentUserFetcher.fetch());
+
+      fetchCompleter.complete(left(const SessionFailure.network()));
+      await Future<void>.delayed(Duration.zero);
+
+      await networkController.close();
       controller.dispose();
       sessionNotifier.dispose();
     });
