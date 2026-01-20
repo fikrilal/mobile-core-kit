@@ -30,15 +30,21 @@ lib/
 ├─ main_staging.dart              # entrypoint (ENV=staging) [optional]
 ├─ main_prod.dart                 # entrypoint (ENV=prod) [optional]
 ├─ core/                          # cross‑cutting infrastructure
+│  ├─ adaptive/                   # responsive layout + tokens
 │  ├─ configs/                    # AppConfig/BuildConfig (env‑driven)
-│  ├─ databases/                  # sqflite DB bootstrap
+│  ├─ database/                   # sqflite bootstrap + schema registration
 │  ├─ di/                         # service locator (GetIt)
-│  ├─ events/                     # AppEventBus (cross‑feature refresh)
+│  ├─ dev_tools/                  # dev-only tooling (guarded by env)
+│  ├─ events/                     # AppEventBus (cross-feature lifecycle)
+│  ├─ localization/               # l10n helpers + locale extensions
 │  ├─ network/                    # ApiClient, ApiHelper, endpoints, interceptors
-│  ├─ result/                     # Paginated<T>, PaginationInfo
-│  ├─ services/                   # session, device, fcm, navigation, etc.
-│  ├─ storage/                    # secure storage
+│  ├─ services/                   # app-wide services (startup, deep links, etc.)
+│  ├─ session/                    # session + token orchestration
+│  ├─ storage/                    # secure storage + prefs
 │  ├─ theme/                      # tokens, typography, responsive spacing
+│  ├─ user/                       # core user abstractions/entities
+│  ├─ utilities/                  # small shared helpers
+│  ├─ validation/                 # value objects + validation contracts
 │  └─ widgets/                    # shared UI components
 ├─ features/
 │  └─ <feature>/
@@ -93,6 +99,19 @@ lib/
 │  └─ showcase/ ...
 └─ ...
 ```
+
+### Session & Current User (Template Standard)
+
+This template separates responsibilities explicitly:
+
+- **Session orchestration** lives in `lib/core/session/` (`SessionManager`, `SessionRepository`, `TokenRefresher`, `SessionFailure`).
+- **User identity (“me”)** is exposed to UI via `lib/core/services/user_context/` (`UserContextService`).
+- **Auth feature** owns login/refresh/logout flows and provides the `TokenRefresher` adapter via DI.
+- **User feature** owns `GET /me` and cached-user persistence (sqflite) and provides:
+  - `CurrentUserFetcher` implementation (`lib/core/user/current_user_fetcher.dart`)
+  - `CachedUserStore` implementation (`lib/core/session/cached_user_store.dart`)
+
+Usage guide: `docs/template/current_user.md`
 
 ### Feature Directory Anatomy (features/<feature>/)
 

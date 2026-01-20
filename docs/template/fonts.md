@@ -33,6 +33,21 @@ This template ships with a bundled custom font so teams can clone it and keep ty
    - `fvm flutter pub get` (WSL: `tool/agent/flutterw pub get`)
    - `fvm flutter run` (WSL: `tool/agent/flutterw run`)
 
+## Using Alternate Fonts in UI (AppText)
+
+Default typography uses `Typefaces.primary` (currently `Inter`).
+
+If you need a one-off font family (example: a branded heading using Space Grotesk), use `AppText.fontFamily`:
+
+```dart
+AppText.headlineMedium(
+  'Profile',
+  fontFamily: 'SpaceGrotesk',
+);
+```
+
+Guideline: keep alternate font usage **explicit and rare** (e.g., a single feature header), otherwise typography will drift across screens.
+
 ## Sizing / Performance Notes
 
 - Variable fonts keep size smaller and simplify maintenance (two files instead of many).

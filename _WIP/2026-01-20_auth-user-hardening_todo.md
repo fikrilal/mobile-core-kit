@@ -274,12 +274,13 @@ Goal: provide the template-standard “read current user safely” API for UI + 
 
 ## Phase 6 — Docs & template guidance (so downstream teams don’t reinvent this)
 
-- [ ] Add a short template doc:
-  - [ ] `docs/template/current_user.md` (recommended) explaining how to read current user in UI + how to add a new user-scoped slice.
-- [ ] Update relevant existing docs:
-  - [ ] `docs/engineering/project_architecture.md` (where “session” and “user” live)
-  - [ ] `docs/explainers/` (if there’s an explainer for auth/session)
-- [ ] Add a “usage snippet” for `AppText` with alternate fonts (if not already documented elsewhere) and for Space Grotesk usage in UI.
+- [x] Add a short template doc:
+  - [x] `docs/template/current_user.md`
+- [x] Update relevant existing docs:
+  - [x] `docs/engineering/project_architecture.md` (explicit session/current-user ownership)
+  - [x] `docs/template/README.md` (index entry)
+- [x] Add a “usage snippet” for `AppText` with alternate fonts / Space Grotesk usage:
+  - [x] `docs/template/fonts.md`
 
 ## Suggested implementation sequence (PR-sized chunks)
 
