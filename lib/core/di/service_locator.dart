@@ -34,6 +34,7 @@ import 'package:mobile_core_kit/core/services/localization/locale_controller.dar
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
@@ -184,6 +185,17 @@ void registerLocator() {
   AuthModule.register(locator);
 
   // App orchestrators (depend on feature modules)
+  if (!locator.isRegistered<UserContextService>()) {
+    locator.registerLazySingleton<UserContextService>(
+      () => UserContextService(
+        sessionManager: locator<SessionManager>(),
+        currentUserFetcher: locator<CurrentUserFetcher>(),
+        events: locator<AppEventBus>(),
+      ),
+      dispose: (service) => service.dispose(),
+    );
+  }
+
   if (!locator.isRegistered<AppStartupController>()) {
     locator.registerLazySingleton<AppStartupController>(
       () => AppStartupController(

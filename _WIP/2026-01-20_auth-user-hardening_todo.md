@@ -11,10 +11,10 @@ This is the end-to-end checklist to harden **auth + user/session foundations** f
 - [x] **Architecture boundaries are clean:** `tool/lints/architecture_lints.yaml` no longer needs the temporary exceptions under `core_no_features` for `lib/core/session/**` and `lib/core/services/app_startup/**`.
 - [x] **Core is truly core:** `lib/core/**` imports **zero** `lib/features/**` (except `lib/core/di/**` importing `lib/features/*/di/**`).
 - [x] **User feature owns “me” data end-to-end:** remote + local persistence live under `lib/features/user/**` (not `auth`).
-- [ ] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
-- [ ] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
-- [ ] **Core “current user” access is implemented:** `UserContextService` (and optional `UserDataSlice<T>`) exists, is wired, documented, and used by Profile UI.
-- [ ] **Verification passes:** `dart run tool/verify.dart --env dev` (or WSL wrapper) is green.
+- [x] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
+- [x] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
+- [x] **Core “current user” access is implemented:** `UserContextService` exists, is wired, and used by Profile UI.
+- [x] **Verification passes:** `dart run tool/verify.dart --env dev` (or WSL wrapper) is green.
 
 ## Phase 0 — Baseline & scoping (no behavior changes)
 
@@ -256,22 +256,21 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 Goal: provide the template-standard “read current user safely” API for UI + future user-scoped slices.
 
-- [ ] Implement `UserContextService` in `lib/core/services/user_context/`:
-  - [ ] Observes `SessionManager.sessionNotifier`
-  - [ ] Exposes:
-    - [ ] `ValueListenable<CurrentUserState>` (or equivalent)
-    - [ ] `displayName`, `email`, `initials` helpers
-    - [ ] `ensureUserFresh()` and `refreshUser()` using `CurrentUserFetcher`
-  - [ ] Clears slices on `SessionCleared` / `SessionExpired`
-- [ ] (Optional, recommended for scaling) Implement `UserDataSlice<T>`:
-  - [ ] Single-flight refresh
-  - [ ] TTL + staleness semantics
-  - [ ] Invalidation on session end
-- [ ] Update Profile UI to consume `UserContextService` instead of directly reading `SessionManager`.
-- [ ] Add unit tests:
-  - [ ] service reflects session changes (login/logout/setUser)
-  - [ ] refresh respects single-flight + session race guards
-  - [ ] ensureUserFresh respects TTL
+- [x] Implement `UserContextService` in `lib/core/services/user_context/`:
+  - [x] Observes `SessionManager.sessionNotifier`
+  - [x] Exposes:
+    - [x] `ValueListenable<CurrentUserState>` (`lib/core/services/user_context/current_user_state.dart`)
+    - [x] `displayName`, `email`, `initials` helpers
+    - [x] `ensureUserFresh()` and `refreshUser()` using `CurrentUserFetcher`
+  - [x] Resets derived state on `SessionCleared` / `SessionExpired`
+- [ ] (Optional, recommended for scaling) Implement `UserDataSlice<T>` (defer until we have 2+ real slices).
+- [x] Update Profile UI to consume `UserContextService`:
+  - [x] `lib/features/profile/presentation/pages/profile_page.dart`
+- [x] Add unit tests:
+  - [x] `test/core/services/user_context/user_context_service_test.dart`
+  - [x] service reflects session changes (signedOut/authPending/available)
+  - [x] refresh respects single-flight + session race guards
+  - [x] ensureUserFresh returns existing user without fetching
 
 ## Phase 6 — Docs & template guidance (so downstream teams don’t reinvent this)
 

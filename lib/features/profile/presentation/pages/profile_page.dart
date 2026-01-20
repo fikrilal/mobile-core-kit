@@ -5,7 +5,10 @@ import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/services/user_context/current_user_state.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
@@ -58,6 +61,7 @@ class _ProfileContent extends StatelessWidget {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
     final showDevTools = BuildConfig.env == BuildEnv.dev;
+    final userContext = locator<UserContextService>();
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
@@ -69,16 +73,47 @@ class _ProfileContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [AppAvatar(onChangePhoto: () {})],
-                    ),
-                    const SizedBox(height: AppSpacing.space16),
-                    AppText.headlineMedium('Ahmad Fikril Al Muzakki'),
-                  ],
+                child: ValueListenableBuilder<CurrentUserState>(
+                  valueListenable: userContext.stateListenable,
+                  builder: (context, state, _) {
+                    final displayName = userContext.displayName;
+                    final email = userContext.email;
+                    final hasDisplayName =
+                        displayName != null && displayName.trim().isNotEmpty;
+                    final showEmail =
+                        hasDisplayName &&
+                        email != null &&
+                        email.trim().isNotEmpty &&
+                        email.trim() != displayName.trim();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AppAvatar(
+                              onChangePhoto: () {},
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.space16),
+                        if (hasDisplayName)
+                          AppText.headlineMedium(displayName),
+                        if (showEmail) ...[
+                          const SizedBox(height: AppSpacing.space4),
+                          AppText.bodyMedium(email),
+                        ] else if (displayName == null &&
+                            email != null &&
+                            email.trim().isNotEmpty)
+                          AppText.headlineMedium(email),
+                        if (state.isAuthPending) ...[
+                          const SizedBox(height: AppSpacing.space4),
+                          AppText.bodySmall(context.l10n.commonLoading),
+                        ],
+                      ],
+                    );
+                  },
                 ),
               ),
               SizedBox(height: sectionSpacing),
