@@ -164,21 +164,21 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 ### 2.2 Introduce core interfaces to remove core → feature dependencies
 
-- [ ] Create a core refresh abstraction so `SessionManager` no longer imports auth use cases/failures:
-  - [ ] `lib/core/session/token_refresher.dart`:
-    - [ ] `Future<Either<SessionFailure, SessionTokens>> refresh(String refreshToken)`
-  - [ ] `lib/core/session/session_failure.dart` (subset we actually need for session decisions):
-    - [ ] `network`, `unauthenticated`, `tooManyRequests`, `serverError`, `unexpected`
-  - [ ] Auth feature provides adapter implementation (registered in `AuthModule`) that wraps existing `RefreshTokenUsecase`.
-- [ ] Create a core cached-user abstraction so `SessionRepositoryImpl` doesn’t import user feature data:
-  - [ ] `lib/core/session/cached_user_store.dart`:
-    - [ ] `Future<UserEntity?> read()`
-    - [ ] `Future<void> write(UserEntity user)`
-    - [ ] `Future<void> clear()`
-  - [ ] User feature provides adapter implementation wrapping `UserLocalDataSource` (registered in `UserModule`).
-- [ ] Create a core “current user fetch” abstraction for startup hydration (optional but recommended to remove imports from `AppStartupController`):
-  - [ ] `lib/core/user/current_user_fetcher.dart`
-  - [ ] User feature adapter wraps `GetMeUseCase` (or repository) and returns `Either<SessionFailure, UserEntity>`.
+- [x] Create a core refresh abstraction so `SessionManager` no longer imports auth use cases/failures:
+  - [x] `lib/core/session/token_refresher.dart`:
+    - [x] `Future<Either<SessionFailure, AuthTokensEntity>> refresh(String refreshToken)`
+  - [x] `lib/core/session/session_failure.dart` (subset we actually need for session decisions):
+    - [x] `network`, `unauthenticated`, `tooManyRequests`, `serverError`, `unexpected`
+  - [x] Auth feature provides adapter implementation (registered in `AuthModule`) that maps `AuthFailure` → `SessionFailure`.
+- [x] Create a core cached-user abstraction so `SessionRepositoryImpl` doesn’t import user feature data:
+  - [x] `lib/core/session/cached_user_store.dart`:
+    - [x] `Future<UserEntity?> read()`
+    - [x] `Future<void> write(UserEntity user)`
+    - [x] `Future<void> clear()`
+  - [x] User feature provides adapter implementation wrapping `UserLocalDataSource` (registered in `UserModule`).
+- [x] Create a core “current user fetch” abstraction for startup hydration (optional but recommended to remove imports from `AppStartupController`):
+  - [x] `lib/core/user/current_user_fetcher.dart`
+  - [x] User feature adapter wraps `GetMeUseCase` and returns `Either<SessionFailure, UserEntity>`.
 
 ### 2.3 Refactor core to use only core types/interfaces
 
