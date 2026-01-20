@@ -1,6 +1,9 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/network/api/api_response_either.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
@@ -10,11 +13,8 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_mo
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';

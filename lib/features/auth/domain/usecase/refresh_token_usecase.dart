@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 

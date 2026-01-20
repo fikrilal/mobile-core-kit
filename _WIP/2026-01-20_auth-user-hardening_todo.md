@@ -154,13 +154,13 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
 
 ### 2.1 Move shared types out of features (core-owned)
 
-- [ ] Move session-owned types out of `features/auth/domain` into `lib/core/session/`:
-  - [ ] `AuthTokensEntity` → `lib/core/session/entity/session_tokens.dart` (rename optional)
-  - [ ] `AuthSessionEntity` → `lib/core/session/entity/session_entity.dart` (rename optional)
-  - [ ] `RefreshRequestEntity` → `lib/core/session/entity/refresh_request.dart` (or replace with simple param object)
-- [ ] Move `UserEntity` out of `features/user/domain/entity` into core (recommended: user is cross-cutting in almost all apps):
-  - [ ] `lib/features/user/domain/entity/user_entity.dart` → `lib/core/user/entity/user_entity.dart`
-  - [ ] Update mappers (`UserModel.toEntity()`, local model mapping) accordingly.
+- [x] Move session-owned types out of `features/auth/domain` into `lib/core/session/`:
+  - [x] `AuthTokensEntity` → `lib/core/session/entity/auth_tokens_entity.dart` (kept name)
+  - [x] `AuthSessionEntity` → `lib/core/session/entity/auth_session_entity.dart` (kept name)
+  - [x] `RefreshRequestEntity` → `lib/core/session/entity/refresh_request_entity.dart` (kept name)
+- [x] Move `UserEntity` out of `features/user/domain/entity` into core (recommended: user is cross-cutting in almost all apps):
+  - [x] `lib/features/user/domain/entity/user_entity.dart` → `lib/core/user/entity/user_entity.dart`
+  - [x] Update mappers (`UserModel.toEntity()`, local model mapping) accordingly.
 
 ### 2.2 Introduce core interfaces to remove core → feature dependencies
 

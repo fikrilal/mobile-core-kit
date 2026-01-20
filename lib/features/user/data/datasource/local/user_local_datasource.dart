@@ -1,8 +1,8 @@
 import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/user/data/model/local/user_local_model.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserLocalDataSource implements CachedUserStore {
@@ -47,4 +47,3 @@ class UserLocalDataSource implements CachedUserStore {
     await dao.deleteAll();
   }
 }
-

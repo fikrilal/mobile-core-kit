@@ -2,10 +2,10 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/network/api/api_response_either.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {

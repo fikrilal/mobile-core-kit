@@ -1,10 +1,10 @@
 import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
   final CachedUserStore _cachedUserStore;

@@ -8,10 +8,10 @@ import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
 import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 

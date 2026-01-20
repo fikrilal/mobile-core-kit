@@ -1,4 +1,4 @@
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 
 /// Core abstraction for caching the current signed-in user ("me") locally.
 ///
@@ -9,4 +9,3 @@ abstract class CachedUserStore {
   Future<void> write(UserEntity user);
   Future<void> clear();
 }
-
