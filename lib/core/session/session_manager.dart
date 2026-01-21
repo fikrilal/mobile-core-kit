@@ -155,6 +155,9 @@ class SessionManager {
 
   AuthTokensEntity _withComputedExpiresAt(AuthTokensEntity tokens) {
     if (tokens.expiresAt != null) return tokens;
+    // A non-positive expiresIn is treated as "unknown" (temporary placeholder)
+    // and must not trigger preflight refresh loops.
+    if (tokens.expiresIn <= 0) return tokens;
     return tokens.copyWith(
       expiresAt: DateTime.now().add(Duration(seconds: tokens.expiresIn)),
     );

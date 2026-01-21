@@ -370,29 +370,36 @@ Me envelope (profile is nested + nullable):
 
 ### 2.1 Introduce backend-compatible DTOs
 
-- [ ] Add a backend-core-kit-shaped model for auth success:
-  - [ ] `AuthResultModel` representing `{ user, accessToken, refreshToken }`
-  - [ ] `AuthResultEnvelopeModel` representing `{ data: AuthResultModel }`
-- [ ] Update `AuthRemoteDataSource`:
-  - [ ] `register()` parser uses `AuthResultModel` (or envelope model depending on ApiHelper behavior)
-  - [ ] `login()` parser uses `AuthResultModel`
-  - [ ] `refreshToken()` parser uses `AuthResultModel` (not tokens-only)
-    - still OK if repository only needs tokens; it can ignore user
+- [x] Replace mobile auth-success DTOs to match backend-core-kit (no backward compatible parsing):
+  - [x] `lib/features/auth/data/model/remote/auth_result_model.dart`
+    - shape: `{ user, accessToken, refreshToken }`
+    - note: `ApiHelper` already unwraps `{ data: ... }`, so no envelope model is needed
+  - [x] Removed old `{ tokens: { ... }, user: ... }` DTOs:
+    - [x] deleted `AuthSessionModel` and `AuthTokensModel` (and generated files)
+- [x] Update `AuthRemoteDataSource`:
+  - [x] `register()` parses `AuthResultModel`
+  - [x] `login()` parses `AuthResultModel`
+  - [x] `refreshToken()` parses `AuthResultModel` (matches backend `/v1/auth/refresh`)
+    - repository can ignore `user` for refresh
 
 ### 2.2 Token expiry derivation (required)
 
 Backend does not send `expiresIn`, so mobile must derive token expiry from JWT `exp`.
 
-- [ ] Add a small core utility:
-  - [ ] `lib/core/utilities/jwt_utils.dart`:
+- [x] Add a small core utility:
+  - [x] `lib/core/utilities/jwt_utils.dart`:
     - parse JWT payload without verification (client-side convenience)
     - extract `exp` (seconds since epoch) and compute:
       - `expiresAt: DateTime`
       - `expiresIn: int` (max(0, exp-now))
-- [ ] Update auth repository mapping to always produce `AuthTokensEntity` with:
-  - [ ] `expiresAt` (derived)
-  - [ ] `expiresIn` (derived)
-  - [ ] `tokenType = 'Bearer'`
+- [x] Update auth mapping to always produce `AuthTokensEntity` with:
+  - [x] `expiresAt` (derived from JWT `exp`)
+  - [x] `expiresIn` (derived from JWT `exp`, clamped `>= 0`)
+  - [x] `tokenType = 'Bearer'`
+  - [x] Wired via `AuthResultModel.toTokensEntity()` (single source of truth for auth-success parsing)
+- [x] Add tests:
+  - [x] `test/core/utilities/jwt_utils_test.dart`
+  - [x] `test/features/auth/data/model/remote/auth_result_model_test.dart`
 
 ### 2.3 Register payload decision + implementation
 

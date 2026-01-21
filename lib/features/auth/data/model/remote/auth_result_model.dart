@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/utilities/jwt_utils.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/user_model.dart';
 
 part 'auth_result_model.freezed.dart';
@@ -25,21 +26,20 @@ abstract class AuthResultModel with _$AuthResultModel {
 }
 
 extension AuthResultModelX on AuthResultModel {
-  static const int _unknownExpiresInSeconds = 0;
-
   AuthSessionEntity toSessionEntity() => AuthSessionEntity(
     tokens: toTokensEntity(),
     user: user.toEntity(),
   );
 
-  AuthTokensEntity toTokensEntity() => AuthTokensEntity(
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-    tokenType: 'Bearer',
+  AuthTokensEntity toTokensEntity() {
+    final expiry = JwtUtils.tryComputeExpiry(accessToken);
 
-    // Backend contract does not provide expiresIn; Phase 2.2 will derive expiry
-    // deterministically from JWT `exp`.
-    expiresIn: _unknownExpiresInSeconds,
-    expiresAt: null,
-  );
+    return AuthTokensEntity(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      tokenType: 'Bearer',
+      expiresIn: expiry?.expiresIn ?? 0,
+      expiresAt: expiry?.expiresAt,
+    );
+  }
 }
