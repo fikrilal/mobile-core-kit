@@ -6,6 +6,7 @@ import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/model/remote/patch_me_request_model.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -27,10 +28,41 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
+  @override
+  Future<Either<AuthFailure, UserEntity>> patchMeProfile({
+    required String givenName,
+    String? familyName,
+    String? displayName,
+  }) async {
+    try {
+      final apiResponse = await _remote.patchMe(
+        request: PatchMeRequestModel(
+          profile: PatchMeProfileModel(
+            displayName: displayName,
+            givenName: givenName,
+            familyName: familyName,
+          ),
+        ),
+      );
+
+      return apiResponse
+          .toEitherWithFallback('Failed to update profile.')
+          .mapLeft(_mapApiFailure)
+          .map((m) => m.toEntity());
+    } catch (e, st) {
+      Log.error('PatchMe unexpected error', e, st, true, 'UserRepository');
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
   AuthFailure _mapApiFailure(ApiFailure f) {
     final code = f.code;
     if (code != null) {
       switch (code) {
+        case ApiErrorCodes.validationFailed:
+          return AuthFailure.validation(
+            f.validationErrors ?? const [],
+          );
         case ApiErrorCodes.unauthorized:
           return const AuthFailure.unauthenticated();
         case ApiErrorCodes.rateLimited:

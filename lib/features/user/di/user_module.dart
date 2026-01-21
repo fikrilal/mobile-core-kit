@@ -14,6 +14,7 @@ import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -52,6 +53,12 @@ class UserModule {
     if (!getIt.isRegistered<GetMeUseCase>()) {
       getIt.registerFactory<GetMeUseCase>(
         () => GetMeUseCase(getIt<UserRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<PatchMeProfileUseCase>()) {
+      getIt.registerFactory<PatchMeProfileUseCase>(
+        () => PatchMeProfileUseCase(getIt<UserRepository>()),
       );
     }
 

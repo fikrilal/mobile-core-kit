@@ -5,4 +5,10 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
 abstract class UserRepository {
   Future<Either<AuthFailure, UserEntity>> getMe();
+
+  Future<Either<AuthFailure, UserEntity>> patchMeProfile({
+    required String givenName,
+    String? familyName,
+    String? displayName,
+  });
 }
