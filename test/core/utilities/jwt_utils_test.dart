@@ -68,6 +68,20 @@ void main() {
       expect(expiry.expiresIn, 0);
     });
 
+    test('returns null when exp is missing', () {
+      final jwt = _jwtWithPayload({'sub': 'u1'});
+
+      expect(JwtUtils.tryGetExpiresAt(jwt), isNull);
+      expect(JwtUtils.tryComputeExpiry(jwt), isNull);
+    });
+
+    test('returns null when exp is malformed', () {
+      final jwt = _jwtWithPayload({'exp': 'not-a-number'});
+
+      expect(JwtUtils.tryGetExpiresAt(jwt), isNull);
+      expect(JwtUtils.tryComputeExpiry(jwt), isNull);
+    });
+
     test('returns null for invalid tokens', () {
       expect(JwtUtils.tryDecodePayload('not-a-jwt'), isNull);
       expect(JwtUtils.tryGetExpiresAt('not-a-jwt'), isNull);

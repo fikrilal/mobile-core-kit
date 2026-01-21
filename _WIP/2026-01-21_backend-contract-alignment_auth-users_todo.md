@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend contract source:** `backend-core-kit` (`/mnt/c/Development/_CORE/backend-core-kit`)  
 **Date:** 2026-01-21  
-**Status:** In progress (Phase 0–1 complete)
+**Status:** In progress (Phase 0–4 complete; Phase 2.4/2.5 + Phase 3.3+ pending)
 
 This TODO aligns **feature-level API contracts** (Auth + Users) in this mobile template to the
 **backend-core-kit** OpenAPI contract and standards.
@@ -406,42 +406,56 @@ Backend does not send `expiresIn`, so mobile must derive token expiry from JWT `
 **Agreed approach:** progressive profiling. Register creates an authenticated session; profile fields
 are filled via `PATCH /v1/me` and the client resumes completion based on `GET /v1/me`.
 
-- [ ] Update domain + models:
-  - [ ] `RegisterRequestEntity` remove required `firstName/lastName` (names do not belong to auth register payload)
-  - [ ] `RegisterRequestModel` match backend (`email`, `password`, optional `deviceId`, `deviceName`)
-  - [ ] Register validation rules updated accordingly
-- [ ] Update UI:
-  - [ ] `lib/features/auth/presentation/pages/register_page.dart` remove first/last name fields
-  - [ ] Add **Complete Profile** screen (under user feature) that collects names and calls `PATCH /v1/me`
-  - [ ] Add resume behavior:
-    - [ ] After auth success: `GET /v1/me` → if required fields missing → navigate to Complete Profile
-    - [ ] On cold start with tokens: `GET /v1/me` → if required fields missing → navigate to Complete Profile
-- [ ] Implement `PATCH /v1/me` under user feature:
-  - [ ] Add DTO(s) matching backend (`PatchMeRequestDto` → `profile: { displayName?, givenName?, familyName? }`)
-  - [ ] Ensure request retry safety:
-    - [ ] Client sets `Idempotency-Key` for this PATCH
-    - [ ] Mobile retry policy already respects idempotency for writes (`AuthTokenInterceptor`)
+- [x] Update domain + models:
+  - [x] `RegisterRequestEntity` remove required `firstName/lastName` (names do not belong to auth register payload)
+  - [x] `RegisterRequestModel` match backend (`email`, `password`)
+    - optional `deviceId/deviceName` are supported by backend but deferred to Phase 6 “Device identity plumbing”.
+  - [x] Register validation rules updated accordingly
+- [x] Update UI:
+  - [x] `lib/features/auth/presentation/pages/register_page.dart` remove first/last name fields
+  - [x] Add **Complete Profile** screen (under user feature) that collects names and calls `PATCH /v1/me`
+  - [x] Add resume behavior:
+    - [x] After auth success: `GET /v1/me` → if required fields missing → navigate to Complete Profile
+    - [x] On cold start with tokens: `GET /v1/me` → if required fields missing → navigate to Complete Profile
+- [x] Implement `PATCH /v1/me` under user feature:
+  - [x] Add DTO(s) matching backend (`PatchMeRequestDto` → `profile: { displayName?, givenName?, familyName? }`)
+  - [x] Ensure request retry safety:
+    - [x] Client sets `Idempotency-Key` for this PATCH
+    - [x] Mobile retry policy already respects idempotency for writes (`AuthTokenInterceptor`)
 - [ ] Optional UX hardening:
   - [ ] Store a local “profile draft” while the user is on Complete Profile so closing the app mid-form can resume cleanly.
 
 ### 2.4 Update refresh + retry semantics (already mostly aligned)
 
-- [ ] Ensure refresh handling stays **fail-closed** on unknown outcome:
-  - current behavior already does this via `mapAuthFailureForRefresh()` on `-2` timeouts.
-- [ ] Validate `AuthTokenInterceptor` retry policy stays aligned with backend idempotency rules:
-  - GET/HEAD retry OK
-  - write retry only with `Idempotency-Key` header
+- [x] Ensure refresh handling stays **fail-closed** on unknown outcome:
+  - [x] `mapAuthFailureForRefresh()` treats `null`/`-2` as unauthenticated (unknown outcome → force re-auth)
+  - [x] `SessionManager.refreshTokens()` logs out when refresh maps to `unauthenticated`
+  - [x] Tests:
+    - [x] `test/features/auth/data/error/auth_failure_mapper_test.dart`
+    - [x] `test/core/session/session_manager_test.dart`
+- [x] Validate `AuthTokenInterceptor` retry policy stays aligned with backend idempotency rules:
+  - [x] GET/HEAD retry OK after refresh
+  - [x] write retry only with `Idempotency-Key` header
+  - [x] Tests:
+    - [x] `test/core/network/interceptors/auth_token_interceptor_test.dart`
 
 ### 2.5 Tests (must-have)
 
-- [ ] Auth DTO parsing tests:
-  - [ ] login/register parsing from backend-shaped JSON
-  - [ ] refresh parsing from backend-shaped JSON
-- [ ] JWT expiry derivation tests:
-  - [ ] exp present → computed `expiresAt/expiresIn`
-  - [ ] exp missing/malformed → safe fallback behavior (define expected policy)
-- [ ] Session persistence tests:
-  - [ ] after login/register, `SessionRepositoryImpl.loadSession()` restores tokens with derived expiry
+- [x] Auth DTO parsing tests:
+  - [x] login/register parsing from backend-shaped JSON
+    - [x] `test/features/auth/data/model/remote/auth_result_model_test.dart`
+  - [x] refresh parsing from backend-shaped JSON
+    - [x] `test/features/auth/data/model/remote/auth_result_model_test.dart`
+- [x] JWT expiry derivation tests:
+  - [x] exp present → computed `expiresAt/expiresIn`
+    - [x] `test/core/utilities/jwt_utils_test.dart`
+    - [x] `test/features/auth/data/model/remote/auth_result_model_test.dart`
+  - [x] exp missing/malformed → safe fallback behavior (policy: `expiresIn=0`, `expiresAt=null`)
+    - [x] `test/core/utilities/jwt_utils_test.dart`
+    - [x] `test/features/auth/data/model/remote/auth_result_model_test.dart`
+- [x] Session persistence tests:
+  - [x] after login/register, `SessionRepositoryImpl.loadSession()` restores tokens with derived expiry
+    - [x] `test/core/session/session_expiry_persistence_test.dart`
 
 ---
 
@@ -449,14 +463,14 @@ are filled via `PATCH /v1/me` and the client resumes completion based on `GET /v
 
 ### 3.1 Add backend-shaped Me models
 
-- [ ] Add models matching backend `MeDto` (nested profile):
-  - [ ] `MeModel` with:
+- [x] Add models matching backend `MeDto` (nested profile):
+  - [x] `MeModel` with:
     - `id`, `email`, `emailVerified`
     - `roles: List<String>`
     - `authMethods: List<String>`
     - `profile: MeProfileModel(displayName, givenName, familyName)`
     - optional `accountDeletion`
-- [ ] Update `UserRemoteDataSource.getMe()` parser to parse `MeModel` instead of `UserModel`.
+- [x] Update `UserRemoteDataSource.getMe()` parser to parse `MeModel` instead of `UserModel`.
 
 ### 3.2 Map backend Me → app `UserEntity`
 
@@ -500,20 +514,21 @@ Backend contract:
 
 Mobile tasks:
 
-- [ ] Replace endpoint constant:
-  - [ ] `lib/core/network/endpoints/auth_endpoint.dart`: replace `google` with `oidcExchange = '/auth/oidc/exchange'`
-- [ ] Replace request model:
-  - [ ] `OidcExchangeRequestModel { provider, idToken, deviceId?, deviceName? }`
-- [ ] Update auth repository/usecase/cubit naming:
-  - [ ] `googleSignIn()` becomes `signInWithGoogleOidc()` (or similar) but keep UI copy “Continue with Google”
-- [ ] Update federated auth service:
-  - [ ] Stop returning Firebase ID token
-  - [ ] Return Google OIDC `idToken` from `google_sign_in` directly
-  - [ ] Remove FirebaseAuth dependency from this flow (Firebase can still exist for messaging/crashlytics/analytics, etc.)
-  - [ ] Remove unused code and unused dependencies (no deprecation layer)
-- [ ] Tests:
-  - [ ] service returns null on cancel
-  - [ ] exchange request body matches backend contract
+- [x] Replace endpoint constant:
+  - [x] `lib/core/network/endpoints/auth_endpoint.dart`: replace `google` with `oidcExchange = '/auth/oidc/exchange'`
+- [x] Replace request model:
+  - [x] `OidcExchangeRequestModel { provider, idToken }`
+  - [x] Note: backend supports optional `deviceId/deviceName`; template defers these to Phase 6 “Device identity plumbing”.
+- [x] Update auth repository/usecase/cubit naming:
+  - [x] `googleSignIn()` becomes `signInWithGoogleOidc()` (or similar) but keep UI copy “Continue with Google”
+- [x] Update federated auth service:
+  - [x] Stop returning Firebase ID token
+  - [x] Return Google OIDC `idToken` from `google_sign_in` directly
+  - [x] Remove FirebaseAuth dependency from this flow (Firebase can still exist for messaging/crashlytics/analytics, etc.)
+  - [x] Remove unused code and unused dependencies (no deprecation layer)
+- [x] Tests:
+  - [x] service returns null on cancel
+  - [x] exchange request body matches backend contract
 
 ---
 
