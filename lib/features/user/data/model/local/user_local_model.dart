@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 
@@ -14,29 +11,19 @@ abstract class UserLocalModel with _$UserLocalModel {
       'CREATE TABLE IF NOT EXISTS users ('
       'id TEXT PRIMARY KEY,'
       'email TEXT,'
+      'firstName TEXT,'
+      'lastName TEXT,'
       'emailVerified INTEGER,'
-      'rolesJson TEXT,'
-      'authMethodsJson TEXT,'
-      'profileImageFileId TEXT,'
-      'displayName TEXT,'
-      'givenName TEXT,'
-      'familyName TEXT,'
-      'accountDeletionRequestedAt TEXT,'
-      'accountDeletionScheduledFor TEXT'
+      'createdAt TEXT'
       ');';
 
   const factory UserLocalModel({
     String? id,
     String? email,
+    String? firstName,
+    String? lastName,
     bool? emailVerified,
-    String? rolesJson,
-    String? authMethodsJson,
-    String? profileImageFileId,
-    String? displayName,
-    String? givenName,
-    String? familyName,
-    String? accountDeletionRequestedAt,
-    String? accountDeletionScheduledFor,
+    String? createdAt,
   }) = _UserLocalModel;
 
   const UserLocalModel._();
@@ -44,59 +31,32 @@ abstract class UserLocalModel with _$UserLocalModel {
   factory UserLocalModel.fromMap(Map<String, dynamic> m) => UserLocalModel(
     id: m['id'] as String?,
     email: m['email'] as String?,
+    firstName: m['firstName'] as String?,
+    lastName: m['lastName'] as String?,
     emailVerified: m['emailVerified'] == null
         ? null
         : (m['emailVerified'] as int) == 1,
-    rolesJson: m['rolesJson'] as String?,
-    authMethodsJson: m['authMethodsJson'] as String?,
-    profileImageFileId: m['profileImageFileId'] as String?,
-    displayName: m['displayName'] as String?,
-    givenName: m['givenName'] as String?,
-    familyName: m['familyName'] as String?,
-    accountDeletionRequestedAt: m['accountDeletionRequestedAt'] as String?,
-    accountDeletionScheduledFor: m['accountDeletionScheduledFor'] as String?,
+    createdAt: m['createdAt'] as String?,
   );
 
   Map<String, dynamic> toMap() => {
     'id': id,
     'email': email,
+    'firstName': firstName,
+    'lastName': lastName,
     'emailVerified': emailVerified == null ? null : (emailVerified! ? 1 : 0),
-    'rolesJson': rolesJson,
-    'authMethodsJson': authMethodsJson,
-    'profileImageFileId': profileImageFileId,
-    'displayName': displayName,
-    'givenName': givenName,
-    'familyName': familyName,
-    'accountDeletionRequestedAt': accountDeletionRequestedAt,
-    'accountDeletionScheduledFor': accountDeletionScheduledFor,
+    'createdAt': createdAt,
   };
 
   UserEntity? toEntity() {
     if (id == null || id!.isEmpty || email == null || email!.isEmpty) {
       return null;
     }
-
-    final roles = _decodeStringList(rolesJson);
-    final authMethods = _decodeStringList(authMethodsJson);
-    final profile = UserProfileEntity(
-      profileImageFileId: profileImageFileId,
-      displayName: displayName,
-      givenName: givenName,
-      familyName: familyName,
-    );
-    final deletion = _decodeAccountDeletion(
-      requestedAt: accountDeletionRequestedAt,
-      scheduledFor: accountDeletionScheduledFor,
-    );
-
     return UserEntity(
       id: id!,
       email: email!,
       emailVerified: emailVerified ?? false,
-      roles: roles,
-      authMethods: authMethods,
-      profile: profile,
-      accountDeletion: deletion,
+      profile: UserProfileEntity(givenName: firstName, familyName: lastName),
     );
   }
 }
@@ -105,41 +65,9 @@ extension UserEntityLocalX on UserEntity {
   UserLocalModel toLocalModel() => UserLocalModel(
     id: id,
     email: email,
+    firstName: profile.givenName,
+    lastName: profile.familyName,
     emailVerified: emailVerified,
-    rolesJson: jsonEncode(roles),
-    authMethodsJson: jsonEncode(authMethods),
-    profileImageFileId: profile.profileImageFileId,
-    displayName: profile.displayName,
-    givenName: profile.givenName,
-    familyName: profile.familyName,
-    accountDeletionRequestedAt: accountDeletion?.requestedAt,
-    accountDeletionScheduledFor: accountDeletion?.scheduledFor,
-  );
-}
-
-List<String> _decodeStringList(String? value) {
-  if (value == null || value.isEmpty) return const [];
-  try {
-    final decoded = jsonDecode(value);
-    if (decoded is! List) return const [];
-    return decoded.whereType<String>().toList(growable: false);
-  } catch (_) {
-    return const [];
-  }
-}
-
-AccountDeletionEntity? _decodeAccountDeletion({
-  required String? requestedAt,
-  required String? scheduledFor,
-}) {
-  if (requestedAt == null ||
-      requestedAt.isEmpty ||
-      scheduledFor == null ||
-      scheduledFor.isEmpty) {
-    return null;
-  }
-  return AccountDeletionEntity(
-    requestedAt: requestedAt,
-    scheduledFor: scheduledFor,
+    createdAt: null,
   );
 }
