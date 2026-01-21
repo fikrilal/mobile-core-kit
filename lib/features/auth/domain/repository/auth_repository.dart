@@ -25,7 +25,8 @@ abstract class AuthRepository {
   /// Backend: `POST /v1/auth/logout` (204 No Content, does not require access token).
   Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request);
 
-  /// Sign in with Google via Firebase Auth, then exchange the Firebase ID token
-  /// with the backend to obtain an app session (access/refresh tokens).
-  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn();
+  /// Sign in with Google via OIDC and exchange the provider `id_token` with the backend.
+  ///
+  /// Backend: `POST /v1/auth/oidc/exchange` (provider=GOOGLE).
+  Future<Either<AuthFailure, AuthSessionEntity>> signInWithGoogleOidc();
 }

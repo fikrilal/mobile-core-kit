@@ -16,12 +16,12 @@ import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
@@ -82,9 +82,9 @@ class AuthModule {
       );
     }
 
-    if (!getIt.isRegistered<GoogleSignInUseCase>()) {
-      getIt.registerFactory<GoogleSignInUseCase>(
-        () => GoogleSignInUseCase(getIt<AuthRepository>()),
+    if (!getIt.isRegistered<SignInWithGoogleUseCase>()) {
+      getIt.registerFactory<SignInWithGoogleUseCase>(
+        () => SignInWithGoogleUseCase(getIt<AuthRepository>()),
       );
     }
 
@@ -114,7 +114,7 @@ class AuthModule {
       getIt.registerFactory<LoginCubit>(
         () => LoginCubit(
           getIt<LoginUserUseCase>(),
-          getIt<GoogleSignInUseCase>(),
+          getIt<SignInWithGoogleUseCase>(),
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
         ),

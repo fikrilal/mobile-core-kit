@@ -32,8 +32,8 @@ import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entit
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
@@ -80,7 +80,7 @@ void main() {
     await startup.initialize();
 
     final loginUseCase = LoginUserUseCase(authRepo);
-    final googleUseCase = GoogleSignInUseCase(authRepo);
+    final googleUseCase = SignInWithGoogleUseCase(authRepo);
 
     final router = GoRouter(
       initialLocation: AppRoutes.root,
@@ -256,7 +256,7 @@ class _InMemorySessionRepository implements SessionRepository {
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
+  Future<Either<AuthFailure, AuthSessionEntity>> signInWithGoogleOidc() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 

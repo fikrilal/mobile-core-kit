@@ -5,9 +5,9 @@ import 'package:mobile_core_kit/core/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/network/endpoints/auth_endpoint.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/google_sign_in_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 
@@ -106,14 +106,14 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthResultModel>> googleSignIn(
-    GoogleSignInRequestModel requestModel,
+  Future<ApiResponse<AuthResultModel>> oidcExchange(
+    OidcExchangeRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
-    Log.info('Google sign-in (Firebase ID token length=$len)', name: _tag);
+    Log.info('OIDC exchange (provider=${requestModel.provider}, len=$len)', name: _tag);
 
     final response = await _apiHelper.post<AuthResultModel>(
-      AuthEndpoint.google,
+      AuthEndpoint.oidcExchange,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
@@ -123,7 +123,7 @@ class AuthRemoteDataSource {
 
     if (response.isError) {
       Log.warning(
-        'Google mobile sign-in failed (status=${response.statusCode}): ${response.message}',
+        'OIDC exchange failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }

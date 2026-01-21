@@ -8,9 +8,9 @@ import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/google_sign_in_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
@@ -106,21 +106,24 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
+  Future<Either<AuthFailure, AuthSessionEntity>> signInWithGoogleOidc() async {
     try {
-      final idToken = await _googleAuth.signInAndGetFirebaseIdToken();
+      final idToken = await _googleAuth.signInAndGetOidcIdToken();
       if (idToken == null) return left(const AuthFailure.cancelled());
 
       Log.debug(
-        'Exchanging Firebase ID token (length=${idToken.length})',
+        'Exchanging Google OIDC id_token (length=${idToken.length})',
         name: 'AuthRepository',
       );
 
-      final apiRequest = GoogleSignInRequestModel(idToken);
-      final apiResponse = await _remote.googleSignIn(apiRequest);
+      final apiRequest = OidcExchangeRequestModel(
+        provider: 'GOOGLE',
+        idToken: idToken,
+      );
+      final apiResponse = await _remote.oidcExchange(apiRequest);
       return apiResponse
           .toEitherWithFallback('Google sign-in failed.')
-          .mapLeft(mapAuthFailureForGoogle)
+          .mapLeft(mapAuthFailureForOidcExchange)
           .map((m) => m.toSessionEntity());
     } catch (e, st) {
       Log.error(

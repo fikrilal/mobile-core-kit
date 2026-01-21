@@ -9,8 +9,8 @@ import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.d
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
@@ -25,7 +25,7 @@ class LoginCubit extends Cubit<LoginState> {
   ) : super(LoginState.initial());
 
   final LoginUserUseCase _loginUser;
-  final GoogleSignInUseCase _googleSignIn;
+  final SignInWithGoogleUseCase _googleSignIn;
   final SessionManager _sessionManager;
   final AnalyticsTracker _analytics;
 

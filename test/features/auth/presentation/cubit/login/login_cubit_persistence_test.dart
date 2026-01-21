@@ -12,14 +12,14 @@ import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLoginUserUseCase extends Mock implements LoginUserUseCase {}
 
-class _MockGoogleSignInUseCase extends Mock implements GoogleSignInUseCase {}
+class _MockGoogleSignInUseCase extends Mock implements SignInWithGoogleUseCase {}
 
 class _MockAnalyticsTracker extends Mock implements AnalyticsTracker {}
 
