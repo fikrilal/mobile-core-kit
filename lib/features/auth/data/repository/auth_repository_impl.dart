@@ -7,7 +7,7 @@ import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart'
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/auth_session_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/google_sign_in_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
@@ -36,7 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return apiResponse
           .toEitherWithFallback('Register failed.')
           .mapLeft(mapAuthFailure)
-          .map((m) => m.toEntity());
+          .map((m) => m.toSessionEntity());
     } catch (e, st) {
       Log.error(
         'Register user unexpected error',
@@ -60,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return apiResponse
           .toEitherWithFallback('Login failed.')
           .mapLeft(mapAuthFailure)
-          .map((m) => m.toEntity());
+          .map((m) => m.toSessionEntity());
     } catch (e, st) {
       Log.error('Login user unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
@@ -77,7 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return apiResponse
           .toEitherWithFallback('Token refresh failed.')
           .mapLeft(mapAuthFailureForRefresh)
-          .map((m) => m.toEntity());
+          .map((m) => m.toTokensEntity());
     } catch (e, st) {
       Log.error(
         'Refresh token unexpected error',
@@ -121,7 +121,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return apiResponse
           .toEitherWithFallback('Google sign-in failed.')
           .mapLeft(mapAuthFailureForGoogle)
-          .map((m) => m.toEntity());
+          .map((m) => m.toSessionEntity());
     } catch (e, st) {
       Log.error(
         'Unexpected error during Google sign-in',

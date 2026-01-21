@@ -1,23 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_tokens_model.dart';
+part of 'auth_result_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_AuthTokensModel _$AuthTokensModelFromJson(Map<String, dynamic> json) =>
-    _AuthTokensModel(
+_AuthResultModel _$AuthResultModelFromJson(Map<String, dynamic> json) =>
+    _AuthResultModel(
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
-      tokenType: json['tokenType'] as String? ?? 'Bearer',
-      expiresIn: (json['expiresIn'] as num).toInt(),
     );
 
-Map<String, dynamic> _$AuthTokensModelToJson(_AuthTokensModel instance) =>
+Map<String, dynamic> _$AuthResultModelToJson(_AuthResultModel instance) =>
     <String, dynamic>{
+      'user': instance.user,
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,
-      'tokenType': instance.tokenType,
-      'expiresIn': instance.expiresIn,
     };
