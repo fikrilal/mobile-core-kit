@@ -25,13 +25,17 @@ class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const UserEntity(id: 'id', email: 'email@example.com'));
+    registerFallbackValue(
+      const UserEntity(id: 'id', email: 'email@example.com'),
+    );
   });
 
   group('AppStartupController.initialize', () {
     test('does not block on restoring cached user', () async {
       final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => true);
+      when(
+        () => appLaunch.shouldShowOnboarding(),
+      ).thenAnswer((_) async => true);
 
       final connectivity = _MockConnectivityService();
       when(
@@ -176,7 +180,9 @@ void main() {
   group('AppStartupController hydration', () {
     test('does not hydrate when onboarding is required', () async {
       final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => true);
+      when(
+        () => appLaunch.shouldShowOnboarding(),
+      ).thenAnswer((_) async => true);
 
       final connectivity = _MockConnectivityService();
       final networkController = StreamController<NetworkStatus>.broadcast();
@@ -189,11 +195,14 @@ void main() {
       when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
       when(() => sessionManager.init()).thenAnswer((_) async {});
       when(() => sessionManager.isAuthPending).thenReturn(true);
-      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+      when(
+        () => sessionManager.restoreCachedUserIfNeeded(),
+      ).thenAnswer((_) async {});
 
       final currentUserFetcher = _MockCurrentUserFetcher();
       when(() => currentUserFetcher.fetch()).thenAnswer(
-        (_) async => right(const UserEntity(id: 'u1', email: 'user@example.com')),
+        (_) async =>
+            right(const UserEntity(id: 'u1', email: 'user@example.com')),
       );
 
       final controller = AppStartupController(
@@ -217,48 +226,55 @@ void main() {
       sessionNotifier.dispose();
     });
 
-    test('does not call GetMe if cached user restoration resolves auth pending', () async {
-      final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+    test(
+      'does not call GetMe if cached user restoration resolves auth pending',
+      () async {
+        final appLaunch = _MockAppLaunchService();
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
 
-      final connectivity = _MockConnectivityService();
-      when(
-        () => connectivity.networkStatusStream,
-      ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        final connectivity = _MockConnectivityService();
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
-      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
-      final sessionManager = _MockSessionManager();
-      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
-      when(() => sessionManager.init()).thenAnswer((_) async {});
+        final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        final sessionManager = _MockSessionManager();
+        when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+        when(() => sessionManager.init()).thenAnswer((_) async {});
 
-      var isAuthPending = true;
-      when(() => sessionManager.isAuthPending).thenAnswer((_) => isAuthPending);
+        var isAuthPending = true;
+        when(
+          () => sessionManager.isAuthPending,
+        ).thenAnswer((_) => isAuthPending);
 
-      final restoreCompleter = Completer<void>();
-      when(
-        () => sessionManager.restoreCachedUserIfNeeded(),
-      ).thenAnswer((_) => restoreCompleter.future);
+        final restoreCompleter = Completer<void>();
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) => restoreCompleter.future);
 
-      final currentUserFetcher = _MockCurrentUserFetcher();
+        final currentUserFetcher = _MockCurrentUserFetcher();
 
-      final controller = AppStartupController(
-        appLaunch: appLaunch,
-        connectivity: connectivity,
-        sessionManager: sessionManager,
-        currentUserFetcher: currentUserFetcher,
-      );
+        final controller = AppStartupController(
+          appLaunch: appLaunch,
+          connectivity: connectivity,
+          sessionManager: sessionManager,
+          currentUserFetcher: currentUserFetcher,
+        );
 
-      await controller.initialize();
+        await controller.initialize();
 
-      isAuthPending = false;
-      restoreCompleter.complete();
+        isAuthPending = false;
+        restoreCompleter.complete();
 
-      await Future<void>.delayed(Duration.zero);
-      verifyNever(() => currentUserFetcher.fetch());
+        await Future<void>.delayed(Duration.zero);
+        verifyNever(() => currentUserFetcher.fetch());
 
-      controller.dispose();
-      sessionNotifier.dispose();
-    });
+        controller.dispose();
+        sessionNotifier.dispose();
+      },
+    );
 
     test(
       'hydrates on connectivity online when auth is pending and throttles repeated online events',
@@ -332,7 +348,9 @@ void main() {
 
     test('dedupes in-flight hydration attempts (single-flight)', () async {
       final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+      when(
+        () => appLaunch.shouldShowOnboarding(),
+      ).thenAnswer((_) async => false);
 
       final connectivity = _MockConnectivityService();
       final networkController = StreamController<NetworkStatus>.broadcast();
@@ -344,17 +362,23 @@ void main() {
       final sessionManager = _MockSessionManager();
       when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
       when(() => sessionManager.init()).thenAnswer((_) async {});
-      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+      when(
+        () => sessionManager.restoreCachedUserIfNeeded(),
+      ).thenAnswer((_) async {});
 
       var isAuthPending = false;
       when(() => sessionManager.isAuthPending).thenAnswer((_) => isAuthPending);
       when(() => sessionManager.refreshToken).thenReturn('refresh_1');
-      when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
+      when(
+        () => sessionManager.logout(reason: any(named: 'reason')),
+      ).thenAnswer((_) async {});
       when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
 
       final fetchCompleter = Completer<Either<SessionFailure, UserEntity>>();
       final currentUserFetcher = _MockCurrentUserFetcher();
-      when(() => currentUserFetcher.fetch()).thenAnswer((_) => fetchCompleter.future);
+      when(
+        () => currentUserFetcher.fetch(),
+      ).thenAnswer((_) => fetchCompleter.future);
 
       final controller = AppStartupController(
         appLaunch: appLaunch,
@@ -386,149 +410,182 @@ void main() {
       sessionNotifier.dispose();
     });
 
-    test('logs out when GetMe returns unauthenticated (session unchanged)', () async {
-      final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+    test(
+      'logs out when GetMe returns unauthenticated (session unchanged)',
+      () async {
+        final appLaunch = _MockAppLaunchService();
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
 
-      final connectivity = _MockConnectivityService();
-      when(
-        () => connectivity.networkStatusStream,
-      ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        final connectivity = _MockConnectivityService();
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
-      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
-      final sessionManager = _MockSessionManager();
-      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
-      when(() => sessionManager.init()).thenAnswer((_) async {});
-      when(() => sessionManager.isAuthPending).thenReturn(true);
-      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
+        final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        final sessionManager = _MockSessionManager();
+        when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+        when(() => sessionManager.init()).thenAnswer((_) async {});
+        when(() => sessionManager.isAuthPending).thenReturn(true);
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
 
-      when(() => sessionManager.refreshToken).thenReturn('refresh_1');
-      when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
-      when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
+        when(() => sessionManager.refreshToken).thenReturn('refresh_1');
+        when(
+          () => sessionManager.logout(reason: any(named: 'reason')),
+        ).thenAnswer((_) async {});
+        when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
 
-      final currentUserFetcher = _MockCurrentUserFetcher();
-      when(
-        () => currentUserFetcher.fetch(),
-      ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
+        final currentUserFetcher = _MockCurrentUserFetcher();
+        when(
+          () => currentUserFetcher.fetch(),
+        ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
 
-      final controller = AppStartupController(
-        appLaunch: appLaunch,
-        connectivity: connectivity,
-        sessionManager: sessionManager,
-        currentUserFetcher: currentUserFetcher,
-      );
+        final controller = AppStartupController(
+          appLaunch: appLaunch,
+          connectivity: connectivity,
+          sessionManager: sessionManager,
+          currentUserFetcher: currentUserFetcher,
+        );
 
-      await controller.initialize();
-      await Future<void>.delayed(Duration.zero);
+        await controller.initialize();
+        await Future<void>.delayed(Duration.zero);
 
-      verify(() => currentUserFetcher.fetch()).called(1);
-      verify(() => sessionManager.logout(reason: 'hydrate_unauthenticated')).called(1);
-      verifyNever(() => sessionManager.setUser(any()));
+        verify(() => currentUserFetcher.fetch()).called(1);
+        verify(
+          () => sessionManager.logout(reason: 'hydrate_unauthenticated'),
+        ).called(1);
+        verifyNever(() => sessionManager.setUser(any()));
 
-      controller.dispose();
-      sessionNotifier.dispose();
-    });
+        controller.dispose();
+        sessionNotifier.dispose();
+      },
+    );
 
-    test('does not apply GetMe result if session is cleared mid-flight', () async {
-      final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+    test(
+      'does not apply GetMe result if session is cleared mid-flight',
+      () async {
+        final appLaunch = _MockAppLaunchService();
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
 
-      final connectivity = _MockConnectivityService();
-      when(
-        () => connectivity.networkStatusStream,
-      ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        final connectivity = _MockConnectivityService();
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
-      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
-      final sessionManager = _MockSessionManager();
-      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
-      when(() => sessionManager.init()).thenAnswer((_) async {});
-      when(() => sessionManager.isAuthPending).thenReturn(true);
-      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
-      when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
-      when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
+        final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        final sessionManager = _MockSessionManager();
+        when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+        when(() => sessionManager.init()).thenAnswer((_) async {});
+        when(() => sessionManager.isAuthPending).thenReturn(true);
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
+        when(
+          () => sessionManager.logout(reason: any(named: 'reason')),
+        ).thenAnswer((_) async {});
+        when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
 
-      String? refreshToken = 'refresh_1';
-      when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
+        String? refreshToken = 'refresh_1';
+        when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
 
-      final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
-      final currentUserFetcher = _MockCurrentUserFetcher();
-      when(() => currentUserFetcher.fetch()).thenAnswer((_) => getMeCompleter.future);
+        final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
+        final currentUserFetcher = _MockCurrentUserFetcher();
+        when(
+          () => currentUserFetcher.fetch(),
+        ).thenAnswer((_) => getMeCompleter.future);
 
-      final controller = AppStartupController(
-        appLaunch: appLaunch,
-        connectivity: connectivity,
-        sessionManager: sessionManager,
-        currentUserFetcher: currentUserFetcher,
-      );
+        final controller = AppStartupController(
+          appLaunch: appLaunch,
+          connectivity: connectivity,
+          sessionManager: sessionManager,
+          currentUserFetcher: currentUserFetcher,
+        );
 
-      await controller.initialize();
-      await Future<void>.delayed(Duration.zero);
+        await controller.initialize();
+        await Future<void>.delayed(Duration.zero);
 
-      verify(() => currentUserFetcher.fetch()).called(1);
+        verify(() => currentUserFetcher.fetch()).called(1);
 
-      refreshToken = null;
-      getMeCompleter.complete(
-        right(const UserEntity(id: 'u1', email: 'user@example.com')),
-      );
+        refreshToken = null;
+        getMeCompleter.complete(
+          right(const UserEntity(id: 'u1', email: 'user@example.com')),
+        );
 
-      await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
 
-      verifyNever(() => sessionManager.setUser(any()));
-      verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
+        verifyNever(() => sessionManager.setUser(any()));
+        verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
 
-      controller.dispose();
-      sessionNotifier.dispose();
-    });
+        controller.dispose();
+        sessionNotifier.dispose();
+      },
+    );
 
-    test('does not apply GetMe result if session switches mid-flight', () async {
-      final appLaunch = _MockAppLaunchService();
-      when(() => appLaunch.shouldShowOnboarding()).thenAnswer((_) async => false);
+    test(
+      'does not apply GetMe result if session switches mid-flight',
+      () async {
+        final appLaunch = _MockAppLaunchService();
+        when(
+          () => appLaunch.shouldShowOnboarding(),
+        ).thenAnswer((_) async => false);
 
-      final connectivity = _MockConnectivityService();
-      when(
-        () => connectivity.networkStatusStream,
-      ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
+        final connectivity = _MockConnectivityService();
+        when(
+          () => connectivity.networkStatusStream,
+        ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
-      final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
-      final sessionManager = _MockSessionManager();
-      when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
-      when(() => sessionManager.init()).thenAnswer((_) async {});
-      when(() => sessionManager.isAuthPending).thenReturn(true);
-      when(() => sessionManager.restoreCachedUserIfNeeded()).thenAnswer((_) async {});
-      when(() => sessionManager.logout(reason: any(named: 'reason'))).thenAnswer((_) async {});
-      when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
+        final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        final sessionManager = _MockSessionManager();
+        when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+        when(() => sessionManager.init()).thenAnswer((_) async {});
+        when(() => sessionManager.isAuthPending).thenReturn(true);
+        when(
+          () => sessionManager.restoreCachedUserIfNeeded(),
+        ).thenAnswer((_) async {});
+        when(
+          () => sessionManager.logout(reason: any(named: 'reason')),
+        ).thenAnswer((_) async {});
+        when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
 
-      String refreshToken = 'refresh_1';
-      when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
+        String refreshToken = 'refresh_1';
+        when(() => sessionManager.refreshToken).thenAnswer((_) => refreshToken);
 
-      final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
-      final currentUserFetcher = _MockCurrentUserFetcher();
-      when(() => currentUserFetcher.fetch()).thenAnswer((_) => getMeCompleter.future);
+        final getMeCompleter = Completer<Either<SessionFailure, UserEntity>>();
+        final currentUserFetcher = _MockCurrentUserFetcher();
+        when(
+          () => currentUserFetcher.fetch(),
+        ).thenAnswer((_) => getMeCompleter.future);
 
-      final controller = AppStartupController(
-        appLaunch: appLaunch,
-        connectivity: connectivity,
-        sessionManager: sessionManager,
-        currentUserFetcher: currentUserFetcher,
-      );
+        final controller = AppStartupController(
+          appLaunch: appLaunch,
+          connectivity: connectivity,
+          sessionManager: sessionManager,
+          currentUserFetcher: currentUserFetcher,
+        );
 
-      await controller.initialize();
-      await Future<void>.delayed(Duration.zero);
+        await controller.initialize();
+        await Future<void>.delayed(Duration.zero);
 
-      verify(() => currentUserFetcher.fetch()).called(1);
+        verify(() => currentUserFetcher.fetch()).called(1);
 
-      refreshToken = 'refresh_2';
-      getMeCompleter.complete(
-        right(const UserEntity(id: 'u_old', email: 'old@example.com')),
-      );
+        refreshToken = 'refresh_2';
+        getMeCompleter.complete(
+          right(const UserEntity(id: 'u_old', email: 'old@example.com')),
+        );
 
-      await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
 
-      verifyNever(() => sessionManager.setUser(any()));
-      verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
+        verifyNever(() => sessionManager.setUser(any()));
+        verifyNever(() => sessionManager.logout(reason: any(named: 'reason')));
 
-      controller.dispose();
-      sessionNotifier.dispose();
-    });
+        controller.dispose();
+        sessionNotifier.dispose();
+      },
+    );
   });
 }

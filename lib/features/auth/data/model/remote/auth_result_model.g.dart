@@ -8,7 +8,7 @@ part of 'auth_result_model.dart';
 
 _AuthResultModel _$AuthResultModelFromJson(Map<String, dynamic> json) =>
     _AuthResultModel(
-      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      user: AuthUserModel.fromJson(json['user'] as Map<String, dynamic>),
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
     );

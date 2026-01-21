@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthResultModel {
 
- UserModel get user; String get accessToken; String get refreshToken;
+ AuthUserModel get user; String get accessToken; String get refreshToken;
 /// Create a copy of AuthResultModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,11 +48,11 @@ abstract mixin class $AuthResultModelCopyWith<$Res>  {
   factory $AuthResultModelCopyWith(AuthResultModel value, $Res Function(AuthResultModel) _then) = _$AuthResultModelCopyWithImpl;
 @useResult
 $Res call({
- UserModel user, String accessToken, String refreshToken
+ AuthUserModel user, String accessToken, String refreshToken
 });
 
 
-$UserModelCopyWith<$Res> get user;
+$AuthUserModelCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$AuthResultModelCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(_self.copyWith(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserModel,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as AuthUserModel,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -77,9 +77,9 @@ as String,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserModelCopyWith<$Res> get user {
+$AuthUserModelCopyWith<$Res> get user {
   
-  return $UserModelCopyWith<$Res>(_self.user, (value) {
+  return $AuthUserModelCopyWith<$Res>(_self.user, (value) {
     return _then(_self.copyWith(user: value));
   });
 }
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( UserModel user,  String accessToken,  String refreshToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthUserModel user,  String accessToken,  String refreshToken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthResultModel() when $default != null:
 return $default(_that.user,_that.accessToken,_that.refreshToken);case _:
@@ -185,7 +185,7 @@ return $default(_that.user,_that.accessToken,_that.refreshToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( UserModel user,  String accessToken,  String refreshToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthUserModel user,  String accessToken,  String refreshToken)  $default,) {final _that = this;
 switch (_that) {
 case _AuthResultModel():
 return $default(_that.user,_that.accessToken,_that.refreshToken);case _:
@@ -205,7 +205,7 @@ return $default(_that.user,_that.accessToken,_that.refreshToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( UserModel user,  String accessToken,  String refreshToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthUserModel user,  String accessToken,  String refreshToken)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthResultModel() when $default != null:
 return $default(_that.user,_that.accessToken,_that.refreshToken);case _:
@@ -223,7 +223,7 @@ class _AuthResultModel extends AuthResultModel {
   const _AuthResultModel({required this.user, required this.accessToken, required this.refreshToken}): super._();
   factory _AuthResultModel.fromJson(Map<String, dynamic> json) => _$AuthResultModelFromJson(json);
 
-@override final  UserModel user;
+@override final  AuthUserModel user;
 @override final  String accessToken;
 @override final  String refreshToken;
 
@@ -260,11 +260,11 @@ abstract mixin class _$AuthResultModelCopyWith<$Res> implements $AuthResultModel
   factory _$AuthResultModelCopyWith(_AuthResultModel value, $Res Function(_AuthResultModel) _then) = __$AuthResultModelCopyWithImpl;
 @override @useResult
 $Res call({
- UserModel user, String accessToken, String refreshToken
+ AuthUserModel user, String accessToken, String refreshToken
 });
 
 
-@override $UserModelCopyWith<$Res> get user;
+@override $AuthUserModelCopyWith<$Res> get user;
 
 }
 /// @nodoc
@@ -280,7 +280,7 @@ class __$AuthResultModelCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? accessToken = null,Object? refreshToken = null,}) {
   return _then(_AuthResultModel(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserModel,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as AuthUserModel,accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -290,9 +290,9 @@ as String,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$UserModelCopyWith<$Res> get user {
+$AuthUserModelCopyWith<$Res> get user {
   
-  return $UserModelCopyWith<$Res>(_self.user, (value) {
+  return $AuthUserModelCopyWith<$Res>(_self.user, (value) {
     return _then(_self.copyWith(user: value));
   });
 }

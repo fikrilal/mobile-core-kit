@@ -59,10 +59,7 @@ class JwtUtils {
     final reference = now ?? DateTime.now();
     final remaining = expiresAt.difference(reference).inSeconds;
 
-    return (
-      expiresAt: expiresAt,
-      expiresIn: remaining < 0 ? 0 : remaining,
-    );
+    return (expiresAt: expiresAt, expiresIn: remaining < 0 ? 0 : remaining);
   }
 
   static int? _tryParseEpochSeconds(Object? value) {
@@ -72,4 +69,3 @@ class JwtUtils {
     return null;
   }
 }
-

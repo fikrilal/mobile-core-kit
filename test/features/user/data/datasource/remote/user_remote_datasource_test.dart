@@ -4,29 +4,42 @@ import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
-import 'package:mobile_core_kit/features/user/data/model/remote/user_model.dart';
+import 'package:mobile_core_kit/features/user/data/model/remote/me_model.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockApiHelper extends Mock implements ApiHelper {}
 
-UserModel _fallbackUserParser(Map<String, dynamic> json) =>
-    const UserModel(id: 'fallback', email: 'fallback@example.com');
+MeModel _fallbackMeParser(Map<String, dynamic> json) => const MeModel(
+  id: 'fallback',
+  email: 'fallback@example.com',
+  emailVerified: false,
+  roles: ['USER'],
+  authMethods: ['PASSWORD'],
+  profile: MeProfileModel(),
+);
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(_fallbackUserParser);
+    registerFallbackValue(_fallbackMeParser);
   });
 
   test('getMe hits /me on profile host', () async {
     final apiHelper = _MockApiHelper();
     final datasource = UserRemoteDataSource(apiHelper);
 
-    final expected = ApiResponse<UserModel>.success(
-      data: const UserModel(id: 'u1', email: 'user@example.com'),
+    final expected = ApiResponse<MeModel>.success(
+      data: const MeModel(
+        id: 'u1',
+        email: 'user@example.com',
+        emailVerified: false,
+        roles: ['USER'],
+        authMethods: ['PASSWORD'],
+        profile: MeProfileModel(),
+      ),
     );
 
     when(
-      () => apiHelper.getOne<UserModel>(
+      () => apiHelper.getOne<MeModel>(
         UserEndpoint.me,
         parser: any(named: 'parser'),
         host: ApiHost.profile,
@@ -38,7 +51,7 @@ void main() {
 
     expect(response, same(expected));
     verify(
-      () => apiHelper.getOne<UserModel>(
+      () => apiHelper.getOne<MeModel>(
         UserEndpoint.me,
         parser: any(named: 'parser'),
         host: ApiHost.profile,

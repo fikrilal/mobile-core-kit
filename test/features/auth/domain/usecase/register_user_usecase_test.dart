@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -86,8 +87,7 @@ void main() {
         user: UserEntity(
           id: 'u1',
           email: 'user@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
+          profile: UserProfileEntity(givenName: 'John', familyName: 'Doe'),
           emailVerified: false,
         ),
       );

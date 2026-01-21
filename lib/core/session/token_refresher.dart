@@ -8,4 +8,3 @@ import 'package:mobile_core_kit/core/session/session_failure.dart';
 abstract class TokenRefresher {
   Future<Either<SessionFailure, AuthTokensEntity>> refresh(String refreshToken);
 }
-

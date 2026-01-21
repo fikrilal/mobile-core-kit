@@ -142,8 +142,9 @@ void main() {
       await manager.login(session);
       final after = DateTime.now();
 
-      final saved = verify(() => repo.saveSession(captureAny())).captured.single
-          as AuthSessionEntity;
+      final saved =
+          verify(() => repo.saveSession(captureAny())).captured.single
+              as AuthSessionEntity;
       final expiresAt = saved.tokens.expiresAt;
 
       expect(manager.session, saved);
@@ -151,14 +152,8 @@ void main() {
 
       final min = before.add(const Duration(seconds: 60));
       final max = after.add(const Duration(seconds: 60));
-      expect(
-        expiresAt!.isAfter(min) || expiresAt.isAtSameMomentAs(min),
-        true,
-      );
-      expect(
-        expiresAt.isBefore(max) || expiresAt.isAtSameMomentAs(max),
-        true,
-      );
+      expect(expiresAt!.isAfter(min) || expiresAt.isAtSameMomentAs(min), true);
+      expect(expiresAt.isBefore(max) || expiresAt.isAtSameMomentAs(max), true);
 
       events.dispose();
       manager.dispose();
@@ -260,9 +255,7 @@ void main() {
     test('restores cached user when auth is pending', () async {
       final repo = _MockSessionRepository();
       when(() => repo.saveSession(any())).thenAnswer((_) async {});
-      when(
-        () => repo.loadCachedUser(),
-      ).thenAnswer(
+      when(() => repo.loadCachedUser()).thenAnswer(
         (_) async => const UserEntity(id: 'u1', email: 'cached@example.com'),
       );
 
@@ -480,7 +473,10 @@ void main() {
 
       await Future<void>.delayed(Duration.zero);
       expect(emitted.whereType<SessionCleared>().length, 1);
-      expect(emitted.whereType<SessionCleared>().single.reason, 'manual_logout');
+      expect(
+        emitted.whereType<SessionCleared>().single.reason,
+        'manual_logout',
+      );
 
       await sub.cancel();
       events.dispose();

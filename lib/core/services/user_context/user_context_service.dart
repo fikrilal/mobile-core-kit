@@ -61,13 +61,19 @@ class UserContextService {
   String? get displayName {
     final u = user;
     if (u == null) return null;
-    final first = u.firstName?.trim();
-    final last = u.lastName?.trim();
-    final hasFirst = first != null && first.isNotEmpty;
-    final hasLast = last != null && last.isNotEmpty;
-    if (hasFirst && hasLast) return '$first $last';
-    if (hasFirst) return first;
-    if (hasLast) return last;
+    final profile = u.profile;
+    final explicitDisplayName = profile.displayName?.trim();
+    if (explicitDisplayName != null && explicitDisplayName.isNotEmpty) {
+      return explicitDisplayName;
+    }
+
+    final given = profile.givenName?.trim();
+    final family = profile.familyName?.trim();
+    final hasGiven = given != null && given.isNotEmpty;
+    final hasFamily = family != null && family.isNotEmpty;
+    if (hasGiven && hasFamily) return '$given $family';
+    if (hasGiven) return given;
+    if (hasFamily) return family;
     return u.email.trim().isEmpty ? null : u.email;
   }
 

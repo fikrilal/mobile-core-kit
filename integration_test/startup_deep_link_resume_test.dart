@@ -22,6 +22,7 @@ import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
@@ -160,8 +161,7 @@ void main() {
           user: const UserEntity(
             id: 'u1',
             email: 'user@example.com',
-            firstName: 'Test',
-            lastName: 'User',
+            profile: UserProfileEntity(givenName: 'Test', familyName: 'User'),
           ),
         ),
       );

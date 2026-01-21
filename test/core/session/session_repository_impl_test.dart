@@ -45,7 +45,9 @@ void main() {
           value: any<String?>(named: 'value'),
         ),
       ).thenAnswer((_) async {});
-      when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
+      when(
+        () => storage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
 
       final cachedUserStore = _FakeCachedUserStore();
       final repository = SessionRepositoryImpl(
@@ -73,8 +75,12 @@ void main() {
       expect(cachedUserStore.clearCount, 0);
       expect(await cachedUserStore.read(), user);
 
-      verify(() => storage.write(key: 'access_token', value: 'access')).called(1);
-      verify(() => storage.write(key: 'refresh_token', value: 'refresh')).called(1);
+      verify(
+        () => storage.write(key: 'access_token', value: 'access'),
+      ).called(1);
+      verify(
+        () => storage.write(key: 'refresh_token', value: 'refresh'),
+      ).called(1);
       verify(() => storage.write(key: 'expires_in', value: '900')).called(1);
       verify(
         () => storage.write(
@@ -92,7 +98,9 @@ void main() {
           value: any<String?>(named: 'value'),
         ),
       ).thenAnswer((_) async {});
-      when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
+      when(
+        () => storage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
 
       final cachedUserStore = _FakeCachedUserStore();
       final repository = SessionRepositoryImpl(
@@ -124,9 +132,9 @@ void main() {
   group('SessionRepositoryImpl.loadSession', () {
     test('returns null when access token is missing', () async {
       final storage = _MockFlutterSecureStorage();
-      when(
-        () => storage.readAll(),
-      ).thenAnswer((_) async => {'refresh_token': 'refresh', 'expires_in': '900'});
+      when(() => storage.readAll()).thenAnswer(
+        (_) async => {'refresh_token': 'refresh', 'expires_in': '900'},
+      );
 
       final repository = SessionRepositoryImpl(
         cachedUserStore: _FakeCachedUserStore(),
@@ -139,9 +147,9 @@ void main() {
 
     test('returns null when refresh token is missing', () async {
       final storage = _MockFlutterSecureStorage();
-      when(
-        () => storage.readAll(),
-      ).thenAnswer((_) async => {'access_token': 'access', 'expires_in': '900'});
+      when(() => storage.readAll()).thenAnswer(
+        (_) async => {'access_token': 'access', 'expires_in': '900'},
+      );
 
       final repository = SessionRepositoryImpl(
         cachedUserStore: _FakeCachedUserStore(),
@@ -154,9 +162,7 @@ void main() {
 
     test('returns null when expiry is missing or invalid', () async {
       final storage = _MockFlutterSecureStorage();
-      when(
-        () => storage.readAll(),
-      ).thenAnswer(
+      when(() => storage.readAll()).thenAnswer(
         (_) async => {
           'access_token': 'access',
           'refresh_token': 'refresh',
@@ -228,7 +234,9 @@ void main() {
   group('SessionRepositoryImpl.clearSession', () {
     test('clears secure tokens and cached user store', () async {
       final storage = _MockFlutterSecureStorage();
-      when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
+      when(
+        () => storage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
 
       final cachedUserStore = _FakeCachedUserStore();
       await cachedUserStore.write(
@@ -251,4 +259,3 @@ void main() {
     });
   });
 }
-

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 
 part 'user_local_model.freezed.dart';
 
@@ -54,10 +55,8 @@ abstract class UserLocalModel with _$UserLocalModel {
     return UserEntity(
       id: id!,
       email: email!,
-      firstName: firstName,
-      lastName: lastName,
-      emailVerified: emailVerified,
-      createdAt: createdAt,
+      emailVerified: emailVerified ?? false,
+      profile: UserProfileEntity(givenName: firstName, familyName: lastName),
     );
   }
 }
@@ -66,9 +65,9 @@ extension UserEntityLocalX on UserEntity {
   UserLocalModel toLocalModel() => UserLocalModel(
     id: id,
     email: email,
-    firstName: firstName,
-    lastName: lastName,
+    firstName: profile.givenName,
+    lastName: profile.familyName,
     emailVerified: emailVerified,
-    createdAt: createdAt,
+    createdAt: null,
   );
 }

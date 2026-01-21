@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
@@ -110,8 +111,7 @@ void main() {
         user: UserEntity(
           id: 'u1',
           email: 'user@example.com',
-          firstName: 'Jane',
-          lastName: 'Doe',
+          profile: UserProfileEntity(givenName: 'Jane', familyName: 'Doe'),
         ),
       );
       when(() => registerUser(any())).thenAnswer((_) async => right(session));

@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/utilities/jwt_utils.dart';
-import 'package:mobile_core_kit/features/user/data/model/remote/user_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_user_model.dart';
 
 part 'auth_result_model.freezed.dart';
 part 'auth_result_model.g.dart';
@@ -14,7 +14,7 @@ part 'auth_result_model.g.dart';
 @freezed
 abstract class AuthResultModel with _$AuthResultModel {
   const factory AuthResultModel({
-    required UserModel user,
+    required AuthUserModel user,
     required String accessToken,
     required String refreshToken,
   }) = _AuthResultModel;
@@ -26,10 +26,8 @@ abstract class AuthResultModel with _$AuthResultModel {
 }
 
 extension AuthResultModelX on AuthResultModel {
-  AuthSessionEntity toSessionEntity() => AuthSessionEntity(
-    tokens: toTokensEntity(),
-    user: user.toEntity(),
-  );
+  AuthSessionEntity toSessionEntity() =>
+      AuthSessionEntity(tokens: toTokensEntity(), user: user.toEntity());
 
   AuthTokensEntity toTokensEntity() {
     final expiry = JwtUtils.tryComputeExpiry(accessToken);

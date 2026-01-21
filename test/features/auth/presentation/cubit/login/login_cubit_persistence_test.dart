@@ -90,7 +90,9 @@ void main() {
           value: any<String?>(named: 'value'),
         ),
       ).thenAnswer((_) async {});
-      when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
+      when(
+        () => storage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
 
       final cachedUserStore = _FakeCachedUserStore();
       final sessionRepo = SessionRepositoryImpl(
@@ -130,4 +132,3 @@ void main() {
     });
   });
 }
-

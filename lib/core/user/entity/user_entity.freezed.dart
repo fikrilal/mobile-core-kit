@@ -14,7 +14,22 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserEntity {
 
- String get id; String get email; String? get firstName; String? get lastName; bool? get emailVerified; String? get createdAt;
+ String get id; String get email;/// Whether the user's email address has been verified.
+///
+/// Backend source: `AuthUserDto.emailVerified`, `MeDto.emailVerified`.
+ bool get emailVerified;/// Authorization roles for the current user (RBAC).
+///
+/// Backend source: `MeDto.roles`.
+ List<String> get roles;/// Linked authentication methods on this account.
+///
+/// Backend source: `MeDto.authMethods` and (optionally) `AuthUserDto.authMethods`.
+ List<String> get authMethods;/// User profile information (`/v1/me.profile`).
+///
+/// This may be incomplete for newly registered users (progressive profiling).
+ UserProfileEntity get profile;/// When present, the account is scheduled for deletion.
+///
+/// Backend source: `MeDto.accountDeletion`.
+ AccountDeletionEntity? get accountDeletion;
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +40,16 @@ $UserEntityCopyWith<UserEntity> get copyWith => _$UserEntityCopyWithImpl<UserEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other.roles, roles)&&const DeepCollectionEquality().equals(other.authMethods, authMethods)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.accountDeletion, accountDeletion) || other.accountDeletion == accountDeletion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,emailVerified,const DeepCollectionEquality().hash(roles),const DeepCollectionEquality().hash(authMethods),profile,accountDeletion);
 
 @override
 String toString() {
-  return 'UserEntity(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
+  return 'UserEntity(id: $id, email: $email, emailVerified: $emailVerified, roles: $roles, authMethods: $authMethods, profile: $profile, accountDeletion: $accountDeletion)';
 }
 
 
@@ -45,11 +60,11 @@ abstract mixin class $UserEntityCopyWith<$Res>  {
   factory $UserEntityCopyWith(UserEntity value, $Res Function(UserEntity) _then) = _$UserEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
+ String id, String email, bool emailVerified, List<String> roles, List<String> authMethods, UserProfileEntity profile, AccountDeletionEntity? accountDeletion
 });
 
 
-
+$UserProfileEntityCopyWith<$Res> get profile;$AccountDeletionEntityCopyWith<$Res>? get accountDeletion;
 
 }
 /// @nodoc
@@ -62,18 +77,40 @@ class _$UserEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? emailVerified = null,Object? roles = null,Object? authMethods = null,Object? profile = null,Object? accountDeletion = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
+as bool,roles: null == roles ? _self.roles : roles // ignore: cast_nullable_to_non_nullable
+as List<String>,authMethods: null == authMethods ? _self.authMethods : authMethods // ignore: cast_nullable_to_non_nullable
+as List<String>,profile: null == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as UserProfileEntity,accountDeletion: freezed == accountDeletion ? _self.accountDeletion : accountDeletion // ignore: cast_nullable_to_non_nullable
+as AccountDeletionEntity?,
   ));
 }
+/// Create a copy of UserEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserProfileEntityCopyWith<$Res> get profile {
+  
+  return $UserProfileEntityCopyWith<$Res>(_self.profile, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
+}/// Create a copy of UserEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AccountDeletionEntityCopyWith<$Res>? get accountDeletion {
+    if (_self.accountDeletion == null) {
+    return null;
+  }
 
+  return $AccountDeletionEntityCopyWith<$Res>(_self.accountDeletion!, (value) {
+    return _then(_self.copyWith(accountDeletion: value));
+  });
+}
 }
 
 
@@ -155,10 +192,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  bool emailVerified,  List<String> roles,  List<String> authMethods,  UserProfileEntity profile,  AccountDeletionEntity? accountDeletion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserEntity() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.roles,_that.authMethods,_that.profile,_that.accountDeletion);case _:
   return orElse();
 
 }
@@ -176,10 +213,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  bool emailVerified,  List<String> roles,  List<String> authMethods,  UserProfileEntity profile,  AccountDeletionEntity? accountDeletion)  $default,) {final _that = this;
 switch (_that) {
 case _UserEntity():
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.roles,_that.authMethods,_that.profile,_that.accountDeletion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +233,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  bool emailVerified,  List<String> roles,  List<String> authMethods,  UserProfileEntity profile,  AccountDeletionEntity? accountDeletion)?  $default,) {final _that = this;
 switch (_that) {
 case _UserEntity() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.roles,_that.authMethods,_that.profile,_that.accountDeletion);case _:
   return null;
 
 }
@@ -211,15 +248,49 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 
 
 class _UserEntity implements UserEntity {
-  const _UserEntity({required this.id, required this.email, this.firstName, this.lastName, this.emailVerified, this.createdAt});
+  const _UserEntity({required this.id, required this.email, this.emailVerified = false, final  List<String> roles = const <String>[], final  List<String> authMethods = const <String>[], this.profile = const UserProfileEntity(), this.accountDeletion}): _roles = roles,_authMethods = authMethods;
   
 
 @override final  String id;
 @override final  String email;
-@override final  String? firstName;
-@override final  String? lastName;
-@override final  bool? emailVerified;
-@override final  String? createdAt;
+/// Whether the user's email address has been verified.
+///
+/// Backend source: `AuthUserDto.emailVerified`, `MeDto.emailVerified`.
+@override@JsonKey() final  bool emailVerified;
+/// Authorization roles for the current user (RBAC).
+///
+/// Backend source: `MeDto.roles`.
+ final  List<String> _roles;
+/// Authorization roles for the current user (RBAC).
+///
+/// Backend source: `MeDto.roles`.
+@override@JsonKey() List<String> get roles {
+  if (_roles is EqualUnmodifiableListView) return _roles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_roles);
+}
+
+/// Linked authentication methods on this account.
+///
+/// Backend source: `MeDto.authMethods` and (optionally) `AuthUserDto.authMethods`.
+ final  List<String> _authMethods;
+/// Linked authentication methods on this account.
+///
+/// Backend source: `MeDto.authMethods` and (optionally) `AuthUserDto.authMethods`.
+@override@JsonKey() List<String> get authMethods {
+  if (_authMethods is EqualUnmodifiableListView) return _authMethods;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_authMethods);
+}
+
+/// User profile information (`/v1/me.profile`).
+///
+/// This may be incomplete for newly registered users (progressive profiling).
+@override@JsonKey() final  UserProfileEntity profile;
+/// When present, the account is scheduled for deletion.
+///
+/// Backend source: `MeDto.accountDeletion`.
+@override final  AccountDeletionEntity? accountDeletion;
 
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +302,16 @@ _$UserEntityCopyWith<_UserEntity> get copyWith => __$UserEntityCopyWithImpl<_Use
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other._roles, _roles)&&const DeepCollectionEquality().equals(other._authMethods, _authMethods)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.accountDeletion, accountDeletion) || other.accountDeletion == accountDeletion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,emailVerified,const DeepCollectionEquality().hash(_roles),const DeepCollectionEquality().hash(_authMethods),profile,accountDeletion);
 
 @override
 String toString() {
-  return 'UserEntity(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
+  return 'UserEntity(id: $id, email: $email, emailVerified: $emailVerified, roles: $roles, authMethods: $authMethods, profile: $profile, accountDeletion: $accountDeletion)';
 }
 
 
@@ -251,11 +322,11 @@ abstract mixin class _$UserEntityCopyWith<$Res> implements $UserEntityCopyWith<$
   factory _$UserEntityCopyWith(_UserEntity value, $Res Function(_UserEntity) _then) = __$UserEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
+ String id, String email, bool emailVerified, List<String> roles, List<String> authMethods, UserProfileEntity profile, AccountDeletionEntity? accountDeletion
 });
 
 
-
+@override $UserProfileEntityCopyWith<$Res> get profile;@override $AccountDeletionEntityCopyWith<$Res>? get accountDeletion;
 
 }
 /// @nodoc
@@ -268,19 +339,41 @@ class __$UserEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? emailVerified = null,Object? roles = null,Object? authMethods = null,Object? profile = null,Object? accountDeletion = freezed,}) {
   return _then(_UserEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
+as bool,roles: null == roles ? _self._roles : roles // ignore: cast_nullable_to_non_nullable
+as List<String>,authMethods: null == authMethods ? _self._authMethods : authMethods // ignore: cast_nullable_to_non_nullable
+as List<String>,profile: null == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as UserProfileEntity,accountDeletion: freezed == accountDeletion ? _self.accountDeletion : accountDeletion // ignore: cast_nullable_to_non_nullable
+as AccountDeletionEntity?,
   ));
 }
 
+/// Create a copy of UserEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserProfileEntityCopyWith<$Res> get profile {
+  
+  return $UserProfileEntityCopyWith<$Res>(_self.profile, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
+}/// Create a copy of UserEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AccountDeletionEntityCopyWith<$Res>? get accountDeletion {
+    if (_self.accountDeletion == null) {
+    return null;
+  }
 
+  return $AccountDeletionEntityCopyWith<$Res>(_self.accountDeletion!, (value) {
+    return _then(_self.copyWith(accountDeletion: value));
+  });
+}
 }
 
 // dart format on

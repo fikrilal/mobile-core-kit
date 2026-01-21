@@ -47,8 +47,7 @@ class AuthModule {
 
     if (!getIt.isRegistered<SessionRepository>()) {
       getIt.registerLazySingleton<SessionRepository>(
-        () =>
-            SessionRepositoryImpl(cachedUserStore: getIt<CachedUserStore>()),
+        () => SessionRepositoryImpl(cachedUserStore: getIt<CachedUserStore>()),
       );
     }
 
