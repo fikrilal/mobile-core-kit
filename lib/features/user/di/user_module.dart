@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -15,6 +16,7 @@ import 'package:mobile_core_kit/features/user/data/repository/user_repository_im
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -59,6 +61,16 @@ class UserModule {
     if (!getIt.isRegistered<PatchMeProfileUseCase>()) {
       getIt.registerFactory<PatchMeProfileUseCase>(
         () => PatchMeProfileUseCase(getIt<UserRepository>()),
+      );
+    }
+
+    // Presentation
+    if (!getIt.isRegistered<CompleteProfileCubit>()) {
+      getIt.registerFactory<CompleteProfileCubit>(
+        () => CompleteProfileCubit(
+          getIt<PatchMeProfileUseCase>(),
+          getIt<SessionManager>(),
+        ),
       );
     }
 

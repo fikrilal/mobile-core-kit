@@ -8,12 +8,16 @@ import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
+import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,6 +28,13 @@ class _MockConnectivityService extends Mock implements ConnectivityService {}
 class _MockSessionManager extends Mock implements SessionManager {}
 
 class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
+
+class _StartupHarness {
+  _StartupHarness(this.controller, this.sessionNotifier);
+
+  final AppStartupController controller;
+  final ValueNotifier<AuthSessionEntity?> sessionNotifier;
+}
 
 AppStartupController _startupNotReady() {
   final appLaunch = _MockAppLaunchService();
@@ -57,6 +68,51 @@ AppStartupController _startupNotReady() {
   });
 
   return controller;
+}
+
+Future<_StartupHarness> _startupHarness({
+  required bool shouldShowOnboarding,
+  required bool isAuthenticated,
+  AuthSessionEntity? session,
+}) async {
+  final appLaunch = _MockAppLaunchService();
+  when(
+    () => appLaunch.shouldShowOnboarding(),
+  ).thenAnswer((_) async => shouldShowOnboarding);
+
+  final connectivity = _MockConnectivityService();
+  when(
+    () => connectivity.networkStatusStream,
+  ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
+
+  final sessionNotifier = ValueNotifier<AuthSessionEntity?>(session);
+  final sessionManager = _MockSessionManager();
+  when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
+  when(() => sessionManager.init()).thenAnswer((_) async {});
+  when(
+    () => sessionManager.restoreCachedUserIfNeeded(),
+  ).thenAnswer((_) async {});
+  when(() => sessionManager.isAuthPending).thenReturn(false);
+  when(() => sessionManager.isAuthenticated).thenReturn(isAuthenticated);
+
+  final currentUserFetcher = _MockCurrentUserFetcher();
+
+  final controller = AppStartupController(
+    appLaunch: appLaunch,
+    connectivity: connectivity,
+    sessionManager: sessionManager,
+    currentUserFetcher: currentUserFetcher,
+    sessionInitTimeout: const Duration(milliseconds: 10),
+    onboardingReadTimeout: const Duration(milliseconds: 10),
+  );
+
+  await controller.initialize();
+  addTearDown(() {
+    controller.dispose();
+    sessionNotifier.dispose();
+  });
+
+  return _StartupHarness(controller, sessionNotifier);
 }
 
 Future<AppStartupController> _startup({
@@ -229,6 +285,70 @@ void main() {
       );
 
       expect(redirect, AppRoutes.root);
+      expect(deepLinks.pendingLocation, isNull);
+    });
+  });
+
+  group('appRedirectUri (profile completion)', () {
+    test('redirects to complete profile and preserves pending deep link', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            roles: ['USER'],
+            authMethods: ['PASSWORD'],
+            profile: UserProfileEntity(),
+          ),
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('/profile'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, UserRoutes.completeProfile);
+      expect(deepLinks.pendingLocation, '/profile');
+
+      // Once the profile is complete, allow resuming the pending location.
+      startup.sessionNotifier.value = const AuthSessionEntity(
+        tokens: AuthTokensEntity(
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+        ),
+        user: UserEntity(
+          id: 'u1',
+          email: 'user@example.com',
+          roles: ['USER'],
+          authMethods: ['PASSWORD'],
+          profile: UserProfileEntity(givenName: 'Dante', familyName: 'Alighieri'),
+        ),
+      );
+
+      final resume = appRedirectUri(
+        Uri.parse(UserRoutes.completeProfile),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(resume, '/profile');
       expect(deepLinks.pendingLocation, isNull);
     });
   });

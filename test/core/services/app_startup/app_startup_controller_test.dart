@@ -9,6 +9,7 @@ import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
 import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
@@ -29,6 +30,13 @@ void main() {
       const UserEntity(id: 'id', email: 'email@example.com'),
     );
   });
+
+  const tokens = AuthTokensEntity(
+    accessToken: 'access',
+    refreshToken: 'refresh',
+    tokenType: 'Bearer',
+    expiresIn: 3600,
+  );
 
   group('AppStartupController.initialize', () {
     test('does not block on restoring cached user', () async {
@@ -191,6 +199,7 @@ void main() {
       ).thenAnswer((_) => networkController.stream);
 
       final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+      sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
       final sessionManager = _MockSessionManager();
       when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
       when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -240,6 +249,7 @@ void main() {
         ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -265,6 +275,16 @@ void main() {
 
         await controller.initialize();
 
+        // Simulate cached user restore: user becomes available and fully
+        // hydrated (roles populated), so hydration should not run.
+        sessionNotifier.value = const AuthSessionEntity(
+          tokens: tokens,
+          user: UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            roles: ['USER'],
+          ),
+        );
         isAuthPending = false;
         restoreCompleter.complete();
 
@@ -291,6 +311,7 @@ void main() {
         ).thenAnswer((_) => networkController.stream);
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -321,10 +342,6 @@ void main() {
         );
 
         await controller.initialize();
-
-        // Flip to auth pending after startup so the auto-hydration path doesn't
-        // interfere with this connectivity-driven test.
-        isAuthPending = true;
 
         networkController.add(NetworkStatus.online);
         await Future<void>.delayed(Duration.zero);
@@ -359,6 +376,7 @@ void main() {
       ).thenAnswer((_) => networkController.stream);
 
       final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+      sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
       final sessionManager = _MockSessionManager();
       when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
       when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -388,7 +406,6 @@ void main() {
       );
 
       await controller.initialize();
-      isAuthPending = true;
 
       networkController.add(NetworkStatus.online);
       await Future<void>.delayed(Duration.zero);
@@ -424,6 +441,7 @@ void main() {
         ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -478,6 +496,7 @@ void main() {
         ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.init()).thenAnswer((_) async {});
@@ -540,6 +559,7 @@ void main() {
         ).thenAnswer((_) => const Stream<NetworkStatus>.empty());
 
         final sessionNotifier = ValueNotifier<AuthSessionEntity?>(null);
+        sessionNotifier.value = const AuthSessionEntity(tokens: tokens);
         final sessionManager = _MockSessionManager();
         when(() => sessionManager.sessionNotifier).thenReturn(sessionNotifier);
         when(() => sessionManager.init()).thenAnswer((_) async {});

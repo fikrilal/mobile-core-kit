@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+// ignore_for_file: invalid_annotation_target
+
 part 'patch_me_request_model.freezed.dart';
 part 'patch_me_request_model.g.dart';
 

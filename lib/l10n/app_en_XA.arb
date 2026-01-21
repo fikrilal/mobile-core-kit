@@ -243,6 +243,14 @@
   "@onboardingSemanticContinue": {
     "description": "Accessibility label for continuing from onboarding."
   },
+  "profileCompleteTitle": "⟪Çǿḿρŀḗŧḗ ẏǿüŗ ρŗǿƒīŀḗ⟫",
+  "@profileCompleteTitle": {
+    "description": "Title shown on the required profile completion screen."
+  },
+  "profileCompleteBody": "⟪Åḓḓ ẏǿüŗ ñåḿḗ ŧǿ ρḗŗşǿñåŀīşḗ ẏǿüŗ ḗẋρḗŗīḗñçḗ.⟫",
+  "@profileCompleteBody": {
+    "description": "Body copy shown on the required profile completion screen."
+  },
   "profileYourAccountHeading": "⟪Ẏǿüŗ åççǿüñŧ⟫",
   "@profileYourAccountHeading": {
     "description": "Profile screen heading for the account section."

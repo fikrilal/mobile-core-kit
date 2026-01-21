@@ -280,6 +280,15 @@ class _FakeUserRepository implements UserRepository {
   Future<Either<AuthFailure, UserEntity>> getMe() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
+
+  @override
+  Future<Either<AuthFailure, UserEntity>> patchMeProfile({
+    required String givenName,
+    String? familyName,
+    String? displayName,
+  }) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
 }
 
 SessionFailure _toSessionFailure(AuthFailure failure) {

@@ -19,6 +19,7 @@ import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes_list.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/shell/app_shell_page.dart';
+import 'package:mobile_core_kit/navigation/user/user_routes_list.dart';
 
 /// Builds the global [GoRouter] used by the app.
 ///
@@ -74,6 +75,7 @@ GoRouter createRouter() {
       if (BuildConfig.env == BuildEnv.dev) ...devToolsRoutes,
       ...authRoutes,
       ...onboardingRoutes,
+      ...userRoutes,
     ],
   );
 }

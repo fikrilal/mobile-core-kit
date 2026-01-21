@@ -8,6 +8,7 @@ import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.da
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 enum AppStartupStatus { idle, initializing, ready }
@@ -72,6 +73,32 @@ class AppStartupController extends ChangeNotifier {
 
   bool get isAuthenticated => _sessionManager.isAuthenticated;
   bool get isAuthPending => _sessionManager.isAuthPending;
+  UserEntity? get user => _sessionManager.sessionNotifier.value?.user;
+
+  /// Whether the app should fetch `GET /v1/me` to hydrate user data.
+  ///
+  /// The template treats `MeDto.roles` as a hydration marker:
+  /// - Auth responses (`AuthUserDto`) omit roles, so an auth-derived user will
+  ///   typically have `roles = []`.
+  /// - `/v1/me` always returns roles (and other profile fields).
+  bool get needsUserHydration {
+    final session = _sessionManager.sessionNotifier.value;
+    if (session == null) return false;
+    final u = session.user;
+    if (u == null) return true;
+    return u.roles.isEmpty;
+  }
+
+  /// Whether the user must complete required profile fields before proceeding.
+  ///
+  /// This only becomes `true` once the user has been hydrated from `/v1/me`.
+  bool get needsProfileCompletion {
+    final u = user;
+    if (u == null) return false;
+    if (u.roles.isEmpty) return false;
+    final given = u.profile.givenName?.trim();
+    return given == null || given.isEmpty;
+  }
 
   Future<void> initialize() async {
     if (_status == AppStartupStatus.ready) return;
@@ -163,7 +190,7 @@ class AppStartupController extends ChangeNotifier {
 
   void _maybeHydrateUser({bool force = false}) {
     if (_shouldShowOnboarding ?? true) return;
-    if (!_sessionManager.isAuthPending) return;
+    if (!needsUserHydration) return;
     if (_isHydratingUser) return;
 
     final now = DateTime.now();

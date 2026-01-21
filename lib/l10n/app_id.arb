@@ -243,6 +243,14 @@
   "@onboardingSemanticContinue": {
     "description": "Accessibility label for continuing from onboarding."
   },
+  "profileCompleteTitle": "Lengkapi profil Anda",
+  "@profileCompleteTitle": {
+    "description": "Title shown on the required profile completion screen."
+  },
+  "profileCompleteBody": "Tambahkan nama Anda untuk mempersonalisasi pengalaman.",
+  "@profileCompleteBody": {
+    "description": "Body copy shown on the required profile completion screen."
+  },
   "profileYourAccountHeading": "Akun Anda",
   "@profileYourAccountHeading": {
     "description": "Profile screen heading for the account section."

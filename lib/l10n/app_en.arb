@@ -243,6 +243,14 @@
   "@onboardingSemanticContinue": {
     "description": "Accessibility label for continuing from onboarding."
   },
+  "profileCompleteTitle": "Complete your profile",
+  "@profileCompleteTitle": {
+    "description": "Title shown on the required profile completion screen."
+  },
+  "profileCompleteBody": "Add your name to personalize your experience.",
+  "@profileCompleteBody": {
+    "description": "Body copy shown on the required profile completion screen."
+  },
   "profileYourAccountHeading": "Your account",
   "@profileYourAccountHeading": {
     "description": "Profile screen heading for the account section."
