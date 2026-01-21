@@ -13,7 +13,7 @@ abstract class AuthSessionEntity with _$AuthSessionEntity {
     /// User can be null when restoring a session from tokens only.
     ///
     /// On app start, the app may restore tokens from secure storage and then
-    /// hydrate the user via `GET /v1/users/me`.
+    /// hydrate the user via `GET /v1/me`.
     UserEntity? user,
   }) = _AuthSessionEntity;
 }

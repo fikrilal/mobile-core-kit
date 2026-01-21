@@ -12,7 +12,7 @@ sealed class AuthFailure with _$AuthFailure {
 
   /// Session is missing/expired or the user is not authenticated.
   ///
-  /// Use this for protected endpoints that return 401 (e.g. `GET /users/me`),
+  /// Use this for protected endpoints that return 401 (e.g. `GET /v1/me`),
   /// not for login failures (use [invalidCredentials] instead).
   const factory AuthFailure.unauthenticated() = _UnauthenticatedFailure;
   const factory AuthFailure.emailTaken() = _EmailTakenFailure;
