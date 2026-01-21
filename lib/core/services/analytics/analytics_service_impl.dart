@@ -1,9 +1,9 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import '../../configs/app_config.dart';
-import '../../configs/build_config.dart';
-import '../../utilities/log_utils.dart';
-import 'analytics_events.dart';
-import 'analytics_service.dart';
+import 'package:mobile_core_kit/core/configs/app_config.dart';
+import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_events.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 /// Low-level analytics implementation backed by Firebase Analytics.
 ///

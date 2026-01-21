@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../../configs/build_config.dart';
-import 'net_log_mode.dart';
+import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/network/logging/net_log_mode.dart';
 
 /// Configuration for network logging behavior.
 ///

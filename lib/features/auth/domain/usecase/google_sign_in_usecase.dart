@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
-import '../entity/auth_session_entity.dart';
-import '../failure/auth_failure.dart';
-import '../repository/auth_repository.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 
 class GoogleSignInUseCase {
   final AuthRepository _repository;

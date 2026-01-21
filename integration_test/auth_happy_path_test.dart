@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
@@ -17,25 +16,26 @@ import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/session/token_refresher.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
@@ -51,20 +51,20 @@ void main() {
     final userRepo = _FakeUserRepository();
     final analytics = AnalyticsTracker(_NoopAnalyticsService());
 
-    final refreshUsecase = RefreshTokenUsecase(authRepo);
+    final tokenRefresher = _AuthRepositoryTokenRefresher(authRepo);
     final events = AppEventBus();
     final sessionManager = SessionManager(
       sessionRepo,
-      refreshUsecase: refreshUsecase,
+      tokenRefresher: tokenRefresher,
       events: events,
     );
 
-    final getMe = GetMeUseCase(userRepo);
+    final currentUserFetcher = _UserRepositoryCurrentUserFetcher(userRepo);
     final startup = AppStartupController(
       appLaunch: appLaunch,
       connectivity: connectivity,
       sessionManager: sessionManager,
-      getMe: getMe,
+      currentUserFetcher: currentUserFetcher,
       sessionInitTimeout: const Duration(milliseconds: 50),
       onboardingReadTimeout: const Duration(milliseconds: 50),
     );
@@ -305,5 +305,43 @@ class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, UserEntity>> getMe() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+}
+
+SessionFailure _toSessionFailure(AuthFailure failure) {
+  return failure.maybeWhen(
+    network: () => const SessionFailure.network(),
+    unauthenticated: () => const SessionFailure.unauthenticated(),
+    tooManyRequests: () => const SessionFailure.tooManyRequests(),
+    serverError: (message) => SessionFailure.serverError(message),
+    orElse: () => const SessionFailure.unexpected(),
+  );
+}
+
+class _AuthRepositoryTokenRefresher implements TokenRefresher {
+  _AuthRepositoryTokenRefresher(this._repository);
+
+  final AuthRepository _repository;
+
+  @override
+  Future<Either<SessionFailure, AuthTokensEntity>> refresh(
+    String refreshToken,
+  ) async {
+    final result = await _repository.refreshToken(
+      RefreshRequestEntity(refreshToken: refreshToken),
+    );
+    return result.mapLeft(_toSessionFailure);
+  }
+}
+
+class _UserRepositoryCurrentUserFetcher implements CurrentUserFetcher {
+  _UserRepositoryCurrentUserFetcher(this._repository);
+
+  final UserRepository _repository;
+
+  @override
+  Future<Either<SessionFailure, UserEntity>> fetch() async {
+    final result = await _repository.getMe();
+    return result.mapLeft(_toSessionFailure);
   }
 }

@@ -1,9 +1,8 @@
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_localizer.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-
-import '../../domain/failure/auth_failure.dart';
-import '../cubit/logout/logout_state.dart';
 
 /// User-facing localization for the auth feature.
 ///
@@ -34,5 +33,7 @@ String messageForAuthFieldError(ValidationError error, AppLocalizations l10n) {
 }
 
 String messageForLogoutFailure(LogoutFailure failure, AppLocalizations l10n) {
-  return switch (failure) { LogoutFailure.failed => l10n.authErrorsLogoutFailed };
+  return switch (failure) {
+    LogoutFailure.failed => l10n.authErrorsLogoutFailed,
+  };
 }

@@ -79,6 +79,7 @@ dev_dependencies:
     path: packages/mobile_core_kit_lints
   fake_async: ^1.3.3
   mocktail: ^1.0.4
+  sqflite_common_ffi: ^2.4.0+2
   build_runner: ^2.10.4
   freezed: ^3.2.3
   json_serializable: ^6.11.2
@@ -127,11 +128,14 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
   fonts:
-    - family: InterTight
+    - family: Inter
       fonts:
-        - asset: assets/fonts/InterTight-VariableFont_wght.ttf
-        - asset: assets/fonts/InterTight-Italic-VariableFont_wght.ttf
+        - asset: assets/fonts/Inter-VariableFont_opsz_wght.ttf
+        - asset: assets/fonts/Inter-Italic-VariableFont_opsz_wght.ttf
           style: italic
+    - family: SpaceGrotesk
+      fonts:
+        - asset: assets/fonts/SpaceGrotesk-VariableFont_wght.ttf
 
 flutter_native_splash:
   color: "#FFFFFF"

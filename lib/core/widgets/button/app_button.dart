@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_styles.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_variants.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
-import '../common/app_haptic_feedback.dart';
-import 'button_variants.dart';
-import 'button_styles.dart';
 
 class AppButton extends StatelessWidget {
   // Core functionality

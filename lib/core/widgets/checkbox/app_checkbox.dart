@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../theme/system/state_opacities.dart';
-import '../common/app_haptic_feedback.dart';
-import 'checkbox_variants.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/widgets/checkbox/checkbox_variants.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
 
 class AppCheckbox extends StatelessWidget {
   /// The current value of the checkbox

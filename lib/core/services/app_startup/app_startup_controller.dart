@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-
-import '../app_launch/app_launch_service.dart';
-import '../connectivity/connectivity_service.dart';
-import '../connectivity/network_status.dart';
-import '../startup_metrics/startup_metrics.dart';
-import '../../session/session_manager.dart';
-import '../../../features/user/domain/usecase/get_me_usecase.dart';
-import '../../../features/auth/domain/failure/auth_failure.dart';
-import '../../utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
+import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
+import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 enum AppStartupStatus { idle, initializing, ready }
 
@@ -18,7 +17,7 @@ class AppStartupController extends ChangeNotifier {
     required AppLaunchService appLaunch,
     required ConnectivityService connectivity,
     required SessionManager sessionManager,
-    required GetMeUseCase getMe,
+    required CurrentUserFetcher currentUserFetcher,
     Duration sessionInitTimeout = const Duration(seconds: 5),
     Duration onboardingReadTimeout = const Duration(seconds: 2),
   }) : _appLaunch = appLaunch,
@@ -26,7 +25,7 @@ class AppStartupController extends ChangeNotifier {
        _sessionManager = sessionManager,
        _sessionInitTimeout = sessionInitTimeout,
        _onboardingReadTimeout = onboardingReadTimeout {
-    _getMe = getMe;
+    _currentUserFetcher = currentUserFetcher;
     _sessionListener = () {
       notifyListeners();
       _maybeHydrateUser();
@@ -34,8 +33,14 @@ class AppStartupController extends ChangeNotifier {
     _sessionManager.sessionNotifier.addListener(_sessionListener);
 
     _connectivitySub = _connectivity.networkStatusStream.listen((status) {
+      final wasOffline = _lastNetworkStatus == NetworkStatus.offline;
+      _lastNetworkStatus = status;
+
       if (status == NetworkStatus.online) {
-        _maybeHydrateUser(force: true);
+        // If connectivity flaps and emits repeated `online` values, apply the
+        // cooldown to avoid request spam. Only bypass the cooldown when we
+        // observed an offline -> online transition.
+        _maybeHydrateUser(force: wasOffline);
       }
     });
   }
@@ -43,11 +48,12 @@ class AppStartupController extends ChangeNotifier {
   final AppLaunchService _appLaunch;
   final ConnectivityService _connectivity;
   final SessionManager _sessionManager;
-  late final GetMeUseCase _getMe;
+  late final CurrentUserFetcher _currentUserFetcher;
   final Duration _sessionInitTimeout;
   final Duration _onboardingReadTimeout;
   late final VoidCallback _sessionListener;
   StreamSubscription<NetworkStatus>? _connectivitySub;
+  NetworkStatus? _lastNetworkStatus;
 
   AppStartupStatus _status = AppStartupStatus.idle;
   bool? _shouldShowOnboarding;
@@ -173,15 +179,21 @@ class AppStartupController extends ChangeNotifier {
   Future<void> _hydrateUser() async {
     if (_isHydratingUser) return;
     _isHydratingUser = true;
+    final refreshTokenAtStart = _sessionManager.refreshToken;
 
     try {
-      final result = await _getMe();
+      final result = await _currentUserFetcher.fetch();
+
+      // Guard against races: if the session changed (logout, account switch,
+      // token rotation) while the request was in-flight, ignore the result.
+      if (refreshTokenAtStart == null ||
+          _sessionManager.refreshToken != refreshTokenAtStart) {
+        return;
+      }
+
       await result.match(
-        (AuthFailure failure) async {
-          final shouldLogout = failure.maybeWhen(
-            unauthenticated: () => true,
-            orElse: () => false,
-          );
+        (SessionFailure failure) async {
+          final shouldLogout = failure.isUnauthenticated;
           if (shouldLogout) {
             Log.info(
               'Hydrate user failed (unauthenticated). Clearing session.',
@@ -190,7 +202,7 @@ class AppStartupController extends ChangeNotifier {
             await _sessionManager.logout(reason: 'hydrate_unauthenticated');
           } else {
             Log.warning(
-              'Hydrate user failed (not logging out): ${failure.runtimeType}',
+              'Hydrate user failed (not logging out): ${failure.type}',
               name: 'AppStartupController',
             );
           }

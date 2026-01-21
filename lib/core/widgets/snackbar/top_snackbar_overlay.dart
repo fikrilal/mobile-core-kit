@@ -22,8 +22,8 @@ class _TopSnackBarOverlayController {
     await dismiss();
 
     final controller = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      reverseDuration: const Duration(milliseconds: 200),
+      duration: MotionDurations.long,
+      reverseDuration: MotionDurations.medium,
       vsync: overlay,
     );
     final animation = CurvedAnimation(

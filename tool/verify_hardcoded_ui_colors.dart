@@ -48,20 +48,12 @@ Future<int> main(List<String> argv) async {
   ];
 
   // Some literals are used as “no paint” sentinels and are acceptable.
-  final allowedConstants = <String>{
-    'Colors.transparent',
-  };
+  final allowedConstants = <String>{'Colors.transparent'};
 
   final banned = <_BannedPattern>[
     _BannedPattern('Color(...)', RegExp(r'\b(?:const\s+)?Color\s*\(')),
-    _BannedPattern(
-      'Color.fromARGB(...)',
-      RegExp(r'\bColor\.fromARGB\s*\('),
-    ),
-    _BannedPattern(
-      'Color.fromRGBO(...)',
-      RegExp(r'\bColor\.fromRGBO\s*\('),
-    ),
+    _BannedPattern('Color.fromARGB(...)', RegExp(r'\bColor\.fromARGB\s*\(')),
+    _BannedPattern('Color.fromRGBO(...)', RegExp(r'\bColor\.fromRGBO\s*\(')),
     _BannedPattern('Colors.*', RegExp(r'\bColors\.[A-Za-z_]\w*')),
     _BannedPattern(
       'CupertinoColors.*',
@@ -76,11 +68,7 @@ Future<int> main(List<String> argv) async {
     if (!_isIncludedPath(normalizedPath, includePrefixes)) continue;
 
     violations.addAll(
-      _scanFile(
-        file,
-        banned: banned,
-        allowedConstants: allowedConstants,
-      ),
+      _scanFile(file, banned: banned, allowedConstants: allowedConstants),
     );
   }
 

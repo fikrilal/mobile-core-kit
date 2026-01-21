@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../localization/l10n.dart';
-import '../common/app_haptic_feedback.dart';
-import 'field_styles.dart';
-import 'field_variants.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_styles.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_variants.dart';
 
 class AppTextField extends StatefulWidget {
   // Core
@@ -561,9 +562,9 @@ class _AppTextFieldState extends State<AppTextField> {
   Widget build(BuildContext context) {
     final effectiveHintText =
         widget.fieldType == FieldType.search &&
-                (widget.hintText == null || widget.hintText!.trim().isEmpty)
-            ? context.l10n.fieldSearchHint
-            : widget.hintText;
+            (widget.hintText == null || widget.hintText!.trim().isEmpty)
+        ? context.l10n.fieldSearchHint
+        : widget.hintText;
 
     final decoration = FieldStyles.getInputDecoration(
       context: context,
@@ -661,7 +662,7 @@ class _AppTextFieldState extends State<AppTextField> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.space8),
           textField,
         ],
       );

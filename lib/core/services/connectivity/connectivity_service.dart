@@ -1,4 +1,4 @@
-import 'network_status.dart';
+import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 
 /// Abstraction for connectivity so it can be mocked and swapped in tests.
 abstract class ConnectivityService {

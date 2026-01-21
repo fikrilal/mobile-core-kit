@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../tokens/type_metrics.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/type_metrics.dart';
 
 /// Paragraph widget for multi-line body text.
 ///
@@ -104,10 +104,10 @@ class Paragraph extends StatelessWidget {
   TextStyle _resolveStyle(BuildContext context) {
     final t = Theme.of(context).textTheme;
     return switch (_role) {
-      _ParagraphRole.bodyLarge => t.bodyLarge,
-      _ParagraphRole.bodyMedium => t.bodyMedium,
-      _ParagraphRole.bodySmall => t.bodySmall,
-    } ??
+          _ParagraphRole.bodyLarge => t.bodyLarge,
+          _ParagraphRole.bodyMedium => t.bodyMedium,
+          _ParagraphRole.bodySmall => t.bodySmall,
+        } ??
         const TextStyle();
   }
 

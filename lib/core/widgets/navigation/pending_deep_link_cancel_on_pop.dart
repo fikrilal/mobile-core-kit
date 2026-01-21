@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../services/deep_link/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 
 /// Clears any pending deep link intent when the user navigates back (cancels).
 ///

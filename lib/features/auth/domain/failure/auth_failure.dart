@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
 
 part 'auth_failure.freezed.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
 
 /// Policy for deriving input capabilities (touch vs pointer vs mixed).
 ///

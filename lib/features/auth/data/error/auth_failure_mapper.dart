@@ -1,7 +1,7 @@
-import '../../../../../core/network/exceptions/api_error_codes.dart';
-import '../../../../../core/network/exceptions/api_failure.dart';
-import '../../domain/failure/auth_failure.dart';
-import 'auth_error_codes.dart';
+import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
+import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
+import 'package:mobile_core_kit/features/auth/data/error/auth_error_codes.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
 /// Maps network-layer [ApiFailure] into auth-domain [AuthFailure].
 ///

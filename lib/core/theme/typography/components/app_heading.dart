@@ -104,14 +104,14 @@ class Heading extends StatelessWidget {
   TextStyle _resolveStyle(BuildContext context) {
     final t = Theme.of(context).textTheme;
     return switch (level) {
-      1 => t.displayLarge,
-      2 => t.displayMedium,
-      3 => t.displaySmall,
-      4 => t.headlineLarge,
-      5 => t.headlineMedium,
-      6 => t.headlineSmall,
-      _ => t.displayLarge,
-    } ??
+          1 => t.displayLarge,
+          2 => t.displayMedium,
+          3 => t.displaySmall,
+          4 => t.headlineLarge,
+          5 => t.headlineMedium,
+          6 => t.headlineSmall,
+          _ => t.displayLarge,
+        } ??
         const TextStyle();
   }
 }

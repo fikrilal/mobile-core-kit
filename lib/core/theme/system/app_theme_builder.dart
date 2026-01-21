@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../tokens/sizing.dart';
-import '../tokens/spacing.dart';
-import 'app_color_scheme_builder.dart';
-import 'state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/system/app_color_scheme_builder.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 
 /// Builds the app's ThemeData from derived color roles.
 ///
@@ -187,7 +186,9 @@ abstract final class AppThemeBuilder {
           return BorderSide(
             width: 2,
             color: isDisabled
-                ? scheme.onSurface.withValues(alpha: StateOpacities.disabledContent)
+                ? scheme.onSurface.withValues(
+                    alpha: StateOpacities.disabledContent,
+                  )
                 : scheme.outline,
           );
         }),
@@ -271,9 +272,7 @@ abstract final class AppThemeBuilder {
       ),
       // textTheme will be applied through AppTheme.*() which uses
       // TypographySystem.applyTypography.
-      extensions: [
-        colors.semantic,
-      ],
+      extensions: [colors.semantic],
     );
   }
 }

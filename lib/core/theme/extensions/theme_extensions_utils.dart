@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'semantic_colors.dart';
+import 'package:mobile_core_kit/core/theme/extensions/semantic_colors.dart';
 
 extension ThemeColorAccess on BuildContext {
   // Semantic status colors (non-M3)
@@ -27,6 +27,7 @@ extension ThemeRoleColors on BuildContext {
   Color get bgSurface => cs.surface;
   Color get bgSurfaceInverse => cs.inverseSurface;
   Color get bgContainer => cs.surfaceContainer;
+  Color get bgContainerLowest => cs.surfaceContainerLowest;
   Color get bgContainerLow => cs.surfaceContainerLow;
   Color get bgContainerHigh => cs.surfaceContainerHigh;
   Color get bgContainerHighest => cs.surfaceContainerHighest;

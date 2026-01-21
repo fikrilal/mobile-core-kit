@@ -1,4 +1,4 @@
-import '../../validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
 
 class ApiResponse<T> {
   final String status; // "success" | "error"

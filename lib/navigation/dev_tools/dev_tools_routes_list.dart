@@ -1,11 +1,10 @@
 import 'package:go_router/go_router.dart';
-
-import '../../core/dev_tools/theme/theme_roles_showcase_screen.dart';
-import '../../core/dev_tools/widget_showcases/widget_showcases_screen.dart';
-import '../../core/widgets/button/button_showcase_screen.dart';
-import '../../core/widgets/field/field_showcase_screen.dart';
-import '../../core/theme/typography/showcase/typography_showcase_screen.dart';
-import 'dev_tools_routes.dart';
+import 'package:mobile_core_kit/core/dev_tools/theme/theme_roles_showcase_screen.dart';
+import 'package:mobile_core_kit/core/dev_tools/widget_showcases/widget_showcases_screen.dart';
+import 'package:mobile_core_kit/core/theme/typography/showcase/typography_showcase_screen.dart';
+import 'package:mobile_core_kit/core/widgets/button/button_showcase_screen.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_showcase_screen.dart';
+import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 
 final List<GoRoute> devToolsRoutes = [
   GoRoute(

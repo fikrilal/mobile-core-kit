@@ -19,7 +19,10 @@ void main() {
         expect(theme.cardTheme.color, scheme.surfaceContainerLow);
 
         expect(theme.dialogTheme.backgroundColor, scheme.surfaceContainerHigh);
-        expect(theme.bottomSheetTheme.backgroundColor, scheme.surfaceContainerHigh);
+        expect(
+          theme.bottomSheetTheme.backgroundColor,
+          scheme.surfaceContainerHigh,
+        );
         expect(
           theme.bottomSheetTheme.modalBackgroundColor,
           scheme.surfaceContainerHigh,
@@ -31,23 +34,39 @@ void main() {
         expect(theme.appBarTheme.foregroundColor, scheme.onSurface);
         expect(theme.appBarTheme.surfaceTintColor, scheme.surfaceTint);
 
-        expect(theme.navigationBarTheme.backgroundColor, scheme.surfaceContainer);
-        expect(theme.navigationBarTheme.indicatorColor, scheme.primaryContainer);
+        expect(
+          theme.navigationBarTheme.backgroundColor,
+          scheme.surfaceContainer,
+        );
+        expect(
+          theme.navigationBarTheme.indicatorColor,
+          scheme.primaryContainer,
+        );
 
-        final navSelectedIcon =
-            theme.navigationBarTheme.iconTheme?.resolve({WidgetState.selected});
-        final navUnselectedIcon = theme.navigationBarTheme.iconTheme?.resolve({});
+        final navSelectedIcon = theme.navigationBarTheme.iconTheme?.resolve({
+          WidgetState.selected,
+        });
+        final navUnselectedIcon = theme.navigationBarTheme.iconTheme?.resolve(
+          {},
+        );
         expect(navSelectedIcon?.color, scheme.onPrimaryContainer);
         expect(navUnselectedIcon?.color, scheme.onSurfaceVariant);
 
-        final navSelectedLabel =
-            theme.navigationBarTheme.labelTextStyle?.resolve({WidgetState.selected});
-        final navUnselectedLabel = theme.navigationBarTheme.labelTextStyle?.resolve({});
+        final navSelectedLabel = theme.navigationBarTheme.labelTextStyle
+            ?.resolve({WidgetState.selected});
+        final navUnselectedLabel = theme.navigationBarTheme.labelTextStyle
+            ?.resolve({});
         expect(navSelectedLabel?.color, scheme.onSurface);
         expect(navUnselectedLabel?.color, scheme.onSurfaceVariant);
 
-        expect(theme.navigationRailTheme.backgroundColor, scheme.surfaceContainer);
-        expect(theme.navigationRailTheme.indicatorColor, scheme.primaryContainer);
+        expect(
+          theme.navigationRailTheme.backgroundColor,
+          scheme.surfaceContainer,
+        );
+        expect(
+          theme.navigationRailTheme.indicatorColor,
+          scheme.primaryContainer,
+        );
         expect(
           theme.navigationRailTheme.selectedIconTheme?.color,
           scheme.onPrimaryContainer,
@@ -61,18 +80,22 @@ void main() {
           theme.navigationDrawerTheme.backgroundColor,
           scheme.surfaceContainer,
         );
-        expect(theme.navigationDrawerTheme.indicatorColor, scheme.primaryContainer);
+        expect(
+          theme.navigationDrawerTheme.indicatorColor,
+          scheme.primaryContainer,
+        );
 
-        final drawerSelectedIcon =
-            theme.navigationDrawerTheme.iconTheme?.resolve({WidgetState.selected});
-        final drawerUnselectedIcon = theme.navigationDrawerTheme.iconTheme?.resolve({});
+        final drawerSelectedIcon = theme.navigationDrawerTheme.iconTheme
+            ?.resolve({WidgetState.selected});
+        final drawerUnselectedIcon = theme.navigationDrawerTheme.iconTheme
+            ?.resolve({});
         expect(drawerSelectedIcon?.color, scheme.onPrimaryContainer);
         expect(drawerUnselectedIcon?.color, scheme.onSurfaceVariant);
 
-        final drawerSelectedLabel =
-            theme.navigationDrawerTheme.labelTextStyle?.resolve({WidgetState.selected});
-        final drawerUnselectedLabel =
-            theme.navigationDrawerTheme.labelTextStyle?.resolve({});
+        final drawerSelectedLabel = theme.navigationDrawerTheme.labelTextStyle
+            ?.resolve({WidgetState.selected});
+        final drawerUnselectedLabel = theme.navigationDrawerTheme.labelTextStyle
+            ?.resolve({});
         expect(drawerSelectedLabel?.color, scheme.onSurface);
         expect(drawerUnselectedLabel?.color, scheme.onSurfaceVariant);
 

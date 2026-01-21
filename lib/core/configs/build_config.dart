@@ -1,4 +1,4 @@
-import 'api_host.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
 part 'build_config_values.dart';
 
 enum BuildEnv { dev, stage, prod }

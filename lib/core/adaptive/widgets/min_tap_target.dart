@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 
 /// Ensures a minimum interactive size for touch targets.
 ///

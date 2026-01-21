@@ -1,12 +1,12 @@
 import 'package:fpdart/fpdart.dart';
-import '../entity/login_request_entity.dart';
-import '../entity/auth_session_entity.dart';
-import '../failure/auth_failure.dart';
-import '../repository/auth_repository.dart';
-import '../value/email_address.dart';
-import '../value/login_password.dart';
-import '../value/value_failure.dart';
-import '../../../../core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 class LoginUserUseCase {
   final AuthRepository _repository;
@@ -24,11 +24,7 @@ class LoginUserUseCase {
 
     email.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'email',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'email', message: '', code: f.code),
       ),
       (_) {},
     );
@@ -38,11 +34,7 @@ class LoginUserUseCase {
     final password = LoginPassword.create(request.password);
     password.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'password',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'password', message: '', code: f.code),
       ),
       (value) => normalizedPassword = value.value,
     );

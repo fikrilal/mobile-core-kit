@@ -1,43 +1,37 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
-
-import '../../../core/events/app_event_bus.dart';
-import '../../../core/database/app_database.dart';
-import '../../../core/network/api/api_helper.dart';
-import '../../../core/session/session_manager.dart';
-import '../../../core/session/session_repository.dart';
-import '../../../core/session/session_repository_impl.dart';
-import '../../../core/services/analytics/analytics_tracker.dart';
-import '../../../core/services/federated_auth/google_federated_auth_service.dart';
-import '../data/datasource/local/dao/user_dao.dart';
-import '../data/datasource/local/auth_local_datasource.dart';
-import '../data/datasource/remote/auth_remote_datasource.dart';
-import '../data/repository/auth_repository_impl.dart';
-import '../domain/repository/auth_repository.dart';
-import '../domain/usecase/google_sign_in_usecase.dart';
-import '../domain/usecase/login_user_usecase.dart';
-import '../domain/usecase/logout_flow_usecase.dart';
-import '../domain/usecase/logout_remote_usecase.dart';
-import '../domain/usecase/refresh_token_usecase.dart';
-import '../domain/usecase/register_user_usecase.dart';
-import '../presentation/cubit/logout/logout_cubit.dart';
-import '../presentation/cubit/login/login_cubit.dart';
-import '../presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
+import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/session/session_failure.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
+import 'package:mobile_core_kit/core/session/token_refresher.dart';
+import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
+import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
 
 class AuthModule {
   static void register(GetIt getIt) {
-    // Database table registration
-    AppDatabase.registerOnCreate((db) async => UserDao(db).createTable());
-
     // Data sources
     if (!getIt.isRegistered<AuthRemoteDataSource>()) {
       getIt.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSource(getIt<ApiHelper>()),
-      );
-    }
-
-    if (!getIt.isRegistered<AuthLocalDataSource>()) {
-      getIt.registerLazySingleton<AuthLocalDataSource>(
-        () => const AuthLocalDataSource(),
       );
     }
 
@@ -53,7 +47,8 @@ class AuthModule {
 
     if (!getIt.isRegistered<SessionRepository>()) {
       getIt.registerLazySingleton<SessionRepository>(
-        () => SessionRepositoryImpl(local: getIt<AuthLocalDataSource>()),
+        () =>
+            SessionRepositoryImpl(cachedUserStore: getIt<CachedUserStore>()),
       );
     }
 
@@ -67,6 +62,12 @@ class AuthModule {
     if (!getIt.isRegistered<RefreshTokenUsecase>()) {
       getIt.registerFactory<RefreshTokenUsecase>(
         () => RefreshTokenUsecase(getIt<AuthRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<TokenRefresher>()) {
+      getIt.registerFactory<TokenRefresher>(
+        () => _AuthRepositoryTokenRefresher(getIt<AuthRepository>()),
       );
     }
 
@@ -93,7 +94,7 @@ class AuthModule {
       getIt.registerLazySingleton<SessionManager>(
         () => SessionManager(
           getIt<SessionRepository>(),
-          refreshUsecase: getIt<RefreshTokenUsecase>(),
+          tokenRefresher: getIt<TokenRefresher>(),
           events: getIt<AppEventBus>(),
         ),
         dispose: (manager) => manager.dispose(),
@@ -136,5 +137,37 @@ class AuthModule {
         () => LogoutCubit(getIt<LogoutFlowUseCase>()),
       );
     }
+  }
+}
+
+class _AuthRepositoryTokenRefresher implements TokenRefresher {
+  _AuthRepositoryTokenRefresher(this._repository);
+
+  final AuthRepository _repository;
+
+  @override
+  Future<Either<SessionFailure, AuthTokensEntity>> refresh(
+    String refreshToken,
+  ) async {
+    final result = await _repository.refreshToken(
+      RefreshRequestEntity(refreshToken: refreshToken),
+    );
+    return result.mapLeft(_toSessionFailure);
+  }
+
+  SessionFailure _toSessionFailure(AuthFailure failure) {
+    return failure.when(
+      network: () => const SessionFailure.network(),
+      cancelled: () => const SessionFailure.unexpected(),
+      unauthenticated: () => const SessionFailure.unauthenticated(),
+      emailTaken: () => const SessionFailure.unexpected(),
+      emailNotVerified: () => const SessionFailure.unexpected(),
+      validation: (_) => const SessionFailure.unexpected(),
+      invalidCredentials: () => const SessionFailure.unexpected(),
+      tooManyRequests: () => const SessionFailure.tooManyRequests(),
+      userSuspended: () => const SessionFailure.unexpected(),
+      serverError: (message) => SessionFailure.serverError(message),
+      unexpected: (message) => SessionFailure.unexpected(message),
+    );
   }
 }

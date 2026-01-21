@@ -18,7 +18,7 @@ class ShimmerBox extends StatelessWidget {
     this.baseColor,
     this.highlightColor,
     this.direction = ShimmerDirection.ltr,
-    this.period = const Duration(milliseconds: 1500),
+    this.period = MotionDurations.shimmerPeriod,
   });
 
   @override
@@ -56,7 +56,7 @@ class ShimmerCircle extends StatelessWidget {
     this.baseColor,
     this.highlightColor,
     this.direction = ShimmerDirection.ltr,
-    this.period = const Duration(milliseconds: 1500),
+    this.period = MotionDurations.shimmerPeriod,
   });
 
   @override
@@ -93,7 +93,7 @@ class ShimmerText extends StatelessWidget {
     this.baseColor,
     this.highlightColor,
     this.direction = ShimmerDirection.ltr,
-    this.period = const Duration(milliseconds: 1500),
+    this.period = MotionDurations.shimmerPeriod,
   });
 
   @override

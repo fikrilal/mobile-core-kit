@@ -226,19 +226,10 @@ class _RoleSwatch extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 const SizedBox(height: 6),
-                AppText.bodySmall(
-                  '${_hex(bg)}  /  ${_hex(fg)}',
-                  color: fg,
-                ),
+                AppText.bodySmall('${_hex(bg)}  /  ${_hex(fg)}', color: fg),
                 const SizedBox(height: 10),
-                AppText.bodyMedium(
-                  'Aa 123 — sample text',
-                  color: fg,
-                ),
-                if (sample != null) ...[
-                  const SizedBox(height: 10),
-                  sample!,
-                ],
+                AppText.bodyMedium('Aa 123 — sample text', color: fg),
+                if (sample != null) ...[const SizedBox(height: 10), sample!],
               ],
             ),
           ),
@@ -266,10 +257,7 @@ class _BorderSample extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: AppText.bodySmall(
-          label,
-          color: context.textPrimary,
-        ),
+        child: AppText.bodySmall(label, color: context.textPrimary),
       ),
     );
   }

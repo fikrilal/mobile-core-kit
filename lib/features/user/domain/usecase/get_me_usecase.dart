@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
 
-import '../../../auth/domain/failure/auth_failure.dart';
-import '../entity/user_entity.dart';
-import '../repository/user_repository.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 
 class GetMeUseCase {
   final UserRepository _repository;

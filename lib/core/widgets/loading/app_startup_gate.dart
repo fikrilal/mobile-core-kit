@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import '../../localization/l10n.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/system/motion_durations.dart';
-import '../../theme/typography/components/text.dart';
-import 'app_dot_wave.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/widgets/loading/app_dot_wave.dart';
 
 typedef AppStartupGateIsReady = bool Function();
 
@@ -317,11 +316,7 @@ class AppStartupBackdrop extends StatelessWidget {
 /// Keep this simple and brand-neutral by default. Apps can override it via
 /// [AppStartupGate.overlayBuilder] (e.g. show a logo instead of text).
 class AppStartupOverlay extends StatelessWidget {
-  const AppStartupOverlay({
-    super.key,
-    this.title,
-    this.semanticLabel,
-  });
+  const AppStartupOverlay({super.key, this.title, this.semanticLabel});
 
   final String? title;
   final String? semanticLabel;
@@ -331,8 +326,8 @@ class AppStartupOverlay extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final effectiveSemanticLabel =
         semanticLabel == null || semanticLabel!.trim().isEmpty
-            ? context.l10n.commonStartingUp
-            : semanticLabel!;
+        ? context.l10n.commonStartingUp
+        : semanticLabel!;
 
     return Semantics(
       label: effectiveSemanticLabel,

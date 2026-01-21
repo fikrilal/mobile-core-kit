@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/services/app_launch/app_launch_service.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
@@ -8,13 +7,14 @@ import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockAppLaunchService extends Mock implements AppLaunchService {}
@@ -23,7 +23,7 @@ class _MockConnectivityService extends Mock implements ConnectivityService {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
-class _MockGetMeUseCase extends Mock implements GetMeUseCase {}
+class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
 
 AppStartupController _startupNotReady() {
   final appLaunch = _MockAppLaunchService();
@@ -42,13 +42,13 @@ AppStartupController _startupNotReady() {
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(false);
 
-  final getMe = _MockGetMeUseCase();
+  final currentUserFetcher = _MockCurrentUserFetcher();
 
   final controller = AppStartupController(
     appLaunch: appLaunch,
     connectivity: connectivity,
     sessionManager: sessionManager,
-    getMe: getMe,
+    currentUserFetcher: currentUserFetcher,
   );
 
   addTearDown(() {
@@ -83,13 +83,13 @@ Future<AppStartupController> _startup({
   when(() => sessionManager.isAuthPending).thenReturn(false);
   when(() => sessionManager.isAuthenticated).thenReturn(isAuthenticated);
 
-  final getMe = _MockGetMeUseCase();
+  final currentUserFetcher = _MockCurrentUserFetcher();
 
   final controller = AppStartupController(
     appLaunch: appLaunch,
     connectivity: connectivity,
     sessionManager: sessionManager,
-    getMe: getMe,
+    currentUserFetcher: currentUserFetcher,
     sessionInitTimeout: const Duration(milliseconds: 10),
     onboardingReadTimeout: const Duration(milliseconds: 10),
   );

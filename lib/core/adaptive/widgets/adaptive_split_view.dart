@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../adaptive_context.dart';
-import '../size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// List/detail split view that adapts between one-pane and two-pane layouts.
 ///

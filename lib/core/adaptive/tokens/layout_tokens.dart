@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../adaptive_spec.dart';
-import '../size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// Layout token table derived from size classes and input mode.
 ///

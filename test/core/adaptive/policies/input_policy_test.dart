@@ -8,7 +8,9 @@ void main() {
   group('InputPolicy.standard', () {
     const policy = InputPolicy.standard();
 
-    testWidgets('derives mode from platform and hover capability', (tester) async {
+    testWidgets('derives mode from platform and hover capability', (
+      tester,
+    ) async {
       await tester.pumpWidget(const SizedBox.shrink());
 
       final hoverEnabled =

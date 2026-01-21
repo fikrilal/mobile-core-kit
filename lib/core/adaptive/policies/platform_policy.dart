@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
 
 /// Policy for deriving [PlatformSpec].
 ///

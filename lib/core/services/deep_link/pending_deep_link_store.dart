@@ -1,6 +1,5 @@
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_intent.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'deep_link_intent.dart';
 
 /// Persists a single pending deep link intent with expiry.
 ///

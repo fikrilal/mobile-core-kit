@@ -24,20 +24,42 @@ rules:
       - from: lib/core/di/**
         allow:
           - lib/features/*/di/**
-          # TEMP (to be removed by TODO above): move registration to user_module.dart.
-          - lib/features/user/domain/usecase/**
 
-      # Allowed: session infrastructure depends on auth feature (temporary).
-      - from: lib/core/session/**
+  # Clean Architecture boundaries inside features.
+  - id: feature_domain_no_data_or_presentation
+    reason: Domain must not depend on data/presentation (or navigation).
+    from: lib/features/*/domain/**
+    deny:
+      - lib/features/*/data/**
+      - lib/features/*/presentation/**
+      - lib/navigation/**
+
+  - id: feature_presentation_no_data
+    reason: Presentation must not depend on data directly; go through usecases/repos.
+    from: lib/features/*/presentation/**
+    deny:
+      - lib/features/*/data/**
+
+  - id: feature_data_no_presentation_or_navigation
+    reason: Data must not depend on presentation or navigation.
+    from: lib/features/*/data/**
+    deny:
+      - lib/features/*/presentation/**
+      - lib/navigation/**
+
+  - id: navigation_no_feature_domain_or_data
+    reason: Navigation composes UI only; it must not reach into feature domain/data.
+    from: lib/navigation/**
+    deny:
+      - lib/features/*/domain/**
+      - lib/features/*/data/**
+
+  - id: feature_di_only_composed_from_core_di
+    reason: Feature DI modules should only be imported by core DI composition.
+    from: lib/**
+    deny:
+      - lib/features/*/di/**
+    exceptions:
+      - from: lib/core/di/**
         allow:
-          - lib/features/auth/**
-          # TEMP (to be removed by TODO above): move shared user/session type out of features/user.
-          - lib/features/user/domain/entity/**
-
-      # TEMP: app startup currently coordinates auth+user hydration from core.
-      # TODO(core-boundary): move AppStartupController to an app-layer module or a core-owned abstraction.
-      - from: lib/core/services/app_startup/**
-        allow:
-          - lib/features/user/domain/usecase/**
-          - lib/features/auth/domain/failure/**
-
+          - lib/features/*/di/**

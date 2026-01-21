@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/network/interceptors/auth_token_interceptor.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mocktail/mocktail.dart';
 
 class _MockSessionManager extends Mock implements SessionManager {}
 

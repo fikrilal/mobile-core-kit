@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import '../adaptive_spec.dart';
-import '../size_classes.dart';
-import '../tokens/navigation_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/navigation_tokens.dart';
 
 /// Policy for deriving shell navigation behavior from size classes.
 ///

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../adaptive/adaptive_context.dart';
-import '../../extensions/theme_extensions_utils.dart';
-import '../components/text.dart';
-import '../tokens/type_weights.dart';
-import '../tokens/typefaces.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/type_weights.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/typefaces.dart';
 
 /// A comprehensive showcase screen for testing all typography styles and font weights.
 ///

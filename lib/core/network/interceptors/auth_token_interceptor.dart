@@ -1,9 +1,10 @@
 import 'dart:async';
+
 import 'package:dio/dio.dart' as dio;
-import '../../di/service_locator.dart';
-import '../../session/session_manager.dart';
-import '../../utilities/log_utils.dart';
-import '../api/api_client.dart';
+import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/network/api/api_client.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class AuthTokenInterceptor extends dio.Interceptor {
   AuthTokenInterceptor();

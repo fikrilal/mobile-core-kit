@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../../utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class ErrorInterceptor extends Interceptor {
   @override

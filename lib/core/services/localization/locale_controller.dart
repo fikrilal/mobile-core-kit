@@ -1,9 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-
-import '../../configs/build_config.dart';
-import '../../utilities/log_utils.dart';
-import 'locale_store.dart';
 
 /// In-memory locale override with SharedPreferences persistence.
 ///
@@ -21,8 +20,10 @@ class LocaleController extends ValueNotifier<Locale?> {
 
   Locale? get localeOverride => value;
 
-  List<Locale> get supportedLocales =>
-      supportedLocalesForEnv(env: _env, allSupportedLocales: AppLocalizations.supportedLocales);
+  List<Locale> get supportedLocales => supportedLocalesForEnv(
+    env: _env,
+    allSupportedLocales: AppLocalizations.supportedLocales,
+  );
 
   /// Loads the persisted locale override (idempotent).
   Future<void> load() {
@@ -140,4 +141,5 @@ List<Locale> supportedLocalesForEnv({
 }
 
 bool _isSameLocale(Locale a, Locale b) =>
-    a.languageCode == b.languageCode && (a.countryCode ?? '') == (b.countryCode ?? '');
+    a.languageCode == b.languageCode &&
+    (a.countryCode ?? '') == (b.countryCode ?? '');

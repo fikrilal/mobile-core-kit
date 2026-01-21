@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
-import '../../configs/api_host.dart';
-import '../../configs/app_config.dart';
-import '../interceptors/auth_token_interceptor.dart';
-import '../interceptors/base_url_interceptor.dart';
-import '../interceptors/error_interceptor.dart';
-import '../interceptors/header_interceptor.dart';
-import '../interceptors/logging_interceptor.dart';
-import '../logging/net_log_mode.dart';
-import '../logging/network_log_config.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/configs/app_config.dart';
+import 'package:mobile_core_kit/core/network/interceptors/auth_token_interceptor.dart';
+import 'package:mobile_core_kit/core/network/interceptors/base_url_interceptor.dart';
+import 'package:mobile_core_kit/core/network/interceptors/error_interceptor.dart';
+import 'package:mobile_core_kit/core/network/interceptors/header_interceptor.dart';
+import 'package:mobile_core_kit/core/network/interceptors/logging_interceptor.dart';
+import 'package:mobile_core_kit/core/network/logging/net_log_mode.dart';
+import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();

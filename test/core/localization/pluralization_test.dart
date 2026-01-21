@@ -29,4 +29,3 @@ void main() {
     expect(_stripDigits(one), _stripDigits(other));
   });
 }
-

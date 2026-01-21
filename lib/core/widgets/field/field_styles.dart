@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 
-import 'field_variants.dart';
+import 'package:mobile_core_kit/core/widgets/field/field_variants.dart';
 
 class FieldStyles {
   FieldStyles._();
@@ -14,24 +16,33 @@ class FieldStyles {
       height: 36.0,
       iconSize: 16.0,
       borderRadius: 8.0,
-      contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.space12,
+        vertical: AppSpacing.space8,
+      ),
     ),
     FieldSize.medium: FieldSizeConfig(
       height: 44.0,
       iconSize: 20.0,
       borderRadius: 10.0,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
     ),
     FieldSize.large: FieldSizeConfig(
       height: 52.0,
       iconSize: 24.0,
       borderRadius: 10.0,
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.space20,
+        vertical: AppSpacing.space16,
+      ),
     ),
   };
 
   // Animation configurations
-  static const Duration animationDuration = Duration(milliseconds: 200);
+  static const Duration animationDuration = MotionDurations.medium;
   static const Curve animationCurve = Curves.easeInOut;
 
   // Get size configuration for a field size
@@ -217,10 +228,7 @@ class FieldStyles {
         );
 
       case FieldVariant.filled:
-        final baseBorderSide = BorderSide(
-          color: getBorderColor(),
-          width: 1.0,
-        );
+        final baseBorderSide = BorderSide(color: getBorderColor(), width: 1.0);
 
         return decoration.copyWith(
           border: OutlineInputBorder(
@@ -266,7 +274,9 @@ class FieldStyles {
 
       switch (state) {
         case FieldState.disabled:
-          return colorScheme.onSurface.withValues(alpha: 0.38);
+          return colorScheme.onSurface.withValues(
+            alpha: StateOpacities.disabledContent,
+          );
         case FieldState.error:
           return colorScheme.error;
         case FieldState.enabled:

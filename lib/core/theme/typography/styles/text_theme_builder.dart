@@ -1,10 +1,10 @@
 // lib/core/theme/typography/styles/text_theme_builder.dart
 
 import 'package:flutter/material.dart';
-import '../tokens/type_metrics.dart';
-import '../tokens/type_scale.dart';
-import '../tokens/type_weights.dart';
-import '../tokens/typefaces.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/type_metrics.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/type_scale.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/type_weights.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/typefaces.dart';
 
 /// Builds the app `TextTheme` for use with Flutter's theming system.
 ///

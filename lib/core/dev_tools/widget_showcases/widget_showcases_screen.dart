@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
+import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
+import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
-import '../../adaptive/tokens/surface_tokens.dart';
-import '../../adaptive/widgets/app_page_container.dart';
-import '../../widgets/badge/app_icon_badge.dart';
-import '../../widgets/list/app_list_tile.dart';
-import '../../../navigation/dev_tools/dev_tools_routes.dart';
 
 /// Screen listing all available widget showcases for developers.
 class WidgetShowcasesScreen extends StatelessWidget {

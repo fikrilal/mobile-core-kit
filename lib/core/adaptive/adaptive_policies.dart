@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'policies/modal_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
 
 /// Policy container for adaptive behaviors that are configured at the app root.
 ///
@@ -20,7 +20,8 @@ class AdaptivePolicies extends InheritedWidget {
 
   /// Returns the nearest policies and registers a dependency.
   static AdaptivePolicies of(BuildContext context) {
-    final widget = context.dependOnInheritedWidgetOfExactType<AdaptivePolicies>();
+    final widget = context
+        .dependOnInheritedWidgetOfExactType<AdaptivePolicies>();
     assert(widget != null, 'No AdaptiveScope found in context');
     return widget!;
   }
@@ -28,7 +29,9 @@ class AdaptivePolicies extends InheritedWidget {
   /// Returns the nearest policies without registering a dependency.
   static AdaptivePolicies read(BuildContext context) {
     final widget =
-        context.getElementForInheritedWidgetOfExactType<AdaptivePolicies>()?.widget
+        context
+                .getElementForInheritedWidgetOfExactType<AdaptivePolicies>()
+                ?.widget
             as AdaptivePolicies?;
     assert(widget != null, 'No AdaptiveScope found in context');
     return widget!;

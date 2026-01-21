@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-import 'core/di/service_locator.dart';
-import 'core/adaptive/adaptive_scope.dart';
-import 'core/adaptive/policies/navigation_policy.dart';
-import 'core/adaptive/policies/text_scale_policy.dart';
-import 'core/localization/l10n.dart';
-import 'core/services/app_startup/app_startup_controller.dart';
-import 'core/services/appearance/theme_mode_controller.dart';
-import 'core/services/localization/locale_controller.dart';
-import 'core/theme/theme.dart';
 import 'package:go_router/go_router.dart';
-import 'core/services/navigation/navigation_service.dart';
-import 'core/widgets/loading/loading.dart';
-import 'core/widgets/listener/app_event_listener.dart';
-import 'navigation/app_router.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
+import 'package:mobile_core_kit/core/theme/theme.dart';
+import 'package:mobile_core_kit/core/widgets/listener/app_event_listener.dart';
+import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
+import 'package:mobile_core_kit/navigation/app_router.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -84,7 +84,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Locale? _resolveLocale(List<Locale>? deviceLocales, Iterable<Locale> supported) {
+Locale? _resolveLocale(
+  List<Locale>? deviceLocales,
+  Iterable<Locale> supported,
+) {
   if (deviceLocales == null || deviceLocales.isEmpty) {
     return _fallbackLocale(supported);
   }
@@ -116,4 +119,5 @@ Locale? _fallbackLocale(Iterable<Locale> supported) {
 }
 
 bool _isSameLocale(Locale a, Locale b) =>
-    a.languageCode == b.languageCode && (a.countryCode ?? '') == (b.countryCode ?? '');
+    a.languageCode == b.languageCode &&
+    (a.countryCode ?? '') == (b.countryCode ?? '');

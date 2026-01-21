@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/extensions/theme_extensions_utils.dart';
-import '../../theme/tokens/spacing.dart';
-import '../avatar/avatar_size.dart';
+import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/avatar_size.dart';
 
 /// Circular icon container with an optional notification dot (top-right).
 ///
@@ -48,9 +48,9 @@ class AppIconBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final diameter = size.diameter;
 
-    final effectiveBackground = backgroundColor ?? context.bgContainerLow;
+    final effectiveBackground = backgroundColor ?? Colors.transparent;
     final effectiveBorder =
-        borderColor ?? (onTap != null ? context.border : context.borderSubtle);
+        borderColor ?? (onTap != null ? context.border : context.borderMuted);
     final effectiveIconColor = iconColor ?? context.textPrimary;
     final effectiveIconSize = iconSize ?? (diameter * 0.48).clamp(16.0, 28.0);
 

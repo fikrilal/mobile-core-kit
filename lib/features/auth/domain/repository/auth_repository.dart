@@ -1,11 +1,11 @@
-import '../entity/login_request_entity.dart';
-import '../entity/refresh_request_entity.dart';
-import '../entity/auth_session_entity.dart';
-import '../entity/auth_tokens_entity.dart';
-import '../entity/register_request_entity.dart';
 import 'package:fpdart/fpdart.dart';
-import '../failure/auth_failure.dart';
-import '../entity/logout_request_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
 abstract class AuthRepository {
   Future<Either<AuthFailure, AuthSessionEntity>> register(

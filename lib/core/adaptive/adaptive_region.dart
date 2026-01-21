@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_scope.dart';
-import 'adaptive_spec.dart';
-import 'adaptive_spec_builder.dart';
-import 'size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec_builder.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// Local adaptive scope for nested constraints.
 ///

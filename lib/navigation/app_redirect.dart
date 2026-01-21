@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/services/app_startup/app_startup_controller.dart';
-import '../core/services/deep_link/deep_link_parser.dart';
-import '../core/services/deep_link/pending_deep_link_controller.dart';
-import 'app_routes.dart';
-import 'auth/auth_routes.dart';
-import 'onboarding/onboarding_routes.dart';
+import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
+import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/navigation/app_routes.dart';
+import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
+import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
 
 /// Central navigation gate for the app.
 ///

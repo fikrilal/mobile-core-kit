@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'tokens/typefaces.dart';
-import 'styles/text_theme_builder.dart';
+import 'package:mobile_core_kit/core/theme/typography/styles/text_theme_builder.dart';
+import 'package:mobile_core_kit/core/theme/typography/tokens/typefaces.dart';
 
 /// Main entry point to the typography system.
 ///

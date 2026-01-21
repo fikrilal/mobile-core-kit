@@ -4,14 +4,18 @@ This template ships with a bundled custom font so teams can clone it and keep ty
 
 ## Current Setup
 
-- Font family: `InterTight`
+- Default font family: `Inter`
+- Additional font families:
+  - `SpaceGrotesk`
 - Assets (variable fonts):
-  - `assets/fonts/InterTight-VariableFont_wght.ttf` (upright)
-  - `assets/fonts/InterTight-Italic-VariableFont_wght.ttf` (italic)
-- License: `assets/fonts/OFL.txt` (SIL Open Font License)
+  - `assets/fonts/Inter-VariableFont_opsz_wght.ttf` (upright)
+  - `assets/fonts/Inter-Italic-VariableFont_opsz_wght.ttf` (italic)
+  - `assets/fonts/SpaceGrotesk-VariableFont_wght.ttf` (upright)
+- License: `assets/fonts/OFL.txt` (SIL Open Font License; covers Inter + Space Grotesk)
 - Registration: `pubspec.yaml` → `flutter: fonts:`
 - Default selection:
-  - `lib/core/theme/typography/typography_system.dart` → `TypographySystem.fontFamily`
+  - `lib/core/theme/typography/tokens/typefaces.dart` → `Typefaces.primary`
+  - `lib/core/theme/typography/typography_system.dart` → `TypographySystem.fontFamily` (wired to `Typefaces.primary`)
   - Theme text styles are built from that choice (see `lib/core/theme/typography/`).
 
 ## How To Change The Font
@@ -23,11 +27,26 @@ This template ships with a bundled custom font so teams can clone it and keep ty
    - Provide italic variants where available.
 
 3) Update the default font family:
-   - Edit `lib/core/theme/typography/typography_system.dart` and set `TypographySystem.fontFamily` to your new family name.
+   - Update `lib/core/theme/typography/tokens/typefaces.dart` and set `Typefaces.primary` to your new family name.
 
 4) Run:
-   - `fvm flutter pub get`
-   - `fvm flutter run`
+   - `fvm flutter pub get` (WSL: `tool/agent/flutterw pub get`)
+   - `fvm flutter run` (WSL: `tool/agent/flutterw run`)
+
+## Using Alternate Fonts in UI (AppText)
+
+Default typography uses `Typefaces.primary` (currently `Inter`).
+
+If you need a one-off font family (example: a branded heading using Space Grotesk), use `AppText.fontFamily`:
+
+```dart
+AppText.headlineMedium(
+  'Profile',
+  fontFamily: 'SpaceGrotesk',
+);
+```
+
+Guideline: keep alternate font usage **explicit and rare** (e.g., a single feature header), otherwise typography will drift across screens.
 
 ## Sizing / Performance Notes
 

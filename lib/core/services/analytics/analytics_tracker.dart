@@ -1,5 +1,5 @@
-import 'analytics_events.dart';
-import 'analytics_service.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_events.dart';
+import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
 
 /// Facade that exposes high-level, app-specific analytics events.
 ///

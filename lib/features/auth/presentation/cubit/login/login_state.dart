@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 
-import '../../../domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
 part 'login_state.freezed.dart';
 

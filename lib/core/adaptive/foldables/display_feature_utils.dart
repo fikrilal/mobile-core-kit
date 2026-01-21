@@ -6,7 +6,7 @@ import 'dart:ui' show DisplayFeature, DisplayFeatureState, Rect;
 
 import 'package:flutter/widgets.dart';
 
-import 'display_posture.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/display_posture.dart';
 
 /// Derives a coarse foldable posture from raw display features.
 DisplayPosture postureForDisplayFeatures(List<DisplayFeature> features) {

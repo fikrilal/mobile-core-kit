@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_context.dart';
-import '../adaptive_policies.dart';
-import '../policies/modal_policy.dart';
-import '../../theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_policies.dart';
+import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 
 /// Visual style variants for modal bottom sheets.
 enum AdaptiveBottomSheetStyle {
@@ -178,9 +178,9 @@ class _BottomSheetHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.onSurfaceVariant.withValues(
-      alpha: 0.35,
-    );
+    final color = Theme.of(
+      context,
+    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.35);
     return Padding(
       padding: const EdgeInsets.only(
         top: AppSpacing.space12,

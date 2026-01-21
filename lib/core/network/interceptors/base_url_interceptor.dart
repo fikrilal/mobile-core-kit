@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import '../../configs/api_host.dart';
-import '../../configs/app_config.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/configs/app_config.dart';
 
 class BaseUrlInterceptor extends Interceptor {
   @override

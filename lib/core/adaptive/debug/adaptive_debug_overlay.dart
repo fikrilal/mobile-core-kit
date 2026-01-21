@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_debug_banner.dart';
+import 'package:mobile_core_kit/core/adaptive/debug/adaptive_debug_banner.dart';
 
 /// Debug-only overlay that renders [AdaptiveDebugBanner] on top of the app.
 ///

@@ -1,16 +1,16 @@
-import '../../../../../core/configs/api_host.dart';
-import '../../../../../core/network/api/api_helper.dart';
-import '../../../../../core/network/api/api_response.dart';
-import '../../../../../core/network/api/no_data.dart';
-import '../../../../../core/network/endpoints/auth_endpoint.dart';
-import '../../../../../core/utilities/log_utils.dart';
-import '../../model/remote/login_request_model.dart';
-import '../../model/remote/auth_session_model.dart';
-import '../../model/remote/auth_tokens_model.dart';
-import '../../model/remote/logout_request_model.dart';
-import '../../model/remote/refresh_request_model.dart';
-import '../../model/remote/register_request_model.dart';
-import '../../model/remote/google_sign_in_request_model.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/network/api/no_data.dart';
+import 'package:mobile_core_kit/core/network/endpoints/auth_endpoint.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_session_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_tokens_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/google_sign_in_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._apiHelper);

@@ -1,6 +1,6 @@
-import '../../../../core/session/session_manager.dart';
-import '../entity/logout_request_entity.dart';
-import 'logout_remote_usecase.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 
 /// Orchestrates a full logout flow:
 /// 1) best-effort remote session revocation (current session)

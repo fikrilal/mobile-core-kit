@@ -1,19 +1,19 @@
-import '../../features/auth/data/datasource/local/auth_local_datasource.dart';
-import '../../features/auth/domain/entity/auth_session_entity.dart';
-import '../../features/auth/domain/entity/auth_tokens_entity.dart';
-import '../../features/user/domain/entity/user_entity.dart';
-import '../services/startup_metrics/startup_metrics.dart';
-import '../storage/secure/token_secure_storage.dart';
-import 'session_repository.dart';
+import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
+import 'package:mobile_core_kit/core/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/session/session_repository.dart';
+import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
+import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
-  final AuthLocalDataSource _local;
+  final CachedUserStore _cachedUserStore;
   final TokenSecureStorage _secure;
 
   SessionRepositoryImpl({
-    required AuthLocalDataSource local,
+    required CachedUserStore cachedUserStore,
     TokenSecureStorage? secure,
-  }) : _local = local,
+  }) : _cachedUserStore = cachedUserStore,
        _secure = secure ?? const TokenSecureStorage();
 
   @override
@@ -27,10 +27,10 @@ class SessionRepositoryImpl implements SessionRepository {
     );
     final user = session.user;
     if (user != null) {
-      await _local.cacheUserEntity(user);
+      await _cachedUserStore.write(user);
     } else {
       // Prevent stale profile data if a tokens-only session is persisted.
-      await _local.clearAll();
+      await _cachedUserStore.clear();
     }
   }
 
@@ -60,13 +60,12 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<UserEntity?> loadCachedUser() async {
-    final model = await _local.getCachedUser();
-    return model?.toEntity();
+    return _cachedUserStore.read();
   }
 
   @override
   Future<void> clearSession() async {
     await _secure.clear();
-    await _local.clearAll();
+    await _cachedUserStore.clear();
   }
 }

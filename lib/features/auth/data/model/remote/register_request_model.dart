@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 
 part 'register_request_model.freezed.dart';
 part 'register_request_model.g.dart';

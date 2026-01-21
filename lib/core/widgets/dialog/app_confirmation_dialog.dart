@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
-
-import '../../adaptive/widgets/adaptive_modal.dart';
-import '../../localization/l10n.dart';
-import '../../theme/tokens/spacing.dart';
-import '../../theme/typography/components/text.dart';
-import '../button/button.dart';
+import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/widgets/button/button.dart';
 
 enum AppConfirmationDialogVariant { standard, featured }
 
@@ -319,12 +318,11 @@ Future<bool?> showAppConfirmationDialog({
   final l10n = context.l10n;
   final effectiveConfirmLabel =
       confirmLabel == null || confirmLabel.trim().isEmpty
-          ? l10n.commonConfirm
-          : confirmLabel;
-  final effectiveCancelLabel =
-      cancelLabel == null || cancelLabel.trim().isEmpty
-          ? l10n.commonCancel
-          : cancelLabel;
+      ? l10n.commonConfirm
+      : confirmLabel;
+  final effectiveCancelLabel = cancelLabel == null || cancelLabel.trim().isEmpty
+      ? l10n.commonCancel
+      : cancelLabel;
 
   final canDismiss = isCancelEnabled && !isLoading;
   final effectiveBarrierDismissible = barrierDismissible ?? canDismiss;

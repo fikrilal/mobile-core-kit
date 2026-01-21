@@ -68,4 +68,3 @@ LayoutSpec _layout(WindowWidthClass widthClass) {
     navigation: const NavigationSpec(kind: NavigationKind.none),
   );
 }
-

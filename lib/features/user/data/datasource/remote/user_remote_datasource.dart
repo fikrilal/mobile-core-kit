@@ -1,9 +1,9 @@
-import '../../../../../core/configs/api_host.dart';
-import '../../../../../core/network/api/api_helper.dart';
-import '../../../../../core/network/api/api_response.dart';
-import '../../../../../core/network/endpoints/user_endpoint.dart';
-import '../../../../../core/utilities/log_utils.dart';
-import '../../model/remote/user_model.dart';
+import 'package:mobile_core_kit/core/configs/api_host.dart';
+import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/network/endpoints/user_endpoint.dart';
+import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/features/user/data/model/remote/user_model.dart';
 
 class UserRemoteDataSource {
   UserRemoteDataSource(this._apiHelper);

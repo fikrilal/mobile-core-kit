@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-import 'adaptive_aspect.dart';
-import 'adaptive_scope.dart';
-import 'adaptive_spec.dart';
-import 'foldables/foldable_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_aspect.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/foldables/foldable_spec.dart';
 
 /// Context accessors for the adaptive contract.
 ///

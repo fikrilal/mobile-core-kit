@@ -1,7 +1,6 @@
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-
-import 'validation_error.dart';
-import 'validation_error_codes.dart';
 
 /// Localizes a field-level [ValidationError] into user-facing copy.
 ///
@@ -31,4 +30,3 @@ String messageForValidationError(ValidationError error, AppLocalizations l10n) {
   if (error.message.isNotEmpty) return error.message;
   return l10n.errorsValidation;
 }
-

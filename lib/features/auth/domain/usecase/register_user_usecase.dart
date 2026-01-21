@@ -1,13 +1,13 @@
 import 'package:fpdart/fpdart.dart';
-import '../entity/register_request_entity.dart';
-import '../entity/auth_session_entity.dart';
-import '../repository/auth_repository.dart';
-import '../failure/auth_failure.dart';
-import '../value/email_address.dart';
-import '../value/password.dart';
-import '../value/value_failure.dart';
-import '../../../../core/validation/validation_error.dart';
-import '../value/person_name.dart';
+import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/person_name.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 class RegisterUserUseCase {
   final AuthRepository _repository;
@@ -31,11 +31,7 @@ class RegisterUserUseCase {
 
     email.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'email',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'email', message: '', code: f.code),
       ),
       (_) {},
     );
@@ -43,33 +39,21 @@ class RegisterUserUseCase {
 
     password.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'password',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'password', message: '', code: f.code),
       ),
       (value) => normalizedPassword = value.value,
     );
 
     firstName.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'firstName',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'firstName', message: '', code: f.code),
       ),
       (value) => normalizedFirstName = value.value,
     );
 
     lastName.fold(
       (f) => errors.add(
-        ValidationError(
-          field: 'lastName',
-          message: '',
-          code: f.code,
-        ),
+        ValidationError(field: 'lastName', message: '', code: f.code),
       ),
       (value) => normalizedLastName = value.value,
     );

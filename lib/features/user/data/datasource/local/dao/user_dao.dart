@@ -1,5 +1,5 @@
+import 'package:mobile_core_kit/features/user/data/model/local/user_local_model.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../../model/local/user_local_model.dart';
 
 class UserDao {
   final DatabaseExecutor _db;

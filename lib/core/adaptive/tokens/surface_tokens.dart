@@ -5,7 +5,7 @@
 // rules and other constraints that should be stable across the product.
 import 'package:flutter/foundation.dart';
 
-import '../size_classes.dart';
+import 'package:mobile_core_kit/core/adaptive/size_classes.dart';
 
 /// High-level surface categories used for max-width and layout guidance.
 enum SurfaceKind { reading, form, settings, dashboard, media, fullBleed }

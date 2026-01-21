@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/validation/validation_error_codes.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 part 'value_failure.freezed.dart';
 
 @freezed

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_context.dart';
-import '../adaptive_spec.dart';
-import '../tokens/navigation_tokens.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/adaptive/adaptive_spec.dart';
+import 'package:mobile_core_kit/core/adaptive/tokens/navigation_tokens.dart';
 
 @immutable
 class AdaptiveScaffoldDestination {

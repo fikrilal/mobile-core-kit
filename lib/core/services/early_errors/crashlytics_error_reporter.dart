@@ -1,7 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
-import 'early_error_buffer.dart';
+import 'package:mobile_core_kit/core/services/early_errors/early_error_buffer.dart';
 
 /// Reports buffered early errors to Firebase Crashlytics.
 ///
