@@ -1,10 +1,18 @@
-# Auth + User Hardening TODO (toward Current User Core Service)
+# Example — Auth + User Hardening TODO (toward Current User Core Service)
 
 **Project:** `mobile-core-kit`  
 **Date:** 2026-01-20  
-**Status:** TODO / execution plan
+**Status:** Completed (example)
+**Location:** `_WIP/examples/todo_document_example_auth_user_hardening.md`  
 
-This is the end-to-end checklist to harden **auth + user/session foundations** first, then implement the **template-standard “current user” core service** (as proposed in `_WIP/2026-01-20_current-user-service-proposal.md`).
+This file is preserved as a **worked example** of a high-signal TODO document for a multi-phase refactor/hardening effort in a template repo.
+
+This is the end-to-end checklist used to harden **auth + user/session foundations** first, then implement the **template-standard “current user” core service**.
+
+Canonical docs (post-implementation):
+
+- Session + current-user engineering docs: `docs/core/session/README.md`
+- Current user usage guide: `docs/template/current_user.md`
 
 ## Target outcomes (definition of done)
 
@@ -221,9 +229,15 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
   - [x] “loadSession returns null when any required token field is missing”
   - [x] “loadCachedUser delegates to cached user store”
   - [x] “clearSession clears secure tokens + cached user store”
-- [ ] Decide (and document) whether we support:
-  - [ ] multi-account on the same device (switch user) — if yes, add explicit “session key” concept for race guards
-  - [ ] guest mode — if yes, define whether user cache persists
+- [x] Decide (and document) whether we support:
+  - [x] multi-account on the same device (switch user): **not supported**
+    - Policy: this template assumes **one active session per device**. “Switch account” = logout → login.
+    - Guarding: session race guards use the refresh token as a practical session key (see `docs/core/session/components.md`).
+  - [x] guest mode: **supported**
+    - Policy: signed-out users can still use guest-eligible surfaces/features.
+    - Session semantics: guest mode is represented by `session == null` (signed-out).
+    - Persistence: guest mode does **not** persist user identity; cached “me” is cleared on logout/session clear.
+    - Docs: `docs/core/session/components.md`, `docs/core/session/flows.md`
 
 ### 3.2 Auth feature focus & correctness
 
@@ -263,7 +277,8 @@ Goal: provide the template-standard “read current user safely” API for UI + 
     - [x] `displayName`, `email`, `initials` helpers
     - [x] `ensureUserFresh()` and `refreshUser()` using `CurrentUserFetcher`
   - [x] Resets derived state on `SessionCleared` / `SessionExpired`
-- [ ] (Optional, recommended for scaling) Implement `UserDataSlice<T>` (defer until we have 2+ real slices).
+- [x] (Optional, recommended for scaling) `UserDataSlice<T>` is **deferred** until we have 2+ real slices.
+  - [x] Added a documentation stub for future implementation: `lib/core/services/user_context/user_data_slice.dart`
 - [x] Update Profile UI to consume `UserContextService`:
   - [x] `lib/features/profile/presentation/pages/profile_page.dart`
 - [x] Add unit tests:
@@ -281,6 +296,12 @@ Goal: provide the template-standard “read current user safely” API for UI + 
   - [x] `docs/template/README.md` (index entry)
 - [x] Add a “usage snippet” for `AppText` with alternate fonts / Space Grotesk usage:
   - [x] `docs/template/fonts.md`
+- [x] Add engineering deep-dive docs for session/current-user:
+  - [x] `docs/core/session/README.md`
+  - [x] `docs/core/session/system_tree.md`
+  - [x] `docs/core/session/components.md`
+  - [x] `docs/core/session/flows.md`
+  - [x] `docs/core/session/testing.md`
 
 ## Suggested implementation sequence (PR-sized chunks)
 

@@ -284,3 +284,17 @@ Key invariants:
 - It resets derived state when it observes `SessionCleared/SessionExpired`.
 - It guards against applying refresh results across session switches.
 
+---
+
+## Guest mode semantics (template default)
+
+This template supports **guest mode** (signed-out users can still use guest-eligible surfaces).
+
+Representation:
+
+- Guest mode is simply `SessionManager.session == null`.
+- There are no “guest tokens”; access to protected APIs will fail (and should be guarded in routing/UI).
+
+Important invariant:
+
+- Cached “me” is **cleared** on logout/session clear. Guest mode must never show a previous account’s identity.

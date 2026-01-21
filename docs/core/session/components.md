@@ -371,3 +371,47 @@ Testing helper:
 
 - `DbBasePathProvider basePathOverride` exists to avoid platform-channel directory lookups in tests.
 
+---
+
+## Product policy decisions (template defaults)
+
+This repo is a template; the “right” behavior depends on product requirements. The defaults below are explicit to prevent ambiguity.
+
+### Multi-account support: **not supported**
+
+Policy:
+
+- This template assumes **one active account per device**.
+- “Switch account” is modeled as: `logout()` → `login(newSession)`.
+
+Why:
+
+- Multi-account introduces hard problems (per-account caches, per-account DB schemas, per-account push tokens, and cross-account leakage).
+- A template should bias toward correctness and simplicity unless multi-account is a confirmed requirement.
+
+If you later add multi-account:
+
+- Introduce a first-class **session key** concept (not just “refresh token string”) and plumb it through:
+  - cached-user store keys
+  - user-scoped caches/slices
+  - hydration and refresh guards
+- Add explicit tests for “cached user must not leak across accounts”.
+
+### Guest mode: **supported**
+
+Policy:
+
+- Signed-out users can still use guest-eligible surfaces/features.
+- Guest mode is represented by `SessionManager.session == null` (signed-out).
+
+Persistence:
+
+- Guest mode does **not** persist user identity.
+- Cached “me” is cleared on any session clear (`logout`) to prevent stale identity leaks.
+
+UI semantics:
+
+- `UserContextService` exposes:
+  - `status = signedOut`
+  - `displayName/email/initials = null` unless a signed-in session exists
+- UI should treat signed-out as a first-class state (e.g., show “Sign in” CTA instead of user details).
