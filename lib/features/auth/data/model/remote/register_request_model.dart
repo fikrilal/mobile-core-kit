@@ -10,8 +10,6 @@ abstract class RegisterRequestModel with _$RegisterRequestModel {
   const factory RegisterRequestModel({
     required String email,
     required String password,
-    required String firstName,
-    required String lastName,
   }) = _RegisterRequestModel;
 
   const RegisterRequestModel._();
@@ -23,8 +21,6 @@ abstract class RegisterRequestModel with _$RegisterRequestModel {
     return RegisterRequestModel(
       email: entity.email,
       password: entity.password,
-      firstName: entity.firstName,
-      lastName: entity.lastName,
     );
   }
 }

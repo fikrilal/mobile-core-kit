@@ -17,12 +17,7 @@ class _MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const RegisterRequestEntity(
-        email: 'e',
-        password: 'password123',
-        firstName: 'First',
-        lastName: 'Last',
-      ),
+      const RegisterRequestEntity(email: 'e', password: 'password123'),
     );
   });
 
@@ -37,8 +32,6 @@ void main() {
           const RegisterRequestEntity(
             email: 'not-an-email',
             password: 'short',
-            firstName: ' ',
-            lastName: 'A',
           ),
         );
 
@@ -56,16 +49,6 @@ void main() {
                 field: 'password',
                 message: '',
                 code: ValidationErrorCodes.passwordTooShort,
-              ),
-              ValidationError(
-                field: 'firstName',
-                message: '',
-                code: ValidationErrorCodes.required,
-              ),
-              ValidationError(
-                field: 'lastName',
-                message: '',
-                code: ValidationErrorCodes.nameTooShort,
               ),
             ]),
           );
@@ -100,8 +83,6 @@ void main() {
         const RegisterRequestEntity(
           email: ' user@example.com ',
           password: ' stringstring ',
-          firstName: ' John ',
-          lastName: ' Doe ',
         ),
       );
 
@@ -112,8 +93,6 @@ void main() {
       final request = captured.single as RegisterRequestEntity;
       expect(request.email, 'user@example.com');
       expect(request.password, ' stringstring ');
-      expect(request.firstName, 'John');
-      expect(request.lastName, 'Doe');
     });
   });
 }

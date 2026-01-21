@@ -59,36 +59,6 @@ class _RegisterForm extends StatelessWidget {
                   children: [
                     const SizedBox(height: AppSpacing.space24),
                     AppTextField(
-                      fieldType: FieldType.text,
-                      labelText: context.l10n.commonFirstName,
-                      errorText: state.firstNameError == null
-                          ? null
-                          : messageForAuthFieldError(
-                              state.firstNameError!,
-                              context.l10n,
-                            ),
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.givenName],
-                      onChanged: context.read<RegisterCubit>().firstNameChanged,
-                    ),
-                    const SizedBox(height: AppSpacing.space16),
-                    AppTextField(
-                      fieldType: FieldType.text,
-                      labelText: context.l10n.commonLastName,
-                      errorText: state.lastNameError == null
-                          ? null
-                          : messageForAuthFieldError(
-                              state.lastNameError!,
-                              context.l10n,
-                            ),
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.familyName],
-                      onChanged: context.read<RegisterCubit>().lastNameChanged,
-                    ),
-                    const SizedBox(height: AppSpacing.space16),
-                    AppTextField(
                       fieldType: FieldType.email,
                       labelText: context.l10n.commonEmail,
                       errorText: state.emailError == null
