@@ -23,7 +23,7 @@ class DatabaseMigration {
 
 class AppDatabase {
   static const _dbName = 'mobile_core_kit.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
 
   /// Override used by tests to avoid platform-channel directory lookups.
   static DbBasePathProvider? basePathOverride;

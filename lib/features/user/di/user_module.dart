@@ -11,9 +11,11 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/model/local/user_local_model.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:sqflite/sqflite.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -22,6 +24,13 @@ class UserModule {
     // Database table registration (owned by the user feature).
     if (!_dbRegistered) {
       AppDatabase.registerOnCreate((db) async => UserDao(db).createTable());
+      AppDatabase.registerMigration(
+        DatabaseMigration(
+          fromVersion: 1,
+          toVersion: 2,
+          migrate: _migrateUserCacheV1ToV2,
+        ),
+      );
       _dbRegistered = true;
     }
 
@@ -60,6 +69,13 @@ class UserModule {
         () => _GetMeCurrentUserFetcher(getIt<GetMeUseCase>()),
       );
     }
+  }
+
+  static Future<void> _migrateUserCacheV1ToV2(Database db) async {
+    // This table is a cache of `/v1/me` only; we prefer a deterministic and
+    // low-risk migration strategy: drop and recreate the table.
+    await db.execute('DROP TABLE IF EXISTS ${UserLocalModel.tableName}');
+    await UserDao(db).createTable();
   }
 }
 
