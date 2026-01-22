@@ -13,4 +13,20 @@ void main() {
       'idToken': 'oidc-id-token',
     });
   });
+
+  test('toJson includes device metadata when provided', () {
+    const model = OidcExchangeRequestModel(
+      provider: 'GOOGLE',
+      idToken: 'oidc-id-token',
+      deviceId: 'device-123',
+      deviceName: 'Pixel 7',
+    );
+
+    expect(model.toJson(), <String, dynamic>{
+      'provider': 'GOOGLE',
+      'idToken': 'oidc-id-token',
+      'deviceId': 'device-123',
+      'deviceName': 'Pixel 7',
+    });
+  });
 }

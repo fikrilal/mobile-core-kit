@@ -26,6 +26,8 @@ import 'package:mobile_core_kit/core/services/deep_link/deep_link_source.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_telemetry.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_store.dart';
+import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
+import 'package:mobile_core_kit/core/services/device_identity/device_identity_service_impl.dart';
 import 'package:mobile_core_kit/core/services/early_errors/crashlytics_error_reporter.dart';
 import 'package:mobile_core_kit/core/services/early_errors/early_error_buffer.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
@@ -161,6 +163,12 @@ void registerLocator() {
   if (!locator.isRegistered<GoogleFederatedAuthService>()) {
     locator.registerLazySingleton<GoogleFederatedAuthService>(
       () => GoogleFederatedAuthServiceImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<DeviceIdentityService>()) {
+    locator.registerLazySingleton<DeviceIdentityService>(
+      () => DeviceIdentityServiceImpl(),
     );
   }
 

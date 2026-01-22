@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RegisterRequestModel {
 
- String get email; String get password;
+ String get email; String get password; String? get deviceId; String? get deviceName;
 /// Create a copy of RegisterRequestModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RegisterRequestModelCopyWith<RegisterRequestModel> get copyWith => _$RegisterRe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterRequestModel&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterRequestModel&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email,password);
+int get hashCode => Object.hash(runtimeType,email,password,deviceId,deviceName);
 
 @override
 String toString() {
-  return 'RegisterRequestModel(email: $email, password: $password)';
+  return 'RegisterRequestModel(email: $email, password: $password, deviceId: $deviceId, deviceName: $deviceName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RegisterRequestModelCopyWith<$Res>  {
   factory $RegisterRequestModelCopyWith(RegisterRequestModel value, $Res Function(RegisterRequestModel) _then) = _$RegisterRequestModelCopyWithImpl;
 @useResult
 $Res call({
- String email, String password
+ String email, String password, String? deviceId, String? deviceName
 });
 
 
@@ -65,11 +65,13 @@ class _$RegisterRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of RegisterRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,Object? deviceId = freezed,Object? deviceName = freezed,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deviceId: freezed == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String?,deviceName: freezed == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -154,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password,  String? deviceId,  String? deviceName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RegisterRequestModel() when $default != null:
-return $default(_that.email,_that.password);case _:
+return $default(_that.email,_that.password,_that.deviceId,_that.deviceName);case _:
   return orElse();
 
 }
@@ -175,10 +177,10 @@ return $default(_that.email,_that.password);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password,  String? deviceId,  String? deviceName)  $default,) {final _that = this;
 switch (_that) {
 case _RegisterRequestModel():
-return $default(_that.email,_that.password);case _:
+return $default(_that.email,_that.password,_that.deviceId,_that.deviceName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +197,10 @@ return $default(_that.email,_that.password);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password,  String? deviceId,  String? deviceName)?  $default,) {final _that = this;
 switch (_that) {
 case _RegisterRequestModel() when $default != null:
-return $default(_that.email,_that.password);case _:
+return $default(_that.email,_that.password,_that.deviceId,_that.deviceName);case _:
   return null;
 
 }
@@ -207,14 +209,16 @@ return $default(_that.email,_that.password);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(includeIfNull: false)
 class _RegisterRequestModel extends RegisterRequestModel {
-  const _RegisterRequestModel({required this.email, required this.password}): super._();
+  const _RegisterRequestModel({required this.email, required this.password, this.deviceId, this.deviceName}): super._();
   factory _RegisterRequestModel.fromJson(Map<String, dynamic> json) => _$RegisterRequestModelFromJson(json);
 
 @override final  String email;
 @override final  String password;
+@override final  String? deviceId;
+@override final  String? deviceName;
 
 /// Create a copy of RegisterRequestModel
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterRequestModel&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterRequestModel&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email,password);
+int get hashCode => Object.hash(runtimeType,email,password,deviceId,deviceName);
 
 @override
 String toString() {
-  return 'RegisterRequestModel(email: $email, password: $password)';
+  return 'RegisterRequestModel(email: $email, password: $password, deviceId: $deviceId, deviceName: $deviceName)';
 }
 
 
@@ -249,7 +253,7 @@ abstract mixin class _$RegisterRequestModelCopyWith<$Res> implements $RegisterRe
   factory _$RegisterRequestModelCopyWith(_RegisterRequestModel value, $Res Function(_RegisterRequestModel) _then) = __$RegisterRequestModelCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String password
+ String email, String password, String? deviceId, String? deviceName
 });
 
 
@@ -266,11 +270,13 @@ class __$RegisterRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of RegisterRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,Object? deviceId = freezed,Object? deviceName = freezed,}) {
   return _then(_RegisterRequestModel(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deviceId: freezed == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String?,deviceName: freezed == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

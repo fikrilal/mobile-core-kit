@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OidcExchangeRequestModel {
 
- String get provider; String get idToken;
+ String get provider; String get idToken; String? get deviceId; String? get deviceName;
 /// Create a copy of OidcExchangeRequestModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OidcExchangeRequestModelCopyWith<OidcExchangeRequestModel> get copyWith => _$Oi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OidcExchangeRequestModel&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.idToken, idToken) || other.idToken == idToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OidcExchangeRequestModel&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.idToken, idToken) || other.idToken == idToken)&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,provider,idToken);
+int get hashCode => Object.hash(runtimeType,provider,idToken,deviceId,deviceName);
 
 @override
 String toString() {
-  return 'OidcExchangeRequestModel(provider: $provider, idToken: $idToken)';
+  return 'OidcExchangeRequestModel(provider: $provider, idToken: $idToken, deviceId: $deviceId, deviceName: $deviceName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OidcExchangeRequestModelCopyWith<$Res>  {
   factory $OidcExchangeRequestModelCopyWith(OidcExchangeRequestModel value, $Res Function(OidcExchangeRequestModel) _then) = _$OidcExchangeRequestModelCopyWithImpl;
 @useResult
 $Res call({
- String provider, String idToken
+ String provider, String idToken, String? deviceId, String? deviceName
 });
 
 
@@ -65,11 +65,13 @@ class _$OidcExchangeRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of OidcExchangeRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? provider = null,Object? idToken = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? provider = null,Object? idToken = null,Object? deviceId = freezed,Object? deviceName = freezed,}) {
   return _then(_self.copyWith(
 provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
 as String,idToken: null == idToken ? _self.idToken : idToken // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deviceId: freezed == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String?,deviceName: freezed == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -154,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String provider,  String idToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String provider,  String idToken,  String? deviceId,  String? deviceName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OidcExchangeRequestModel() when $default != null:
-return $default(_that.provider,_that.idToken);case _:
+return $default(_that.provider,_that.idToken,_that.deviceId,_that.deviceName);case _:
   return orElse();
 
 }
@@ -175,10 +177,10 @@ return $default(_that.provider,_that.idToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String provider,  String idToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String provider,  String idToken,  String? deviceId,  String? deviceName)  $default,) {final _that = this;
 switch (_that) {
 case _OidcExchangeRequestModel():
-return $default(_that.provider,_that.idToken);case _:
+return $default(_that.provider,_that.idToken,_that.deviceId,_that.deviceName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +197,10 @@ return $default(_that.provider,_that.idToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String provider,  String idToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String provider,  String idToken,  String? deviceId,  String? deviceName)?  $default,) {final _that = this;
 switch (_that) {
 case _OidcExchangeRequestModel() when $default != null:
-return $default(_that.provider,_that.idToken);case _:
+return $default(_that.provider,_that.idToken,_that.deviceId,_that.deviceName);case _:
   return null;
 
 }
@@ -207,14 +209,16 @@ return $default(_that.provider,_that.idToken);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(includeIfNull: false)
 class _OidcExchangeRequestModel extends OidcExchangeRequestModel {
-  const _OidcExchangeRequestModel({required this.provider, required this.idToken}): super._();
+  const _OidcExchangeRequestModel({required this.provider, required this.idToken, this.deviceId, this.deviceName}): super._();
   factory _OidcExchangeRequestModel.fromJson(Map<String, dynamic> json) => _$OidcExchangeRequestModelFromJson(json);
 
 @override final  String provider;
 @override final  String idToken;
+@override final  String? deviceId;
+@override final  String? deviceName;
 
 /// Create a copy of OidcExchangeRequestModel
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OidcExchangeRequestModel&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.idToken, idToken) || other.idToken == idToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OidcExchangeRequestModel&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.idToken, idToken) || other.idToken == idToken)&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,provider,idToken);
+int get hashCode => Object.hash(runtimeType,provider,idToken,deviceId,deviceName);
 
 @override
 String toString() {
-  return 'OidcExchangeRequestModel(provider: $provider, idToken: $idToken)';
+  return 'OidcExchangeRequestModel(provider: $provider, idToken: $idToken, deviceId: $deviceId, deviceName: $deviceName)';
 }
 
 
@@ -249,7 +253,7 @@ abstract mixin class _$OidcExchangeRequestModelCopyWith<$Res> implements $OidcEx
   factory _$OidcExchangeRequestModelCopyWith(_OidcExchangeRequestModel value, $Res Function(_OidcExchangeRequestModel) _then) = __$OidcExchangeRequestModelCopyWithImpl;
 @override @useResult
 $Res call({
- String provider, String idToken
+ String provider, String idToken, String? deviceId, String? deviceName
 });
 
 
@@ -266,11 +270,13 @@ class __$OidcExchangeRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of OidcExchangeRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? provider = null,Object? idToken = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? provider = null,Object? idToken = null,Object? deviceId = freezed,Object? deviceName = freezed,}) {
   return _then(_OidcExchangeRequestModel(
 provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
 as String,idToken: null == idToken ? _self.idToken : idToken // ignore: cast_nullable_to_non_nullable
-as String,
+as String,deviceId: freezed == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
+as String?,deviceName: freezed == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/network/api/api_response_either.dart';
+import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
@@ -23,13 +24,18 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
   final GoogleFederatedAuthService _googleAuth;
 
-  AuthRepositoryImpl(this._remote, this._googleAuth);
+  final DeviceIdentityService _deviceIdentity;
+
+  AuthRepositoryImpl(this._remote, this._googleAuth, this._deviceIdentity);
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> register(
     RegisterRequestEntity request,
   ) async {
-    final apiRequest = RegisterRequestModel.fromEntity(request);
+    final device = await _deviceIdentity.get();
+    final apiRequest = RegisterRequestModel.fromEntity(
+      request,
+    ).copyWith(deviceId: device.id, deviceName: device.name);
 
     try {
       final apiResponse = await _remote.register(apiRequest);
@@ -53,7 +59,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<AuthFailure, AuthSessionEntity>> login(
     LoginRequestEntity request,
   ) async {
-    final apiRequest = LoginRequestModel.fromEntity(request);
+    final device = await _deviceIdentity.get();
+    final apiRequest = LoginRequestModel.fromEntity(
+      request,
+    ).copyWith(deviceId: device.id, deviceName: device.name);
 
     try {
       final apiResponse = await _remote.login(apiRequest);
@@ -111,6 +120,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final idToken = await _googleAuth.signInAndGetOidcIdToken();
       if (idToken == null) return left(const AuthFailure.cancelled());
 
+      final device = await _deviceIdentity.get();
+
       Log.debug(
         'Exchanging Google OIDC id_token (length=${idToken.length})',
         name: 'AuthRepository',
@@ -119,6 +130,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final apiRequest = OidcExchangeRequestModel(
         provider: 'GOOGLE',
         idToken: idToken,
+        deviceId: device.id,
+        deviceName: device.name,
       );
       final apiResponse = await _remote.oidcExchange(apiRequest);
       return apiResponse

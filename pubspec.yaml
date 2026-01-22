@@ -60,6 +60,7 @@ dependencies:
   shared_preferences: ^2.5.4
   app_links: ^7.0.0
   phosphor_flutter: ^2.1.0
+  device_info_plus: ^12.3.0
 
 dev_dependencies:
   flutter_test:
