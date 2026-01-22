@@ -129,7 +129,9 @@ abstract class UserLocalModel with _$UserLocalModel {
 extension UserEntityLocalX on UserEntity {
   UserLocalModel toLocalModel() {
     final rolesJson = roles.isEmpty ? null : jsonEncode(roles);
-    final authMethodsJson = authMethods.isEmpty ? null : jsonEncode(authMethods);
+    final authMethodsJson = authMethods.isEmpty
+        ? null
+        : jsonEncode(authMethods);
     return UserLocalModel(
       id: id,
       email: email,

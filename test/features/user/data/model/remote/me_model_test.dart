@@ -57,9 +57,7 @@ void main() {
         'emailVerified': true,
         'roles': ['USER'],
         'authMethods': ['PASSWORD'],
-        'profile': {
-          'givenName': 'Dante',
-        },
+        'profile': {'givenName': 'Dante'},
       };
 
       final entity = MeModel.fromJson(json).toEntity();
@@ -68,4 +66,3 @@ void main() {
     });
   });
 }
-

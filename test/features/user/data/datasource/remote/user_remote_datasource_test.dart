@@ -90,7 +90,10 @@ void main() {
 
     final response = await datasource.patchMe(
       request: const PatchMeRequestModel(
-        profile: PatchMeProfileModel(givenName: 'Dante', familyName: 'Alighieri'),
+        profile: PatchMeProfileModel(
+          givenName: 'Dante',
+          familyName: 'Alighieri',
+        ),
       ),
     );
 

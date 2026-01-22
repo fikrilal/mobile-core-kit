@@ -19,7 +19,8 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockLoginUserUseCase extends Mock implements LoginUserUseCase {}
 
-class _MockGoogleSignInUseCase extends Mock implements SignInWithGoogleUseCase {}
+class _MockGoogleSignInUseCase extends Mock
+    implements SignInWithGoogleUseCase {}
 
 class _MockAnalyticsTracker extends Mock implements AnalyticsTracker {}
 

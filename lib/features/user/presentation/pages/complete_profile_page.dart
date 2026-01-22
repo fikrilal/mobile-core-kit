@@ -69,8 +69,9 @@ class _CompleteProfileForm extends StatelessWidget {
                               context.l10n,
                             ),
                       textInputAction: TextInputAction.next,
-                      onChanged:
-                          context.read<CompleteProfileCubit>().givenNameChanged,
+                      onChanged: context
+                          .read<CompleteProfileCubit>()
+                          .givenNameChanged,
                     ),
                     const SizedBox(height: AppSpacing.space16),
                     AppTextField(
@@ -82,8 +83,9 @@ class _CompleteProfileForm extends StatelessWidget {
                               context.l10n,
                             ),
                       textInputAction: TextInputAction.done,
-                      onChanged:
-                          context.read<CompleteProfileCubit>().familyNameChanged,
+                      onChanged: context
+                          .read<CompleteProfileCubit>()
+                          .familyNameChanged,
                     ),
                     const SizedBox(height: AppSpacing.space24),
                     AppButton.primary(
@@ -106,4 +108,3 @@ class _CompleteProfileForm extends StatelessWidget {
     );
   }
 }
-

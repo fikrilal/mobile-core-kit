@@ -18,9 +18,6 @@ abstract class RegisterRequestModel with _$RegisterRequestModel {
       _$RegisterRequestModelFromJson(json);
 
   factory RegisterRequestModel.fromEntity(RegisterRequestEntity entity) {
-    return RegisterRequestModel(
-      email: entity.email,
-      password: entity.password,
-    );
+    return RegisterRequestModel(email: entity.email, password: entity.password);
   }
 }

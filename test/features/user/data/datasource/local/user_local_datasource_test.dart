@@ -106,8 +106,10 @@ void main() {
         expect(tables, isNotEmpty);
 
         final columns = await db.rawQuery('PRAGMA table_info(users)');
-        final columnNames =
-            columns.map((c) => c['name']).whereType<String>().toSet();
+        final columnNames = columns
+            .map((c) => c['name'])
+            .whereType<String>()
+            .toSet();
         expect(columnNames, contains('rolesJson'));
         expect(columnNames, contains('authMethodsJson'));
         expect(columnNames, contains('displayName'));

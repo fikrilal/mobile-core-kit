@@ -16,4 +16,3 @@ final List<GoRoute> userRoutes = [
     ),
   ),
 ];
-

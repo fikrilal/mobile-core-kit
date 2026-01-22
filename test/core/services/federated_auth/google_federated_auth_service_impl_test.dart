@@ -20,7 +20,9 @@ void main() {
         const GoogleSignInException(code: GoogleSignInExceptionCode.canceled),
       );
 
-      final service = GoogleFederatedAuthServiceImpl(googleSignIn: googleSignIn);
+      final service = GoogleFederatedAuthServiceImpl(
+        googleSignIn: googleSignIn,
+      );
 
       final result = await service.signInAndGetOidcIdToken();
 
@@ -36,11 +38,13 @@ void main() {
         () => googleSignIn.attemptLightweightAuthentication(),
       ).thenAnswer((_) => Future.value(null));
       when(() => googleSignIn.authenticate()).thenAnswer((_) async => account);
-      when(() => account.authentication).thenReturn(
-        const GoogleSignInAuthentication(idToken: 'oidc-id-token'),
-      );
+      when(
+        () => account.authentication,
+      ).thenReturn(const GoogleSignInAuthentication(idToken: 'oidc-id-token'));
 
-      final service = GoogleFederatedAuthServiceImpl(googleSignIn: googleSignIn);
+      final service = GoogleFederatedAuthServiceImpl(
+        googleSignIn: googleSignIn,
+      );
 
       final result = await service.signInAndGetOidcIdToken();
 

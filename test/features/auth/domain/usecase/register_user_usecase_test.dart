@@ -29,10 +29,7 @@ void main() {
         final usecase = RegisterUserUseCase(repo);
 
         final result = await usecase(
-          const RegisterRequestEntity(
-            email: 'not-an-email',
-            password: 'short',
-          ),
+          const RegisterRequestEntity(email: 'not-an-email', password: 'short'),
         );
 
         expect(result.isLeft(), true);

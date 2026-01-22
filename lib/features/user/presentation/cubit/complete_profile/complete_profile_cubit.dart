@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/value/family_name.dart';
+import 'package:mobile_core_kit/features/user/domain/value/given_name.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_state.dart';
 
 class CompleteProfileCubit extends Cubit<CompleteProfileState> {
@@ -16,14 +18,12 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   final PatchMeProfileUseCase _patchMeProfile;
   final SessionManager _sessionManager;
 
-  static const int _minNameLength = 2;
-  static const int _maxNameLength = 50;
-
   void givenNameChanged(String value) {
+    final error = _validateGivenName(value);
     emit(
       state.copyWith(
         givenName: value,
-        givenNameError: _validateRequiredName(value, field: 'givenName'),
+        givenNameError: error,
         failure: null,
         status: state.status == CompleteProfileStatus.failure
             ? CompleteProfileStatus.initial
@@ -33,10 +33,11 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   }
 
   void familyNameChanged(String value) {
+    final error = _validateFamilyName(value);
     emit(
       state.copyWith(
         familyName: value,
-        familyNameError: _validateOptionalName(value, field: 'familyName'),
+        familyNameError: error,
         failure: null,
         status: state.status == CompleteProfileStatus.failure
             ? CompleteProfileStatus.initial
@@ -48,11 +49,8 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   Future<void> submit() async {
     if (state.isSubmitting) return;
 
-    final givenError = _validateRequiredName(state.givenName, field: 'givenName');
-    final familyError = _validateOptionalName(
-      state.familyName,
-      field: 'familyName',
-    );
+    final givenError = _validateGivenName(state.givenName);
+    final familyError = _validateFamilyName(state.familyName);
 
     if (givenError != null || familyError != null) {
       emit(
@@ -70,16 +68,10 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
       state.copyWith(status: CompleteProfileStatus.submitting, failure: null),
     );
 
-    final given = state.givenName.trim();
-    final familyTrimmed = state.familyName.trim();
-    final family = familyTrimmed.isEmpty ? null : familyTrimmed;
-    final displayName = family == null ? given : '$given $family';
-
     final result = await _patchMeProfile(
       PatchMeProfileRequestEntity(
-        givenName: given,
-        familyName: family,
-        displayName: displayName,
+        givenName: state.givenName,
+        familyName: state.familyName,
       ),
     );
 
@@ -89,12 +81,14 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
           validation: (errors) {
             emit(
               state.copyWith(
-                givenNameError:
-                    _firstFieldError(errors, ['givenName', 'profile.givenName']),
-                familyNameError: _firstFieldError(
-                  errors,
-                  ['familyName', 'profile.familyName'],
-                ),
+                givenNameError: _firstFieldError(errors, [
+                  'givenName',
+                  'profile.givenName',
+                ]),
+                familyNameError: _firstFieldError(errors, [
+                  'familyName',
+                  'profile.familyName',
+                ]),
                 status: CompleteProfileStatus.failure,
                 failure: failure,
               ),
@@ -117,50 +111,20 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     );
   }
 
-  ValidationError? _validateRequiredName(String value, {required String field}) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) {
-      return ValidationError(
-        field: field,
-        message: '',
-        code: ValidationErrorCodes.required,
-      );
-    }
-    if (normalized.length < _minNameLength) {
-      return ValidationError(
-        field: field,
-        message: '',
-        code: ValidationErrorCodes.nameTooShort,
-      );
-    }
-    if (normalized.length > _maxNameLength) {
-      return ValidationError(
-        field: field,
-        message: '',
-        code: ValidationErrorCodes.nameTooLong,
-      );
-    }
-    return null;
+  ValidationError? _validateGivenName(String input) {
+    final result = GivenName.create(input);
+    return result.fold(
+      (f) => ValidationError(field: 'givenName', message: '', code: f.code),
+      (_) => null,
+    );
   }
 
-  ValidationError? _validateOptionalName(String value, {required String field}) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return null;
-    if (normalized.length < _minNameLength) {
-      return ValidationError(
-        field: field,
-        message: '',
-        code: ValidationErrorCodes.nameTooShort,
-      );
-    }
-    if (normalized.length > _maxNameLength) {
-      return ValidationError(
-        field: field,
-        message: '',
-        code: ValidationErrorCodes.nameTooLong,
-      );
-    }
-    return null;
+  ValidationError? _validateFamilyName(String input) {
+    final result = FamilyName.createOptional(input);
+    return result.fold(
+      (f) => ValidationError(field: 'familyName', message: '', code: f.code),
+      (_) => null,
+    );
   }
 
   ValidationError? _firstFieldError(

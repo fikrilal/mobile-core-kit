@@ -110,7 +110,10 @@ class AuthRemoteDataSource {
     OidcExchangeRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
-    Log.info('OIDC exchange (provider=${requestModel.provider}, len=$len)', name: _tag);
+    Log.info(
+      'OIDC exchange (provider=${requestModel.provider}, len=$len)',
+      name: _tag,
+    );
 
     final response = await _apiHelper.post<AuthResultModel>(
       AuthEndpoint.oidcExchange,

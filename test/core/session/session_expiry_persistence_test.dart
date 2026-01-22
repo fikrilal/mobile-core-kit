@@ -90,9 +90,9 @@ void main() {
       );
 
       final tokenRefresher = _MockTokenRefresher();
-      when(() => tokenRefresher.refresh(any())).thenAnswer(
-        (_) async => left(const SessionFailure.unexpected()),
-      );
+      when(
+        () => tokenRefresher.refresh(any()),
+      ).thenAnswer((_) async => left(const SessionFailure.unexpected()));
 
       final events = AppEventBus();
       final manager = SessionManager(
@@ -132,7 +132,10 @@ void main() {
       expect(restored.tokens.tokenType, 'Bearer');
       expect(restored.tokens.expiresIn, savedExpiresIn);
       expect(restored.tokens.expiresAt, isNotNull);
-      expect(restored.tokens.expiresAt!.millisecondsSinceEpoch, savedExpiresAtMs);
+      expect(
+        restored.tokens.expiresAt!.millisecondsSinceEpoch,
+        savedExpiresAtMs,
+      );
       expect(restored.user, isNull);
 
       events.dispose();
@@ -140,4 +143,3 @@ void main() {
     },
   );
 }
-

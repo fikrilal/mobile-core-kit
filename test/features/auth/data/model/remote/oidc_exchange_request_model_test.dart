@@ -8,10 +8,9 @@ void main() {
       idToken: 'oidc-id-token',
     );
 
-    expect(
-      model.toJson(),
-      <String, dynamic>{'provider': 'GOOGLE', 'idToken': 'oidc-id-token'},
-    );
+    expect(model.toJson(), <String, dynamic>{
+      'provider': 'GOOGLE',
+      'idToken': 'oidc-id-token',
+    });
   });
 }
-

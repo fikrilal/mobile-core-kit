@@ -3,4 +3,3 @@ class UserRoutes {
 
   static const String completeProfile = '/user/complete-profile';
 }
-

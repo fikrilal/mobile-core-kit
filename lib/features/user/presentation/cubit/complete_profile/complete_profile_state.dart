@@ -29,4 +29,3 @@ extension CompleteProfileStateX on CompleteProfileState {
     return givenNameError == null && familyNameError == null;
   }
 }
-

@@ -290,14 +290,44 @@ void main() {
   });
 
   group('appRedirectUri (profile completion)', () {
-    test('redirects to complete profile and preserves pending deep link', () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'redirects to complete profile and preserves pending deep link',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startup = await _startupHarness(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-        session: const AuthSessionEntity(
+        final startup = await _startupHarness(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+          session: const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access',
+              refreshToken: 'refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            user: UserEntity(
+              id: 'u1',
+              email: 'user@example.com',
+              roles: ['USER'],
+              authMethods: ['PASSWORD'],
+              profile: UserProfileEntity(),
+            ),
+          ),
+        );
+
+        final redirect = appRedirectUri(
+          Uri.parse('/profile'),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
+
+        expect(redirect, UserRoutes.completeProfile);
+        expect(deepLinks.pendingLocation, '/profile');
+
+        // Once the profile is complete, allow resuming the pending location.
+        startup.sessionNotifier.value = const AuthSessionEntity(
           tokens: AuthTokensEntity(
             accessToken: 'access',
             refreshToken: 'refresh',
@@ -309,47 +339,23 @@ void main() {
             email: 'user@example.com',
             roles: ['USER'],
             authMethods: ['PASSWORD'],
-            profile: UserProfileEntity(),
+            profile: UserProfileEntity(
+              givenName: 'Dante',
+              familyName: 'Alighieri',
+            ),
           ),
-        ),
-      );
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse('/profile'),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
+        final resume = appRedirectUri(
+          Uri.parse(UserRoutes.completeProfile),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, UserRoutes.completeProfile);
-      expect(deepLinks.pendingLocation, '/profile');
-
-      // Once the profile is complete, allow resuming the pending location.
-      startup.sessionNotifier.value = const AuthSessionEntity(
-        tokens: AuthTokensEntity(
-          accessToken: 'access',
-          refreshToken: 'refresh',
-          tokenType: 'Bearer',
-          expiresIn: 900,
-        ),
-        user: UserEntity(
-          id: 'u1',
-          email: 'user@example.com',
-          roles: ['USER'],
-          authMethods: ['PASSWORD'],
-          profile: UserProfileEntity(givenName: 'Dante', familyName: 'Alighieri'),
-        ),
-      );
-
-      final resume = appRedirectUri(
-        Uri.parse(UserRoutes.completeProfile),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
-
-      expect(resume, '/profile');
-      expect(deepLinks.pendingLocation, isNull);
-    });
+        expect(resume, '/profile');
+        expect(deepLinks.pendingLocation, isNull);
+      },
+    );
   });
 }

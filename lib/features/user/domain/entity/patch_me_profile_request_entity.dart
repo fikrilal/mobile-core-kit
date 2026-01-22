@@ -10,4 +10,3 @@ abstract class PatchMeProfileRequestEntity with _$PatchMeProfileRequestEntity {
     String? displayName,
   }) = _PatchMeProfileRequestEntity;
 }
-
