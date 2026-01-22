@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
@@ -39,7 +40,18 @@ void main() {
         id: 'u1',
         email: 'user@example.com',
         emailVerified: true,
-        profile: UserProfileEntity(givenName: 'First', familyName: 'Last'),
+        roles: ['USER'],
+        authMethods: ['PASSWORD'],
+        profile: UserProfileEntity(
+          profileImageFileId: 'file_1',
+          displayName: 'First Last',
+          givenName: 'First',
+          familyName: 'Last',
+        ),
+        accountDeletion: AccountDeletionEntity(
+          requestedAt: '2026-01-01T00:00:00Z',
+          scheduledFor: '2026-02-01T00:00:00Z',
+        ),
       );
 
       const datasource = UserLocalDataSource();
@@ -48,11 +60,7 @@ void main() {
       final cached = await datasource.getCachedMe();
 
       expect(cached, isNotNull);
-      expect(cached?.id, user.id);
-      expect(cached?.email, user.email);
-      expect(cached?.emailVerified, user.emailVerified);
-      expect(cached?.profile.givenName, user.profile.givenName);
-      expect(cached?.profile.familyName, user.profile.familyName);
+      expect(cached, user);
     });
 
     test('clearMe removes entity', () async {
@@ -96,6 +104,15 @@ void main() {
         );
 
         expect(tables, isNotEmpty);
+
+        final columns = await db.rawQuery('PRAGMA table_info(users)');
+        final columnNames =
+            columns.map((c) => c['name']).whereType<String>().toSet();
+        expect(columnNames, contains('rolesJson'));
+        expect(columnNames, contains('authMethodsJson'));
+        expect(columnNames, contains('displayName'));
+        expect(columnNames, contains('givenName'));
+        expect(columnNames, contains('familyName'));
 
         await getIt.reset();
       },

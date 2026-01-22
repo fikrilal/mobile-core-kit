@@ -489,20 +489,25 @@ Agreed: **full mapping**. `UserEntity` becomes the client-side representation of
 
 Agreed: schema changes required.
 
-- [ ] Update `UserLocalModel.createTableQuery` + mapping to store the expanded entity.
-- [ ] Add migration strategy (sqflite version bump + deterministic migrations):
-  - [ ] Prefer `ALTER TABLE ... ADD COLUMN` for additive fields
-  - [ ] For arrays/objects:
-    - [ ] store as JSON `TEXT` (e.g., `rolesJson`, `authMethodsJson`, `accountDeletionJson`) OR
-    - [ ] store as separate normalized tables (overkill for cached “me”; choose JSON unless there is a strong reason)
-- [ ] Update `UserLocalModel.fromMap/toMap` and tests.
+- [x] Update `UserLocalModel.createTableQuery` + mapping to store the expanded entity.
+  - [x] Profile fields stored as columns (givenName/familyName/displayName/profileImageFileId).
+  - [x] `roles/authMethods` stored as JSON `TEXT` (`rolesJson/authMethodsJson`).
+  - [x] `accountDeletion` stored as columns (`accountDeletionRequestedAt/accountDeletionScheduledFor`).
+- [ ] Migration strategy (template note):
+  - Cached user is treated as a **cache**, so we do not bump DB version or add migrations in this contract-alignment pass.
+  - If a downstream app needs to preserve cache across upgrades, bump `AppDatabase._dbVersion` and add migrations in `AppDatabase.registerMigration(...)`.
+- [x] Update `UserLocalModel.fromMap/toMap` and tests.
+  - [x] `test/features/user/data/datasource/local/user_local_datasource_test.dart`
 
 ### 3.4 Tests (must-have)
 
-- [ ] Me parsing tests:
-  - [ ] nested profile JSON maps correctly to `UserEntity`
-- [ ] Cached user restore still works:
-  - [ ] `SessionManager.restoreCachedUserIfNeeded()` emits user without network call
+- [x] Me parsing tests:
+  - [x] nested profile JSON maps correctly to `UserEntity`
+    - [x] `test/features/user/data/model/remote/me_model_test.dart`
+- [x] Cached user restore still works:
+  - [x] `SessionManager.restoreCachedUserIfNeeded()` emits user without network call
+    - [x] `test/core/session/session_manager_test.dart`
+    - [x] `test/core/services/app_startup/app_startup_controller_test.dart` (ensures no `/me` fetch after cached user restore)
 
 ---
 

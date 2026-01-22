@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserLocalModel {
 
- String? get id; String? get email; String? get firstName; String? get lastName; bool? get emailVerified; String? get createdAt;
+ String? get id; String? get email; bool? get emailVerified; String? get rolesJson; String? get authMethodsJson; String? get profileImageFileId; String? get displayName; String? get givenName; String? get familyName; String? get accountDeletionRequestedAt; String? get accountDeletionScheduledFor;
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $UserLocalModelCopyWith<UserLocalModel> get copyWith => _$UserLocalModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.rolesJson, rolesJson) || other.rolesJson == rolesJson)&&(identical(other.authMethodsJson, authMethodsJson) || other.authMethodsJson == authMethodsJson)&&(identical(other.profileImageFileId, profileImageFileId) || other.profileImageFileId == profileImageFileId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.givenName, givenName) || other.givenName == givenName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.accountDeletionRequestedAt, accountDeletionRequestedAt) || other.accountDeletionRequestedAt == accountDeletionRequestedAt)&&(identical(other.accountDeletionScheduledFor, accountDeletionScheduledFor) || other.accountDeletionScheduledFor == accountDeletionScheduledFor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,emailVerified,rolesJson,authMethodsJson,profileImageFileId,displayName,givenName,familyName,accountDeletionRequestedAt,accountDeletionScheduledFor);
 
 @override
 String toString() {
-  return 'UserLocalModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
+  return 'UserLocalModel(id: $id, email: $email, emailVerified: $emailVerified, rolesJson: $rolesJson, authMethodsJson: $authMethodsJson, profileImageFileId: $profileImageFileId, displayName: $displayName, givenName: $givenName, familyName: $familyName, accountDeletionRequestedAt: $accountDeletionRequestedAt, accountDeletionScheduledFor: $accountDeletionScheduledFor)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $UserLocalModelCopyWith<$Res>  {
   factory $UserLocalModelCopyWith(UserLocalModel value, $Res Function(UserLocalModel) _then) = _$UserLocalModelCopyWithImpl;
 @useResult
 $Res call({
- String? id, String? email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
+ String? id, String? email, bool? emailVerified, String? rolesJson, String? authMethodsJson, String? profileImageFileId, String? displayName, String? givenName, String? familyName, String? accountDeletionRequestedAt, String? accountDeletionScheduledFor
 });
 
 
@@ -62,14 +62,19 @@ class _$UserLocalModelCopyWithImpl<$Res>
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? emailVerified = freezed,Object? rolesJson = freezed,Object? authMethodsJson = freezed,Object? profileImageFileId = freezed,Object? displayName = freezed,Object? givenName = freezed,Object? familyName = freezed,Object? accountDeletionRequestedAt = freezed,Object? accountDeletionScheduledFor = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool?,rolesJson: freezed == rolesJson ? _self.rolesJson : rolesJson // ignore: cast_nullable_to_non_nullable
+as String?,authMethodsJson: freezed == authMethodsJson ? _self.authMethodsJson : authMethodsJson // ignore: cast_nullable_to_non_nullable
+as String?,profileImageFileId: freezed == profileImageFileId ? _self.profileImageFileId : profileImageFileId // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,givenName: freezed == givenName ? _self.givenName : givenName // ignore: cast_nullable_to_non_nullable
+as String?,familyName: freezed == familyName ? _self.familyName : familyName // ignore: cast_nullable_to_non_nullable
+as String?,accountDeletionRequestedAt: freezed == accountDeletionRequestedAt ? _self.accountDeletionRequestedAt : accountDeletionRequestedAt // ignore: cast_nullable_to_non_nullable
+as String?,accountDeletionScheduledFor: freezed == accountDeletionScheduledFor ? _self.accountDeletionScheduledFor : accountDeletionScheduledFor // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -155,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  bool? emailVerified,  String? rolesJson,  String? authMethodsJson,  String? profileImageFileId,  String? displayName,  String? givenName,  String? familyName,  String? accountDeletionRequestedAt,  String? accountDeletionScheduledFor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserLocalModel() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.rolesJson,_that.authMethodsJson,_that.profileImageFileId,_that.displayName,_that.givenName,_that.familyName,_that.accountDeletionRequestedAt,_that.accountDeletionScheduledFor);case _:
   return orElse();
 
 }
@@ -176,10 +181,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  bool? emailVerified,  String? rolesJson,  String? authMethodsJson,  String? profileImageFileId,  String? displayName,  String? givenName,  String? familyName,  String? accountDeletionRequestedAt,  String? accountDeletionScheduledFor)  $default,) {final _that = this;
 switch (_that) {
 case _UserLocalModel():
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.rolesJson,_that.authMethodsJson,_that.profileImageFileId,_that.displayName,_that.givenName,_that.familyName,_that.accountDeletionRequestedAt,_that.accountDeletionScheduledFor);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +201,10 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  String? firstName,  String? lastName,  bool? emailVerified,  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  bool? emailVerified,  String? rolesJson,  String? authMethodsJson,  String? profileImageFileId,  String? displayName,  String? givenName,  String? familyName,  String? accountDeletionRequestedAt,  String? accountDeletionScheduledFor)?  $default,) {final _that = this;
 switch (_that) {
 case _UserLocalModel() when $default != null:
-return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailVerified,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.emailVerified,_that.rolesJson,_that.authMethodsJson,_that.profileImageFileId,_that.displayName,_that.givenName,_that.familyName,_that.accountDeletionRequestedAt,_that.accountDeletionScheduledFor);case _:
   return null;
 
 }
@@ -211,15 +216,20 @@ return $default(_that.id,_that.email,_that.firstName,_that.lastName,_that.emailV
 
 
 class _UserLocalModel extends UserLocalModel {
-  const _UserLocalModel({this.id, this.email, this.firstName, this.lastName, this.emailVerified, this.createdAt}): super._();
+  const _UserLocalModel({this.id, this.email, this.emailVerified, this.rolesJson, this.authMethodsJson, this.profileImageFileId, this.displayName, this.givenName, this.familyName, this.accountDeletionRequestedAt, this.accountDeletionScheduledFor}): super._();
   
 
 @override final  String? id;
 @override final  String? email;
-@override final  String? firstName;
-@override final  String? lastName;
 @override final  bool? emailVerified;
-@override final  String? createdAt;
+@override final  String? rolesJson;
+@override final  String? authMethodsJson;
+@override final  String? profileImageFileId;
+@override final  String? displayName;
+@override final  String? givenName;
+@override final  String? familyName;
+@override final  String? accountDeletionRequestedAt;
+@override final  String? accountDeletionScheduledFor;
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +241,16 @@ _$UserLocalModelCopyWith<_UserLocalModel> get copyWith => __$UserLocalModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserLocalModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.rolesJson, rolesJson) || other.rolesJson == rolesJson)&&(identical(other.authMethodsJson, authMethodsJson) || other.authMethodsJson == authMethodsJson)&&(identical(other.profileImageFileId, profileImageFileId) || other.profileImageFileId == profileImageFileId)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.givenName, givenName) || other.givenName == givenName)&&(identical(other.familyName, familyName) || other.familyName == familyName)&&(identical(other.accountDeletionRequestedAt, accountDeletionRequestedAt) || other.accountDeletionRequestedAt == accountDeletionRequestedAt)&&(identical(other.accountDeletionScheduledFor, accountDeletionScheduledFor) || other.accountDeletionScheduledFor == accountDeletionScheduledFor));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,email,firstName,lastName,emailVerified,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,emailVerified,rolesJson,authMethodsJson,profileImageFileId,displayName,givenName,familyName,accountDeletionRequestedAt,accountDeletionScheduledFor);
 
 @override
 String toString() {
-  return 'UserLocalModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, emailVerified: $emailVerified, createdAt: $createdAt)';
+  return 'UserLocalModel(id: $id, email: $email, emailVerified: $emailVerified, rolesJson: $rolesJson, authMethodsJson: $authMethodsJson, profileImageFileId: $profileImageFileId, displayName: $displayName, givenName: $givenName, familyName: $familyName, accountDeletionRequestedAt: $accountDeletionRequestedAt, accountDeletionScheduledFor: $accountDeletionScheduledFor)';
 }
 
 
@@ -251,7 +261,7 @@ abstract mixin class _$UserLocalModelCopyWith<$Res> implements $UserLocalModelCo
   factory _$UserLocalModelCopyWith(_UserLocalModel value, $Res Function(_UserLocalModel) _then) = __$UserLocalModelCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String? email, String? firstName, String? lastName, bool? emailVerified, String? createdAt
+ String? id, String? email, bool? emailVerified, String? rolesJson, String? authMethodsJson, String? profileImageFileId, String? displayName, String? givenName, String? familyName, String? accountDeletionRequestedAt, String? accountDeletionScheduledFor
 });
 
 
@@ -268,14 +278,19 @@ class __$UserLocalModelCopyWithImpl<$Res>
 
 /// Create a copy of UserLocalModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? firstName = freezed,Object? lastName = freezed,Object? emailVerified = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? emailVerified = freezed,Object? rolesJson = freezed,Object? authMethodsJson = freezed,Object? profileImageFileId = freezed,Object? displayName = freezed,Object? givenName = freezed,Object? familyName = freezed,Object? accountDeletionRequestedAt = freezed,Object? accountDeletionScheduledFor = freezed,}) {
   return _then(_UserLocalModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,firstName: freezed == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String?,lastName: freezed == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: freezed == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool?,rolesJson: freezed == rolesJson ? _self.rolesJson : rolesJson // ignore: cast_nullable_to_non_nullable
+as String?,authMethodsJson: freezed == authMethodsJson ? _self.authMethodsJson : authMethodsJson // ignore: cast_nullable_to_non_nullable
+as String?,profileImageFileId: freezed == profileImageFileId ? _self.profileImageFileId : profileImageFileId // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,givenName: freezed == givenName ? _self.givenName : givenName // ignore: cast_nullable_to_non_nullable
+as String?,familyName: freezed == familyName ? _self.familyName : familyName // ignore: cast_nullable_to_non_nullable
+as String?,accountDeletionRequestedAt: freezed == accountDeletionRequestedAt ? _self.accountDeletionRequestedAt : accountDeletionRequestedAt // ignore: cast_nullable_to_non_nullable
+as String?,accountDeletionScheduledFor: freezed == accountDeletionScheduledFor ? _self.accountDeletionScheduledFor : accountDeletionScheduledFor // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
