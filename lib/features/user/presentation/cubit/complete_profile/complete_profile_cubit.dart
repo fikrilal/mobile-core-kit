@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_state.dart';
 
@@ -75,9 +76,11 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     final displayName = family == null ? given : '$given $family';
 
     final result = await _patchMeProfile(
-      givenName: given,
-      familyName: family,
-      displayName: displayName,
+      PatchMeProfileRequestEntity(
+        givenName: given,
+        familyName: family,
+        displayName: displayName,
+      ),
     );
 
     await result.match(
@@ -175,4 +178,3 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     return null;
   }
 }
-

@@ -7,6 +7,7 @@ import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/patch_me_request_model.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -29,18 +30,16 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<AuthFailure, UserEntity>> patchMeProfile({
-    required String givenName,
-    String? familyName,
-    String? displayName,
-  }) async {
+  Future<Either<AuthFailure, UserEntity>> patchMeProfile(
+    PatchMeProfileRequestEntity request,
+  ) async {
     try {
       final apiResponse = await _remote.patchMe(
         request: PatchMeRequestModel(
           profile: PatchMeProfileModel(
-            displayName: displayName,
-            givenName: givenName,
-            familyName: familyName,
+            displayName: request.displayName,
+            givenName: request.givenName,
+            familyName: request.familyName,
           ),
         ),
       );

@@ -539,14 +539,14 @@ Mobile tasks:
 
 ## Phase 5 — Docs alignment (template hygiene)
 
-- [ ] Update `docs/template/networking_backend_contract.md`:
-  - [ ] `/v1/me` instead of `/v1/users/me`
-  - [ ] Auth success payload shape `{ user, accessToken, refreshToken }`
-  - [ ] Note “expiresIn derived from JWT exp” policy
-  - [ ] Note idempotency retry policy for writes
-- [ ] Add a short “Mobile ↔ backend-core-kit integration” doc section:
-  - [ ] recommended `.env/dev.yaml` base URL for local backend (`http://127.0.0.1:4000/v1`)
-  - [ ] how to run backend + mobile together
+- [x] Update `docs/template/networking_backend_contract.md`:
+  - [x] `/v1/me` instead of `/v1/users/me`
+  - [x] Auth success payload shape `{ user, accessToken, refreshToken }`
+  - [x] Note “expiresIn derived from JWT exp” policy
+  - [x] Note idempotency retry policy for writes
+- [x] Add a short “Mobile ↔ backend-core-kit integration” doc section:
+  - [x] recommended `.env/dev.yaml` base URL(s) for local backend (Android emulator: `http://10.0.2.2:4000/v1`)
+  - [x] how to run backend + mobile together
 
 ---
 

@@ -5,7 +5,7 @@ This template provides a **single, safe way** to read the currently signed-in us
 Goals:
 
 - Keep UI simple: read `displayName`, `email`, `initials` without wiring session logic per screen.
-- Avoid race bugs: cached-user restore and `GET /me` hydration must not leak across account switches.
+- Avoid race bugs: cached-user restore and `GET /v1/me` hydration must not leak across account switches.
 - Preserve boundaries: `core/**` must not depend on `features/**` (except DI composition).
 
 ## The Standard API (What to Use)
@@ -24,7 +24,7 @@ It observes `SessionManager.sessionNotifier` and exposes:
   - `initials`
 - refresh entrypoints:
   - `ensureUserFresh()` — returns an existing user if already available, otherwise triggers refresh
-  - `refreshUser()` — explicitly calls remote `GET /me` via the core abstraction `CurrentUserFetcher`
+  - `refreshUser()` — explicitly calls remote `GET /v1/me` via the core abstraction `CurrentUserFetcher`
 
 ## How it works (High Level)
 
@@ -73,7 +73,7 @@ Rule of thumb:
 
 ## What NOT to do
 
-- Don’t call `GET /me` directly from screens/widgets.
+- Don’t call `GET /v1/me` directly from screens/widgets.
 - Don’t read `SessionManager.sessionNotifier` in feature UI to display user fields.
   - That spreads session semantics everywhere and makes migrations/refactors expensive.
 - Don’t store a user object in multiple places (session + UI + local caches) without explicit invalidation rules.
@@ -95,4 +95,3 @@ Guidelines:
   - Invalidate on `SessionCleared` / `SessionExpired`.
 
 This repo intentionally defers `UserDataSlice<T>` until there are at least two real slices to justify it.
-
