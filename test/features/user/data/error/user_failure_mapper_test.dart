@@ -45,10 +45,52 @@ void main() {
       expect(mapUserFailure(failure), const AuthFailure.tooManyRequests());
     });
 
+    test('maps IDEMPOTENCY_IN_PROGRESS code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'In progress',
+        statusCode: 409,
+        code: ApiErrorCodes.idempotencyInProgress,
+      );
+
+      expect(
+        mapUserFailure(failure),
+        const AuthFailure.unexpected(
+          message: ApiErrorCodes.idempotencyInProgress,
+        ),
+      );
+    });
+
+    test('maps CONFLICT code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'Conflict',
+        statusCode: 409,
+        code: ApiErrorCodes.conflict,
+      );
+
+      expect(
+        mapUserFailure(failure),
+        const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
+      );
+    });
+
+    test('maps INTERNAL code to serverError', () {
+      final failure = ApiFailure(
+        message: 'Internal',
+        statusCode: 500,
+        code: ApiErrorCodes.internal,
+      );
+
+      expect(mapUserFailure(failure), const AuthFailure.serverError());
+    });
+
     test('falls back to status codes when code is missing', () {
       expect(
         mapUserFailure(ApiFailure(message: 'no', statusCode: 401)),
         const AuthFailure.unauthenticated(),
+      );
+      expect(
+        mapUserFailure(ApiFailure(message: 'no', statusCode: 409)),
+        const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
       );
       expect(
         mapUserFailure(ApiFailure(message: 'no', statusCode: 429)),

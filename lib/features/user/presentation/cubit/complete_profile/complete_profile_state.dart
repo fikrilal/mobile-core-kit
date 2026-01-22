@@ -25,6 +25,7 @@ extension CompleteProfileStateX on CompleteProfileState {
 
   bool get canSubmit {
     if (isSubmitting) return false;
+    if (status == CompleteProfileStatus.success) return false;
     if (givenName.trim().isEmpty) return false;
     return givenNameError == null && familyNameError == null;
   }

@@ -48,6 +48,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
 
   Future<void> submit() async {
     if (state.isSubmitting) return;
+    if (state.status == CompleteProfileStatus.success) return;
 
     final givenError = _validateGivenName(state.givenName);
     final familyError = _validateFamilyName(state.familyName);

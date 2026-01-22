@@ -2,6 +2,8 @@
 ///
 /// Prefer mapping by `ApiFailure.code` first, and fall back to HTTP status codes
 /// for resilience (some backends might omit `code`).
+///
+/// Backend source of truth: `backend-core-kit/docs/standards/error-codes.md`
 class ApiErrorCodes {
   ApiErrorCodes._();
 
@@ -14,8 +16,14 @@ class ApiErrorCodes {
   /// Authorization failure.
   static const String forbidden = 'FORBIDDEN';
 
+  /// Resource not found.
+  static const String notFound = 'NOT_FOUND';
+
   /// Conflict (e.g. duplicate resource).
   static const String conflict = 'CONFLICT';
+
+  /// Idempotency key is currently being processed (safe retry may succeed later).
+  static const String idempotencyInProgress = 'IDEMPOTENCY_IN_PROGRESS';
 
   /// Internal server error.
   static const String internal = 'INTERNAL';
