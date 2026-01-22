@@ -31,15 +31,15 @@ Persist unsent Complete Profile form inputs locally and restore them on reopen, 
 
 ## Phase 2 — Data layer (SharedPreferences)
 
-- [ ] Add local model (JSON + TTL):
-  - [ ] `lib/features/user/data/model/local/profile_draft_local_model.dart`
-- [ ] Add local datasource:
-  - [ ] `lib/features/user/data/datasource/local/profile_draft_local_datasource.dart`
-  - [ ] Key format: `user_profile_draft:<userId>`
-  - [ ] Store JSON string
-  - [ ] Enforce TTL on read
-- [ ] Add repository implementation:
-  - [ ] `lib/features/user/data/repository/profile_draft_repository_impl.dart`
+- [x] Add local model (JSON + TTL helpers):
+  - [x] `lib/features/user/data/model/local/profile_draft_local_model.dart`
+- [x] Add local datasource (SharedPreferences + TTL):
+  - [x] `lib/features/user/data/datasource/local/profile_draft_local_datasource.dart`
+  - [x] Key format: `user_profile_draft:<userId>`
+  - [x] Store JSON string (single key per user)
+  - [x] Enforce TTL on read (expired/invalid drafts are cleared)
+- [x] Add repository implementation:
+  - [x] `lib/features/user/data/repository/profile_draft_repository_impl.dart`
 
 ## Phase 3 — DI wiring
 
