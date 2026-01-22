@@ -122,6 +122,10 @@ Full pipeline (preferred for non-trivial changes):
 
 - `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
+Auto-fix (format + import/directive ordering):
+
+- `tool/agent/dartw --no-stdin run tool/fix.dart --apply`
+
 ## Agent Preferences (Code Authoring)
 
 - Prioritize clean, readable code. Keep widgets small and focused; extract private helpers for

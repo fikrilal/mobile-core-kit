@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend contract source:** `backend-core-kit` (`/mnt/c/Development/_CORE/backend-core-kit`)  
 **Date:** 2026-01-21  
-**Status:** In progress (Phase 0–4 complete; Phase 2.4/2.5 + Phase 3.3+ pending)
+**Status:** In progress (Phases 0–6.2 complete; remaining optional: profile draft + `/v1/me/**` modules)
 
 This TODO aligns **feature-level API contracts** (Auth + Users) in this mobile template to the
 **backend-core-kit** OpenAPI contract and standards.
@@ -409,7 +409,7 @@ are filled via `PATCH /v1/me` and the client resumes completion based on `GET /v
 - [x] Update domain + models:
   - [x] `RegisterRequestEntity` remove required `firstName/lastName` (names do not belong to auth register payload)
   - [x] `RegisterRequestModel` match backend (`email`, `password`)
-    - optional `deviceId/deviceName` are supported by backend but deferred to Phase 6 “Device identity plumbing”.
+    - optional `deviceId/deviceName` are supported by backend and are now wired via Phase 6 “Device identity plumbing”.
   - [x] Register validation rules updated accordingly
 - [x] Update UI:
   - [x] `lib/features/auth/presentation/pages/register_page.dart` remove first/last name fields
@@ -522,8 +522,8 @@ Mobile tasks:
 - [x] Replace endpoint constant:
   - [x] `lib/core/network/endpoints/auth_endpoint.dart`: replace `google` with `oidcExchange = '/auth/oidc/exchange'`
 - [x] Replace request model:
-  - [x] `OidcExchangeRequestModel { provider, idToken }`
-  - [x] Note: backend supports optional `deviceId/deviceName`; template defers these to Phase 6 “Device identity plumbing”.
+  - [x] `OidcExchangeRequestModel { provider, idToken, deviceId?, deviceName? }`
+  - [x] Note: backend supports optional `deviceId/deviceName`; this template wires them via Phase 6 “Device identity plumbing”.
 - [x] Update auth repository/usecase/cubit naming:
   - [x] `googleSignIn()` becomes `signInWithGoogleOidc()` (or similar) but keep UI copy “Continue with Google”
 - [x] Update federated auth service:
@@ -552,12 +552,22 @@ Mobile tasks:
 
 ## Phase 6 — Optional enterprise upgrades (nice-to-have)
 
-- [ ] Add a client-generated request id:
-  - [ ] new interceptor that sets `X-Request-Id` on every request if absent (UUIDv4)
-  - aligns with backend’s “accept from clients; generate if missing”
-- [ ] Device identity plumbing:
-  - [ ] stable `deviceId` provider + optional `deviceName`
-  - pass through to login/register/oidc exchange payloads
+- [x] Add a client-generated request id:
+  - [x] new interceptor that sets `X-Request-Id` on every request if absent (UUIDv4)
+  - [x] aligns with backend’s “accept from clients; generate if missing”
+  - Implementation:
+    - `lib/core/network/interceptors/request_id_interceptor.dart`
+    - `lib/core/utilities/uuid_v4_utils.dart`
+- [x] Device identity plumbing:
+  - [x] stable `deviceId` provider + optional `deviceName`
+  - [x] pass through to register/login/oidc exchange payloads
+  - Implementation:
+    - `lib/core/services/device_identity/**`
+    - `lib/core/storage/secure/device_identity_secure_storage.dart`
+    - `lib/features/auth/data/model/remote/register_request_model.dart`
+    - `lib/features/auth/data/model/remote/login_request_model.dart`
+    - `lib/features/auth/data/model/remote/oidc_exchange_request_model.dart`
+    - `lib/features/auth/data/repository/auth_repository_impl.dart`
 - [ ] Implement more `/v1/me/**` endpoints as optional modules:
   - [ ] push token register/revoke
   - [ ] session list + revoke-other-sessions
