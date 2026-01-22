@@ -12,9 +12,11 @@ abstract class AuthTokensEntity with _$AuthTokensEntity {
 
     /// When the access token is expected to expire.
     ///
-    /// This is computed client-side using `expiresIn` at the time tokens are
-    /// received/persisted. It can be null for legacy/restored sessions that
-    /// were persisted before this field existed.
+    /// This is computed client-side from the JWT `exp` claim when available,
+    /// and may fall back to `expiresIn` in legacy paths.
+    ///
+    /// It can be null for legacy/restored sessions or when expiry cannot be
+    /// derived (fail-safe: no preflight refresh; rely on 401 refresh).
     DateTime? expiresAt,
   }) = _AuthTokensEntity;
 }

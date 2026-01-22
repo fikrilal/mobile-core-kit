@@ -8,4 +8,3 @@ import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 abstract class CurrentUserFetcher {
   Future<Either<SessionFailure, UserEntity>> fetch();
 }
-

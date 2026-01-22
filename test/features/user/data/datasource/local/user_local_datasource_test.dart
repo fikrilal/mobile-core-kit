@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/di/user_module.dart';
 import 'package:mocktail/mocktail.dart';
@@ -37,10 +39,19 @@ void main() {
       const user = UserEntity(
         id: 'u1',
         email: 'user@example.com',
-        firstName: 'First',
-        lastName: 'Last',
         emailVerified: true,
-        createdAt: '2026-01-20',
+        roles: ['USER'],
+        authMethods: ['PASSWORD'],
+        profile: UserProfileEntity(
+          profileImageFileId: 'file_1',
+          displayName: 'First Last',
+          givenName: 'First',
+          familyName: 'Last',
+        ),
+        accountDeletion: AccountDeletionEntity(
+          requestedAt: '2026-01-01T00:00:00Z',
+          scheduledFor: '2026-02-01T00:00:00Z',
+        ),
       );
 
       const datasource = UserLocalDataSource();
@@ -49,12 +60,7 @@ void main() {
       final cached = await datasource.getCachedMe();
 
       expect(cached, isNotNull);
-      expect(cached?.id, user.id);
-      expect(cached?.email, user.email);
-      expect(cached?.firstName, user.firstName);
-      expect(cached?.lastName, user.lastName);
-      expect(cached?.emailVerified, user.emailVerified);
-      expect(cached?.createdAt, user.createdAt);
+      expect(cached, user);
     });
 
     test('clearMe removes entity', () async {
@@ -84,20 +90,34 @@ void main() {
       await tempDir.delete(recursive: true);
     });
 
-    test('UserModule registers users table via AppDatabase onCreate tasks', () async {
-      final getIt = GetIt.asNewInstance();
-      getIt.registerLazySingleton<ApiHelper>(() => _MockApiHelper());
+    test(
+      'UserModule registers users table via AppDatabase onCreate tasks',
+      () async {
+        final getIt = GetIt.asNewInstance();
+        getIt.registerLazySingleton<ApiHelper>(() => _MockApiHelper());
 
-      UserModule.register(getIt);
+        UserModule.register(getIt);
 
-      final db = await AppDatabase().database;
-      final tables = await db.rawQuery(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='users'",
-      );
+        final db = await AppDatabase().database;
+        final tables = await db.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='users'",
+        );
 
-      expect(tables, isNotEmpty);
+        expect(tables, isNotEmpty);
 
-      await getIt.reset();
-    });
+        final columns = await db.rawQuery('PRAGMA table_info(users)');
+        final columnNames = columns
+            .map((c) => c['name'])
+            .whereType<String>()
+            .toSet();
+        expect(columnNames, contains('rolesJson'));
+        expect(columnNames, contains('authMethodsJson'));
+        expect(columnNames, contains('displayName'));
+        expect(columnNames, contains('givenName'));
+        expect(columnNames, contains('familyName'));
+
+        await getIt.reset();
+      },
+    );
   });
 }

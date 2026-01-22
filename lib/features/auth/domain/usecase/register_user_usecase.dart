@@ -6,7 +6,6 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/person_name.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 class RegisterUserUseCase {
@@ -17,17 +16,13 @@ class RegisterUserUseCase {
   Future<Either<AuthFailure, AuthSessionEntity>> call(
     RegisterRequestEntity request,
   ) async {
-    // Final gate validation: email format, password, required names.
+    // Final gate validation: email format + password.
     final email = EmailAddress.create(request.email);
     final password = Password.create(request.password);
-    final firstName = PersonName.create(request.firstName);
-    final lastName = PersonName.create(request.lastName);
 
     final errors = <ValidationError>[];
     String normalizedEmail = request.email.trim();
     String normalizedPassword = request.password;
-    String normalizedFirstName = request.firstName.trim();
-    String normalizedLastName = request.lastName.trim();
 
     email.fold(
       (f) => errors.add(
@@ -44,20 +39,6 @@ class RegisterUserUseCase {
       (value) => normalizedPassword = value.value,
     );
 
-    firstName.fold(
-      (f) => errors.add(
-        ValidationError(field: 'firstName', message: '', code: f.code),
-      ),
-      (value) => normalizedFirstName = value.value,
-    );
-
-    lastName.fold(
-      (f) => errors.add(
-        ValidationError(field: 'lastName', message: '', code: f.code),
-      ),
-      (value) => normalizedLastName = value.value,
-    );
-
     if (errors.isNotEmpty) {
       return left<AuthFailure, AuthSessionEntity>(
         AuthFailure.validation(errors),
@@ -68,8 +49,6 @@ class RegisterUserUseCase {
       RegisterRequestEntity(
         email: normalizedEmail,
         password: normalizedPassword,
-        firstName: normalizedFirstName,
-        lastName: normalizedLastName,
       ),
     );
   }

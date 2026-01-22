@@ -17,7 +17,7 @@ mixin _$AuthSessionEntity {
  AuthTokensEntity get tokens;/// User can be null when restoring a session from tokens only.
 ///
 /// On app start, the app may restore tokens from secure storage and then
-/// hydrate the user via `GET /v1/users/me`.
+/// hydrate the user via `GET /v1/me`.
  UserEntity? get user;
 /// Create a copy of AuthSessionEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -239,7 +239,7 @@ class _AuthSessionEntity implements AuthSessionEntity {
 /// User can be null when restoring a session from tokens only.
 ///
 /// On app start, the app may restore tokens from secure storage and then
-/// hydrate the user via `GET /v1/users/me`.
+/// hydrate the user via `GET /v1/me`.
 @override final  UserEntity? user;
 
 /// Create a copy of AuthSessionEntity

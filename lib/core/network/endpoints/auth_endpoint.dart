@@ -3,5 +3,5 @@ class AuthEndpoint {
   static const String register = '/auth/password/register';
   static const String refreshToken = '/auth/refresh';
   static const String logout = '/auth/logout';
-  static const String google = '/auth/google';
+  static const String oidcExchange = '/auth/oidc/exchange';
 }

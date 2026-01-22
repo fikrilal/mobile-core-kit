@@ -91,15 +91,10 @@ class _ProfileContent extends StatelessWidget {
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AppAvatar(
-                              onChangePhoto: () {},
-                            ),
-                          ],
+                          children: [AppAvatar(onChangePhoto: () {})],
                         ),
                         const SizedBox(height: AppSpacing.space16),
-                        if (hasDisplayName)
-                          AppText.headlineMedium(displayName),
+                        if (hasDisplayName) AppText.headlineMedium(displayName),
                         if (showEmail) ...[
                           const SizedBox(height: AppSpacing.space4),
                           AppText.bodyMedium(email),

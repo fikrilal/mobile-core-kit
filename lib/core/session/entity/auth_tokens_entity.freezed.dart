@@ -16,9 +16,11 @@ mixin _$AuthTokensEntity {
 
  String get accessToken; String get refreshToken; String get tokenType; int get expiresIn;/// When the access token is expected to expire.
 ///
-/// This is computed client-side using `expiresIn` at the time tokens are
-/// received/persisted. It can be null for legacy/restored sessions that
-/// were persisted before this field existed.
+/// This is computed client-side from the JWT `exp` claim when available,
+/// and may fall back to `expiresIn` in legacy paths.
+///
+/// It can be null for legacy/restored sessions or when expiry cannot be
+/// derived (fail-safe: no preflight refresh; rely on 401 refresh).
  DateTime? get expiresAt;
 /// Create a copy of AuthTokensEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -224,9 +226,11 @@ class _AuthTokensEntity implements AuthTokensEntity {
 @override final  int expiresIn;
 /// When the access token is expected to expire.
 ///
-/// This is computed client-side using `expiresIn` at the time tokens are
-/// received/persisted. It can be null for legacy/restored sessions that
-/// were persisted before this field existed.
+/// This is computed client-side from the JWT `exp` claim when available,
+/// and may fall back to `expiresIn` in legacy paths.
+///
+/// It can be null for legacy/restored sessions or when expiry cannot be
+/// derived (fail-safe: no preflight refresh; rely on 401 refresh).
 @override final  DateTime? expiresAt;
 
 /// Create a copy of AuthTokensEntity

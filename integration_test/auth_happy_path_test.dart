@@ -25,16 +25,18 @@ import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/google_sign_in_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
@@ -79,7 +81,7 @@ void main() {
     await startup.initialize();
 
     final loginUseCase = LoginUserUseCase(authRepo);
-    final googleUseCase = GoogleSignInUseCase(authRepo);
+    final googleUseCase = SignInWithGoogleUseCase(authRepo);
 
     final router = GoRouter(
       initialLocation: AppRoutes.root,
@@ -255,7 +257,7 @@ class _InMemorySessionRepository implements SessionRepository {
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<Either<AuthFailure, AuthSessionEntity>> googleSignIn() async {
+  Future<Either<AuthFailure, AuthSessionEntity>> signInWithGoogleOidc() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
@@ -274,8 +276,7 @@ class _FakeAuthRepository implements AuthRepository {
         user: const UserEntity(
           id: 'u1',
           email: 'user@example.com',
-          firstName: 'Test',
-          lastName: 'User',
+          profile: UserProfileEntity(givenName: 'Test', familyName: 'User'),
         ),
       ),
     );
@@ -304,6 +305,13 @@ class _FakeAuthRepository implements AuthRepository {
 class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, UserEntity>> getMe() async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, UserEntity>> patchMeProfile(
+    PatchMeProfileRequestEntity request,
+  ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 }

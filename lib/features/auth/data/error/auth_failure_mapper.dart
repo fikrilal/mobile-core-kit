@@ -77,11 +77,11 @@ AuthFailure mapAuthFailureForRefresh(ApiFailure failure) {
   return mapAuthFailure(failure);
 }
 
-/// Mapping for Google token exchange.
+/// Mapping for OIDC token exchange (`/v1/auth/oidc/exchange`).
 ///
-/// This endpoint often returns 401/UNAUTHORIZED for invalid/expired Google ID
-/// tokens, which is closer to "invalid credentials" than "unauthenticated".
-AuthFailure mapAuthFailureForGoogle(ApiFailure failure) {
+/// This endpoint often returns 401/UNAUTHORIZED for invalid/expired provider
+/// `id_token`s, which is closer to "invalid credentials" than "unauthenticated".
+AuthFailure mapAuthFailureForOidcExchange(ApiFailure failure) {
   final code = failure.code;
   if (code != null) {
     switch (code) {

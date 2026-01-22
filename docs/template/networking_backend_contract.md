@@ -74,6 +74,42 @@ Where it’s implemented:
 - `ApiPaginatedResult<T>` is cursor-based: `nextCursor`, `limit` (`lib/core/network/api/api_paginated_result.dart`).
 - Domain helpers are cursor-based: `DomainCursorPagination` (`lib/core/network/api/pagination_utils.dart`).
 
+### 1.5 Auth session payloads: `{ user, accessToken, refreshToken }`
+
+When integrating with `backend-core-kit`, the auth endpoints return an auth result shaped like:
+
+```json
+{
+  "data": {
+    "user": { "id": "u1", "email": "user@example.com", "emailVerified": true },
+    "accessToken": "<jwt>",
+    "refreshToken": "<opaque>"
+  }
+}
+```
+
+Notes:
+
+- The mobile template expects this shape for:
+  - register (`POST /v1/auth/password/register`)
+  - login (`POST /v1/auth/password/login`)
+  - refresh (`POST /v1/auth/refresh`)
+- Token expiry is **derived** from the access token’s JWT `exp` claim (backend does not send `expiresIn`).
+  - See: `lib/core/utilities/jwt_utils.dart` + `AuthResultModel.toTokensEntity()`
+  - Persisted fields: `expiresIn` (seconds remaining) and `expiresAtMs` (absolute timestamp), so cold-start restore can preflight refresh.
+
+### 1.6 Idempotency + retry rules (important)
+
+The template aligns its automatic auth-retry policy with backend-core-kit’s idempotency standards:
+
+- **Reads** (`GET`, `HEAD`) may be retried after a token refresh.
+- **Writes** (`POST`, `PUT`, `PATCH`, `DELETE`) are only retried if an `Idempotency-Key` header is present.
+
+Where it’s implemented:
+
+- `AuthTokenInterceptor` enforces the retry rule: `lib/core/network/interceptors/auth_token_interceptor.dart`
+- Feature datasources must set `Idempotency-Key` when the operation is safe to retry (example: `PATCH /v1/me`).
+
 ---
 
 ## 2) How to customize the template for your backend
@@ -88,6 +124,16 @@ Then use:
 - `BuildConfig.apiUrl(ApiHost.core|auth|profile)` from `lib/core/configs/build_config.dart`.
 
 See: `docs/template/env_config.md`.
+
+#### backend-core-kit (local) quick defaults
+
+When running `backend-core-kit` locally, API runs at `http://127.0.0.1:4000` with routes under `/v1`.
+
+In `.env/dev.yaml`, set `core/auth/profile` to a base URL reachable from your client runtime:
+
+- Android emulator: `http://10.0.2.2:4000/v1`
+- iOS simulator / Flutter desktop / Flutter web: `http://127.0.0.1:4000/v1`
+- Physical device: `http://<LAN_IP_OF_DEV_MACHINE>:4000/v1`
 
 ### 2.2 Endpoint paths
 
@@ -142,3 +188,27 @@ If your backend uses offset/page pagination instead of cursor:
 - Analyze: `fvm flutter analyze`
 - Tests: `fvm flutter test`
 
+---
+
+## 5) Mobile ↔ backend-core-kit integration (local)
+
+Backend (from `/mnt/c/Development/_CORE/backend-core-kit`):
+
+- `cp env.example .env`
+- `npm run deps:up` (Postgres + Redis)
+- `npm install`
+- `npm run prisma:migrate && npm run prisma:generate`
+- `npm run start:dev` (API on `http://127.0.0.1:4000`, Swagger at `/docs`)
+
+Mobile (this repo):
+
+1) Ensure `.env/dev.yaml` points to the reachable base URL (see section 2.1).
+2) Regenerate build config: `dart run tool/gen_config.dart --env dev`
+3) Run: `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`
+
+WSL note:
+
+- Prefer using the wrappers under `tool/agent/` when running Flutter/Dart from WSL:
+  - `tool/agent/dartw --no-stdin run tool/gen_config.dart --env dev`
+  - `tool/agent/flutterw analyze`
+  - `tool/agent/flutterw --no-stdin test`

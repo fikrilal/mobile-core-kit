@@ -38,66 +38,70 @@ class _FakeCachedUserStore implements CachedUserStore {
 
 void main() {
   group('SessionManager.refreshTokens (persistence)', () {
-    test('unauthenticated refresh clears secure tokens and cached user', () async {
-      final storage = _MockFlutterSecureStorage();
-      when(
-        () => storage.write(
-          key: any(named: 'key'),
-          value: any<String?>(named: 'value'),
-        ),
-      ).thenAnswer((_) async {});
-      when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
-
-      final cachedUserStore = _FakeCachedUserStore();
-      final repo = SessionRepositoryImpl(
-        cachedUserStore: cachedUserStore,
-        secure: TokenSecureStorage(storage),
-      );
-
-      final tokenRefresher = _MockTokenRefresher();
-      when(
-        () => tokenRefresher.refresh(any()),
-      ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
-
-      final events = AppEventBus();
-      final manager = SessionManager(
-        repo,
-        tokenRefresher: tokenRefresher,
-        events: events,
-      );
-
-      const user = UserEntity(id: 'u1', email: 'user@example.com');
-      await manager.login(
-        const AuthSessionEntity(
-          tokens: AuthTokensEntity(
-            accessToken: 'access_old',
-            refreshToken: 'refresh_old',
-            tokenType: 'Bearer',
-            expiresIn: 900,
+    test(
+      'unauthenticated refresh clears secure tokens and cached user',
+      () async {
+        final storage = _MockFlutterSecureStorage();
+        when(
+          () => storage.write(
+            key: any(named: 'key'),
+            value: any<String?>(named: 'value'),
           ),
-          user: user,
-        ),
-      );
+        ).thenAnswer((_) async {});
+        when(
+          () => storage.delete(key: any(named: 'key')),
+        ).thenAnswer((_) async {});
 
-      expect(cachedUserStore.cachedUser, user);
+        final cachedUserStore = _FakeCachedUserStore();
+        final repo = SessionRepositoryImpl(
+          cachedUserStore: cachedUserStore,
+          secure: TokenSecureStorage(storage),
+        );
 
-      clearInteractions(storage);
-      cachedUserStore.clearCount = 0;
+        final tokenRefresher = _MockTokenRefresher();
+        when(
+          () => tokenRefresher.refresh(any()),
+        ).thenAnswer((_) async => left(const SessionFailure.unauthenticated()));
 
-      final ok = await manager.refreshTokens();
-      expect(ok, false);
-      expect(manager.session, isNull);
-      expect(cachedUserStore.cachedUser, isNull);
-      expect(cachedUserStore.clearCount, 1);
+        final events = AppEventBus();
+        final manager = SessionManager(
+          repo,
+          tokenRefresher: tokenRefresher,
+          events: events,
+        );
 
-      verify(() => storage.delete(key: 'access_token')).called(1);
-      verify(() => storage.delete(key: 'refresh_token')).called(1);
-      verify(() => storage.delete(key: 'expires_in')).called(1);
-      verify(() => storage.delete(key: 'expires_at_ms')).called(1);
+        const user = UserEntity(id: 'u1', email: 'user@example.com');
+        await manager.login(
+          const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access_old',
+              refreshToken: 'refresh_old',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            user: user,
+          ),
+        );
 
-      events.dispose();
-      manager.dispose();
-    });
+        expect(cachedUserStore.cachedUser, user);
+
+        clearInteractions(storage);
+        cachedUserStore.clearCount = 0;
+
+        final ok = await manager.refreshTokens();
+        expect(ok, false);
+        expect(manager.session, isNull);
+        expect(cachedUserStore.cachedUser, isNull);
+        expect(cachedUserStore.clearCount, 1);
+
+        verify(() => storage.delete(key: 'access_token')).called(1);
+        verify(() => storage.delete(key: 'refresh_token')).called(1);
+        verify(() => storage.delete(key: 'expires_in')).called(1);
+        verify(() => storage.delete(key: 'expires_at_ms')).called(1);
+
+        events.dispose();
+        manager.dispose();
+      },
+    );
   });
 }
-

@@ -13,7 +13,6 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/person_name.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_state.dart';
 
@@ -24,44 +23,6 @@ class RegisterCubit extends Cubit<RegisterState> {
   final RegisterUserUseCase _registerUser;
   final SessionManager _sessionManager;
   final AnalyticsTracker _analytics;
-
-  void firstNameChanged(String value) {
-    final result = PersonName.create(value);
-    final error = result.fold(
-      (f) => ValidationError(field: 'firstName', message: '', code: f.code),
-      (_) => null,
-    );
-
-    emit(
-      state.copyWith(
-        firstName: value,
-        firstNameError: error,
-        failure: null,
-        status: state.status == RegisterStatus.failure
-            ? RegisterStatus.initial
-            : state.status,
-      ),
-    );
-  }
-
-  void lastNameChanged(String value) {
-    final result = PersonName.create(value);
-    final error = result.fold(
-      (f) => ValidationError(field: 'lastName', message: '', code: f.code),
-      (_) => null,
-    );
-
-    emit(
-      state.copyWith(
-        lastName: value,
-        lastNameError: error,
-        failure: null,
-        status: state.status == RegisterStatus.failure
-            ? RegisterStatus.initial
-            : state.status,
-      ),
-    );
-  }
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
@@ -112,19 +73,9 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
 
     // Re-run validation as a pre-flight check.
-    final firstNameResult = PersonName.create(state.firstName);
-    final lastNameResult = PersonName.create(state.lastName);
     final emailResult = EmailAddress.create(state.email);
     final passwordResult = Password.create(state.password);
 
-    final firstNameError = firstNameResult.fold(
-      (f) => ValidationError(field: 'firstName', message: '', code: f.code),
-      (_) => null,
-    );
-    final lastNameError = lastNameResult.fold(
-      (f) => ValidationError(field: 'lastName', message: '', code: f.code),
-      (_) => null,
-    );
     final emailError = emailResult.fold(
       (f) => ValidationError(field: 'email', message: '', code: f.code),
       (_) => null,
@@ -134,14 +85,9 @@ class RegisterCubit extends Cubit<RegisterState> {
       (_) => null,
     );
 
-    if (firstNameError != null ||
-        lastNameError != null ||
-        emailError != null ||
-        passwordError != null) {
+    if (emailError != null || passwordError != null) {
       emit(
         state.copyWith(
-          firstNameError: firstNameError,
-          lastNameError: lastNameError,
           emailError: emailError,
           passwordError: passwordError,
           status: RegisterStatus.initial,
@@ -157,8 +103,6 @@ class RegisterCubit extends Cubit<RegisterState> {
       RegisterRequestEntity(
         email: state.email.trim(),
         password: state.password,
-        firstName: state.firstName.trim(),
-        lastName: state.lastName.trim(),
       ),
     );
 
@@ -190,17 +134,11 @@ class RegisterCubit extends Cubit<RegisterState> {
       },
       emailNotVerified: (_) => _emitFailure(failure),
       validation: (v) {
-        ValidationError? firstNameError;
-        ValidationError? lastNameError;
         ValidationError? emailError;
         ValidationError? passwordError;
 
         for (final ValidationError err in v.errors) {
-          if (err.field == 'firstName' && firstNameError == null) {
-            firstNameError = err;
-          } else if (err.field == 'lastName' && lastNameError == null) {
-            lastNameError = err;
-          } else if (err.field == 'email' && emailError == null) {
+          if (err.field == 'email' && emailError == null) {
             emailError = err;
           } else if (err.field == 'password' && passwordError == null) {
             passwordError = err;
@@ -209,8 +147,6 @@ class RegisterCubit extends Cubit<RegisterState> {
 
         emit(
           state.copyWith(
-            firstNameError: firstNameError ?? state.firstNameError,
-            lastNameError: lastNameError ?? state.lastNameError,
             emailError: emailError ?? state.emailError,
             passwordError: passwordError ?? state.passwordError,
             status: RegisterStatus.failure,

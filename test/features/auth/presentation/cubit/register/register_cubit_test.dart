@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
@@ -24,12 +25,7 @@ class _MockAnalyticsTracker extends Mock implements AnalyticsTracker {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const RegisterRequestEntity(
-        email: 'e',
-        password: 'p',
-        firstName: 'f',
-        lastName: 'l',
-      ),
+      const RegisterRequestEntity(email: 'e', password: 'p'),
     );
     registerFallbackValue(
       const AuthSessionEntity(
@@ -76,11 +72,6 @@ void main() {
       expect(emitted.single.status, RegisterStatus.initial);
       expect(emitted.single.failure, isNull);
       expect(
-        emitted.single.firstNameError?.code,
-        ValidationErrorCodes.required,
-      );
-      expect(emitted.single.lastNameError?.code, ValidationErrorCodes.required);
-      expect(
         emitted.single.emailError?.code,
         ValidationErrorCodes.invalidEmail,
       );
@@ -110,8 +101,7 @@ void main() {
         user: UserEntity(
           id: 'u1',
           email: 'user@example.com',
-          firstName: 'Jane',
-          lastName: 'Doe',
+          profile: UserProfileEntity(givenName: 'Jane', familyName: 'Doe'),
         ),
       );
       when(() => registerUser(any())).thenAnswer((_) async => right(session));
@@ -120,24 +110,20 @@ void main() {
       final emitted = <RegisterState>[];
       final sub = cubit.stream.listen(emitted.add);
 
-      cubit.firstNameChanged('Jane');
-      cubit.lastNameChanged('Doe');
       cubit.emailChanged('user@example.com');
       cubit.passwordChanged('password123');
       await cubit.submit();
       await pumpEventQueue();
 
-      expect(emitted.length, 6);
-      expect(emitted[4].status, RegisterStatus.submitting);
-      expect(emitted[5].status, RegisterStatus.success);
+      expect(emitted.length, 4);
+      expect(emitted[2].status, RegisterStatus.submitting);
+      expect(emitted[3].status, RegisterStatus.success);
 
       final captured = verify(() => registerUser(captureAny())).captured;
       expect(captured.length, 1);
       final request = captured.single as RegisterRequestEntity;
       expect(request.email, 'user@example.com');
       expect(request.password, 'password123');
-      expect(request.firstName, 'Jane');
-      expect(request.lastName, 'Doe');
 
       verify(() => sessionManager.login(session)).called(1);
 
@@ -156,18 +142,16 @@ void main() {
         final emitted = <RegisterState>[];
         final sub = cubit.stream.listen(emitted.add);
 
-        cubit.firstNameChanged('Jane');
-        cubit.lastNameChanged('Doe');
         cubit.emailChanged('user@example.com');
         cubit.passwordChanged('password123');
         await cubit.submit();
         await pumpEventQueue();
 
-        expect(emitted.length, 6);
-        expect(emitted[4].status, RegisterStatus.submitting);
-        expect(emitted[5].status, RegisterStatus.failure);
-        expect(emitted[5].failure, const AuthFailure.emailTaken());
-        expect(emitted[5].emailError?.code, 'email_taken');
+        expect(emitted.length, 4);
+        expect(emitted[2].status, RegisterStatus.submitting);
+        expect(emitted[3].status, RegisterStatus.failure);
+        expect(emitted[3].failure, const AuthFailure.emailTaken());
+        expect(emitted[3].emailError?.code, 'email_taken');
 
         cubit.emailChanged('user@example.com');
         await pumpEventQueue();

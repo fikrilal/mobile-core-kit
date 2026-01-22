@@ -1,6 +1,10 @@
-core: https://dev-core.example.com/api
-auth: https://dev-auth.example.com/api
-profile: https://dev-profile.example.com/api
+# Local backend-core-kit defaults.
+#
+# Android emulator: use 10.0.2.2 to reach the host machine.
+# iOS simulator / web / desktop: use 127.0.0.1.
+core: http://10.0.2.2:4000/v1
+auth: http://10.0.2.2:4000/v1
+profile: http://10.0.2.2:4000/v1
 enableLogging: true
 reminderExperiment: false
 

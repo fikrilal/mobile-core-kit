@@ -4,11 +4,10 @@ import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/network/endpoints/auth_endpoint.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/auth_session_model.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/auth_tokens_model.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/google_sign_in_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 
@@ -18,18 +17,18 @@ class AuthRemoteDataSource {
 
   final ApiHelper _apiHelper;
 
-  Future<ApiResponse<AuthSessionModel>> register(
+  Future<ApiResponse<AuthResultModel>> register(
     RegisterRequestModel requestModel,
   ) async {
     Log.info('Starting user registration', name: _tag);
 
-    final response = await _apiHelper.post<AuthSessionModel>(
+    final response = await _apiHelper.post<AuthResultModel>(
       AuthEndpoint.register,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthSessionModel.fromJson,
+      parser: AuthResultModel.fromJson,
     );
 
     if (response.isError) {
@@ -41,18 +40,18 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthSessionModel>> login(
+  Future<ApiResponse<AuthResultModel>> login(
     LoginRequestModel requestModel,
   ) async {
     Log.info('Starting user login', name: _tag);
 
-    final response = await _apiHelper.post<AuthSessionModel>(
+    final response = await _apiHelper.post<AuthResultModel>(
       AuthEndpoint.login,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthSessionModel.fromJson,
+      parser: AuthResultModel.fromJson,
     );
 
     if (response.isError) {
@@ -64,18 +63,18 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthTokensModel>> refreshToken(
+  Future<ApiResponse<AuthResultModel>> refreshToken(
     RefreshRequestModel requestModel,
   ) async {
     Log.info('Refreshing token', name: _tag);
 
-    final response = await _apiHelper.post<AuthTokensModel>(
+    final response = await _apiHelper.post<AuthResultModel>(
       AuthEndpoint.refreshToken,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthTokensModel.fromJson,
+      parser: AuthResultModel.fromJson,
     );
 
     if (response.isError) {
@@ -107,24 +106,27 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthSessionModel>> googleSignIn(
-    GoogleSignInRequestModel requestModel,
+  Future<ApiResponse<AuthResultModel>> oidcExchange(
+    OidcExchangeRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
-    Log.info('Google sign-in (Firebase ID token length=$len)', name: _tag);
+    Log.info(
+      'OIDC exchange (provider=${requestModel.provider}, len=$len)',
+      name: _tag,
+    );
 
-    final response = await _apiHelper.post<AuthSessionModel>(
-      AuthEndpoint.google,
+    final response = await _apiHelper.post<AuthResultModel>(
+      AuthEndpoint.oidcExchange,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthSessionModel.fromJson,
+      parser: AuthResultModel.fromJson,
     );
 
     if (response.isError) {
       Log.warning(
-        'Google mobile sign-in failed (status=${response.statusCode}): ${response.message}',
+        'OIDC exchange failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }

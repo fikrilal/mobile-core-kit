@@ -181,11 +181,11 @@ void main() {
     });
   });
 
-  group('mapAuthFailureForGoogle', () {
+  group('mapAuthFailureForOidcExchange', () {
     test('maps 401 to invalidCredentials (fallback)', () {
       final failure = ApiFailure(message: 'Unauthorized', statusCode: 401);
       expect(
-        mapAuthFailureForGoogle(failure),
+        mapAuthFailureForOidcExchange(failure),
         const AuthFailure.invalidCredentials(),
       );
     });
@@ -197,7 +197,7 @@ void main() {
         code: ApiErrorCodes.unauthorized,
       );
       expect(
-        mapAuthFailureForGoogle(failure),
+        mapAuthFailureForOidcExchange(failure),
         const AuthFailure.invalidCredentials(),
       );
     });
@@ -209,7 +209,7 @@ void main() {
         code: AuthErrorCodes.invalidCredentials,
       );
       expect(
-        mapAuthFailureForGoogle(failure),
+        mapAuthFailureForOidcExchange(failure),
         const AuthFailure.invalidCredentials(),
       );
     });

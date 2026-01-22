@@ -1,14 +1,51 @@
 # Repository Guidelines
 
-## Project Structure & Modules
+## Project Map (where to look)
 
-- `lib/`: Dart source. Organized by feature: `core/` (config, theme, network, DI), `features/`,
-  `navigation/`, `presentation/`.
-- `assets/`: images, icons, fonts (declared in `pubspec.yaml`).
-- `.env/`: YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
-- `tool/`: project scripts (e.g., `gen_config.dart`).
-- Platform folders: `android/`, `ios/`, `web/`, `linux/`, `macos/`, `windows/`.
-- `test/`: Flutter tests (by feature when present).
+```
+assets/
+├─ fonts/
+├─ icons/
+└─ images/
+
+lib/
+├─ app.dart                        # MaterialApp.router + theme
+├─ main_dev.dart                   # entrypoint (ENV=dev)
+├─ main_staging.dart               # entrypoint (ENV=staging) [optional]
+├─ main_prod.dart                  # entrypoint (ENV=prod) [optional]
+├─ core/                           # cross-cutting infrastructure (template-level)
+│  ├─ adaptive/                    # responsive tokens + adaptive widgets
+│  ├─ configs/                     # AppConfig/BuildConfig (env-driven)
+│  ├─ database/                    # sqflite bootstrap + schema registration
+│  ├─ di/                          # GetIt composition (imports feature modules)
+│  ├─ events/                      # AppEventBus (cross-feature lifecycle)
+│  ├─ network/                     # ApiClient/ApiHelper, endpoints, interceptors, errors
+│  ├─ services/                    # app-wide services (analytics, startup, etc.)
+│  ├─ session/                     # session + token refresh orchestration
+│  ├─ theme/                       # tokens, typography, responsive spacing
+│  ├─ user/                        # core user entities + current user abstractions
+│  ├─ validation/                  # ValidationError + codes/localizer
+│  └─ widgets/                     # shared UI components
+├─ features/                       # vertical slices
+│  └─ <feature>/
+│     ├─ data/                     # datasources + DTOs + repository impl
+│     ├─ domain/                   # entities/values/usecases + repo interfaces
+│     ├─ presentation/             # bloc|cubit, pages, widgets
+│     └─ di/                       # <feature>_module.dart
+└─ navigation/                     # GoRouter composition per feature + shells
+
+test/
+└─ mirrors lib/                    # `test/<path-under-lib>_test.dart`
+
+.env/
+├─ dev.yaml
+├─ staging.yaml
+└─ prod.yaml
+
+tool/
+├─ agent/                          # Windows toolchain wrappers (WSL-safe)
+└─ verify.dart                     # full verify pipeline
+```
 
 ## Build, Test, Develop
 
@@ -22,6 +59,16 @@
 ## Coding Style & Naming
 
 - Lints: `flutter_lints` (see `analysis_options.yaml`).
+- Custom lints: `custom_lint` is enabled (see `analysis_options.yaml`). Run it via `dart run custom_lint`
+  (note: `flutter analyze` does **not** run custom lints).
+  - `architecture_imports` (config: `tool/lints/architecture_lints.yaml`) — enforces Clean Architecture import boundaries.
+  - `modal_entrypoints` — modal routing/widget entrypoints conventions.
+  - `hardcoded_ui_colors` — bans hardcoded UI colors (use tokens; allowlist is in `analysis_options.yaml`).
+  - `hardcoded_font_sizes` — bans hardcoded font sizes (use typography tokens/components).
+  - `manual_text_scaling` — bans manual text scaling in UI widgets.
+  - `spacing_tokens` — enforces spacing tokens usage (no raw padding/margins).
+  - `state_opacity_tokens` — enforces opacity tokens usage.
+  - `motion_durations` — enforces motion duration tokens usage.
 - Indentation: 2 spaces; file names `snake_case.dart`.
 - Widgets/classes: `PascalCase`; methods/fields: `camelCase`.
 - Use Freezed for immutable models and JSON (keep `part '*.g.dart'` lines in sync via build_runner).
@@ -32,38 +79,48 @@
 
 ## Testing Guidelines
 
-- Framework: `flutter_test`.
-- Place tests under `test/<feature>/...` mirroring `lib/` paths.
-- Name files `*_test.dart`; keep unit tests fast; prefer widget tests for UI.
-- Run with `fvm flutter test`; aim to cover core logic and mappers.
+- Follow `docs/engineering/testing_strategy.md` (source of truth).
+- Quick rules of thumb:
+  - Mirror paths: `lib/...` → `test/...`
+  - Name files `*_test.dart`
+  - Prefer unit tests for: Value Objects, use cases, mappers, failure mapping
+  - Prefer `bloc_test`/`mocktail` for Bloc/Cubit tests
+  - Add widget tests only when UI behavior needs coverage
 
-## Commit & PR Guidelines
+## Git, Commits & PRs
 
 - Conventional commits (e.g., `feat:`, `fix:`, `chore:`, optional scope `feat(flashcard): ...`).
 - PRs: clear description, linked issues, steps to test, and screenshots/GIFs for UI.
 - Ensure CI passes: analyze, tests, and generated code up to date.
 - **Do not run `git commit` unless the user explicitly asks for it.**
 
-### Commit Flow (Windows host via CMD)
+### Git commands (use `tool/agent/gitw`)
 
-All Git commands must run through the Windows shell so they can access the host credentials:
+When running in WSL, use `tool/agent/gitw` so git uses the Windows credential manager (and avoids WSL/CRLF edge cases).
 
-1. Stage changes  
-   `cmd.exe /c "cd /d C:\Development\_SIDE\orymu-mobile && git add -A"`
-2. Commit with a conventional message (escape quotes carefully)  
-   `cmd.exe /c "cd /d C:\Development\_SIDE\orymu-mobile && git commit -m \"feat(scope): message\""`
-3. Push to origin (replace branch as needed)  
-   `cmd.exe /c "cd /d C:\Development\_SIDE\orymu-mobile && git push origin <branch>"`
+Examples:
 
-If escaping becomes messy, create a temporary `.bat` script with the desired command and execute it
-via `cmd.exe /c script.bat`. Line-ending warnings about CRLF are expected on Windows and can be
-silenced with `git config core.autocrlf true`.
+- Stage: `tool/agent/gitw --no-stdin add -A`
+- Commit: `tool/agent/gitw --no-stdin commit -m "feat(scope): message"`
+- Push: `tool/agent/gitw --no-stdin push origin <branch>`
 
-## Security & Config
+## Agent Verification (required)
 
-- Do not commit secrets; tokens flow via `AppConfig.init` and secure storage.
-- Edit `.env/*.yaml` and re-run `gen_config.dart` to refresh `lib/core/configs/build_config_values.dart`.
-- Firebase: ensure platform configs are present and FCM background handler remains registered.
+Agents must verify changes before claiming completion (when feasible). Prefer these wrappers:
+
+- Flutter: `tool/agent/flutterw --no-stdin <command...>`
+- Dart: `tool/agent/dartw --no-stdin <command...>`
+
+Minimum checks (pick what’s relevant to what you changed):
+
+- Analyze: `tool/agent/flutterw --no-stdin analyze`
+- Custom lints: `tool/agent/dartw --no-stdin run custom_lint`
+- Tests: `tool/agent/flutterw --no-stdin test`
+- Codegen (if touching Freezed/JSON/build config): `tool/agent/dartw --no-stdin run build_runner build --delete-conflicting-outputs`
+
+Full pipeline (preferred for non-trivial changes):
+
+- `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Agent Preferences (Code Authoring)
 
@@ -73,16 +130,15 @@ silenced with `git config core.autocrlf true`.
   theme extensions (`context.*`), adaptive specs, core widgets, and shared services. Avoid
   hardcoded spacing/sizing/colors/typography; if a token/component is missing, add it to
   `lib/core/` and use it from there.
-- Follow the feature BLoC builder pattern consistently:
-    - Use a `BlocBuilder` with a `switch (state.status)` returning dedicated methods:
-        - `initial/loading` -> `_buildLoadingState()` (or feature-specific)
-        - `success` -> `_buildSuccessState(state)`
-        - `failure` -> `_buildErrorState(state.errorMessage)`
-        - `loadingMore` -> `_buildLoadingMoreState(state)` (if applicable)
-- Always provide skeletons/placeholders for loading states, colocated under `widgets/skeleton/`
-  where relevant.
-- Prefer enums and value types over raw strings for domain concepts (e.g., use `FlashcardType`
-  instead of hard-coded keys like 'QA', 'CLOZE').
+- UI state must follow `docs/engineering/ui_state_architecture.md`:
+  - Cubit-first (forms/simple slices). Prefer Bloc for complex orchestration/concurrency.
+  - State is a single immutable snapshot. Default to a `status` enum; use Freezed union states for complex/mutually-exclusive states.
+  - For multi-status screens, render via `BlocBuilder` + `switch (state.status)` and delegate to private `_build...` methods for readability.
+  - One-shot effects (snackbar/nav) via `BlocListener` + `listenWhen`; avoid side effects inside `build`.
+  - Dispatch initial intent at provider creation (route builder), not inside widgets/post-frame.
+- Provide skeletons/placeholders for loading states (when applicable), colocated under `presentation/widgets/skeleton/`.
+- Prefer enums and value objects over raw strings for domain concepts (avoid “magic strings”).
+- For forms, follow the validation architecture: real-time validation in Bloc/Cubit + final-gate validation in use cases (use VOs + stable `ValidationError.code`).
 - Reuse theme tokens and extensions (`context.*`) for colors/spacing/typography; avoid hard-coded
   styling values when a token exists.
 - Prefer existing components in `lib/core/widgets` (buttons, toggles, etc.). If a required UI
@@ -100,46 +156,48 @@ silenced with `git config core.autocrlf true`.
 
 ## Documentation & Best Practices
 
-- Always consult documentation when context is unclear or when changing package/dependency versions.
-    - Fetch latest package docs/changelogs as needed. If internet access is restricted or fails,
-      pause and ask the user for network access instead of forcing execution.
-    - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
-- Record architectural changes with ADRs:
-    - Use `ADR/records/` for **template-level** architectural decisions (cross-cutting patterns, new core services, navigation/auth/deep-link strategy, DI conventions, etc.).
-    - Create a new ADR by copying `ADR/template/adr-template.md` to `ADR/records/00xx-short-title.md` (next number).
-    - ADRs are historical: do not rewrite old ADRs; if a decision changes, add a new ADR and mark the old one as superseded.
-    - Link the ADR from the relevant docs (typically under `docs/engineering/` or `docs/template/`) so adopters know the rationale.
-- Follow the engineering guides under `docs/engineering/` for architecture and implementation details:
-    - `docs/engineering/project_architecture.md` — Clean Architecture + vertical slices, DI,
-      navigation.
-    - `docs/engineering/ui_state_architecture.md` — UI state with Bloc/Cubit, status enums, effects.
-    - `docs/engineering/model_entity_guide.md` — Freezed models, entities, and mapping patterns.
-    - `docs/engineering/validation_architecture.md` — Layered, predictable validation approach.
-    - `docs/engineering/validation_cookbook.md` — Practical validation patterns and snippets.
-    - `docs/engineering/value_objects_validation.md` — Value objects for inputs and form validation.
-    - `docs/engineering/firebase_setup.md` — Flavor-aware Firebase + env config.
-    - `docs/engineering/testing_strategy.md` — Testing pyramid, patterns, and examples.
-    - `docs/engineering/android_ci_cd.md` — Android CI/CD pipeline and Play upload strategy.
-- Testing rules of the road live in `docs/engineering/testing_strategy.md`. Follow the pyramid +
-  naming conventions there, use `bloc_test`/`mocktail`, and ensure every change adds/updates the
-  required unit + bloc tests before merging.
-- After every code change, run analyze/lints to detect regressions early. If tooling fails, request
-  command access and do not force-run in constrained environments.
-
-## Tooling Tips (FVM & WSL)
-
-- Prefer using `fvm` for Flutter/Dart commands as pinned in `.fvmrc`. If you don’t use FVM, replace
-  `fvm flutter` with `flutter` and `fvm dart` with `dart`.
-- When working inside WSL, run Flutter/Dart via the Windows toolchain to avoid CRLF shim issues. The
-  toolchain wrappers are provided in `tool/agent/` (recommended):
-    - Generic: `tool/agent/winrun` (runs any Windows command from WSL; use `--no-stdin` for non-interactive/PTY runners like Codex CLI)
-    - Flutter: `tool/agent/flutterw` (runs Windows `flutter.bat`; supports `--no-stdin`)
-    - Dart: `tool/agent/dartw` (runs Windows `dart.bat`; supports `--no-stdin`)
-    - Example: `tool/agent/flutterw analyze`
-    - Example: `tool/agent/dartw run build_runner build --delete-conflicting-outputs`
-    - Example (non-interactive safe): `tool/agent/dartw --no-stdin run custom_lint`
-    - Override defaults via `WIN_FVM_VERSIONS_DIR`, `WIN_FLUTTER_BIN`, `WIN_DART_BIN`.
-- Always run lint/analyze after making changes to catch errors early:
-    - `fvm flutter analyze` (or the WSL/Windows command shown above)
-- If analyze/lint or other commands fail due to environment or permission constraints, do not force
-  execution. Ask the user for command access/approval to proceed.
+- Start here: `docs/README.md` (docs index + navigation).
+- For dependency/package changes:
+  - Read upstream docs/changelogs; if web access is needed, ask before guessing.
+  - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
+- Record architectural changes with ADRs (template-level decisions):
+  - Use `ADR/records/` (do not rewrite historical ADRs).
+  - Create new ADRs by copying `ADR/template/adr-template.md` to `ADR/records/00xx-short-title.md` (next number).
+  - If a decision changes, add a new ADR and mark the old one as superseded.
+  - Link the ADR from relevant docs (usually under `docs/engineering/` or `docs/template/`).
+- Key engineering guides (source of truth):
+  - Architecture & boundaries:
+    - `docs/engineering/project_architecture.md`
+    - `docs/engineering/data_domain_guide.md`
+    - `docs/engineering/model_entity_guide.md`
+    - `docs/engineering/architecture_linting.md`
+  - UI state & UX governance:
+    - `docs/engineering/ui_state_architecture.md`
+    - `docs/engineering/modal_governance.md`
+    - `docs/engineering/splash_best_practices.md`
+  - Validation:
+    - `docs/engineering/validation_architecture.md`
+    - `docs/engineering/validation_cookbook.md`
+    - `docs/engineering/value_objects_validation.md`
+  - API contracts & usage:
+    - `docs/engineering/api/api_error_handling_contract.md`
+    - `docs/engineering/api/api_pagination_cursor_support.md`
+    - `docs/engineering/api/api_usage_get.md`
+    - `docs/engineering/api/api_usage_post.md`
+    - `docs/engineering/api/` (see usage examples)
+  - Localization:
+    - `docs/engineering/localization.md`
+    - `docs/engineering/localization_playbook.md`
+  - Testing:
+    - `docs/engineering/testing_strategy.md`
+  - Analytics:
+    - `docs/engineering/analytics_documentation.md`
+  - Firebase:
+    - `docs/engineering/firebase_setup.md`
+  - CI/CD:
+    - `docs/engineering/android_ci_cd.md`
+- Template + core docs (how to apply this repo as a starter):
+  - `docs/template/README.md`
+  - `docs/core/README.md` and `docs/core/session/README.md`
+  - `docs/contracts/README.md`
+- After every code change, run the verification commands in “Agent Verification (required)” above.

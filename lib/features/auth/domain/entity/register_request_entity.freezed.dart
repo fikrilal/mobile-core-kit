@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RegisterRequestEntity {
 
- String get email; String get password; String get firstName; String get lastName;
+ String get email; String get password;
 /// Create a copy of RegisterRequestEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RegisterRequestEntityCopyWith<RegisterRequestEntity> get copyWith => _$Register
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterRequestEntity&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RegisterRequestEntity&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,password,firstName,lastName);
+int get hashCode => Object.hash(runtimeType,email,password);
 
 @override
 String toString() {
-  return 'RegisterRequestEntity(email: $email, password: $password, firstName: $firstName, lastName: $lastName)';
+  return 'RegisterRequestEntity(email: $email, password: $password)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RegisterRequestEntityCopyWith<$Res>  {
   factory $RegisterRequestEntityCopyWith(RegisterRequestEntity value, $Res Function(RegisterRequestEntity) _then) = _$RegisterRequestEntityCopyWithImpl;
 @useResult
 $Res call({
- String email, String password, String firstName, String lastName
+ String email, String password
 });
 
 
@@ -62,12 +62,10 @@ class _$RegisterRequestEntityCopyWithImpl<$Res>
 
 /// Create a copy of RegisterRequestEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,Object? firstName = null,Object? lastName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -153,10 +151,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password,  String firstName,  String lastName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RegisterRequestEntity() when $default != null:
-return $default(_that.email,_that.password,_that.firstName,_that.lastName);case _:
+return $default(_that.email,_that.password);case _:
   return orElse();
 
 }
@@ -174,10 +172,10 @@ return $default(_that.email,_that.password,_that.firstName,_that.lastName);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password,  String firstName,  String lastName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password)  $default,) {final _that = this;
 switch (_that) {
 case _RegisterRequestEntity():
-return $default(_that.email,_that.password,_that.firstName,_that.lastName);case _:
+return $default(_that.email,_that.password);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +192,10 @@ return $default(_that.email,_that.password,_that.firstName,_that.lastName);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password,  String firstName,  String lastName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password)?  $default,) {final _that = this;
 switch (_that) {
 case _RegisterRequestEntity() when $default != null:
-return $default(_that.email,_that.password,_that.firstName,_that.lastName);case _:
+return $default(_that.email,_that.password);case _:
   return null;
 
 }
@@ -209,13 +207,11 @@ return $default(_that.email,_that.password,_that.firstName,_that.lastName);case 
 
 
 class _RegisterRequestEntity implements RegisterRequestEntity {
-  const _RegisterRequestEntity({required this.email, required this.password, required this.firstName, required this.lastName});
+  const _RegisterRequestEntity({required this.email, required this.password});
   
 
 @override final  String email;
 @override final  String password;
-@override final  String firstName;
-@override final  String lastName;
 
 /// Create a copy of RegisterRequestEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +223,16 @@ _$RegisterRequestEntityCopyWith<_RegisterRequestEntity> get copyWith => __$Regis
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterRequestEntity&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterRequestEntity&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,password,firstName,lastName);
+int get hashCode => Object.hash(runtimeType,email,password);
 
 @override
 String toString() {
-  return 'RegisterRequestEntity(email: $email, password: $password, firstName: $firstName, lastName: $lastName)';
+  return 'RegisterRequestEntity(email: $email, password: $password)';
 }
 
 
@@ -247,7 +243,7 @@ abstract mixin class _$RegisterRequestEntityCopyWith<$Res> implements $RegisterR
   factory _$RegisterRequestEntityCopyWith(_RegisterRequestEntity value, $Res Function(_RegisterRequestEntity) _then) = __$RegisterRequestEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String password, String firstName, String lastName
+ String email, String password
 });
 
 
@@ -264,12 +260,10 @@ class __$RegisterRequestEntityCopyWithImpl<$Res>
 
 /// Create a copy of RegisterRequestEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,Object? firstName = null,Object? lastName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,}) {
   return _then(_RegisterRequestEntity(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

@@ -13,6 +13,7 @@ import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSessionManager extends Mock implements SessionManager {}
@@ -91,8 +92,7 @@ void main() {
       const user = UserEntity(
         id: 'u1',
         email: 'user@example.com',
-        firstName: 'First',
-        lastName: 'Last',
+        profile: UserProfileEntity(givenName: 'First', familyName: 'Last'),
       );
       sessionNotifier.value = _session(refreshToken: 'rt1', user: user);
 
@@ -103,16 +103,19 @@ void main() {
       expect(service.initials, 'FL');
     });
 
-    test('ensureUserFresh returns existing user without calling fetch', () async {
-      const user = UserEntity(id: 'u1', email: 'user@example.com');
-      sessionNotifier.value = _session(refreshToken: 'rt1', user: user);
+    test(
+      'ensureUserFresh returns existing user without calling fetch',
+      () async {
+        const user = UserEntity(id: 'u1', email: 'user@example.com');
+        sessionNotifier.value = _session(refreshToken: 'rt1', user: user);
 
-      final result = await service.ensureUserFresh();
+        final result = await service.ensureUserFresh();
 
-      expect(result.isRight(), true);
-      result.match((_) => fail('Expected Right'), (u) => expect(u, user));
-      verifyNever(() => currentUserFetcher.fetch());
-    });
+        expect(result.isRight(), true);
+        result.match((_) => fail('Expected Right'), (u) => expect(u, user));
+        verifyNever(() => currentUserFetcher.fetch());
+      },
+    );
 
     test('refreshUser dedupes concurrent refresh (single-flight)', () async {
       sessionNotifier.value = _session(refreshToken: 'rt1');
@@ -130,8 +133,7 @@ void main() {
       const fetchedUser = UserEntity(
         id: 'u1',
         email: 'user@example.com',
-        firstName: 'First',
-        lastName: 'Last',
+        profile: UserProfileEntity(givenName: 'First', familyName: 'Last'),
       );
       completer.complete(right(fetchedUser));
 
@@ -139,7 +141,10 @@ void main() {
 
       for (final result in results) {
         expect(result.isRight(), true);
-        result.match((_) => fail('Expected Right'), (u) => expect(u, fetchedUser));
+        result.match(
+          (_) => fail('Expected Right'),
+          (u) => expect(u, fetchedUser),
+        );
       }
 
       verify(() => sessionManager.setUser(fetchedUser)).called(1);
@@ -198,10 +203,7 @@ void main() {
   });
 }
 
-AuthSessionEntity _session({
-  required String refreshToken,
-  UserEntity? user,
-}) {
+AuthSessionEntity _session({required String refreshToken, UserEntity? user}) {
   return AuthSessionEntity(
     tokens: AuthTokensEntity(
       accessToken: 'at_$refreshToken',

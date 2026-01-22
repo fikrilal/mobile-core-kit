@@ -47,4 +47,3 @@ class SessionFailure {
   @override
   int get hashCode => Object.hash(type, message);
 }
-

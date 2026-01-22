@@ -46,9 +46,9 @@ class CurrentUserState {
       user: userIsSet ? user : this.user,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       lastFailure: lastFailureIsSet ? lastFailure : this.lastFailure,
-      lastRefreshedAt:
-          lastRefreshedAtIsSet ? lastRefreshedAt : this.lastRefreshedAt,
+      lastRefreshedAt: lastRefreshedAtIsSet
+          ? lastRefreshedAt
+          : this.lastRefreshedAt,
     );
   }
 }
-

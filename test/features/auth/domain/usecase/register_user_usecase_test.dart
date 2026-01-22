@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -16,12 +17,7 @@ class _MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const RegisterRequestEntity(
-        email: 'e',
-        password: 'password123',
-        firstName: 'First',
-        lastName: 'Last',
-      ),
+      const RegisterRequestEntity(email: 'e', password: 'password123'),
     );
   });
 
@@ -33,12 +29,7 @@ void main() {
         final usecase = RegisterUserUseCase(repo);
 
         final result = await usecase(
-          const RegisterRequestEntity(
-            email: 'not-an-email',
-            password: 'short',
-            firstName: ' ',
-            lastName: 'A',
-          ),
+          const RegisterRequestEntity(email: 'not-an-email', password: 'short'),
         );
 
         expect(result.isLeft(), true);
@@ -55,16 +46,6 @@ void main() {
                 field: 'password',
                 message: '',
                 code: ValidationErrorCodes.passwordTooShort,
-              ),
-              ValidationError(
-                field: 'firstName',
-                message: '',
-                code: ValidationErrorCodes.required,
-              ),
-              ValidationError(
-                field: 'lastName',
-                message: '',
-                code: ValidationErrorCodes.nameTooShort,
               ),
             ]),
           );
@@ -86,8 +67,7 @@ void main() {
         user: UserEntity(
           id: 'u1',
           email: 'user@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
+          profile: UserProfileEntity(givenName: 'John', familyName: 'Doe'),
           emailVerified: false,
         ),
       );
@@ -100,8 +80,6 @@ void main() {
         const RegisterRequestEntity(
           email: ' user@example.com ',
           password: ' stringstring ',
-          firstName: ' John ',
-          lastName: ' Doe ',
         ),
       );
 
@@ -112,8 +90,6 @@ void main() {
       final request = captured.single as RegisterRequestEntity;
       expect(request.email, 'user@example.com');
       expect(request.password, ' stringstring ');
-      expect(request.firstName, 'John');
-      expect(request.lastName, 'Doe');
     });
   });
 }
