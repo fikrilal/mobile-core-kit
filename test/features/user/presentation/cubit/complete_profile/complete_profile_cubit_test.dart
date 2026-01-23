@@ -146,5 +146,35 @@ void main() {
       await sub.cancel();
       await cubit.close();
     });
+
+    test('loadDraft populates fields when draft exists', () async {
+      final now = DateTime(2026, 1, 1);
+      when(() => getDraft(userId: any(named: 'userId'))).thenAnswer(
+        (_) async => ProfileDraftEntity(
+          givenName: 'John',
+          familyName: 'Doe',
+          displayName: null,
+          updatedAt: now,
+        ),
+      );
+
+      final cubit = CompleteProfileCubit(
+        getDraft,
+        saveDraft,
+        clearDraft,
+        patchMeProfile,
+        sessionManager,
+      );
+
+      await cubit.loadDraft();
+
+      expect(cubit.state.givenName, 'John');
+      expect(cubit.state.familyName, 'Doe');
+      expect(cubit.state.givenNameError, isNull);
+      expect(cubit.state.familyNameError, isNull);
+      verify(() => getDraft(userId: 'u1')).called(1);
+
+      await cubit.close();
+    });
   });
 }

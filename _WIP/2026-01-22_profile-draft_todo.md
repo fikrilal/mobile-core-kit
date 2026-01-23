@@ -58,19 +58,20 @@ Persist unsent Complete Profile form inputs locally and restore them on reopen, 
 
 ## Phase 5 — Tests
 
-- [ ] Unit tests for datasource:
-  - [ ] save → get roundtrip
-  - [ ] clear removes
-  - [ ] TTL expiry returns null
-- [ ] (Optional) Cubit test:
-  - [ ] loadDraft populates state + validation
-  - [ ] debounce-save triggers repository
+- [x] Unit tests for datasource:
+  - [x] save → get roundtrip
+  - [x] clear removes
+  - [x] TTL expiry returns null
+  - [x] invalid payload is cleared (fail safe)
+- [x] Cubit test:
+  - [x] loadDraft populates state + validation
+  - [ ] debounce-save triggers repository (optional; requires fake async)
 
 ## Phase 6 — Verification
 
-- [ ] `tool/agent/flutterw --no-stdin analyze`
-- [ ] `tool/agent/dartw --no-stdin run custom_lint`
-- [ ] `tool/agent/flutterw --no-stdin test`
+- [x] `tool/agent/flutterw --no-stdin analyze`
+- [x] `tool/agent/dartw --no-stdin run custom_lint`
+- [x] `tool/agent/flutterw --no-stdin test`
 - [ ] (If needed) `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 7 — Optional cleanup
