@@ -11,7 +11,7 @@ final List<GoRoute> userRoutes = [
     path: UserRoutes.completeProfile,
     name: 'complete-profile',
     builder: (context, state) => BlocProvider<CompleteProfileCubit>(
-      create: (_) => locator<CompleteProfileCubit>(),
+      create: (_) => locator<CompleteProfileCubit>()..loadDraft(),
       child: const CompleteProfilePage(),
     ),
   ),

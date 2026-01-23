@@ -43,18 +43,18 @@ Persist unsent Complete Profile form inputs locally and restore them on reopen, 
 
 ## Phase 3 — DI wiring
 
-- [ ] Register new components in `lib/features/user/di/user_module.dart`:
-  - [ ] datasource
-  - [ ] repository impl
-  - [ ] use cases
+- [x] Register new components in `lib/features/user/di/user_module.dart`:
+  - [x] datasource
+  - [x] repository impl
+  - [x] use cases
 
 ## Phase 4 — Presentation wiring (CompleteProfile)
 
-- [ ] Update `CompleteProfileCubit`:
-  - [ ] Add `loadDraft()` (session-guarded)
-  - [ ] Add debounced `saveDraft` on `givenNameChanged` / `familyNameChanged`
-  - [ ] Clear draft on successful `PATCH /v1/me`
-- [ ] Ensure draft load is triggered at provider creation (route builder), not in widget post-frame.
+- [x] Update `CompleteProfileCubit`:
+  - [x] Add `loadDraft()` (session-guarded)
+  - [x] Add debounced `saveDraft` on `givenNameChanged` / `familyNameChanged`
+  - [x] Clear draft on successful `PATCH /v1/me`
+- [x] Ensure draft load is triggered at provider creation (route builder), not in widget post-frame.
 
 ## Phase 5 — Tests
 

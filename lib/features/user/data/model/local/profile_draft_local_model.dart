@@ -89,4 +89,3 @@ class ProfileDraftLocalModel {
     return null;
   }
 }
-

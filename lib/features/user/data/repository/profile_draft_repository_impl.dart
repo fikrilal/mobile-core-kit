@@ -21,4 +21,3 @@ class ProfileDraftRepositoryImpl implements ProfileDraftRepository {
   Future<void> clearDraft({required String userId}) =>
       _local.clearDraft(userId: userId);
 }
-

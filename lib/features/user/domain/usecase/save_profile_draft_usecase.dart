@@ -6,7 +6,8 @@ class SaveProfileDraftUseCase {
 
   final ProfileDraftRepository _repository;
 
-  Future<void> call({required String userId, required ProfileDraftEntity draft}) =>
-      _repository.saveDraft(userId: userId, draft: draft);
+  Future<void> call({
+    required String userId,
+    required ProfileDraftEntity draft,
+  }) => _repository.saveDraft(userId: userId, draft: draft);
 }
-
