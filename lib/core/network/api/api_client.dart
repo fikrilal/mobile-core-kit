@@ -6,6 +6,7 @@ import 'package:mobile_core_kit/core/network/interceptors/base_url_interceptor.d
 import 'package:mobile_core_kit/core/network/interceptors/error_interceptor.dart';
 import 'package:mobile_core_kit/core/network/interceptors/header_interceptor.dart';
 import 'package:mobile_core_kit/core/network/interceptors/logging_interceptor.dart';
+import 'package:mobile_core_kit/core/network/interceptors/request_id_interceptor.dart';
 import 'package:mobile_core_kit/core/network/logging/net_log_mode.dart';
 import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
 
@@ -34,12 +35,14 @@ class ApiClient {
 
     // Order matters:
     // 1) BaseUrlInterceptor - sets correct host URL
-    // 2) HeaderInterceptor - adds common headers
-    // 3) AuthTokenInterceptor - attaches auth token and handles refresh/retry
-    // 4) LoggingInterceptor - logs request/response (if enabled)
-    // 5) ErrorInterceptor - handles and transforms errors
+    // 2) RequestIdInterceptor - attaches request correlation ID header
+    // 3) HeaderInterceptor - adds common headers
+    // 4) AuthTokenInterceptor - attaches auth token and handles refresh/retry
+    // 5) LoggingInterceptor - logs request/response (if enabled)
+    // 6) ErrorInterceptor - handles and transforms errors
     _dio.interceptors.addAll([
       BaseUrlInterceptor(),
+      RequestIdInterceptor(),
       _headerInterceptor,
       AuthTokenInterceptor(),
       if (NetworkLogConfig.instance.mode != NetLogMode.off)

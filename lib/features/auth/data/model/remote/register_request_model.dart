@@ -5,11 +5,16 @@ import 'package:mobile_core_kit/features/auth/domain/entity/register_request_ent
 part 'register_request_model.freezed.dart';
 part 'register_request_model.g.dart';
 
+// ignore_for_file: invalid_annotation_target
+
 @freezed
 abstract class RegisterRequestModel with _$RegisterRequestModel {
+  @JsonSerializable(includeIfNull: false)
   const factory RegisterRequestModel({
     required String email,
     required String password,
+    String? deviceId,
+    String? deviceName,
   }) = _RegisterRequestModel;
 
   const RegisterRequestModel._();

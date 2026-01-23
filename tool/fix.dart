@@ -2,22 +2,30 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
+/// Auto-fix script for common, safe style issues in this repo.
+///
+/// This tool is intentionally conservative:
+/// - It only applies `dart fix` for `directives_ordering`
+/// - It runs `dart format`
+///
+/// Why:
+/// - `directives_ordering` is enforced by `flutter analyze` and causes noisy diffs.
+/// - `dart format` keeps formatting consistent across teams using this template.
 Future<int> main(List<String> argv) async {
   final parser = ArgParser()
-    ..addOption('env', abbr: 'e', defaultsTo: 'dev')
-    ..addFlag('apply-fixes', defaultsTo: false)
-    ..addFlag('skip-format', defaultsTo: false)
-    ..addFlag('skip-tests', defaultsTo: false);
+    ..addFlag('apply', defaultsTo: false, help: 'Apply fixes (writes files).')
+    ..addFlag(
+      'dry-run',
+      defaultsTo: false,
+      help: 'Preview actions; does not write files (format uses check mode).',
+    );
 
   final args = parser.parse(argv);
-  final env = args.option('env')!;
-  final applyFixes = args.flag('apply-fixes');
-  final skipFormat = args.flag('skip-format');
-  final skipTests = args.flag('skip-tests');
+  final apply = args.flag('apply');
+  final dryRun = args.flag('dry-run');
 
-  final envs = {'dev', 'staging', 'prod'};
-  if (!envs.contains(env)) {
-    stderr.writeln("Unknown --env '$env'. Expected one of: ${envs.join(', ')}");
+  if (apply && dryRun) {
+    stderr.writeln('Use only one of: --apply or --dry-run');
     return 2;
   }
 
@@ -28,12 +36,11 @@ Future<int> main(List<String> argv) async {
     return runner.run(command);
   }
 
+  final mode = apply ? _FixMode.apply : _FixMode.dryRun;
+
   var exitCode = 0;
 
-  exitCode = await step('Flutter pub get', ['flutter', 'pub', 'get']);
-  if (exitCode != 0) return exitCode;
-
-  if (applyFixes) {
+  if (mode == _FixMode.apply) {
     exitCode = await step('Dart fix (apply: directives_ordering)', [
       'dart',
       'fix',
@@ -43,50 +50,21 @@ Future<int> main(List<String> argv) async {
     ]);
     if (exitCode != 0) return exitCode;
 
-    if (!skipFormat) {
-      exitCode = await step('Dart format (apply)', ['dart', 'format', '.']);
-      if (exitCode != 0) return exitCode;
-    }
-  }
-
-  exitCode = await step('Generate build config (.env/$env.yaml)', [
-    'dart',
-    'run',
-    'tool/gen_config.dart',
-    '--env',
-    env,
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Flutter gen-l10n', ['flutter', 'gen-l10n']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Custom lint', ['dart', 'run', 'custom_lint']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify modal entrypoints', [
-    'dart',
-    'run',
-    'tool/verify_modal_entrypoints.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify hardcoded UI colors', [
-    'dart',
-    'run',
-    'tool/verify_hardcoded_ui_colors.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  if (!skipTests) {
-    exitCode = await step('Flutter test', ['flutter', 'test']);
+    exitCode = await step('Dart format (apply)', ['dart', 'format', '.']);
     if (exitCode != 0) return exitCode;
-  }
+  } else {
+    // Note: `dart fix --dry-run` does not fail when changes are suggested.
+    // This step is informational; `flutter analyze` in tool/verify.dart is the
+    // gate that enforces directives ordering.
+    exitCode = await step('Dart fix (dry-run: directives_ordering)', [
+      'dart',
+      'fix',
+      '--dry-run',
+      '--code',
+      'directives_ordering',
+    ]);
+    if (exitCode != 0) return exitCode;
 
-  if (!skipFormat) {
     exitCode = await step('Dart format (check)', [
       'dart',
       'format',
@@ -101,6 +79,8 @@ Future<int> main(List<String> argv) async {
   stdout.writeln('\nOK');
   return 0;
 }
+
+enum _FixMode { dryRun, apply }
 
 class _CommandRunner {
   _CommandRunner(this._rootDir, this._mode);
@@ -194,9 +174,7 @@ class _CommandRunner {
     final resolved = _resolveWindowsExecutable(executable);
 
     final joinedArgs = args.map(_escapeWindowsArg).join(' ');
-    final cmd =
-        'cd /d $windowsRoot && ${resolved.executable} '
-        '$joinedArgs';
+    final cmd = 'cd /d $windowsRoot && ${resolved.executable} $joinedArgs';
 
     final process = await Process.start(
       'cmd.exe',

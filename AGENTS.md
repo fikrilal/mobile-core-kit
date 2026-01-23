@@ -122,6 +122,10 @@ Full pipeline (preferred for non-trivial changes):
 
 - `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
+Auto-fix (format + import/directive ordering):
+
+- `tool/agent/dartw --no-stdin run tool/fix.dart --apply`
+
 ## Agent Preferences (Code Authoring)
 
 - Prioritize clean, readable code. Keep widgets small and focused; extract private helpers for
@@ -157,6 +161,9 @@ Full pipeline (preferred for non-trivial changes):
 ## Documentation & Best Practices
 
 - Start here: `docs/README.md` (docs index + navigation).
+- Backend contract source of truth (for any API/network/auth/users work): `/mnt/c/Development/_CORE/backend-core-kit`
+  - OpenAPI: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
+  - Standards: `/mnt/c/Development/_CORE/backend-core-kit/docs/standards/`
 - For dependency/package changes:
   - Read upstream docs/changelogs; if web access is needed, ask before guessing.
   - Use `flutter pub outdated` to review version constraints and plan safe upgrades.

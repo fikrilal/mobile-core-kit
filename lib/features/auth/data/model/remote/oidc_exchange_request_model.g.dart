@@ -11,6 +11,8 @@ _OidcExchangeRequestModel _$OidcExchangeRequestModelFromJson(
 ) => _OidcExchangeRequestModel(
   provider: json['provider'] as String,
   idToken: json['idToken'] as String,
+  deviceId: json['deviceId'] as String?,
+  deviceName: json['deviceName'] as String?,
 );
 
 Map<String, dynamic> _$OidcExchangeRequestModelToJson(
@@ -18,4 +20,6 @@ Map<String, dynamic> _$OidcExchangeRequestModelToJson(
 ) => <String, dynamic>{
   'provider': instance.provider,
   'idToken': instance.idToken,
+  'deviceId': ?instance.deviceId,
+  'deviceName': ?instance.deviceName,
 };

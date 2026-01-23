@@ -10,12 +10,18 @@ import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/local/profile_draft_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 
 class UserModule {
@@ -31,6 +37,12 @@ class UserModule {
     if (!getIt.isRegistered<UserLocalDataSource>()) {
       getIt.registerLazySingleton<UserLocalDataSource>(
         () => const UserLocalDataSource(),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileDraftLocalDataSource>()) {
+      getIt.registerLazySingleton<ProfileDraftLocalDataSource>(
+        () => ProfileDraftLocalDataSource(),
       );
     }
 
@@ -52,9 +64,33 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<ProfileDraftRepository>()) {
+      getIt.registerLazySingleton<ProfileDraftRepository>(
+        () => ProfileDraftRepositoryImpl(getIt<ProfileDraftLocalDataSource>()),
+      );
+    }
+
     if (!getIt.isRegistered<GetMeUseCase>()) {
       getIt.registerFactory<GetMeUseCase>(
         () => GetMeUseCase(getIt<UserRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<GetProfileDraftUseCase>()) {
+      getIt.registerFactory<GetProfileDraftUseCase>(
+        () => GetProfileDraftUseCase(getIt<ProfileDraftRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<SaveProfileDraftUseCase>()) {
+      getIt.registerFactory<SaveProfileDraftUseCase>(
+        () => SaveProfileDraftUseCase(getIt<ProfileDraftRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ClearProfileDraftUseCase>()) {
+      getIt.registerFactory<ClearProfileDraftUseCase>(
+        () => ClearProfileDraftUseCase(getIt<ProfileDraftRepository>()),
       );
     }
 
@@ -68,6 +104,9 @@ class UserModule {
     if (!getIt.isRegistered<CompleteProfileCubit>()) {
       getIt.registerFactory<CompleteProfileCubit>(
         () => CompleteProfileCubit(
+          getIt<GetProfileDraftUseCase>(),
+          getIt<SaveProfileDraftUseCase>(),
+          getIt<ClearProfileDraftUseCase>(),
           getIt<PatchMeProfileUseCase>(),
           getIt<SessionManager>(),
         ),
