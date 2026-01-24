@@ -8,4 +8,3 @@ class ClearProfileDraftUseCase {
   Future<void> call({required String userId}) =>
       _repository.clearDraft(userId: userId);
 }
-

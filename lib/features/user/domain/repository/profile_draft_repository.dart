@@ -10,4 +10,3 @@ abstract class ProfileDraftRepository {
 
   Future<void> clearDraft({required String userId});
 }
-

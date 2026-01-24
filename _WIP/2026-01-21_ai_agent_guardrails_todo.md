@@ -2,7 +2,7 @@
 
 **Project:** `mobile-core-kit`  
 **Date:** 2026-01-21  
-**Status:** Planned  
+**Status:** In progress (Phase 0 started)  
 **Location:** `_WIP/2026-01-21_ai_agent_guardrails_todo.md`  
 
 This TODO document is the implementation checklist to fully realize the guardrails proposed in:
@@ -49,21 +49,49 @@ This TODO document is the implementation checklist to fully realize the guardrai
 
 ## Phase 0 — Baseline & decisions (no behavior changes)
 
-- [ ] Re-run verification and paste summary here (do this after the current auth/user contract work stabilizes):
-  - [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
-- [ ] Inventory current “would break” areas before adding new rules:
-  - [ ] Find cross-feature imports: `rg -n \"lib/features/[^/]+/\" lib/features -S --glob 'lib/features/**.dart'`
-  - [ ] Find low-level deps imported outside core:
-    - [ ] `rg -n \"package:dio/dio.dart\" lib -S`
-    - [ ] `rg -n \"package:firebase_\" lib -S`
-    - [ ] `rg -n \"shared_preferences\" lib -S`
-    - [ ] `rg -n \"flutter_secure_storage\" lib -S`
-  - [ ] Find `locator<` usage: `rg -n \"\\blocator<|\\bgetIt\\b\" lib -S`
-  - [ ] Find route string literals: `rg -n \"context\\.(go|push|pushReplacement)\\(\\s*'\" lib -S`
-  - [ ] Sample UI string literal scan (should be mostly dev tools): `rg -n \"\\bText\\s*\\(\\s*'\" lib -S`
-  - [ ] Datasource API usage defaults audit:
-    - [ ] `rg -n \"_apiHelper\\.(getOne|getList|getPaginated|post|put|delete|patch)\" lib/features -S`
-    - [ ] Confirm `host:` and `throwOnError:` presence per datasource.
+- [x] Re-run verification and paste summary here:
+  - [x] Ran (skipping tests): `tool/agent/dartw --no-stdin run tool/verify.dart --env dev --skip-tests`
+    - ✅ `flutter pub get`
+    - ✅ `tool/gen_config.dart --env dev`
+    - ✅ `flutter gen-l10n`
+    - ✅ `flutter analyze`
+    - ✅ `dart run custom_lint`
+    - ✅ `tool/verify_modal_entrypoints.dart`
+    - ✅ `tool/verify_hardcoded_ui_colors.dart`
+    - ⚠️ `dart format (check)` reported 4 changed files but did not fail the verify run; we applied formatting to:
+      - `lib/features/user/domain/entity/profile_draft_entity.dart`
+      - `lib/features/user/domain/repository/profile_draft_repository.dart`
+      - `lib/features/user/domain/usecase/clear_profile_draft_usecase.dart`
+      - `lib/features/user/domain/usecase/get_profile_draft_usecase.dart`
+    - ⚠️ `dart format` printed repeated warnings about resolving `package:flutter_lints/flutter.yaml` from `analysis_options.yaml` (non-blocking).
+- [x] Inventory current “would break” areas before adding new rules:
+  - [x] Find cross-feature imports (practical): `rg -n \"package:mobile_core_kit/features/\" lib/features -S --glob 'lib/features/**/*.dart'`
+    - Notable cross-feature dependency today:
+      - `lib/features/user/di/user_module.dart` imports `features/auth/domain/failure/auth_failure.dart`
+  - [x] Find low-level deps imported outside core:
+    - [x] `rg -n \"package:dio/dio.dart\" lib -S` → 10 matches (all under `lib/core/network/**` ✅)
+    - [x] `rg -n \"package:firebase_\" lib -S` → 6 matches (core DI/services + `lib/firebase_options.dart` ✅)
+    - [x] `rg -n \"shared_preferences\" lib -S` → 5 matches
+      - Core stores/services ✅
+      - Feature-local draft store ❗ `lib/features/user/data/datasource/local/profile_draft_local_datasource.dart`
+        - This will influence Phase 2 (`restricted_imports`) allowlists or require introducing a core wrapper for prefs.
+    - [x] `rg -n \"flutter_secure_storage\" lib -S` → 2 matches (core secure storage only ✅)
+  - [x] Find `locator<` usage: `rg -n \"\\blocator<|\\bGetIt\\b|\\bgetIt\\b\" lib -S` → 159 matches
+    - Expected at composition edges (`lib/app.dart`, `lib/main_*.dart`, `lib/navigation/**`)
+    - Notable non-edge usages (potential targets for Phase 1 “DI boundary”):
+      - `lib/features/profile/presentation/widgets/theme_mode_setting_tile.dart`
+      - `lib/features/profile/presentation/widgets/locale_setting_tile.dart`
+      - `lib/core/widgets/listener/app_event_listener.dart`
+  - [x] Find route string literals:
+    - `rg -n \"context\\.(go|push|pushReplacement)\\(\\s*['\\\"]\" lib -S` → 0 matches ✅
+    - `rg -n \"GoRoute\\(\\s*path:\\s*['\\\"]\" lib -S` → 0 matches ✅
+  - [x] Sample UI string literal scan:
+    - `rg -n \"\\bText\\s*\\(\\s*['\\\"]\" lib -S` → 28 matches (mostly dev tools/showcases/docs ✅)
+  - [x] Datasource API usage defaults audit:
+    - `rg -n \"_apiHelper\\.(getOne|getList|getPaginated|post|put|delete|patch)\" lib/features -S --glob 'lib/features/**/*.dart'` → 7 matches
+    - Current state:
+      - `features/auth` datasources use explicit `host:`, `requiresAuth:`, `throwOnError: false` ✅
+      - `features/user` datasource uses explicit `host:`, `throwOnError: false`, but omits `requiresAuth:` (defaults to `true`) ⚠️
 - [ ] Decision locks (write down, then implement):
   - [ ] What is considered “domain-safe” core imports? (recommend: `core/validation/**`, `core/session/entity/**`, `core/user/entity/**` only)
   - [ ] Which rules are **ERROR now** vs “warn first”? (recommend: architecture + restricted imports + ApiHelper policy = ERROR; strings/routes maybe warn→error)
@@ -260,4 +288,3 @@ Goal: make datasource code deterministic + reviewable.
   - [ ] If yes: keep `.github/workflows/android.yml` thin and use verify as the contract.
   - [ ] If no: ensure each new verify step is duplicated in CI explicitly.
 - [ ] Ensure Flutter version pinning policy is explicit (FVM vs stable channel) so “random CI breakage” doesn’t poison guardrails trust.
-
