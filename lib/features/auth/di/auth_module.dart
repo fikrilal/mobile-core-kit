@@ -10,6 +10,7 @@ import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/core/session/token_refresher.dart';
@@ -106,6 +107,7 @@ class AuthModule {
       getIt.registerFactory<LogoutFlowUseCase>(
         () => LogoutFlowUseCase(
           logoutRemote: getIt<LogoutRemoteUseCase>(),
+          pushTokenRevoker: getIt<SessionPushTokenRevoker>(),
           sessionManager: getIt<SessionManager>(),
         ),
       );

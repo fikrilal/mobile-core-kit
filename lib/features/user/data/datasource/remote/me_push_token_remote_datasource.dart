@@ -59,6 +59,9 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
+      headers: <String, String>{
+        'Idempotency-Key': IdempotencyKeyUtils.generate(),
+      },
     );
 
     if (response.isError) {

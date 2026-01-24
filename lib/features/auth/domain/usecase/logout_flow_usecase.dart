@@ -1,4 +1,5 @@
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 
@@ -8,19 +9,29 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_useca
 class LogoutFlowUseCase {
   LogoutFlowUseCase({
     required LogoutRemoteUseCase logoutRemote,
+    required SessionPushTokenRevoker pushTokenRevoker,
     required SessionManager sessionManager,
   }) : _logoutRemote = logoutRemote,
+       _pushTokenRevoker = pushTokenRevoker,
        _sessionManager = sessionManager;
 
   final LogoutRemoteUseCase _logoutRemote;
+  final SessionPushTokenRevoker _pushTokenRevoker;
   final SessionManager _sessionManager;
 
+  static const Duration _pushRevokeTimeout = Duration(seconds: 2);
   static const Duration _remoteRevokeTimeout = Duration(seconds: 5);
 
   Future<void> call({String reason = 'manual_logout'}) async {
     final refreshToken = _sessionManager.session?.tokens.refreshToken;
 
     if (refreshToken != null && refreshToken.isNotEmpty) {
+      try {
+        await _pushTokenRevoker.revoke().timeout(_pushRevokeTimeout);
+      } catch (_) {
+        // Push token revoke is best-effort; local session is always cleared.
+      }
+
       try {
         await _logoutRemote(
           LogoutRequestEntity(refreshToken: refreshToken),

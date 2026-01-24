@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-24  
-**Status:** In progress (Phases 0–4 complete)  
+**Status:** In progress (Phases 0–6 complete)  
 
 Implements the proposal:
 - `_WIP/2026-01-24_fcm_system_proposal.md`
@@ -102,28 +102,28 @@ Non-goals for this TODO:
 
 ## Phase 5 — DI + bootstrap
 
-- [ ] Register in DI:
-  - [ ] `lib/core/di/service_locator.dart`
-    - [ ] register `FcmTokenProvider`
-    - [ ] register (or rely on user module binding) `PushTokenRegistrar`
-    - [ ] register `PushTokenSyncStore`
-    - [ ] register `PushTokenSyncService`
-- [ ] Bootstrap in `bootstrapLocator()`:
-  - [ ] call `PushTokenSyncService.init()` after:
-    - [ ] Firebase initialization
-    - [ ] `SessionManager.init()`
+- [x] Register in DI:
+  - [x] `lib/core/di/service_locator.dart`
+    - [x] register `FcmTokenProvider`
+    - [x] rely on user module binding for `PushTokenRegistrar`
+    - [x] register `PushTokenSyncStore`
+    - [x] register `PushTokenSyncService`
+- [x] Bootstrap in `bootstrapLocator()`:
+  - [x] call `PushTokenSyncService.init()` after:
+    - [x] Firebase initialization
+    - [x] `SessionManager.init()` (via `AppStartupController.initialize()`)
 
 ---
 
 ## Phase 6 — Logout revocation (best-effort)
 
-- [ ] Update `LogoutFlowUseCase`:
-  - [ ] `lib/features/auth/domain/usecase/logout_flow_usecase.dart`
-  - [ ] Order:
-    1. [ ] best-effort `DELETE /me/push-token` (requiresAuth: true)
-    2. [ ] existing best-effort `POST /auth/logout`
-    3. [ ] always `SessionManager.logout()`
-- [ ] Ensure failures never block local logout.
+- [x] Update `LogoutFlowUseCase`:
+  - [x] `lib/features/auth/domain/usecase/logout_flow_usecase.dart`
+  - [x] Order:
+    1. [x] best-effort `DELETE /me/push-token` (requiresAuth: true)
+    2. [x] existing best-effort `POST /auth/logout`
+    3. [x] always `SessionManager.logout()`
+- [x] Ensure failures never block local logout.
 
 ---
 
