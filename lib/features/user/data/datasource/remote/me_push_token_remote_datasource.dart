@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/core/services/push/push_platform.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
+import 'package:mobile_core_kit/core/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/me_push_token_upsert_request_model.dart';
 
@@ -30,6 +31,9 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
+      headers: <String, String>{
+        'Idempotency-Key': IdempotencyKeyUtils.generate(),
+      },
       data: MePushTokenUpsertRequestModel(
         platform: platform.apiValue,
         token: token,

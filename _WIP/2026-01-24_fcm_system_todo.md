@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-24  
-**Status:** In progress (Phases 0–2 complete)  
+**Status:** In progress (Phases 0–4 complete)  
 
 Implements the proposal:
 - `_WIP/2026-01-24_fcm_system_proposal.md`
@@ -71,32 +71,32 @@ Non-goals for this TODO:
 
 ## Phase 3 — Dedupe store (SharedPreferences)
 
-- [ ] Add store:
-  - [ ] `lib/core/services/push/push_token_sync_store.dart`
-    - [ ] Store `lastSentSessionId`
-    - [ ] Store `lastSentTokenHash` (hash only)
-    - [ ] Store optional `pushNotConfiguredUntilEpochMs`
-  - [ ] Hash policy:
-    - [ ] Use SHA-256 (preferred) or a simple stable hash if crypto isn’t available
-    - [ ] Never store raw FCM token
+- [x] Add store:
+  - [x] `lib/core/services/push/push_token_sync_store.dart`
+    - [x] Store `lastSentSessionHash` (hash only)
+    - [x] Store `lastSentTokenHash` (hash only)
+    - [x] Store optional `pushNotConfiguredUntilMs`
+  - [x] Hash policy:
+    - [x] Use a stable deterministic hash (FNV-1a 64-bit)
+    - [x] Never store raw FCM token
 
 ---
 
 ## Phase 4 — Orchestration service
 
-- [ ] Add `PushTokenSyncService`:
-  - [ ] `lib/core/services/push/push_token_sync_service.dart`
-  - [ ] Listens to `SessionManager.stream` (session active/cleared)
-  - [ ] Subscribes to `FcmTokenProvider.onTokenRefresh`
-  - [ ] On session active:
-    - [ ] fetch token (best-effort)
-    - [ ] if token != null and not deduped → `PUT /me/push-token`
-  - [ ] On token refresh:
-    - [ ] if session active → `PUT /me/push-token`
-  - [ ] Error policy:
-    - [ ] `UNAUTHORIZED` → stop quietly
-    - [ ] `PUSH_NOT_CONFIGURED` → store cooldown and stop until expiry
-    - [ ] other errors → log + retry later
+- [x] Add `PushTokenSyncService`:
+  - [x] `lib/core/services/push/push_token_sync_service.dart`
+  - [x] Listens to `SessionManager.sessionNotifier` (session active/cleared)
+  - [x] Subscribes to `FcmTokenProvider.onTokenRefresh`
+  - [x] On session active:
+    - [x] fetch token (best-effort)
+    - [x] if token != null and not deduped → `PUT /me/push-token`
+  - [x] On token refresh:
+    - [x] if session active → `PUT /me/push-token`
+  - [x] Error policy:
+    - [x] `UNAUTHORIZED` → stop quietly for the current session key
+    - [x] `PUSH_NOT_CONFIGURED` → store cooldown and stop until expiry
+    - [x] other errors → log + retry later (no last-sent persisted)
 
 ---
 
