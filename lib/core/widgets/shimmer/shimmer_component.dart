@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
+import 'package:mobile_core_kit/core/theme/tokens/radii.dart';
 
 part 'shimmer_render.dart';
 part 'shimmer_shapes.dart';

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 
@@ -9,8 +8,13 @@ import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 /// Keeps the presentation layer reactive to domain events without coupling
 /// feature widgets directly to infrastructure concerns.
 class AppEventListener extends StatefulWidget {
-  const AppEventListener({super.key, required this.child});
+  const AppEventListener({
+    super.key,
+    required this.eventBus,
+    required this.child,
+  });
 
+  final AppEventBus eventBus;
   final Widget child;
 
   @override
@@ -18,14 +22,12 @@ class AppEventListener extends StatefulWidget {
 }
 
 class _AppEventListenerState extends State<AppEventListener> {
-  late final AppEventBus _eventBus;
   StreamSubscription<AppEvent>? _subscription;
 
   @override
   void initState() {
     super.initState();
-    _eventBus = locator<AppEventBus>();
-    _subscription = _eventBus.stream.listen(_handleEvent);
+    _subscription = widget.eventBus.stream.listen(_handleEvent);
   }
 
   void _handleEvent(AppEvent event) {

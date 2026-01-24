@@ -2,7 +2,11 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
-Future<int> main(List<String> argv) async {
+Future<void> main(List<String> argv) async {
+  exitCode = await _run(argv);
+}
+
+Future<int> _run(List<String> argv) async {
   final parser = ArgParser()
     ..addFlag('help', abbr: 'h', negatable: false)
     ..addOption('target', defaultsTo: 'lib');

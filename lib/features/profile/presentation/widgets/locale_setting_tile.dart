@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
@@ -12,23 +12,24 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class LocaleSettingTile extends StatelessWidget {
   const LocaleSettingTile({
     required this.includePseudoLocales,
+    required this.controller,
     super.key,
-    this.controller,
   });
 
   final bool includePseudoLocales;
-  final LocaleController? controller;
+  final LocaleController controller;
 
   @override
   Widget build(BuildContext context) {
-    final localeController = controller ?? locator<LocaleController>();
-
     return ValueListenableBuilder<Locale?>(
-      valueListenable: localeController,
+      valueListenable: controller,
       builder: (context, localeOverride, _) {
         return AppListTile(
           leading: AppIconBadge(
-            icon: PhosphorIcon(PhosphorIconsRegular.translate, size: 24),
+            icon: PhosphorIcon(
+              PhosphorIconsRegular.translate,
+              size: AppSizing.iconSizeMedium,
+            ),
           ),
           title: context.l10n.commonLanguage,
           subtitle: _localeLabel(context, localeOverride),
@@ -44,7 +45,7 @@ class LocaleSettingTile extends StatelessWidget {
               ),
             );
             if (selected == null) return;
-            await localeController.setLocale(_localeFromOption(selected));
+            await controller.setLocale(_localeFromOption(selected));
           },
         );
       },

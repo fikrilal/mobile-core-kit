@@ -1,20 +1,31 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart' as dio;
-import 'package:mobile_core_kit/core/di/service_locator.dart';
-import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class AuthTokenInterceptor extends dio.Interceptor {
-  AuthTokenInterceptor();
+  AuthTokenInterceptor({
+    required SessionManager Function() sessionManagerProvider,
+    required dio.Dio client,
+  }) : _sessionManagerProvider = sessionManagerProvider,
+       _client = client;
 
-  SessionManager get _session => getIt<SessionManager>();
+  final SessionManager Function() _sessionManagerProvider;
+  final dio.Dio _client;
   Completer<bool>? _refreshCompleter;
   static const String _requiresAuthKey = 'requiresAuth';
   static const String _allowAuthRetryKey = 'allowAuthRetry';
   static const String _retriedKey = 'retried';
   static const String _idempotencyKeyHeader = 'idempotency-key';
+
+  SessionManager? get _sessionOrNull {
+    try {
+      return _sessionManagerProvider();
+    } catch (_) {
+      return null;
+    }
+  }
 
   bool _requiresAuth(dio.RequestOptions options) {
     final value = options.extra[_requiresAuthKey];
@@ -53,9 +64,12 @@ class AuthTokenInterceptor extends dio.Interceptor {
     dio.RequestOptions options,
     dio.RequestInterceptorHandler handler,
   ) async {
+    final session = _sessionOrNull;
+    if (session == null) return handler.next(options);
+
     if (_requiresAuth(options)) {
       if (options.extra[_retriedKey] != true &&
-          _session.isAccessTokenExpiringSoon) {
+          session.isAccessTokenExpiringSoon) {
         try {
           await _refreshOnce();
         } catch (_) {
@@ -63,7 +77,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
         }
       }
 
-      final token = _session.accessToken;
+      final token = session.accessToken;
       if (token != null && token.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $token';
       }
@@ -72,6 +86,9 @@ class AuthTokenInterceptor extends dio.Interceptor {
   }
 
   Future<bool> _refreshOnce() async {
+    final session = _sessionOrNull;
+    if (session == null) return false;
+
     // Ensure single refresh in flight for both preflight and 401 refresh paths.
     if (_refreshCompleter != null) {
       return _refreshCompleter!.future;
@@ -79,7 +96,7 @@ class AuthTokenInterceptor extends dio.Interceptor {
 
     _refreshCompleter = Completer<bool>();
     try {
-      final ok = await _session.refreshTokens();
+      final ok = await session.refreshTokens();
       if (!(_refreshCompleter!.isCompleted)) {
         _refreshCompleter!.complete(ok);
       }
@@ -105,6 +122,9 @@ class AuthTokenInterceptor extends dio.Interceptor {
         _requiresAuth(err.requestOptions) &&
         err.requestOptions.extra[_retriedKey] != true &&
         _allowAuthRetry(err.requestOptions)) {
+      final session = _sessionOrNull;
+      if (session == null) return handler.next(err);
+
       try {
         final refreshResult = await _refreshOnce();
 
@@ -112,10 +132,9 @@ class AuthTokenInterceptor extends dio.Interceptor {
           // clone original request with new token
           final dio.RequestOptions opts = err.requestOptions;
           opts.extra[_retriedKey] = true;
-          opts.headers['Authorization'] = 'Bearer ${_session.accessToken}';
-          final dio.Dio client = getIt<ApiClient>().dio;
+          opts.headers['Authorization'] = 'Bearer ${session.accessToken}';
           try {
-            final dio.Response<dynamic> response = await client.fetch(opts);
+            final dio.Response<dynamic> response = await _client.fetch(opts);
             return handler.resolve(response);
           } on dio.DioException catch (retryErr) {
             // Surface the *retried request* error (not the original 401).

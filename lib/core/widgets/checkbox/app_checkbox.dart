@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/tokens/radii.dart';
 import 'package:mobile_core_kit/core/widgets/checkbox/checkbox_variants.dart';
 import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
 
@@ -262,7 +263,9 @@ class AppCheckbox extends StatelessWidget {
           }
           return side;
         }),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.radius4),
+        ),
         overlayColor: overlayColor,
       ),
     );

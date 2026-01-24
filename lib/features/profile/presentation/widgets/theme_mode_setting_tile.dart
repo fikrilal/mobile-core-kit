@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
@@ -10,20 +10,21 @@ import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ThemeModeSettingTile extends StatelessWidget {
-  const ThemeModeSettingTile({super.key, this.controller});
+  const ThemeModeSettingTile({super.key, required this.controller});
 
-  final ThemeModeController? controller;
+  final ThemeModeController controller;
 
   @override
   Widget build(BuildContext context) {
-    final themeModeController = controller ?? locator<ThemeModeController>();
-
     return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeModeController,
+      valueListenable: controller,
       builder: (context, themeMode, _) {
         return AppListTile(
           leading: AppIconBadge(
-            icon: PhosphorIcon(PhosphorIconsRegular.moonStars, size: 24),
+            icon: PhosphorIcon(
+              PhosphorIconsRegular.moonStars,
+              size: AppSizing.iconSizeMedium,
+            ),
           ),
           title: context.l10n.commonAppearance,
           subtitle: _themeModeLabel(context, themeMode),
@@ -33,7 +34,7 @@ class ThemeModeSettingTile extends StatelessWidget {
               builder: (_) => _ThemeModePicker(initialThemeMode: themeMode),
             );
             if (selected == null) return;
-            await themeModeController.setThemeMode(selected);
+            await controller.setThemeMode(selected);
           },
         );
       },

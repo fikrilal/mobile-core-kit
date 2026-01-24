@@ -25,6 +25,41 @@ rules:
         allow:
           - lib/features/*/di/**
 
+  - id: features_no_cross_feature_imports
+    reason: Feature code must not import other feature code. Move shared contracts to `lib/core/**`.
+    from: lib/features/**
+    deny:
+      - lib/features/**
+    exceptions:
+      - from: lib/features/auth/**
+        allow:
+          - lib/features/auth/**
+
+      - from: lib/features/home/**
+        allow:
+          - lib/features/home/**
+
+      - from: lib/features/onboarding/**
+        allow:
+          - lib/features/onboarding/**
+
+      - from: lib/features/profile/**
+        allow:
+          - lib/features/profile/**
+          # TEMP: profile reuses auth logout UI + failure localizer.
+          # TODO(guardrails): move shared auth UX contracts to `lib/core/**`.
+          - lib/features/auth/presentation/cubit/logout/**
+          - lib/features/auth/presentation/localization/auth_failure_localizer.dart
+
+      - from: lib/features/user/**
+        allow:
+          - lib/features/user/**
+          # TEMP: user feature reuses auth failure + VO contract.
+          # TODO(guardrails): move shared auth/user failures + value failures to `lib/core/**`.
+          - lib/features/auth/domain/failure/**
+          - lib/features/auth/domain/value/value_failure.dart
+          - lib/features/auth/presentation/localization/auth_failure_localizer.dart
+
   # Clean Architecture boundaries inside features.
   - id: feature_domain_no_data_or_presentation
     reason: Domain must not depend on data/presentation (or navigation).
@@ -33,6 +68,21 @@ rules:
       - lib/features/*/data/**
       - lib/features/*/presentation/**
       - lib/navigation/**
+
+  - id: feature_domain_no_infra
+    reason: Domain must not depend on infrastructure/UI framework concerns.
+    from: lib/features/*/domain/**
+    deny:
+      - lib/core/network/**
+      - lib/core/services/**
+      - lib/core/storage/**
+      - lib/core/database/**
+      - lib/core/theme/**
+      - lib/core/widgets/**
+      - lib/core/adaptive/**
+      - lib/core/di/**
+      - lib/core/dev_tools/**
+      - lib/l10n/**
 
   - id: feature_presentation_no_data
     reason: Presentation must not depend on data directly; go through usecases/repos.
@@ -63,3 +113,25 @@ rules:
       - from: lib/core/di/**
         allow:
           - lib/features/*/di/**
+
+  - id: no_service_locator_imports_outside_edges
+    reason: Only composition roots may import the service locator.
+    from: lib/**
+    deny:
+      - lib/core/di/service_locator.dart
+    exceptions:
+      - from: lib/core/di/**
+        allow:
+          - lib/core/di/service_locator.dart
+      - from: lib/navigation/**
+        allow:
+          - lib/core/di/service_locator.dart
+      - from: lib/app.dart
+        allow:
+          - lib/core/di/service_locator.dart
+      - from: lib/main_*.dart
+        allow:
+          - lib/core/di/service_locator.dart
+      - from: lib/features/*/di/**
+        allow:
+          - lib/core/di/service_locator.dart

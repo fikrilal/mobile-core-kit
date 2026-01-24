@@ -2,16 +2,22 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
-Future<int> main(List<String> argv) async {
+Future<void> main(List<String> argv) async {
+  exitCode = await _run(argv);
+}
+
+Future<int> _run(List<String> argv) async {
   final parser = ArgParser()
     ..addOption('env', abbr: 'e', defaultsTo: 'dev')
     ..addFlag('apply-fixes', defaultsTo: false)
+    ..addFlag('check-codegen', defaultsTo: false)
     ..addFlag('skip-format', defaultsTo: false)
     ..addFlag('skip-tests', defaultsTo: false);
 
   final args = parser.parse(argv);
   final env = args.option('env')!;
   final applyFixes = args.flag('apply-fixes');
+  final checkCodegen = args.flag('check-codegen');
   final skipFormat = args.flag('skip-format');
   final skipTests = args.flag('skip-tests');
 
@@ -32,6 +38,15 @@ Future<int> main(List<String> argv) async {
 
   exitCode = await step('Flutter pub get', ['flutter', 'pub', 'get']);
   if (exitCode != 0) return exitCode;
+
+  if (checkCodegen) {
+    exitCode = await step('Verify codegen outputs', [
+      'dart',
+      'run',
+      'tool/verify_codegen.dart',
+    ]);
+    if (exitCode != 0) return exitCode;
+  }
 
   if (applyFixes) {
     exitCode = await step('Dart fix (apply: directives_ordering)', [
@@ -59,6 +74,13 @@ Future<int> main(List<String> argv) async {
   if (exitCode != 0) return exitCode;
 
   exitCode = await step('Flutter gen-l10n', ['flutter', 'gen-l10n']);
+  if (exitCode != 0) return exitCode;
+
+  exitCode = await step('Verify untranslated messages', [
+    'dart',
+    'run',
+    'tool/verify_untranslated_messages.dart',
+  ]);
   if (exitCode != 0) return exitCode;
 
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);

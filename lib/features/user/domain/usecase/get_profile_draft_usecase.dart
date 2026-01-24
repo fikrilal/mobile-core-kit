@@ -9,4 +9,3 @@ class GetProfileDraftUseCase {
   Future<ProfileDraftEntity?> call({required String userId}) =>
       _repository.getDraft(userId: userId);
 }
-

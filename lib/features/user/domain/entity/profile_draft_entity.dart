@@ -26,4 +26,3 @@ abstract class ProfileDraftEntity with _$ProfileDraftEntity {
     required DateTime updatedAt,
   }) = _ProfileDraftEntity;
 }
-

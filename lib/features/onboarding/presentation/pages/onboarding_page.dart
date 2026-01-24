@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
@@ -11,7 +10,9 @@ import 'package:mobile_core_kit/core/widgets/button/button.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({super.key});
+  const OnboardingPage({super.key, required this.startup});
+
+  final AppStartupController startup;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class OnboardingPage extends StatelessWidget {
                 isExpanded: true,
                 semanticLabel: context.l10n.onboardingSemanticContinue,
                 onPressed: () async {
-                  await locator<AppStartupController>().completeOnboarding();
+                  await startup.completeOnboarding();
                   if (!context.mounted) return;
                   context.go(AuthRoutes.signIn);
                 },

@@ -1,38 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
-
-/// Auto-fix script for common, safe style issues in this repo.
+/// Codegen freshness gate.
 ///
-/// This tool is intentionally conservative:
-/// - It only applies `dart fix` for `directives_ordering`
-/// - It runs `dart format`
+/// This script ensures `build_runner` outputs are checked in and up-to-date.
 ///
-/// Why:
-/// - `directives_ordering` is enforced by `flutter analyze` and causes noisy diffs.
-/// - `dart format` keeps formatting consistent across teams using this template.
-Future<void> main(List<String> argv) async {
-  exitCode = await _run(argv);
+/// In CI, this prevents PRs from forgetting to run codegen after changing:
+/// - Freezed models (`*.freezed.dart`)
+/// - JsonSerializable models (`*.g.dart`)
+///
+/// Local usage:
+/// - Run this after `flutter pub get`.
+/// - If it fails, run the suggested `build_runner` command and commit the
+///   generated outputs.
+Future<void> main(List<String> _) async {
+  exitCode = await _run();
 }
 
-Future<int> _run(List<String> argv) async {
-  final parser = ArgParser()
-    ..addFlag('apply', defaultsTo: false, help: 'Apply fixes (writes files).')
-    ..addFlag(
-      'dry-run',
-      defaultsTo: false,
-      help: 'Preview actions; does not write files (format uses check mode).',
-    );
-
-  final args = parser.parse(argv);
-  final apply = args.flag('apply');
-  final dryRun = args.flag('dry-run');
-
-  if (apply && dryRun) {
-    stderr.writeln('Use only one of: --apply or --dry-run');
-    return 2;
-  }
-
+Future<int> _run() async {
   final runner = _CommandRunner.detect(Directory.current);
 
   Future<int> step(String title, List<String> command) async {
@@ -40,51 +25,81 @@ Future<int> _run(List<String> argv) async {
     return runner.run(command);
   }
 
-  final mode = apply ? _FixMode.apply : _FixMode.dryRun;
-
   var exitCode = 0;
 
-  if (mode == _FixMode.apply) {
-    exitCode = await step('Dart fix (apply: directives_ordering)', [
-      'dart',
-      'fix',
-      '--apply',
-      '--code',
-      'directives_ordering',
-    ]);
-    if (exitCode != 0) return exitCode;
+  exitCode = await step('Build runner', [
+    'dart',
+    'run',
+    'build_runner',
+    'build',
+    '--delete-conflicting-outputs',
+  ]);
+  if (exitCode != 0) return exitCode;
 
-    exitCode = await step('Dart format (apply)', ['dart', 'format', '.']);
-    if (exitCode != 0) return exitCode;
-  } else {
-    // Note: `dart fix --dry-run` does not fail when changes are suggested.
-    // This step is informational; `flutter analyze` in tool/verify.dart is the
-    // gate that enforces directives ordering.
-    exitCode = await step('Dart fix (dry-run: directives_ordering)', [
-      'dart',
-      'fix',
-      '--dry-run',
-      '--code',
-      'directives_ordering',
-    ]);
-    if (exitCode != 0) return exitCode;
-
-    exitCode = await step('Dart format (check)', [
-      'dart',
-      'format',
-      '--output',
-      'none',
-      '--set-exit-if-changed',
-      '.',
-    ]);
-    if (exitCode != 0) return exitCode;
-  }
+  final diffExitCode = await _verifyGeneratedFilesClean();
+  if (diffExitCode != 0) return diffExitCode;
 
   stdout.writeln('\nOK');
   return 0;
 }
 
-enum _FixMode { dryRun, apply }
+Future<int> _verifyGeneratedFilesClean() async {
+  final changedFiles = await _gitDiffNameOnly();
+  if (changedFiles == null) {
+    stderr.writeln('Unable to run `git diff`. Is git installed and on PATH?');
+    return 2;
+  }
+
+  final generatedChanges =
+      changedFiles
+          .where(
+            (path) =>
+                path.endsWith('.g.dart') ||
+                path.endsWith('.freezed.dart') ||
+                path.endsWith('.gr.dart'),
+          )
+          .toList()
+        ..sort();
+
+  if (generatedChanges.isEmpty) return 0;
+
+  stderr.writeln(
+    'Codegen outputs are out-of-date (build_runner produced changes).',
+  );
+  stderr.writeln('');
+  stderr.writeln('Changed generated files:');
+  for (final path in generatedChanges) {
+    stderr.writeln('- $path');
+  }
+  stderr.writeln('');
+  stderr.writeln('Fix:');
+  stderr.writeln('  dart run build_runner build --delete-conflicting-outputs');
+  return 1;
+}
+
+Future<List<String>?> _gitDiffNameOnly() async {
+  try {
+    final result = await Process.run(
+      'git',
+      const ['diff', '--name-only'],
+      workingDirectory: Directory.current.path,
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
+    if (result.exitCode != 0) {
+      return null;
+    }
+    final out = (result.stdout as String).trim();
+    if (out.isEmpty) return const [];
+    return out
+        .split('\n')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  } on ProcessException {
+    return null;
+  }
+}
 
 class _CommandRunner {
   _CommandRunner(this._rootDir, this._mode);
@@ -178,7 +193,9 @@ class _CommandRunner {
     final resolved = _resolveWindowsExecutable(executable);
 
     final joinedArgs = args.map(_escapeWindowsArg).join(' ');
-    final cmd = 'cd /d $windowsRoot && ${resolved.executable} $joinedArgs';
+    final cmd =
+        'cd /d $windowsRoot && ${resolved.executable} '
+        '$joinedArgs';
 
     final process = await Process.start(
       'cmd.exe',
