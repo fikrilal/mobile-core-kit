@@ -3,7 +3,11 @@ import 'dart:io';
 
 const String _defaultPath = 'tool/untranslated_messages.json';
 
-Future<int> main(List<String> args) async {
+Future<void> main(List<String> args) async {
+  exitCode = await _run(args);
+}
+
+Future<int> _run(List<String> args) async {
   final path = args.isNotEmpty ? args.first : _defaultPath;
   final file = File(path);
 

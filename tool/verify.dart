@@ -2,7 +2,11 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
-Future<int> main(List<String> argv) async {
+Future<void> main(List<String> argv) async {
+  exitCode = await _run(argv);
+}
+
+Future<int> _run(List<String> argv) async {
   final parser = ArgParser()
     ..addOption('env', abbr: 'e', defaultsTo: 'dev')
     ..addFlag('apply-fixes', defaultsTo: false)

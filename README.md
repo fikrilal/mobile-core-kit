@@ -65,6 +65,7 @@ This repo uses `custom_lint` to enforce architecture import boundaries in both I
 
 - Rules config: `tool/lints/architecture_lints.yaml`
 - Run locally: `dart run custom_lint` (also included in `dart run tool/verify.dart --env dev`)
+- Guardrails index: `docs/engineering/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`
   - Android Studio: `Tools > Dart > Restart Dart Analysis Server`
@@ -76,6 +77,8 @@ Run all checks (config generation + analyze + custom lint + tests + format check
 ```bash
 dart run tool/verify.dart --env dev
 ```
+
+See `docs/engineering/guardrails.md` for the full list of guardrails (lints + verify scripts + scaffolding).
 
 If you work inside WSL, run the repo-pinned Windows toolchain:
 
@@ -141,6 +144,8 @@ See `docs/engineering/analytics_documentation.md` for patterns and examples.
 For deeper details on the architecture and patterns used in this template:
 
 - `docs/engineering/architecture_linting.md`
+- `docs/engineering/guardrails.md`
+- `docs/engineering/ai_agent_workflow.md`
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/model_entity_guide.md`
 - `docs/engineering/ui_state_architecture.md`

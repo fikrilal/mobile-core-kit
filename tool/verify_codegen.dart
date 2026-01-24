@@ -13,7 +13,11 @@ import 'dart:io';
 /// - Run this after `flutter pub get`.
 /// - If it fails, run the suggested `build_runner` command and commit the
 ///   generated outputs.
-Future<int> main(List<String> _) async {
+Future<void> main(List<String> _) async {
+  exitCode = await _run();
+}
+
+Future<int> _run() async {
   final runner = _CommandRunner.detect(Directory.current);
 
   Future<int> step(String title, List<String> command) async {

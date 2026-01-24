@@ -2,7 +2,7 @@
 
 **Project:** `mobile-core-kit`  
 **Date:** 2026-01-21  
-**Status:** In progress (Phase 0 started)  
+**Status:** Done (Phases 0–9 complete)  
 **Location:** `_WIP/2026-01-21_ai_agent_guardrails_todo.md`  
 
 This TODO document is the implementation checklist to fully realize the guardrails proposed in:
@@ -231,44 +231,37 @@ Goal: make datasource code deterministic + reviewable.
 
 ## Phase 7 — “Make the right thing easy” (feature scaffolder)
 
-- [ ] Add script: `tool/scaffold_feature.dart` (or `tool/new_slice.dart`)
-- [ ] CLI shape (example):
-  - [ ] `dart run tool/scaffold_feature.dart --feature review`
-  - [ ] optional: `--slice list`, `--with-form`, `--with-analytics`, `--with-skeleton`
-- [ ] Generates:
-  - [ ] Standard folder layout under `lib/features/<feature>/...`
-  - [ ] DI module stub in `lib/features/<feature>/di/<feature>_module.dart`
-  - [ ] Route list stubs under `lib/navigation/<feature>/...`
-  - [ ] Presentation skeleton (Cubit-first by default), including status enum pattern
-  - [ ] Tests skeleton mirroring `lib/` under `test/`
-  - [ ] Checklist output for l10n keys (or optional automated insertion)
-- [ ] Guardrails:
-  - [ ] Refuse invalid feature name (must be `snake_case`)
-  - [ ] Refuse if feature already exists
-  - [ ] Print next steps (run verify, run build_runner if needed)
+- [x] Add script: `tool/scaffold_feature.dart`
+- [x] CLI shape:
+  - [x] `dart run tool/scaffold_feature.dart --feature review`
+  - [x] optional: `--slice list`
+- [x] Generates:
+  - [x] Standard folder layout under `lib/features/<feature>/...`
+  - [x] DI module stub in `lib/features/<feature>/di/<feature>_module.dart`
+  - [x] Route stubs under `lib/navigation/<feature>/...`
+  - [x] Presentation skeleton (Cubit-first), including status enum pattern
+  - [x] Tests skeleton mirroring `lib/` under `test/`
+  - [x] Prints l10n key checklist (manual add; avoids creating untranslated keys)
+- [x] Guardrails:
+  - [x] Refuse invalid feature name (must be `snake_case`)
+  - [x] Refuse if feature already exists
+  - [x] Prints wiring next steps (DI + routes + verify)
 
 ---
 
 ## Phase 8 — Documentation + onboarding
 
-- [ ] Add a single “Guardrails index” doc:
-  - [ ] `docs/engineering/guardrails.md` (or extend `docs/engineering/architecture_linting.md`)
-  - [ ] List every guardrail with:
-    - [ ] what it enforces
-    - [ ] where it runs (IDE/CI)
-    - [ ] how to fix
-    - [ ] how to suppress (rare)
-- [ ] Update `README.md` to link the guardrails index and reinforce `tool/verify.dart` as the gate.
-- [ ] Optional: add a short “AI agent workflow” doc:
-  - [ ] where new code should go
-  - [ ] which script to run
-  - [ ] how to interpret lint failures
+- [x] Add a single “Guardrails index” doc:
+  - [x] `docs/engineering/guardrails.md`
+- [x] Update `README.md` to link the guardrails index.
+- [x] Add a short “AI agent workflow” doc:
+  - [x] `docs/engineering/ai_agent_workflow.md`
 
 ---
 
 ## Phase 9 — CI alignment
 
-- [ ] Decide whether CI should call `dart run tool/verify.dart --env prod` as the single entrypoint.
-  - [ ] If yes: keep `.github/workflows/android.yml` thin and use verify as the contract.
-  - [ ] If no: ensure each new verify step is duplicated in CI explicitly.
-- [ ] Ensure Flutter version pinning policy is explicit (FVM vs stable channel) so “random CI breakage” doesn’t poison guardrails trust.
+- [x] CI calls `tool/verify.dart` as the single entrypoint:
+  - [x] `.github/workflows/android.yml` runs `dart run tool/verify.dart --env prod --check-codegen`
+- [x] Flutter version pinning is explicit:
+  - [x] `.github/workflows/android.yml` reads the pinned version from `.fvmrc` and passes it to `subosito/flutter-action`.

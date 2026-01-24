@@ -63,10 +63,25 @@ jobs:
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
 
+      - name: Read Flutter version (.fvmrc)
+        id: fvm
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          with open('.fvmrc', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+          version = data.get('flutter')
+          if not version:
+            raise SystemExit('Missing "flutter" key in .fvmrc')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+            out.write(f"flutter_version={version}\n")
+          PY
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
           cache: true
 
       - name: Setup Java
@@ -86,41 +101,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      - name: Flutter pub get
-        run: flutter pub get
-
-      - name: Verify codegen outputs
-        run: dart run tool/verify_codegen.dart
-
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints
         run: |
           dart pub get
           dart test
 
-      - name: Generate build config (prod env)
-        run: dart run tool/gen_config.dart --env prod
-
-      - name: Flutter gen-l10n
-        run: flutter gen-l10n
-
-      - name: Verify untranslated messages
-        run: dart run tool/verify_untranslated_messages.dart
-
-      - name: Flutter analyze
-        run: flutter analyze
-
-      - name: Custom lint
-        run: dart run custom_lint
-
-      - name: Verify modal entrypoints
-        run: dart run tool/verify_modal_entrypoints.dart
-
-      - name: Verify hardcoded UI colors
-        run: dart run tool/verify_hardcoded_ui_colors.dart
-
-      - name: Run unit tests
-        run: flutter test
+      - name: Verify (canonical)
+        run: dart run tool/verify.dart --env prod --check-codegen
 
       - name: Prepare upload keystore
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
@@ -207,17 +195,26 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
 
+      - name: Read Flutter version (.fvmrc)
+        id: fvm
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          with open('.fvmrc', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+          version = data.get('flutter')
+          if not version:
+            raise SystemExit('Missing "flutter" key in .fvmrc')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+            out.write(f"flutter_version={version}\n")
+          PY
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
           cache: true
-
-      - name: Flutter pub get
-        run: flutter pub get
-
-      - name: Verify codegen outputs
-        run: dart run tool/verify_codegen.dart
 
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints
@@ -225,29 +222,8 @@ jobs:
           dart pub get
           dart test
 
-      - name: Generate build config (prod env)
-        run: dart run tool/gen_config.dart --env prod
-
-      - name: Flutter gen-l10n
-        run: flutter gen-l10n
-
-      - name: Verify untranslated messages
-        run: dart run tool/verify_untranslated_messages.dart
-
-      - name: Flutter analyze
-        run: flutter analyze
-
-      - name: Custom lint
-        run: dart run custom_lint
-
-      - name: Verify modal entrypoints
-        run: dart run tool/verify_modal_entrypoints.dart
-
-      - name: Verify hardcoded UI colors
-        run: dart run tool/verify_hardcoded_ui_colors.dart
-
-      - name: Run unit tests
-        run: flutter test
+      - name: Verify (canonical)
+        run: dart run tool/verify.dart --env prod --check-codegen
 
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign -t lib/main_prod.dart --dart-define=ENV=prod

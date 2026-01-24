@@ -11,7 +11,11 @@ import 'package:args/args.dart';
 /// Why:
 /// - `directives_ordering` is enforced by `flutter analyze` and causes noisy diffs.
 /// - `dart format` keeps formatting consistent across teams using this template.
-Future<int> main(List<String> argv) async {
+Future<void> main(List<String> argv) async {
+  exitCode = await _run(argv);
+}
+
+Future<int> _run(List<String> argv) async {
   final parser = ArgParser()
     ..addFlag('apply', defaultsTo: false, help: 'Apply fixes (writes files).')
     ..addFlag(
