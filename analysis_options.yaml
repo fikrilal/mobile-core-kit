@@ -98,6 +98,11 @@ custom_lint:
             - lib/core/utilities/log_utils.dart
             - lib/core/di/**
           message: Use crash reporting wrappers under `lib/core/services/early_errors/**`.
+        - uri: package:firebase_messaging/firebase_messaging.dart
+          allow:
+            - lib/core/services/push/**
+            - lib/main*.dart
+          message: Use push wrappers under `lib/core/services/push/**`.
         - uri: package:shared_preferences/shared_preferences.dart
           allow:
             - lib/core/services/**

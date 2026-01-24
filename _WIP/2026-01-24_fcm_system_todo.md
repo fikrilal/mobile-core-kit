@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-24  
-**Status:** In progress (Phases 0–1 complete)  
+**Status:** In progress (Phases 0–2 complete)  
 
 Implements the proposal:
 - `_WIP/2026-01-24_fcm_system_proposal.md`
@@ -58,14 +58,14 @@ Non-goals for this TODO:
 
 ## Phase 2 — FCM SDK wrapper
 
-- [ ] Add provider:
-  - [ ] `lib/core/services/push/fcm_token_provider.dart`
-    - [ ] wraps `FirebaseMessaging`
-    - [ ] `Future<String?> getToken()`
-    - [ ] `Stream<String> onTokenRefresh`
-    - [ ] `Future<PushPermissionState> requestPermission()` (optional; no UX wiring yet)
-- [ ] Decide whether to add a `restricted_imports` rule for `firebase_messaging` (optional):
-  - [ ] Allow only `lib/core/services/push/**` and platform bootstrap files if needed
+- [x] Add provider:
+  - [x] `lib/core/services/push/fcm_token_provider.dart`
+    - [x] wraps `FirebaseMessaging`
+    - [x] `Future<String?> getToken()`
+    - [x] `Stream<String> onTokenRefresh`
+    - [x] `Future<PushPermissionState> requestPermission()` (optional; no UX wiring yet)
+- [x] Add a `restricted_imports` rule for `firebase_messaging`:
+  - [x] Allow only `lib/core/services/push/**` and `lib/main*.dart`
 
 ---
 
