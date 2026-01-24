@@ -35,9 +35,16 @@ import 'package:mobile_core_kit/core/services/federated_auth/google_federated_au
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
+import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
+import 'package:mobile_core_kit/core/services/push/fcm_token_provider_impl.dart';
+import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
+import 'package:mobile_core_kit/core/services/push/push_token_sync_service.dart';
+import 'package:mobile_core_kit/core/services/push/push_token_sync_store.dart';
+import 'package:mobile_core_kit/core/services/push/session_push_token_revoker_impl.dart';
 import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/di/auth_module.dart';
@@ -172,6 +179,18 @@ void registerLocator() {
     );
   }
 
+  if (!locator.isRegistered<FcmTokenProvider>()) {
+    locator.registerLazySingleton<FcmTokenProvider>(
+      () => FcmTokenProviderImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<PushTokenSyncStore>()) {
+    locator.registerLazySingleton<PushTokenSyncStore>(
+      () => PushTokenSyncStore(),
+    );
+  }
+
   // Network logging config (must be initialized before ApiClient)
   NetworkLogConfig.initFromBuildConfig();
 
@@ -197,6 +216,24 @@ void registerLocator() {
   AuthModule.register(locator);
 
   // App orchestrators (depend on feature modules)
+  if (!locator.isRegistered<SessionPushTokenRevoker>()) {
+    locator.registerLazySingleton<SessionPushTokenRevoker>(
+      () => SessionPushTokenRevokerImpl(locator<PushTokenRegistrar>()),
+    );
+  }
+
+  if (!locator.isRegistered<PushTokenSyncService>()) {
+    locator.registerLazySingleton<PushTokenSyncService>(
+      () => PushTokenSyncService(
+        sessionManager: locator<SessionManager>(),
+        tokenProvider: locator<FcmTokenProvider>(),
+        registrar: locator<PushTokenRegistrar>(),
+        store: locator<PushTokenSyncStore>(),
+      ),
+      dispose: (service) => service.dispose(),
+    );
+  }
+
   if (!locator.isRegistered<UserContextService>()) {
     locator.registerLazySingleton<UserContextService>(
       () => UserContextService(
@@ -259,6 +296,13 @@ Future<void> bootstrapLocator() {
       // This reduces time spent on the native launch screen at the cost of
       // slightly delayed Firebase/Crashlytics availability.
       await _initializeFirebaseCrashlyticsAndIntl();
+
+      // Push token sync depends on Firebase being initialized (FCM SDK).
+      try {
+        unawaited(locator<PushTokenSyncService>().init());
+      } catch (e, st) {
+        Log.error('Failed to initialize push token sync', e, st, false, 'DI');
+      }
 
       // Optional initializations: failures should not block the app from starting.
       try {

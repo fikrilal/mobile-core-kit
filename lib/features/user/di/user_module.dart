@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
-
 import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
@@ -12,6 +12,7 @@ import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_draft_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/me_push_token_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
@@ -55,6 +56,12 @@ class UserModule {
     if (!getIt.isRegistered<UserRemoteDataSource>()) {
       getIt.registerLazySingleton<UserRemoteDataSource>(
         () => UserRemoteDataSource(getIt<ApiHelper>()),
+      );
+    }
+
+    if (!getIt.isRegistered<PushTokenRegistrar>()) {
+      getIt.registerLazySingleton<PushTokenRegistrar>(
+        () => MePushTokenRemoteDataSource(getIt<ApiHelper>()),
       );
     }
 
