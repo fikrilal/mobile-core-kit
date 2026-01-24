@@ -139,6 +139,9 @@ That keeps logout policy stable even if:
 - the endpoint changes,
 - we add backoff/queueing in the implementation.
 
+See also:
+- `docs/explainers/core/push/push_token_sync.md`
+
 ---
 
 ## 7) Another common example: token refresh orchestration

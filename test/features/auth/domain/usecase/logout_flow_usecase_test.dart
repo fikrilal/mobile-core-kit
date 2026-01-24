@@ -137,6 +137,47 @@ void main() {
       },
     );
 
+    test('still clears local session when push revoke throws', () async {
+      final logoutRemote = _MockLogoutRemoteUseCase();
+      when(() => logoutRemote(any())).thenAnswer((_) async => right(unit));
+
+      final pushTokenRevoker = _MockPushTokenRevoker();
+      when(
+        () => pushTokenRevoker.revoke(),
+      ).thenThrow(Exception('revoke failed'));
+
+      final sessionManager = _MockSessionManager();
+      when(() => sessionManager.session).thenReturn(
+        const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh_123',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+        ),
+      );
+      when(
+        () => sessionManager.logout(reason: any(named: 'reason')),
+      ).thenAnswer((_) async {});
+
+      final usecase = LogoutFlowUseCase(
+        logoutRemote: logoutRemote,
+        pushTokenRevoker: pushTokenRevoker,
+        sessionManager: sessionManager,
+      );
+
+      await usecase(reason: 'manual_logout');
+
+      verify(() => pushTokenRevoker.revoke()).called(1);
+      verify(
+        () => logoutRemote(
+          const LogoutRequestEntity(refreshToken: 'refresh_123'),
+        ),
+      ).called(1);
+      verify(() => sessionManager.logout(reason: 'manual_logout')).called(1);
+    });
+
     test('skips remote logout when there is no session', () async {
       final logoutRemote = _MockLogoutRemoteUseCase();
       final pushTokenRevoker = _MockPushTokenRevoker();

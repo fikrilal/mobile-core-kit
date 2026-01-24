@@ -91,13 +91,13 @@ class PushTokenSyncStore {
   /// - This is used only for dedupe/backoff state; it is not a security feature.
   static String _stableHash(String input) {
     final bytes = utf8.encode(input);
-    const int fnvOffsetBasis = 0xcbf29ce484222325;
-    const int fnvPrime = 0x100000001b3;
-    const int mask64 = 0xffffffffffffffff;
+    final fnvOffsetBasis = BigInt.parse('cbf29ce484222325', radix: 16);
+    final fnvPrime = BigInt.parse('100000001b3', radix: 16);
+    final mask64 = (BigInt.one << 64) - BigInt.one;
 
     var hash = fnvOffsetBasis;
     for (final b in bytes) {
-      hash ^= b;
+      hash = hash ^ BigInt.from(b);
       hash = (hash * fnvPrime) & mask64;
     }
 

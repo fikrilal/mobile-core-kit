@@ -3,10 +3,10 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-24  
-**Status:** In progress (Phases 0–6 complete)  
+**Status:** Done (Phases 0–8 complete)  
 
 Implements the proposal:
-- `_WIP/2026-01-24_fcm_system_proposal.md`
+- Explainer: `docs/explainers/core/push/push_token_sync.md`
 
 ## Objective
 
@@ -129,20 +129,20 @@ Non-goals for this TODO:
 
 ## Phase 7 — Tests
 
-- [ ] Unit tests:
-  - [ ] `PushTokenSyncStore` (dedupe + cooldown)
-  - [ ] `PushTokenSyncService`:
-    - [ ] session active + token present → upsert once
-    - [ ] token refresh while session active → upsert
-    - [ ] `PUSH_NOT_CONFIGURED` sets cooldown
-  - [ ] `LogoutFlowUseCase`:
-    - [ ] revoke failure doesn’t prevent local logout
+- [x] Unit tests:
+  - [x] `PushTokenSyncStore` (dedupe + cooldown)
+  - [x] `PushTokenSyncService`:
+    - [x] session active + token present → upsert once
+    - [x] token refresh while session active → upsert
+    - [x] `PUSH_NOT_CONFIGURED` sets cooldown
+  - [x] `LogoutFlowUseCase`:
+    - [x] revoke failure doesn’t prevent local logout
 
 ---
 
 ## Phase 8 — Verification
 
-- [ ] `tool/agent/flutterw --no-stdin analyze`
-- [ ] `tool/agent/dartw --no-stdin run custom_lint`
-- [ ] `tool/agent/flutterw --no-stdin test`
+- [x] `tool/agent/flutterw --no-stdin analyze`
+- [x] `tool/agent/dartw --no-stdin run custom_lint`
+- [x] `tool/agent/flutterw --no-stdin test`
 - [ ] (Optional full gate) `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
