@@ -97,14 +97,21 @@ Those can be layered later, once token sync is stable.
 
 ## Recommended approach (architecture)
 
-### Why “core service” instead of “feature-owned”
+### Why orchestration is core, but `/me/*` API calls are user-owned
 
 Push token sync is **cross-cutting**:
 - It depends on the session lifecycle (login/restore/logout).
 - It must be kept consistent regardless of which feature is on screen.
 - It should not introduce feature-to-feature imports.
 
-So it belongs under `lib/core/services/` (template-level infrastructure).
+So the **orchestration** belongs under `lib/core/services/` (template-level infrastructure).
+
+However, the backend endpoint is `/v1/me/push-token`, which belongs to the **User** surface (`/me/*`).
+To keep ownership clear and avoid “core becomes a god layer”, we follow the existing pattern used by
+`TokenRefresher` and `CurrentUserFetcher`:
+
+- Core defines an abstraction (`PushTokenRegistrar`).
+- The user feature provides the implementation via DI (so `/me/*` stays feature-owned).
 
 ### Proposed components
 
@@ -124,20 +131,19 @@ Policy:
 - No session logic.
 - Best-effort: a null token is acceptable (especially on iOS until APNS/permission is configured).
 
-#### 2) `PushTokenApi` (network wrapper)
+#### 2) `PushTokenRegistrar` (core abstraction) + user feature implementation
 
-Location: `lib/core/services/push/push_token_api.dart`  
-Responsibilities:
-- `Future<ApiResponse<ApiNoData>> upsert({required platform, required token})`
-- `Future<ApiResponse<ApiNoData>> revoke()`
+Core interface:
+- `lib/core/services/push/push_token_registrar.dart`
 
-Implementation:
-- Use `ApiHelper` with:
-  - `host: ApiHost.profile` (matches other `/me` calls)
-  - `requiresAuth: true`
-  - `throwOnError: false` (matches our datasource policy guardrail)
-- Add endpoint constant:
-  - `UserEndpoint.mePushToken = '/me/push-token'`
+User feature implementation:
+- `lib/features/user/data/datasource/remote/me_push_token_remote_datasource.dart`
+  - uses `ApiHelper` with:
+    - `host: ApiHost.profile` (matches other `/me` calls)
+    - `requiresAuth: true`
+    - `throwOnError: false` (matches our datasource policy guardrail)
+  - endpoint constant:
+    - `UserEndpoint.mePushToken = '/me/push-token'`
 
 #### 3) `PushTokenSyncStore` (dedupe + cooldown)
 
@@ -252,4 +258,3 @@ Integration tests:
    - Suggested default: 24 hours.
 3) Web:
    - Treat as supported platform with best-effort (likely null token), or disable entirely for web builds?
-

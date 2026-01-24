@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-24  
-**Status:** Not started  
+**Status:** In progress (Phases 0–1 complete)  
 
 Implements the proposal:
 - `_WIP/2026-01-24_fcm_system_proposal.md`
@@ -26,37 +26,33 @@ Non-goals for this TODO:
 
 ## Phase 0 — Confirm contracts + decisions
 
-- [ ] Re-check OpenAPI contract (source of truth):
-  - [ ] `PUT /v1/me/push-token` (`204`, body `{platform, token}`)
-  - [ ] `DELETE /v1/me/push-token` (`204`)
-  - [ ] Error codes include `PUSH_NOT_CONFIGURED` (501)
-  - [ ] File: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
-- [ ] Confirm mobile host choice:
-  - [ ] Use `ApiHost.profile` for `/me/push-token` (matches existing `/me` usage)
-- [ ] Confirm default behavior:
-  - [ ] Do **not** prompt for notification permissions at startup
-- [ ] Confirm `PUSH_NOT_CONFIGURED` cooldown duration:
-  - [ ] Suggested: 24 hours
-- [ ] Confirm web policy:
-  - [ ] Best-effort (token likely null) vs disable push token sync on web
+- [x] Re-check OpenAPI contract (source of truth):
+  - [x] `PUT /v1/me/push-token` (`204`, body `{platform, token}`)
+  - [x] `DELETE /v1/me/push-token` (`204`)
+  - [x] Error codes include `PUSH_NOT_CONFIGURED` (501)
+  - [x] File: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
+- [x] Confirm mobile host choice:
+  - [x] Use `ApiHost.profile` for `/me/push-token` (matches existing `/me` usage)
+- [x] Confirm default behavior:
+  - [x] Do **not** prompt for notification permissions at startup (product decides when/where)
+- [x] Confirm `PUSH_NOT_CONFIGURED` cooldown duration:
+  - [x] Default: 24 hours (template-level; can be tuned by downstream apps)
+- [x] Confirm web policy:
+  - [x] Disabled-by-default on web (best-effort no-op) unless a downstream app explicitly configures web push
 
 ---
 
 ## Phase 1 — Networking surface (API contract)
 
-- [ ] Add endpoint constant:
-  - [ ] `lib/core/network/endpoints/user_endpoint.dart`
-    - [ ] `static const String mePushToken = '/me/push-token';`
-- [ ] Add API wrapper:
-  - [ ] `lib/core/services/push/push_token_api.dart`
-    - [ ] `upsert(platform, token)` → `PUT /me/push-token`
-    - [ ] `revoke()` → `DELETE /me/push-token`
-  - [ ] Must use:
-    - [ ] `host: ApiHost.profile`
-    - [ ] `requiresAuth: true`
-    - [ ] `throwOnError: false`
-- [ ] Add simple backend platform mapping:
-  - [ ] `lib/core/services/push/push_platform.dart` (`ANDROID|IOS|WEB`)
+- [x] Add endpoint constant:
+  - [x] `lib/core/network/endpoints/user_endpoint.dart`
+    - [x] `static const String mePushToken = '/me/push-token';`
+- [x] Add core abstraction + feature implementation:
+  - [x] Core interface: `lib/core/services/push/push_token_registrar.dart`
+  - [x] User feature impl: `lib/features/user/data/datasource/remote/me_push_token_remote_datasource.dart`
+  - [x] DI binding: `lib/features/user/di/user_module.dart`
+- [x] Add simple backend platform mapping:
+  - [x] `lib/core/services/push/push_platform.dart` (`ANDROID|IOS|WEB`)
 
 ---
 
@@ -109,7 +105,7 @@ Non-goals for this TODO:
 - [ ] Register in DI:
   - [ ] `lib/core/di/service_locator.dart`
     - [ ] register `FcmTokenProvider`
-    - [ ] register `PushTokenApi`
+    - [ ] register (or rely on user module binding) `PushTokenRegistrar`
     - [ ] register `PushTokenSyncStore`
     - [ ] register `PushTokenSyncService`
 - [ ] Bootstrap in `bootstrapLocator()`:
@@ -150,4 +146,3 @@ Non-goals for this TODO:
 - [ ] `tool/agent/dartw --no-stdin run custom_lint`
 - [ ] `tool/agent/flutterw --no-stdin test`
 - [ ] (Optional full gate) `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
-
