@@ -52,6 +52,13 @@ custom_lint:
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
+    - radius_tokens:
+      include:
+        - lib/core/adaptive/widgets/**
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
     - state_opacity_tokens:
       include:
         - lib/core/adaptive/widgets/**
@@ -60,6 +67,13 @@ custom_lint:
         - lib/navigation/**
         - lib/presentation/**
     - motion_durations:
+      include:
+        - lib/core/adaptive/widgets/**
+        - lib/core/widgets/**
+        - lib/features/**
+        - lib/navigation/**
+        - lib/presentation/**
+    - icon_size_tokens:
       include:
         - lib/core/adaptive/widgets/**
         - lib/core/widgets/**

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/button/button.dart';
@@ -162,7 +163,11 @@ class AppConfirmationDialog extends StatelessWidget {
             right: 0,
             child: IconButton(
               onPressed: _canDismiss ? _resolveCloseAction() : null,
-              icon: Icon(Icons.close, size: 22, color: scheme.onSurfaceVariant),
+              icon: Icon(
+                Icons.close,
+                size: AppSizing.iconSizeCompact,
+                color: scheme.onSurfaceVariant,
+              ),
               splashRadius: 20,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
@@ -277,7 +282,7 @@ class AppConfirmationDialog extends StatelessWidget {
                 onPressed: _canDismiss ? _resolveCloseAction() : null,
                 icon: Icon(
                   Icons.close,
-                  size: 22,
+                  size: AppSizing.iconSizeCompact,
                   color: scheme.onSurfaceVariant,
                 ),
                 splashRadius: 20,

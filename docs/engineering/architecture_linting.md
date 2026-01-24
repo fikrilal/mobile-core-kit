@@ -89,6 +89,16 @@ These lints exist to reduce reviewer cognitive load and keep the UX consistent:
   - Excludes dev tools and showcase screens by default.
 - `route_string_literals`: blocks route path literals in `context.go/push` and `GoRoute(path: ...)` (use route constants).
 
+### Design Token Guardrails
+
+These lints enforce consistent UI sizing and reduce “random magic numbers”:
+
+- `spacing_tokens`: blocks hardcoded spacing in `EdgeInsets`/`SizedBox` (use `AppSpacing.*`).
+- `radius_tokens`: blocks hardcoded `Radius.circular(x)` / `BorderRadius.circular(x)` (use `AppRadii.*`).
+- `icon_size_tokens`: blocks hardcoded icon sizes (`Icon(size: x)`, `PhosphorIcon(size: x)`, `IconButton(iconSize: x)`) (use `AppSizing.iconSize*`).
+- `state_opacity_tokens`: blocks hardcoded alpha values for disabled/pressed/hovered states (use `StateOpacities.*`).
+- `motion_durations`: blocks hardcoded durations for common motion (use `MotionDurations.*`).
+
 ### Networking Guardrails
 
 - `api_helper_datasource_policy`: enforces explicit `ApiHelper` call defaults inside feature datasources:

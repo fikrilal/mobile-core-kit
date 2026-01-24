@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive_policies.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/modal_policy.dart';
+import 'package:mobile_core_kit/core/theme/tokens/radii.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 
 /// Visual style variants for modal bottom sheets.
@@ -50,7 +51,7 @@ Future<T?> showAdaptiveModal<T>({
         bottomSheetShape ??
         theme.bottomSheetTheme.shape ??
         const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(24)),
+          borderRadius: BorderRadius.all(Radius.circular(AppRadii.radius24)),
         );
     final effectiveBackgroundColor =
         bottomSheetBackgroundColor ??
@@ -191,7 +192,7 @@ class _BottomSheetHandle extends StatelessWidget {
         height: AppSpacing.space4,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(AppRadii.radiusPill),
         ),
       ),
     );

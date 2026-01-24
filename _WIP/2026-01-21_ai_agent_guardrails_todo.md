@@ -220,12 +220,12 @@ Goal: make datasource code deterministic + reviewable.
 
 ### 6.1 Radius tokens + lint
 
-- [ ] Add token file: `lib/core/theme/tokens/radii.dart` (`AppRadii.*`)
-- [ ] Add lint `radius_tokens` that flags numeric `Radius.circular` / `BorderRadius.circular` in UI code (exclude core theme builder if needed).
+- [x] Add token file: `lib/core/theme/tokens/radii.dart` (`AppRadii.*`)
+- [x] Add lint `radius_tokens` that flags numeric `Radius.circular` / `BorderRadius.circular` in UI code.
 
 ### 6.2 Icon size tokens + lint (high-signal)
 
-- [ ] Add lint `icon_size_tokens` that flags `Icon(size: <number>)` outside allowed scopes and requires `AppSizing.iconSize*`.
+- [x] Add lint `icon_size_tokens` that flags `Icon(size: <number>)`/`PhosphorIcon(size: <number>)` and `IconButton(iconSize: <number>)` in UI code and requires `AppSizing.iconSize*`.
 
 ---
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
@@ -20,7 +21,10 @@ class ThemeModeSettingTile extends StatelessWidget {
       builder: (context, themeMode, _) {
         return AppListTile(
           leading: AppIconBadge(
-            icon: PhosphorIcon(PhosphorIconsRegular.moonStars, size: 24),
+            icon: PhosphorIcon(
+              PhosphorIconsRegular.moonStars,
+              size: AppSizing.iconSizeMedium,
+            ),
           ),
           title: context.l10n.commonAppearance,
           subtitle: _themeModeLabel(context, themeMode),

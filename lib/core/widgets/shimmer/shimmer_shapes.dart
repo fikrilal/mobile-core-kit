@@ -111,7 +111,7 @@ class ShimmerText extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           color: effectiveBase,
-          borderRadius: BorderRadius.circular(4.0),
+          borderRadius: BorderRadius.circular(AppRadii.radius4),
         ),
       ),
     );

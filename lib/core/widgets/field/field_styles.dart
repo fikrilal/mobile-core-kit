@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
 import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
 import 'package:mobile_core_kit/core/theme/system/state_opacities.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 
 import 'package:mobile_core_kit/core/widgets/field/field_variants.dart';
@@ -14,7 +15,7 @@ class FieldStyles {
   static const Map<FieldSize, FieldSizeConfig> _sizeConfigs = {
     FieldSize.small: FieldSizeConfig(
       height: 36.0,
-      iconSize: 16.0,
+      iconSize: AppSizing.iconSizeSmall,
       borderRadius: 8.0,
       contentPadding: EdgeInsets.symmetric(
         horizontal: AppSpacing.space12,
@@ -23,7 +24,7 @@ class FieldStyles {
     ),
     FieldSize.medium: FieldSizeConfig(
       height: 44.0,
-      iconSize: 20.0,
+      iconSize: AppSizing.iconSizeCompact,
       borderRadius: 10.0,
       contentPadding: EdgeInsets.symmetric(
         horizontal: AppSpacing.space16,
@@ -32,7 +33,7 @@ class FieldStyles {
     ),
     FieldSize.large: FieldSizeConfig(
       height: 52.0,
-      iconSize: 24.0,
+      iconSize: AppSizing.iconSizeMedium,
       borderRadius: 10.0,
       contentPadding: EdgeInsets.symmetric(
         horizontal: AppSpacing.space20,

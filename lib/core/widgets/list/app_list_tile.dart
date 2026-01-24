@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/theme/tokens/radii.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/common/app_haptic_feedback.dart';
@@ -103,7 +105,8 @@ class AppListTile extends StatelessWidget {
           vertical: AppSpacing.space12,
           horizontal: AppSpacing.space4,
         );
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
+    final effectiveBorderRadius =
+        borderRadius ?? BorderRadius.circular(AppRadii.radius12);
 
     // Determine trailing widget
     Widget? effectiveTrailing = trailing;
@@ -112,7 +115,7 @@ class AppListTile extends StatelessWidget {
           chevronIcon ??
           Icon(
             Icons.chevron_right_rounded,
-            size: 20,
+            size: AppSizing.iconSizeCompact,
             color: context.textSecondary,
           );
     }

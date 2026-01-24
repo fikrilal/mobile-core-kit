@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
@@ -25,7 +26,10 @@ class LocaleSettingTile extends StatelessWidget {
       builder: (context, localeOverride, _) {
         return AppListTile(
           leading: AppIconBadge(
-            icon: PhosphorIcon(PhosphorIconsRegular.translate, size: 24),
+            icon: PhosphorIcon(
+              PhosphorIconsRegular.translate,
+              size: AppSizing.iconSizeMedium,
+            ),
           ),
           title: context.l10n.commonLanguage,
           subtitle: _localeLabel(context, localeOverride),

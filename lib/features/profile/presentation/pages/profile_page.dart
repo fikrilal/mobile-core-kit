@@ -10,6 +10,7 @@ import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.d
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
@@ -138,7 +139,10 @@ class _ProfileContent extends StatelessWidget {
               const SizedBox(height: AppSpacing.space8),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.bell, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.bell,
+                    size: AppSizing.iconSizeMedium,
+                  ),
                   showDot: true,
                 ),
                 title: context.l10n.profileInbox,
@@ -146,14 +150,20 @@ class _ProfileContent extends StatelessWidget {
               ),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.question, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.question,
+                    size: AppSizing.iconSizeMedium,
+                  ),
                 ),
                 title: context.l10n.profileHelp,
                 onTap: () {},
               ),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.fileText, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.fileText,
+                    size: AppSizing.iconSizeMedium,
+                  ),
                 ),
                 title: context.l10n.profileStatementsAndReports,
                 onTap: () {},
@@ -167,7 +177,7 @@ class _ProfileContent extends StatelessWidget {
                 leading: AppIconBadge(
                   icon: PhosphorIcon(
                     PhosphorIconsRegular.shieldCheck,
-                    size: 24,
+                    size: AppSizing.iconSizeMedium,
                   ),
                 ),
                 title: context.l10n.profileSecurityAndPrivacy,
@@ -178,7 +188,7 @@ class _ProfileContent extends StatelessWidget {
                 leading: AppIconBadge(
                   icon: PhosphorIcon(
                     PhosphorIconsRegular.bellRinging,
-                    size: 24,
+                    size: AppSizing.iconSizeMedium,
                   ),
                 ),
                 title: context.l10n.profileNotifications,
@@ -192,7 +202,10 @@ class _ProfileContent extends StatelessWidget {
               ),
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.bank,
+                    size: AppSizing.iconSizeMedium,
+                  ),
                 ),
                 title: context.l10n.profilePaymentMethods,
                 subtitle: context.l10n.profilePaymentMethodsSubtitle,
@@ -204,7 +217,10 @@ class _ProfileContent extends StatelessWidget {
                 const SizedBox(height: AppSpacing.space8),
                 AppListTile(
                   leading: AppIconBadge(
-                    icon: PhosphorIcon(PhosphorIconsRegular.palette, size: 24),
+                    icon: PhosphorIcon(
+                      PhosphorIconsRegular.palette,
+                      size: AppSizing.iconSizeMedium,
+                    ),
                   ),
                   title: context.l10n.profileThemeRoles,
                   subtitle: context.l10n.profileThemeRolesSubtitle,
@@ -212,7 +228,10 @@ class _ProfileContent extends StatelessWidget {
                 ),
                 AppListTile(
                   leading: AppIconBadge(
-                    icon: PhosphorIcon(PhosphorIconsRegular.cube, size: 24),
+                    icon: PhosphorIcon(
+                      PhosphorIconsRegular.cube,
+                      size: AppSizing.iconSizeMedium,
+                    ),
                   ),
                   title: context.l10n.profileWidgetShowcases,
                   subtitle: context.l10n.profileWidgetShowcasesSubtitle,
@@ -223,7 +242,10 @@ class _ProfileContent extends StatelessWidget {
 
               AppListTile(
                 leading: AppIconBadge(
-                  icon: PhosphorIcon(PhosphorIconsRegular.signOut, size: 24),
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.signOut,
+                    size: AppSizing.iconSizeMedium,
+                  ),
                   iconColor: Theme.of(context).colorScheme.error,
                 ),
                 title: context.l10n.commonLogout,

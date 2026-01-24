@@ -7,6 +7,7 @@ class AppSizing {
   static const double buttonHeightLarge = 48.0;
 
   static const double iconSizeSmall = 16.0;
+  static const double iconSizeCompact = 20.0;
   static const double iconSizeMedium = 24.0;
   static const double iconSizeLarge = 32.0;
 
