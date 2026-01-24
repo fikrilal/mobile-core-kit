@@ -110,11 +110,24 @@ Run the full verify pipeline (includes custom lint):
 dart run tool/verify.dart --env dev
 ```
 
+Run the codegen freshness gate (ensures generated outputs are committed + up-to-date):
+
+```bash
+dart run tool/verify_codegen.dart
+```
+
+Or via the main verify script:
+
+```bash
+dart run tool/verify.dart --env dev --check-codegen
+```
+
 If you are in WSL, prefer the Windows toolchain wrappers:
 
 ```bash
 tool/agent/dartw run custom_lint
 tool/agent/dartw run tool/verify.dart --env dev
+tool/agent/dartw run tool/verify_codegen.dart
 ```
 
 In non-interactive runners (Codex CLI PTY sessions / scripts), prefer `winrun` with stdin redirected:

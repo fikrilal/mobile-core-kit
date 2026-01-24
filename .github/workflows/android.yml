@@ -89,6 +89,9 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Verify codegen outputs
+        run: dart run tool/verify_codegen.dart
+
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints
         run: |
@@ -212,6 +215,9 @@ jobs:
 
       - name: Flutter pub get
         run: flutter pub get
+
+      - name: Verify codegen outputs
+        run: dart run tool/verify_codegen.dart
 
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints

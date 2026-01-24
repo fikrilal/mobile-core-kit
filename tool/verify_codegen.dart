@@ -1,28 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
-
-Future<int> main(List<String> argv) async {
-  final parser = ArgParser()
-    ..addOption('env', abbr: 'e', defaultsTo: 'dev')
-    ..addFlag('apply-fixes', defaultsTo: false)
-    ..addFlag('check-codegen', defaultsTo: false)
-    ..addFlag('skip-format', defaultsTo: false)
-    ..addFlag('skip-tests', defaultsTo: false);
-
-  final args = parser.parse(argv);
-  final env = args.option('env')!;
-  final applyFixes = args.flag('apply-fixes');
-  final checkCodegen = args.flag('check-codegen');
-  final skipFormat = args.flag('skip-format');
-  final skipTests = args.flag('skip-tests');
-
-  final envs = {'dev', 'staging', 'prod'};
-  if (!envs.contains(env)) {
-    stderr.writeln("Unknown --env '$env'. Expected one of: ${envs.join(', ')}");
-    return 2;
-  }
-
+/// Codegen freshness gate.
+///
+/// This script ensures `build_runner` outputs are checked in and up-to-date.
+///
+/// In CI, this prevents PRs from forgetting to run codegen after changing:
+/// - Freezed models (`*.freezed.dart`)
+/// - JsonSerializable models (`*.g.dart`)
+///
+/// Local usage:
+/// - Run this after `flutter pub get`.
+/// - If it fails, run the suggested `build_runner` command and commit the
+///   generated outputs.
+Future<int> main(List<String> _) async {
   final runner = _CommandRunner.detect(Directory.current);
 
   Future<int> step(String title, List<String> command) async {
@@ -32,92 +23,78 @@ Future<int> main(List<String> argv) async {
 
   var exitCode = 0;
 
-  exitCode = await step('Flutter pub get', ['flutter', 'pub', 'get']);
-  if (exitCode != 0) return exitCode;
-
-  if (checkCodegen) {
-    exitCode = await step('Verify codegen outputs', [
-      'dart',
-      'run',
-      'tool/verify_codegen.dart',
-    ]);
-    if (exitCode != 0) return exitCode;
-  }
-
-  if (applyFixes) {
-    exitCode = await step('Dart fix (apply: directives_ordering)', [
-      'dart',
-      'fix',
-      '--apply',
-      '--code',
-      'directives_ordering',
-    ]);
-    if (exitCode != 0) return exitCode;
-
-    if (!skipFormat) {
-      exitCode = await step('Dart format (apply)', ['dart', 'format', '.']);
-      if (exitCode != 0) return exitCode;
-    }
-  }
-
-  exitCode = await step('Generate build config (.env/$env.yaml)', [
+  exitCode = await step('Build runner', [
     'dart',
     'run',
-    'tool/gen_config.dart',
-    '--env',
-    env,
+    'build_runner',
+    'build',
+    '--delete-conflicting-outputs',
   ]);
   if (exitCode != 0) return exitCode;
 
-  exitCode = await step('Flutter gen-l10n', ['flutter', 'gen-l10n']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify untranslated messages', [
-    'dart',
-    'run',
-    'tool/verify_untranslated_messages.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Custom lint', ['dart', 'run', 'custom_lint']);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify modal entrypoints', [
-    'dart',
-    'run',
-    'tool/verify_modal_entrypoints.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  exitCode = await step('Verify hardcoded UI colors', [
-    'dart',
-    'run',
-    'tool/verify_hardcoded_ui_colors.dart',
-  ]);
-  if (exitCode != 0) return exitCode;
-
-  if (!skipTests) {
-    exitCode = await step('Flutter test', ['flutter', 'test']);
-    if (exitCode != 0) return exitCode;
-  }
-
-  if (!skipFormat) {
-    exitCode = await step('Dart format (check)', [
-      'dart',
-      'format',
-      '--output',
-      'none',
-      '--set-exit-if-changed',
-      '.',
-    ]);
-    if (exitCode != 0) return exitCode;
-  }
+  final diffExitCode = await _verifyGeneratedFilesClean();
+  if (diffExitCode != 0) return diffExitCode;
 
   stdout.writeln('\nOK');
   return 0;
+}
+
+Future<int> _verifyGeneratedFilesClean() async {
+  final changedFiles = await _gitDiffNameOnly();
+  if (changedFiles == null) {
+    stderr.writeln('Unable to run `git diff`. Is git installed and on PATH?');
+    return 2;
+  }
+
+  final generatedChanges =
+      changedFiles
+          .where(
+            (path) =>
+                path.endsWith('.g.dart') ||
+                path.endsWith('.freezed.dart') ||
+                path.endsWith('.gr.dart'),
+          )
+          .toList()
+        ..sort();
+
+  if (generatedChanges.isEmpty) return 0;
+
+  stderr.writeln(
+    'Codegen outputs are out-of-date (build_runner produced changes).',
+  );
+  stderr.writeln('');
+  stderr.writeln('Changed generated files:');
+  for (final path in generatedChanges) {
+    stderr.writeln('- $path');
+  }
+  stderr.writeln('');
+  stderr.writeln('Fix:');
+  stderr.writeln('  dart run build_runner build --delete-conflicting-outputs');
+  return 1;
+}
+
+Future<List<String>?> _gitDiffNameOnly() async {
+  try {
+    final result = await Process.run(
+      'git',
+      const ['diff', '--name-only'],
+      workingDirectory: Directory.current.path,
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
+    if (result.exitCode != 0) {
+      return null;
+    }
+    final out = (result.stdout as String).trim();
+    if (out.isEmpty) return const [];
+    return out
+        .split('\n')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  } on ProcessException {
+    return null;
+  }
 }
 
 class _CommandRunner {

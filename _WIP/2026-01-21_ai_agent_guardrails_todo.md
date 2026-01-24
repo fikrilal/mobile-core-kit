@@ -206,13 +206,13 @@ Goal: make datasource code deterministic + reviewable.
 
 ### 5.2 (Optional) Codegen freshness gate
 
-- [ ] Decide: do we want build_runner in every PR CI?
-  - If yes:
-    - [ ] Add `tool/verify_codegen.dart`:
-      - [ ] run build_runner
-      - [ ] fail if generated outputs differ (via `git diff --exit-code`)
-  - If no:
-    - [ ] Provide a human+agent checklist and keep `tool/verify.dart` as-is.
+- [x] Decide: do we want build_runner in every PR CI? **Yes.**
+- [x] Add `tool/verify_codegen.dart`:
+  - [x] Run `build_runner`.
+  - [x] Fail if generated outputs differ (checks `*.g.dart` / `*.freezed.dart` / `*.gr.dart` diffs).
+- [x] Add to CI (`.github/workflows/android.yml`) after `flutter pub get`.
+- [x] Optional local usage:
+  - [x] `dart run tool/verify.dart --env dev --check-codegen`
 
 ---
 
