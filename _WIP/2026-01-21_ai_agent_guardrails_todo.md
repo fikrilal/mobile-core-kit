@@ -105,37 +105,24 @@ This TODO document is the implementation checklist to fully realize the guardrai
 
 File: `tool/lints/architecture_lints.yaml`
 
-- [ ] Add `feature_domain_no_infra`:
-  - [ ] `from: lib/features/*/domain/**`
-  - [ ] `deny:` add:
-    - [ ] `lib/core/network/**`
-    - [ ] `lib/core/services/**`
-    - [ ] `lib/core/storage/**`
-    - [ ] `lib/core/database/**`
-    - [ ] `lib/core/theme/**`
-    - [ ] `lib/core/widgets/**`
-    - [ ] `lib/core/adaptive/**`
-    - [ ] `lib/core/di/**`
-    - [ ] `lib/core/dev_tools/**`
-    - [ ] `lib/l10n/**`
-- [ ] Add `features_no_cross_feature_imports` (default deny; explicit exceptions only):
-  - [ ] `from: lib/features/*/**`
-  - [ ] `deny: lib/features/**`
-  - [ ] Exceptions (only if truly required; keep very short):
-    - [ ] allow `lib/features/<X>/**` → `lib/features/<Y>/domain/**` only when there is a formal “shared contract”, otherwise move it to `lib/core/**` or a `packages/*` module.
-- [ ] Add `no_service_locator_imports_outside_edges`:
-  - [ ] `from: lib/**`
-  - [ ] `deny: lib/core/di/service_locator.dart`
-  - [ ] Exceptions allow importing it only from:
-    - [ ] `lib/core/di/**`
-    - [ ] `lib/navigation/**`
-    - [ ] `lib/app.dart`
-    - [ ] `lib/main_*.dart`
-    - [ ] `lib/features/*/di/**`
-- [ ] Run: `dart run custom_lint` (or `tool/agent/dartw --no-stdin run custom_lint`) and fix/allowlist as needed.
-- [ ] Update docs:
-  - [ ] `docs/engineering/architecture_linting.md` (document the new rules + rationale).
-  - [ ] `docs/engineering/project_architecture.md` (if it references patterns that these rules now forbid).
+- [x] Add `feature_domain_no_infra`.
+- [x] Add `features_no_cross_feature_imports` (default deny; explicit exceptions only).
+  - [x] TEMP exceptions for current reality:
+    - [x] `features/profile/**` importing `features/auth/**` for logout UI
+    - [x] `features/user/**` importing `features/auth/**` for shared failures/VOs
+- [x] Add `no_service_locator_imports_outside_edges`.
+  - [x] Allowed scopes: `lib/core/di/**`, `lib/navigation/**`, `lib/app.dart`, `lib/main_*.dart`, `lib/features/*/di/**`
+- [x] Run: `tool/agent/dartw --no-stdin run custom_lint` (green).
+- [x] Fix violations by refactoring away `locator<...>()` imports in non-edge code:
+  - [x] `OnboardingPage` now receives `AppStartupController` from route builder.
+  - [x] `ProfilePage` now receives `UserContextService`, `ThemeModeController`, `LocaleController` from router builder.
+  - [x] `ThemeModeSettingTile` / `LocaleSettingTile` now require controllers (no locator fallback).
+  - [x] `AppEventListener` now receives `AppEventBus` from `app.dart`.
+  - [x] `AuthTokenInterceptor` no longer imports the locator; it receives a `sessionManagerProvider` + Dio client.
+    - Tests updated accordingly.
+- [x] Update docs:
+  - [x] `docs/engineering/architecture_linting.md`
+  - [x] `docs/engineering/project_architecture.md`
 
 ---
 
@@ -146,22 +133,23 @@ Files:
 - `packages/mobile_core_kit_lints/lib/mobile_core_kit_lints.dart` (register lint)
 - `analysis_options.yaml` (enable + config)
 
-- [ ] Implement lint behavior:
-  - [ ] Trigger on `ImportDirective` + `ExportDirective`.
-  - [ ] Match by URI prefix:
-    - [ ] `package:dio/dio.dart`
-    - [ ] `package:firebase_analytics/firebase_analytics.dart`
-    - [ ] `package:firebase_crashlytics/firebase_crashlytics.dart`
-    - [ ] `package:shared_preferences/shared_preferences.dart`
-    - [ ] `package:flutter_secure_storage/flutter_secure_storage.dart`
-    - [ ] optional: `dart:developer`
-  - [ ] Allow by file path allowlist globs (config-driven).
-- [ ] Add `analysis_options.yaml` config shape (example):
-  - [ ] `restricted_imports.include: [lib/**]`
-  - [ ] `restricted_imports.rules:` list of `{uri, allow, message?}`.
-- [ ] Add unit tests for config parsing/matching (pure tests under `packages/mobile_core_kit_lints/test/`).
-- [ ] Add docs snippet:
-  - [ ] `docs/engineering/project_architecture.md` or a new `docs/engineering/guardrails.md` section.
+- [x] Implement lint behavior:
+  - [x] Trigger on `ImportDirective` + `ExportDirective`.
+  - [x] Match by URI prefix:
+    - [x] `package:dio/dio.dart`
+    - [x] `package:firebase_analytics/firebase_analytics.dart`
+    - [x] `package:firebase_crashlytics/firebase_crashlytics.dart`
+    - [x] `package:shared_preferences/shared_preferences.dart`
+    - [x] `package:flutter_secure_storage/flutter_secure_storage.dart`
+    - [x] `dart:developer`
+  - [x] Allow by file path allowlist globs (config-driven).
+- [x] Add `analysis_options.yaml` config:
+  - [x] `restricted_imports.include: [lib/**]`
+  - [x] `restricted_imports.rules:` list of `{uri, allow, message?}`.
+- [x] Add unit tests under `packages/mobile_core_kit_lints/test/`:
+  - [x] `packages/mobile_core_kit_lints/test/restricted_imports_test.dart`
+- [x] Add docs snippet:
+  - [x] `docs/engineering/architecture_linting.md` (document `restricted_imports`).
 
 ---
 
@@ -169,28 +157,24 @@ Files:
 
 ### 3.1 `hardcoded_ui_strings`
 
-- [ ] Add lint `hardcoded_ui_strings`:
-  - [ ] Include: UI layers (`lib/core/widgets/**`, `lib/features/**`, `lib/navigation/**`, `lib/presentation/**`)
-  - [ ] Exclude: dev tools/showcases (`lib/core/dev_tools/**`, `**/*showcase*`)
-  - [ ] Flag string literals in widget-ish contexts (start narrow; expand later):
-    - [ ] `Text('...')`
-    - [ ] `AppText.*('...')`
-    - [ ] `AppButton(... text: '...')`
-    - [ ] `AppBar(title: Text('...'))`
-  - [ ] Allowlist:
-    - [ ] semantics/analytics IDs if needed (by file scope or constant prefix)
-    - [ ] dev tools/showcase already excluded
-- [ ] Add suppression instructions (in lint correction message):
-  - [ ] `// ignore: hardcoded_ui_strings`
-  - [ ] `// ignore_for_file: hardcoded_ui_strings`
+- [x] Add lint `hardcoded_ui_strings`:
+  - [x] Include: UI layers (`lib/core/widgets/**`, `lib/features/**`, `lib/navigation/**`, `lib/presentation/**`)
+  - [x] Exclude: dev tools/showcases (`lib/core/dev_tools/**`, `**/*showcase*`)
+  - [x] Flag string literals in widget-ish contexts:
+    - [x] `Text('...')`
+    - [x] `AppText.*('...')`
+    - [x] `AppButton.*(text: '...')`
+  - [x] Suppression instructions are included in the lint correction message:
+    - [x] `// ignore: hardcoded_ui_strings`
+    - [x] `// ignore_for_file: hardcoded_ui_strings`
 
 ### 3.2 `route_string_literals`
 
-- [ ] Add lint `route_string_literals`:
-  - [ ] Flag `context.go('/...')`, `context.push('/...')`, `context.pushReplacement('/...')` with string literal args.
-  - [ ] Flag `GoRoute(path: '/...')` with string literal path.
-  - [ ] Require route constants (`AppRoutes.*`, `<feature>Routes.*`).
-  - [ ] Exclude deep-link parsing / test-only routing helpers if needed (path-based excludes).
+- [x] Add lint `route_string_literals`:
+  - [x] Flag `*.go('/...')`, `*.push('/...')`, `*.pushReplacement('/...')` with string literal args.
+  - [x] Flag `GoRoute(path: '/...')` with string literal path.
+  - [x] Require route constants (`AppRoutes.*`, `<feature>Routes.*`).
+  - [x] (No exclusions needed yet; deep-link parsing is out of scope for the AST patterns we lint.)
 
 ---
 
@@ -200,13 +184,13 @@ Files:
 
 Goal: make datasource code deterministic + reviewable.
 
-- [ ] Add lint applied to: `lib/features/*/data/datasource/**`
-- [ ] For calls to `_apiHelper.*`:
-  - [ ] Require explicit `host:`
-  - [ ] Require `throwOnError: false`
-  - [ ] (Optional) require explicit `requiresAuth:` (true/false)
-- [ ] Allowlist:
-  - [ ] core networking layers (`lib/core/network/**`) excluded entirely
+- [x] Add lint applied to: `lib/features/*/data/datasource/**`
+- [x] For calls to `_apiHelper.*`:
+  - [x] Require explicit `host:`
+  - [x] Require `throwOnError: false`
+  - [x] Require explicit `requiresAuth:` (true/false) (enabled in `analysis_options.yaml`)
+- [x] Fix callsites:
+  - [x] `lib/features/user/data/datasource/remote/user_remote_datasource.dart` now passes `requiresAuth: true`
 
 ---
 
@@ -214,11 +198,11 @@ Goal: make datasource code deterministic + reviewable.
 
 ### 5.1 Untranslated messages gate
 
-- [ ] Add: `tool/verify_untranslated_messages.dart`
-  - [ ] Fail if `tool/untranslated_messages.json` contains any entries.
-  - [ ] Provide actionable output (top N missing keys; suggest `flutter gen-l10n`).
-- [ ] Call it from `tool/verify.dart` after `flutter gen-l10n`.
-- [ ] Add to CI (`.github/workflows/android.yml`) if CI doesn’t run `tool/verify.dart` directly.
+- [x] Add: `tool/verify_untranslated_messages.dart`
+  - [x] Fail if `tool/untranslated_messages.json` contains any entries.
+  - [x] Provide actionable output (prints top missing keys when possible).
+- [x] Call it from `tool/verify.dart` after `flutter gen-l10n`.
+- [x] Add to CI (`.github/workflows/android.yml`) after `flutter gen-l10n`.
 
 ### 5.2 (Optional) Codegen freshness gate
 

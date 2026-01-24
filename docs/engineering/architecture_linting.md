@@ -22,6 +22,80 @@ This file is the **single source of truth** for the architecture rules. It uses 
 
 Note: some exceptions are marked **TEMP** and have TODOs to refactor away.
 
+### Current Policy (Feature Domain Purity)
+
+Feature domain code (`lib/features/*/domain/**`) MUST remain framework- and infra-free:
+
+- It MUST NOT import feature data/presentation or navigation.
+- It MUST NOT import infrastructure concerns such as:
+  - networking (`lib/core/network/**`)
+  - persistence (`lib/core/database/**`, `lib/core/storage/**`)
+  - UI/theme (`lib/core/widgets/**`, `lib/core/theme/**`, `lib/core/adaptive/**`)
+  - DI (`lib/core/di/**`)
+  - generated localization (`lib/l10n/**`)
+
+This keeps the domain layer testable and portable across apps that adopt this template.
+
+### Current Policy (Features → Features)
+
+Features MUST NOT import other feature code by default.
+
+- Default: `lib/features/**` MUST NOT import `lib/features/**`.
+- Exceptions are explicit and rare (see `features_no_cross_feature_imports`).
+
+This is enforced so “shared contracts” do not accidentally live inside a random feature.
+If something is genuinely shared across features, it belongs in `lib/core/**` (or a dedicated shared package).
+
+### Current Policy (Service Locator)
+
+Only **composition roots** may import `lib/core/di/service_locator.dart`.
+
+Allowed scopes:
+- `lib/core/di/**` (registrations / bootstrap)
+- `lib/navigation/**` (route-time providers)
+- `lib/features/*/di/**` (feature module registration)
+- `lib/app.dart`, `lib/main_*.dart` (root composition)
+
+Disallowed scopes (examples):
+- `lib/features/*/presentation/**`
+- `lib/core/network/**`
+- `lib/core/widgets/**`
+
+Pattern to follow:
+- Resolve dependencies in navigation/DI.
+- Pass dependencies via constructors (widgets) or providers (`BlocProvider` at route build time).
+
+### Restricted Imports (Low-Level Dependencies)
+
+This repo also enforces “dependency boundaries” via a separate custom lint:
+
+- `restricted_imports` (configured in `analysis_options.yaml`)
+
+It prevents low-level packages from being imported directly in feature code (unless explicitly allowlisted),
+so we keep migrations and refactors cheap.
+
+Examples of restricted dependencies:
+- `dio` → must live under `lib/core/network/**`
+- `firebase_analytics` → must live under `lib/core/services/analytics/**`
+- `firebase_crashlytics` → must live under `lib/core/services/early_errors/**` / logging utilities
+- `shared_preferences` → only allowed in store/service implementations (plus explicit template allowlists)
+- `flutter_secure_storage` → must live under `lib/core/storage/secure/**`
+
+### Content & Navigation Guardrails
+
+These lints exist to reduce reviewer cognitive load and keep the UX consistent:
+
+- `hardcoded_ui_strings`: blocks user-facing string literals in common widget contexts (use `context.l10n.*`).
+  - Excludes dev tools and showcase screens by default.
+- `route_string_literals`: blocks route path literals in `context.go/push` and `GoRoute(path: ...)` (use route constants).
+
+### Networking Guardrails
+
+- `api_helper_datasource_policy`: enforces explicit `ApiHelper` call defaults inside feature datasources:
+  - explicit `host:`
+  - `throwOnError: false`
+  - explicit `requiresAuth: true|false`
+
 ## Running Locally (CLI)
 
 Run custom lints:

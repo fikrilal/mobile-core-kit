@@ -176,7 +176,11 @@ void registerLocator() {
   NetworkLogConfig.initFromBuildConfig();
 
   if (!locator.isRegistered<ApiClient>()) {
-    locator.registerLazySingleton<ApiClient>(() => ApiClient()..init());
+    locator.registerLazySingleton<ApiClient>(
+      () =>
+          ApiClient()
+            ..init(sessionManagerProvider: () => locator<SessionManager>()),
+    );
   }
 
   if (!locator.isRegistered<ApiHelper>()) {

@@ -2,15 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
-import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/network/interceptors/auth_token_interceptor.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSessionManager extends Mock implements SessionManager {}
-
-class _MockApiClient extends Mock implements ApiClient {}
 
 class _FakeAdapter implements HttpClientAdapter {
   _FakeAdapter(this._onFetch);
@@ -40,14 +36,6 @@ class _RecordingErrorInterceptor extends Interceptor {
 }
 
 void main() {
-  setUp(() async {
-    await locator.reset();
-  });
-
-  tearDown(() async {
-    await locator.reset();
-  });
-
   test(
     'surfaces retry error when refresh succeeds but retried request fails',
     () async {
@@ -73,13 +61,12 @@ void main() {
         );
       });
 
-      final apiClient = _MockApiClient();
-      when(() => apiClient.dio).thenReturn(dio);
-
-      locator.registerSingleton<SessionManager>(session);
-      locator.registerSingleton<ApiClient>(apiClient);
-
-      dio.interceptors.add(AuthTokenInterceptor());
+      dio.interceptors.add(
+        AuthTokenInterceptor(
+          sessionManagerProvider: () => session,
+          client: dio,
+        ),
+      );
 
       await expectLater(
         dio.get('/protected'),
@@ -119,13 +106,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     final response = await dio.get('/protected');
     expect(response.statusCode, 200);
@@ -151,13 +134,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     await expectLater(
       dio.post('/protected', data: {'x': 1}),
@@ -198,13 +177,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     final response = await dio.head('/protected');
     expect(response.statusCode, 200);
@@ -236,13 +211,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     final response = await dio.post(
       '/protected',
@@ -273,13 +244,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     await expectLater(
       dio.patch('/protected', data: {'x': 1}),
@@ -320,13 +287,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     final response = await dio.patch(
       '/protected',
@@ -357,13 +320,9 @@ void main() {
       );
     });
 
-    final apiClient = _MockApiClient();
-    when(() => apiClient.dio).thenReturn(dio);
-
-    locator.registerSingleton<SessionManager>(session);
-    locator.registerSingleton<ApiClient>(apiClient);
-
-    dio.interceptors.add(AuthTokenInterceptor());
+    dio.interceptors.add(
+      AuthTokenInterceptor(sessionManagerProvider: () => session, client: dio),
+    );
 
     await expectLater(
       dio.post(
@@ -409,14 +368,13 @@ void main() {
         );
       });
 
-      final apiClient = _MockApiClient();
-      when(() => apiClient.dio).thenReturn(dio);
-
-      locator.registerSingleton<SessionManager>(session);
-      locator.registerSingleton<ApiClient>(apiClient);
-
       var errorCalls = 0;
-      dio.interceptors.add(AuthTokenInterceptor());
+      dio.interceptors.add(
+        AuthTokenInterceptor(
+          sessionManagerProvider: () => session,
+          client: dio,
+        ),
+      );
       dio.interceptors.add(
         _RecordingErrorInterceptor((err) {
           if (err.response?.statusCode == 401) errorCalls += 1;

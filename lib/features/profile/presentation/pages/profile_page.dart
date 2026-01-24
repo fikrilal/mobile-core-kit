@@ -5,8 +5,9 @@ import 'package:mobile_core_kit/core/adaptive/adaptive_context.dart';
 import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
+import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
@@ -26,7 +27,16 @@ import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({
+    super.key,
+    required this.userContext,
+    required this.themeModeController,
+    required this.localeController,
+  });
+
+  final UserContextService userContext;
+  final ThemeModeController themeModeController;
+  final LocaleController localeController;
 
   @override
   Widget build(BuildContext context) {
@@ -45,23 +55,35 @@ class ProfilePage extends StatelessWidget {
       child: AppLoadingOverlay(
         isLoading: isLoggingOut,
         message: context.l10n.profileLoggingOut,
-        child: _ProfileContent(isLoggingOut: isLoggingOut),
+        child: _ProfileContent(
+          isLoggingOut: isLoggingOut,
+          userContext: userContext,
+          themeModeController: themeModeController,
+          localeController: localeController,
+        ),
       ),
     );
   }
 }
 
 class _ProfileContent extends StatelessWidget {
-  const _ProfileContent({required this.isLoggingOut});
+  const _ProfileContent({
+    required this.isLoggingOut,
+    required this.userContext,
+    required this.themeModeController,
+    required this.localeController,
+  });
 
   final bool isLoggingOut;
+  final UserContextService userContext;
+  final ThemeModeController themeModeController;
+  final LocaleController localeController;
 
   @override
   Widget build(BuildContext context) {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
     final showDevTools = BuildConfig.env == BuildEnv.dev;
-    final userContext = locator<UserContextService>();
 
     return AppPageContainer(
       surface: SurfaceKind.settings,
@@ -163,8 +185,11 @@ class _ProfileContent extends StatelessWidget {
                 subtitle: context.l10n.profileNotificationsSubtitle,
                 onTap: () {},
               ),
-              const ThemeModeSettingTile(),
-              LocaleSettingTile(includePseudoLocales: showDevTools),
+              ThemeModeSettingTile(controller: themeModeController),
+              LocaleSettingTile(
+                includePseudoLocales: showDevTools,
+                controller: localeController,
+              ),
               AppListTile(
                 leading: AppIconBadge(
                   icon: PhosphorIcon(PhosphorIconsRegular.bank, size: 24),

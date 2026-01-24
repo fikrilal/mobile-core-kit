@@ -4,6 +4,7 @@ import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
 import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
@@ -23,11 +24,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigation = locator<NavigationService>();
+    final eventBus = locator<AppEventBus>();
     final startup = locator<AppStartupController>();
     final themeModeController = locator<ThemeModeController>()..load();
     final localeController = locator<LocaleController>()..load();
 
     return AppEventListener(
+      eventBus: eventBus,
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: themeModeController,
         builder: (context, themeMode, _) {

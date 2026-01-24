@@ -7,9 +7,12 @@ import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_route_observer.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_core_kit/features/profile/presentation/pages/profile_page.dart';
@@ -65,7 +68,11 @@ GoRouter createRouter() {
                 name: 'profile',
                 builder: (context, state) => BlocProvider<LogoutCubit>(
                   create: (_) => locator<LogoutCubit>(),
-                  child: const ProfilePage(),
+                  child: ProfilePage(
+                    userContext: locator<UserContextService>(),
+                    themeModeController: locator<ThemeModeController>(),
+                    localeController: locator<LocaleController>(),
+                  ),
                 ),
               ),
             ],

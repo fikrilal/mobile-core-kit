@@ -237,6 +237,7 @@ Modularized DI keeps boundaries explicit and wiring minimal.
 - Core module: `lib/core/di/core_module.dart` registers infrastructure (ApiClient/Helper, DB, secure storage, session, services, event bus, navigation/deep link).
 - Feature modules: `lib/features/<feature>/di/*_module.dart` register datasources, repositories, use cases, and Bloc/Cubit factories.
 - Route‑time providers: create Bloc/Cubit instances inside route builders via `BlocProvider`/`MultiBlocProvider` and dispatch initial intents there.
+- Service locator usage is restricted to composition roots (DI + navigation + app entrypoints). Presentation code should receive dependencies via providers/constructors.
 
 Registration guidelines:
 - Prefer `registerLazySingleton` for repositories/services and `registerFactory` for Bloc/Cubit.

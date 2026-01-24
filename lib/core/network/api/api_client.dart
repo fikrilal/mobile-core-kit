@@ -9,6 +9,7 @@ import 'package:mobile_core_kit/core/network/interceptors/logging_interceptor.da
 import 'package:mobile_core_kit/core/network/interceptors/request_id_interceptor.dart';
 import 'package:mobile_core_kit/core/network/logging/net_log_mode.dart';
 import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
+import 'package:mobile_core_kit/core/session/session_manager.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
@@ -21,7 +22,7 @@ class ApiClient {
   Dio get dio => _dio;
   HeaderInterceptor get headerInterceptor => _headerInterceptor;
 
-  void init() {
+  void init({required SessionManager Function() sessionManagerProvider}) {
     _dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.instance.url(ApiHost.core),
@@ -44,7 +45,10 @@ class ApiClient {
       BaseUrlInterceptor(),
       RequestIdInterceptor(),
       _headerInterceptor,
-      AuthTokenInterceptor(),
+      AuthTokenInterceptor(
+        sessionManagerProvider: sessionManagerProvider,
+        client: _dio,
+      ),
       if (NetworkLogConfig.instance.mode != NetLogMode.off)
         LoggingInterceptor(),
       ErrorInterceptor(),

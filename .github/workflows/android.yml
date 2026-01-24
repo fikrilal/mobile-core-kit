@@ -101,6 +101,9 @@ jobs:
       - name: Flutter gen-l10n
         run: flutter gen-l10n
 
+      - name: Verify untranslated messages
+        run: dart run tool/verify_untranslated_messages.dart
+
       - name: Flutter analyze
         run: flutter analyze
 
@@ -221,6 +224,9 @@ jobs:
 
       - name: Flutter gen-l10n
         run: flutter gen-l10n
+
+      - name: Verify untranslated messages
+        run: dart run tool/verify_untranslated_messages.dart
 
       - name: Flutter analyze
         run: flutter analyze

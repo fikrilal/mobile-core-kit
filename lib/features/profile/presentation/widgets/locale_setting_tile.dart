@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
-import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
@@ -12,19 +11,17 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class LocaleSettingTile extends StatelessWidget {
   const LocaleSettingTile({
     required this.includePseudoLocales,
+    required this.controller,
     super.key,
-    this.controller,
   });
 
   final bool includePseudoLocales;
-  final LocaleController? controller;
+  final LocaleController controller;
 
   @override
   Widget build(BuildContext context) {
-    final localeController = controller ?? locator<LocaleController>();
-
     return ValueListenableBuilder<Locale?>(
-      valueListenable: localeController,
+      valueListenable: controller,
       builder: (context, localeOverride, _) {
         return AppListTile(
           leading: AppIconBadge(
@@ -44,7 +41,7 @@ class LocaleSettingTile extends StatelessWidget {
               ),
             );
             if (selected == null) return;
-            await localeController.setLocale(_localeFromOption(selected));
+            await controller.setLocale(_localeFromOption(selected));
           },
         );
       },

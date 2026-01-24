@@ -19,6 +19,7 @@ class UserRemoteDataSource {
     final response = await _apiHelper.getOne<MeModel>(
       UserEndpoint.me,
       host: ApiHost.profile,
+      requiresAuth: true,
       throwOnError: false,
       parser: MeModel.fromJson,
     );
@@ -41,6 +42,7 @@ class UserRemoteDataSource {
     final response = await _apiHelper.patch<MeModel>(
       UserEndpoint.me,
       host: ApiHost.profile,
+      requiresAuth: true,
       throwOnError: false,
       headers: <String, String>{
         'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
