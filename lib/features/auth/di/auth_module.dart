@@ -23,7 +23,10 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
@@ -91,6 +94,18 @@ class AuthModule {
       );
     }
 
+    if (!getIt.isRegistered<VerifyEmailUseCase>()) {
+      getIt.registerFactory<VerifyEmailUseCase>(
+        () => VerifyEmailUseCase(getIt<AuthRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ResendEmailVerificationUseCase>()) {
+      getIt.registerFactory<ResendEmailVerificationUseCase>(
+        () => ResendEmailVerificationUseCase(getIt<AuthRepository>()),
+      );
+    }
+
     // Session manager
     if (!getIt.isRegistered<SessionManager>()) {
       getIt.registerLazySingleton<SessionManager>(
@@ -121,6 +136,15 @@ class AuthModule {
           getIt<SignInWithGoogleUseCase>(),
           getIt<SessionManager>(),
           getIt<AnalyticsTracker>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<EmailVerificationCubit>()) {
+      getIt.registerFactory<EmailVerificationCubit>(
+        () => EmailVerificationCubit(
+          getIt<VerifyEmailUseCase>(),
+          getIt<ResendEmailVerificationUseCase>(),
         ),
       );
     }
