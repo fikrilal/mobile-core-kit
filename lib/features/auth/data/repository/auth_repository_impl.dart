@@ -8,6 +8,7 @@ import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart'
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_response_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';

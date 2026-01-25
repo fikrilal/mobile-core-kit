@@ -3,9 +3,9 @@ import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/user/model/remote/me_model.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
-import 'package:mobile_core_kit/features/auth/data/model/remote/auth_user_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_response_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
@@ -22,12 +22,15 @@ class _MockGoogleFederatedAuthService extends Mock
 class _MockDeviceIdentityService extends Mock
     implements DeviceIdentityService {}
 
-AuthResultModel _authResult() {
-  return const AuthResultModel(
-    user: AuthUserModel(
+AuthResponseModel _authResponse() {
+  return const AuthResponseModel(
+    user: MeModel(
       id: 'u1',
       email: 'user@example.com',
       emailVerified: false,
+      roles: ['USER'],
+      authMethods: ['PASSWORD'],
+      profile: MeProfileModel(),
     ),
     accessToken: 'access',
     refreshToken: 'refresh',
@@ -55,7 +58,9 @@ void main() {
     );
 
     when(() => remote.register(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResultModel>.success(data: _authResult()),
+      (_) async => ApiResponse<AuthResponseModel>.success(
+        data: _authResponse(),
+      ),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
@@ -82,7 +87,9 @@ void main() {
     );
 
     when(() => remote.login(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResultModel>.success(data: _authResult()),
+      (_) async => ApiResponse<AuthResponseModel>.success(
+        data: _authResponse(),
+      ),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
@@ -112,7 +119,9 @@ void main() {
     );
 
     when(() => remote.oidcExchange(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResultModel>.success(data: _authResult()),
+      (_) async => ApiResponse<AuthResponseModel>.success(
+        data: _authResponse(),
+      ),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);

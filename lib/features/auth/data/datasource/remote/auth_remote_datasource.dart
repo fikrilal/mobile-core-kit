@@ -4,6 +4,7 @@ import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/network/endpoints/auth_endpoint.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/auth_response_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
@@ -17,18 +18,18 @@ class AuthRemoteDataSource {
 
   final ApiHelper _apiHelper;
 
-  Future<ApiResponse<AuthResultModel>> register(
+  Future<ApiResponse<AuthResponseModel>> register(
     RegisterRequestModel requestModel,
   ) async {
     Log.info('Starting user registration', name: _tag);
 
-    final response = await _apiHelper.post<AuthResultModel>(
+    final response = await _apiHelper.post<AuthResponseModel>(
       AuthEndpoint.register,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthResultModel.fromJson,
+      parser: AuthResponseModel.fromJson,
     );
 
     if (response.isError) {
@@ -40,18 +41,18 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthResultModel>> login(
+  Future<ApiResponse<AuthResponseModel>> login(
     LoginRequestModel requestModel,
   ) async {
     Log.info('Starting user login', name: _tag);
 
-    final response = await _apiHelper.post<AuthResultModel>(
+    final response = await _apiHelper.post<AuthResponseModel>(
       AuthEndpoint.login,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthResultModel.fromJson,
+      parser: AuthResponseModel.fromJson,
     );
 
     if (response.isError) {
@@ -106,7 +107,7 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<ApiResponse<AuthResultModel>> oidcExchange(
+  Future<ApiResponse<AuthResponseModel>> oidcExchange(
     OidcExchangeRequestModel requestModel,
   ) async {
     final len = requestModel.idToken.length;
@@ -115,13 +116,13 @@ class AuthRemoteDataSource {
       name: _tag,
     );
 
-    final response = await _apiHelper.post<AuthResultModel>(
+    final response = await _apiHelper.post<AuthResponseModel>(
       AuthEndpoint.oidcExchange,
       data: requestModel.toJson(),
       host: ApiHost.auth,
       requiresAuth: false,
       throwOnError: false,
-      parser: AuthResultModel.fromJson,
+      parser: AuthResponseModel.fromJson,
     );
 
     if (response.isError) {

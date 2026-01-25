@@ -7,10 +7,12 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/auth_user_model.
 part 'auth_result_model.freezed.dart';
 part 'auth_result_model.g.dart';
 
-/// Auth result payload returned by backend-core-kit.
+/// Auth result payload returned by backend-core-kit for token refresh.
 ///
 /// API convention: the backend returns `{ "data": <payload> }`, and [ApiHelper]
 /// extracts the inner `<payload>` for [fromJson].
+///
+/// Source: `AuthResultDto` in `backend-core-kit` OpenAPI (`POST /v1/auth/refresh`).
 @freezed
 abstract class AuthResultModel with _$AuthResultModel {
   const factory AuthResultModel({

@@ -21,35 +21,6 @@ String _jwtWithExpSeconds(int expSeconds) {
 
 void main() {
   group('AuthResultModel', () {
-    test('parses backend-shaped JSON (login/register)', () {
-      final expSeconds =
-          DateTime.now()
-              .toUtc()
-              .add(const Duration(days: 30))
-              .millisecondsSinceEpoch ~/
-          1000;
-
-      final json = <String, dynamic>{
-        'user': <String, dynamic>{
-          'id': 'u1',
-          'email': 'user@example.com',
-          'emailVerified': true,
-          'authMethods': ['PASSWORD'],
-        },
-        'accessToken': _jwtWithExpSeconds(expSeconds),
-        'refreshToken': 'refresh',
-      };
-
-      final model = AuthResultModel.fromJson(json);
-
-      expect(model.user.id, 'u1');
-      expect(model.user.email, 'user@example.com');
-      expect(model.user.emailVerified, true);
-      expect(model.user.authMethods, ['PASSWORD']);
-      expect(model.accessToken, isNotEmpty);
-      expect(model.refreshToken, 'refresh');
-    });
-
     test('parses backend-shaped JSON (refresh, authMethods omitted)', () {
       final expSeconds =
           DateTime.now()

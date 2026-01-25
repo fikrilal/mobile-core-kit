@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
-import 'package:mobile_core_kit/features/user/data/model/remote/me_model.dart';
+import 'package:mobile_core_kit/core/user/model/remote/me_model.dart';
 
 void main() {
   group('MeModel', () {
