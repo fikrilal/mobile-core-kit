@@ -15,9 +15,11 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_m
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 
@@ -142,6 +144,49 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e, st) {
       Log.error(
         'Unexpected error during Google sign-in',
+        e,
+        st,
+        true,
+        'AuthRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> verifyEmail(
+    VerifyEmailRequestEntity request,
+  ) async {
+    final apiRequest = VerifyEmailRequestModel.fromEntity(request);
+    try {
+      final apiResponse = await _remote.verifyEmail(apiRequest);
+      return apiResponse
+          .toEitherWithFallback('Verify email failed.')
+          .mapLeft(mapAuthFailure)
+          .map((_) => unit);
+    } catch (e, st) {
+      Log.error(
+        'Verify email unexpected error',
+        e,
+        st,
+        true,
+        'AuthRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> resendEmailVerification() async {
+    try {
+      final apiResponse = await _remote.resendEmailVerification();
+      return apiResponse
+          .toEitherWithFallback('Resend verification email failed.')
+          .mapLeft(mapAuthFailure)
+          .map((_) => unit);
+    } catch (e, st) {
+      Log.error(
+        'Resend verification email unexpected error',
         e,
         st,
         true,

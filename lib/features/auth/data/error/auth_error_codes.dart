@@ -40,4 +40,12 @@ class AuthErrorCodes {
 
   /// OIDC token invalid/expired.
   static const String oidcTokenInvalid = 'AUTH_OIDC_TOKEN_INVALID';
+
+  /// Email verification token is invalid (malformed/unknown/redeemed).
+  static const String emailVerificationTokenInvalid =
+      'AUTH_EMAIL_VERIFICATION_TOKEN_INVALID';
+
+  /// Email verification token is expired.
+  static const String emailVerificationTokenExpired =
+      'AUTH_EMAIL_VERIFICATION_TOKEN_EXPIRED';
 }

@@ -27,6 +27,7 @@ import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
@@ -246,6 +247,18 @@ class _InMemorySessionRepository implements SessionRepository {
 class _FakeAuthRepository implements AuthRepository {
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> signInWithGoogleOidc() async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> verifyEmail(
+    VerifyEmailRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> resendEmailVerification() async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 

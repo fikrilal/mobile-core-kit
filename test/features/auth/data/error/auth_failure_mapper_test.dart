@@ -94,6 +94,23 @@ void main() {
       expect(mapAuthFailure(failure), const AuthFailure.emailNotVerified());
     });
 
+    test('maps AUTH_EMAIL_VERIFICATION_TOKEN_* codes to unexpected', () {
+      const codes = [
+        AuthErrorCodes.emailVerificationTokenInvalid,
+        AuthErrorCodes.emailVerificationTokenExpired,
+      ];
+
+      for (final code in codes) {
+        final failure = ApiFailure(
+          message: 'Invalid/expired verification token',
+          statusCode: 400,
+          code: code,
+        );
+
+        expect(mapAuthFailure(failure), const AuthFailure.unexpected());
+      }
+    });
+
     test('maps RATE_LIMITED code to tooManyRequests', () {
       final failure = ApiFailure(
         message: 'Too many requests',

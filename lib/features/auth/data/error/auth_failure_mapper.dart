@@ -30,6 +30,9 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       case AuthErrorCodes.emailNotVerified:
       case AuthErrorCodes.oidcEmailNotVerified:
         return const AuthFailure.emailNotVerified();
+      case AuthErrorCodes.emailVerificationTokenInvalid:
+      case AuthErrorCodes.emailVerificationTokenExpired:
+        return const AuthFailure.unexpected();
       case AuthErrorCodes.userSuspended:
         return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:

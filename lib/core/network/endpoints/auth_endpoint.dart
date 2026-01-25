@@ -4,4 +4,6 @@ class AuthEndpoint {
   static const String refreshToken = '/auth/refresh';
   static const String logout = '/auth/logout';
   static const String oidcExchange = '/auth/oidc/exchange';
+  static const String verifyEmail = '/auth/email/verify';
+  static const String resendEmailVerification = '/auth/email/verification/resend';
 }

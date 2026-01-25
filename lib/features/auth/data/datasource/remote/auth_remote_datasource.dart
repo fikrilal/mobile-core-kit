@@ -11,6 +11,7 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_m
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._apiHelper);
@@ -128,6 +129,47 @@ class AuthRemoteDataSource {
     if (response.isError) {
       Log.warning(
         'OIDC exchange failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
+    return response;
+  }
+
+  Future<ApiResponse<ApiNoData>> verifyEmail(
+    VerifyEmailRequestModel requestModel,
+  ) async {
+    Log.info('Verifying email', name: _tag);
+
+    final response = await _apiHelper.post<ApiNoData>(
+      AuthEndpoint.verifyEmail,
+      data: requestModel.toJson(),
+      host: ApiHost.auth,
+      requiresAuth: false,
+      throwOnError: false,
+    );
+
+    if (response.isError) {
+      Log.warning(
+        'Verify email failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
+    return response;
+  }
+
+  Future<ApiResponse<ApiNoData>> resendEmailVerification() async {
+    Log.info('Resending verification email', name: _tag);
+
+    final response = await _apiHelper.post<ApiNoData>(
+      AuthEndpoint.resendEmailVerification,
+      host: ApiHost.auth,
+      requiresAuth: true,
+      throwOnError: false,
+    );
+
+    if (response.isError) {
+      Log.warning(
+        'Resend verification email failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }
