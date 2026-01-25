@@ -3,7 +3,7 @@
 **Repo:** `mobile-core-kit`  
 **Backend:** `/mnt/c/Development/_CORE/backend-core-kit`  
 **Date:** 2026-01-25  
-**Status:** Proposal (backend-first)  
+**Status:** Implemented (backend + mobile)  
 
 ## Context (problem)
 
@@ -30,9 +30,9 @@ We also want to reduce redundant `/me` calls on login/register for template perf
 
 Return a **“Me-equivalent snapshot”** directly from:
 
-- `POST /v1/auth/login`
-- `POST /v1/auth/register`
-- (and any auth entrypoint that establishes a new session: e.g. OIDC exchange)
+- `POST /v1/auth/password/login`
+- `POST /v1/auth/password/register`
+- `POST /v1/auth/oidc/exchange`
 
 So the client can:
 
@@ -86,7 +86,7 @@ This makes:
 
 Update the auth result parsing so the auth `user` uses the **same structure** as `/v1/me`:
 
-- Option A (preferred): reuse the existing `MeModel` in `AuthResultModel.user`
+- Option A (preferred): reuse the existing `MeModel` for auth responses (hydrated user)
   - eliminates duplicate DTO maintenance
   - guarantees parity with `/me` mapping logic
 - Option B: extend `AuthUserModel` to match `MeDto` exactly (higher drift risk)
@@ -126,6 +126,26 @@ In backend-core-kit:
   - This is a best practice to prevent contract drift.
 - Keep token refresh responses minimal (recommended):
   - token refresh can be frequent; avoid returning full user there unless you have a strong reason.
+
+---
+
+## Current implementation (what we did)
+
+### Backend
+
+- Login/Register/OIDC exchange return an auth envelope whose `user` is a `MeDto` snapshot.
+- Refresh remains minimal: `POST /v1/auth/refresh` returns `AuthUserDto`.
+
+### Mobile
+
+- Hydrated auth responses are parsed via `AuthResponseModel`:
+  - `lib/features/auth/data/model/remote/auth_response_model.dart`
+  - `AuthRemoteDataSource.register/login/oidcExchange` use `AuthResponseModel.fromJson`
+- Token refresh remains parsed via `AuthResultModel` (minimal user):
+  - `lib/features/auth/data/model/remote/auth_result_model.dart`
+  - `AuthRemoteDataSource.refreshToken` uses `AuthResultModel.fromJson`
+- `MeModel` lives in core to avoid cross-feature imports (required by architecture lints):
+  - `lib/core/user/model/remote/me_model.dart`
 
 ---
 
@@ -179,4 +199,3 @@ Mitigation:
    - e.g. `userSnapshotVersion` / `isMeSnapshot=true`
    - More robust than the “roles marker”, but requires additional contract and client logic.
    - Consider this if roles can legitimately be empty.
-

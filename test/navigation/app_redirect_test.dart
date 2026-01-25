@@ -357,5 +357,39 @@ void main() {
         expect(deepLinks.pendingLocation, isNull);
       },
     );
+
+    test('redirects directly from auth to complete profile (no home blip)', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            roles: ['USER'],
+            authMethods: ['PASSWORD'],
+            profile: UserProfileEntity(),
+          ),
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse(AuthRoutes.signIn),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, UserRoutes.completeProfile);
+    });
   });
 }
