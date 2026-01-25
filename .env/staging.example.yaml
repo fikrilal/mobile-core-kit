@@ -4,6 +4,13 @@ profile: https://staging-profile.example.com/api
 enableLogging: true
 reminderExperiment: false
 
+# Analytics
+analyticsEnabledDefault: true
+analyticsDebugLoggingEnabled: true
+
+# Google OIDC (Sign-In)
+googleOidcServerClientId: <your-google-web-client-id>.apps.googleusercontent.com
+
 # Network logging (console-only)
 netLogMode: summary
 netLogBodyLimitBytes: 8192

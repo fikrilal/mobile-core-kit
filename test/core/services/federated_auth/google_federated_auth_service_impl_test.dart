@@ -12,7 +12,13 @@ void main() {
     test('returns null when the user cancels sign-in', () async {
       final googleSignIn = _MockGoogleSignIn();
 
-      when(() => googleSignIn.initialize()).thenAnswer((_) async {});
+      when(
+        () => googleSignIn.initialize(
+          serverClientId: any<String?>(
+            named: 'serverClientId',
+          ),
+        ),
+      ).thenAnswer((_) async {});
       when(
         () => googleSignIn.attemptLightweightAuthentication(),
       ).thenAnswer((_) => Future.value(null));
@@ -33,7 +39,13 @@ void main() {
       final googleSignIn = _MockGoogleSignIn();
       final account = _MockGoogleSignInAccount();
 
-      when(() => googleSignIn.initialize()).thenAnswer((_) async {});
+      when(
+        () => googleSignIn.initialize(
+          serverClientId: any<String?>(
+            named: 'serverClientId',
+          ),
+        ),
+      ).thenAnswer((_) async {});
       when(
         () => googleSignIn.attemptLightweightAuthentication(),
       ).thenAnswer((_) => Future.value(null));

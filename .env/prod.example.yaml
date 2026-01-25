@@ -4,6 +4,13 @@ profile: https://prod-profile.example.com/api
 enableLogging: false
 reminderExperiment: false
 
+# Analytics
+analyticsEnabledDefault: true
+analyticsDebugLoggingEnabled: false
+
+# Google OIDC (Sign-In)
+googleOidcServerClientId: <your-google-web-client-id>.apps.googleusercontent.com
+
 # Network logging (console-only)
 netLogMode: off
 netLogBodyLimitBytes: 8192

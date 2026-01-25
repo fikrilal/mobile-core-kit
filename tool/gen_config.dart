@@ -33,7 +33,7 @@ void main(List<String> argv) {
   String escapeSingleQuotes(String value) => value.replaceAll("'", r"\'");
 
   String mapLiteral(String name, Map<String, dynamic> map) {
-    // Only map known API hosts; ignore other config keys like google client IDs.
+    // Only map known API hosts.
     const allowed = {'core', 'auth', 'profile'};
     final entries = map.entries
         .where((entry) => allowed.contains(entry.key))
@@ -109,6 +109,10 @@ void main(List<String> argv) {
       )
       ..writeln(
         'const bool _${env}AnalyticsDebugLoggingEnabled = ${boolLiteralForKey(map, 'analyticsDebugLoggingEnabled', defaultValue: false)};',
+      )
+      // Google OIDC (Sign-In) config
+      ..writeln(
+        'const String _${env}GoogleOidcServerClientId = ${stringLiteral(map, 'googleOidcServerClientId')};',
       )
       // Network logging config
       ..writeln(

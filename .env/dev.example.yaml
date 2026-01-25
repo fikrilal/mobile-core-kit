@@ -8,6 +8,15 @@ profile: http://10.0.2.2:4000/v1
 enableLogging: true
 reminderExperiment: false
 
+# Analytics
+analyticsEnabledDefault: true
+analyticsDebugLoggingEnabled: true
+
+# Google OIDC (Sign-In)
+# Web client id from Google Cloud Console (used as `serverClientId` to mint an `idToken`).
+# Backend must allow this via `AUTH_OIDC_GOOGLE_CLIENT_IDS` (see backend docs: docs/engineering/auth/oidc-google.md).
+googleOidcServerClientId: <your-google-web-client-id>.apps.googleusercontent.com
+
 # Network logging (console-only)
 netLogMode: full
 netLogBodyLimitBytes: 8192
