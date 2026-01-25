@@ -134,7 +134,7 @@ void main() {
       expect(find.text('ROOT'), findsOneWidget);
       expect(find.byType(ModalBarrier), findsAtLeastNWidgets(1));
 
-      router.go('https://orymu.com/profile');
+      router.go('https://links.fikril.dev/profile');
       await tester.pump();
 
       expect(find.text('ROOT'), findsOneWidget);

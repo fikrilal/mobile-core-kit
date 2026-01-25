@@ -231,6 +231,46 @@
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
   },
+  "authVerifyEmailTitle": "⟪RTL⟫ Verify email",
+  "@authVerifyEmailTitle": {
+    "description": "Title shown on the email verification handler screen."
+  },
+  "authVerifyEmailVerifyingBody": "⟪RTL⟫ Verifying your email address…",
+  "@authVerifyEmailVerifyingBody": {
+    "description": "Body copy shown while verifying the email address from a deep link."
+  },
+  "authVerifyEmailSuccessTitle": "⟪RTL⟫ Email verified",
+  "@authVerifyEmailSuccessTitle": {
+    "description": "Title shown when email verification succeeds."
+  },
+  "authVerifyEmailSuccessBody": "⟪RTL⟫ Thanks — your email is now verified.",
+  "@authVerifyEmailSuccessBody": {
+    "description": "Body copy shown when email verification succeeds."
+  },
+  "authVerifyEmailResentTitle": "⟪RTL⟫ Verification email sent",
+  "@authVerifyEmailResentTitle": {
+    "description": "Title shown when verification email resend succeeds."
+  },
+  "authVerifyEmailResentBody": "⟪RTL⟫ Check your inbox for a new verification link.",
+  "@authVerifyEmailResentBody": {
+    "description": "Body copy shown when verification email resend succeeds."
+  },
+  "authVerifyEmailFailureTitle": "⟪RTL⟫ Verification failed",
+  "@authVerifyEmailFailureTitle": {
+    "description": "Title shown when email verification fails."
+  },
+  "authVerifyEmailFailureBody": "⟪RTL⟫ This verification link is invalid or expired. Please request a new one.",
+  "@authVerifyEmailFailureBody": {
+    "description": "Body copy shown when email verification fails (invalid/expired link)."
+  },
+  "authVerifyEmailResendCta": "⟪RTL⟫ Resend verification email",
+  "@authVerifyEmailResendCta": {
+    "description": "CTA label for resending the verification email."
+  },
+  "authVerifyEmailSignInCta": "⟪RTL⟫ Sign in to resend",
+  "@authVerifyEmailSignInCta": {
+    "description": "CTA label shown when the user must sign in before resending verification email."
+  },
   "onboardingWelcomeTitle": "⟪RTL⟫ Welcome",
   "@onboardingWelcomeTitle": {
     "description": "Title shown on the onboarding screen."

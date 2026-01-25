@@ -18,8 +18,8 @@ This document explains **deep linking behavior and extension points** in this te
    - iOS: `ios/Runner/Runner.entitlements`
 
 3) **Host verification files**
-   - Android: `https://orymu.com/.well-known/assetlinks.json`
-   - iOS: `https://orymu.com/.well-known/apple-app-site-association`
+   - Android: `https://links.fikril.dev/.well-known/assetlinks.json`
+   - iOS: `https://links.fikril.dev/.well-known/apple-app-site-association`
 
 4) **Add/adjust tests**
    - Parser: `test/core/services/deep_link/deep_link_parser_test.dart`
@@ -90,7 +90,7 @@ During startup, the app should block user interaction until readiness is known. 
 ### Defaults (this repo)
 
 - Pending intent is **persisted** (so it can survive process death) with a **TTL of 1 hour**.
-- External deep links support **HTTPS** for `orymu.com` only (strict allowlist).
+- External deep links support **HTTPS** for `links.fikril.dev` only (strict allowlist).
 - Multiple incoming links use **last-intent-wins**.
 
 ---
@@ -258,7 +258,7 @@ Block interaction immediately while startup readiness is unknown. If you show a 
 
 ## Adding a New Deep Link Destination (Checklist)
 
-Example: you want to support `https://orymu.com/settings/security` → `/settings/security`.
+Example: you want to support `https://links.fikril.dev/settings/security` → `/settings/security`.
 
 1) **Add the route**
    - Add route constant under `lib/navigation/*` (or feature route list).
@@ -270,12 +270,12 @@ Example: you want to support `https://orymu.com/settings/security` → `/setting
 
 3) **Claim it (Android)**
    - Update the App Links `<intent-filter>` in `android/app/src/main/AndroidManifest.xml`:
-     - add a `<data android:scheme="https" android:host="orymu.com" android:pathPrefix="/settings/security" />`
+     - add a `<data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/settings/security" />`
    - Keep this in sync with the Dart allowlist.
 
 4) **Claim it (iOS)**
    - Ensure `ios/Runner/Runner.entitlements` includes:
-     - `applinks:orymu.com`
+     - `applinks:links.fikril.dev`
    - Update the hosted AASA file path allowlist to include `/settings/security`.
 
 5) **Update hosted verification**

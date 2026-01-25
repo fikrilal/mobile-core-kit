@@ -247,7 +247,7 @@ void main() {
     });
 
     test(
-      'canonicalizes allowlisted https://orymu.com links to internal /path',
+      'canonicalizes allowlisted https://links.fikril.dev links to internal /path',
       () async {
         final deepLinks = _deepLinks();
         final parser = DeepLinkParser();
@@ -258,7 +258,7 @@ void main() {
         );
 
         final redirect = appRedirectUri(
-          Uri.parse('https://orymu.com/profile'),
+          Uri.parse('https://links.fikril.dev/profile'),
           startupAuthed,
           deepLinks,
           parser,
@@ -286,6 +286,47 @@ void main() {
 
       expect(redirect, AppRoutes.root);
       expect(deepLinks.pendingLocation, isNull);
+    });
+
+    test('verify-email deep link bypasses onboarding gate', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startupOnboarding = await _startup(
+        shouldShowOnboarding: true,
+        isAuthenticated: false,
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('https://links.fikril.dev/verify-email?token=abc'),
+        startupOnboarding,
+        deepLinks,
+        parser,
+      );
+
+      // Should canonicalize to the internal auth route instead of redirecting
+      // to onboarding or capturing a pending deep link.
+      expect(redirect, '${AuthRoutes.verifyEmail}?token=abc');
+      expect(deepLinks.pendingLocation, isNull);
+    });
+
+    test('authenticated user is allowed to open verify-email route', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startupAuthed = await _startup(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('${AuthRoutes.verifyEmail}?token=abc'),
+        startupAuthed,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, isNull);
     });
   });
 
@@ -391,6 +432,40 @@ void main() {
 
       expect(redirect, UserRoutes.completeProfile);
     });
+
+    test('verify-email route bypasses profile completion gate', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            roles: ['USER'],
+            authMethods: ['PASSWORD'],
+            profile: UserProfileEntity(),
+          ),
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('${AuthRoutes.verifyEmail}?token=abc'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, isNull);
+    });
   });
 
   group('appRedirectUri (user hydration gate)', () {
@@ -449,6 +524,35 @@ void main() {
 
       expect(redirect, AppRoutes.root);
       expect(deepLinks.pendingLocation, '/profile');
+    });
+
+    test('verify-email deep link bypasses hydration gate', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          // user is intentionally null (tokens-only session restore).
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('https://links.fikril.dev/verify-email?token=abc'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, '${AuthRoutes.verifyEmail}?token=abc');
+      expect(deepLinks.pendingLocation, isNull);
     });
   });
 }
