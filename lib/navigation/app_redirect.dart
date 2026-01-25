@@ -68,6 +68,13 @@ String? appRedirectUri(
       return AuthRoutes.signIn;
     }
 
+    // If the session exists but the user is not yet hydrated (cold start with
+    // tokens only), stay on `/` and let the app-level startup overlay block UI
+    // until hydration completes. This avoids a flash to `/home`.
+    if (startup.shouldBlockRoutingForUserHydration) {
+      return null;
+    }
+
     if (startup.needsProfileCompletion) {
       return UserRoutes.completeProfile;
     }
@@ -98,6 +105,23 @@ String? appRedirectUri(
       reason: 'needs_auth',
     );
     return AuthRoutes.signIn;
+  }
+
+  // Gate routing while hydrating the user (tokens present, no `/me` yet).
+  if (startup.shouldBlockRoutingForUserHydration) {
+    if (zone == _RouteZone.root) return null;
+
+    // Only store resumable intents. Auth/onboarding routes are never meaningful
+    // to resume into once authenticated.
+    if (zone != _RouteZone.auth && zone != _RouteZone.onboarding) {
+      deepLinks.setPendingLocationForRedirect(
+        location,
+        source: pendingSource,
+        reason: 'needs_user_hydration',
+      );
+    }
+
+    return AppRoutes.root;
   }
 
   if (startup.needsProfileCompletion) {

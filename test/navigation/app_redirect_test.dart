@@ -392,4 +392,63 @@ void main() {
       expect(redirect, UserRoutes.completeProfile);
     });
   });
+
+  group('appRedirectUri (user hydration gate)', () {
+    test('stays on / while authenticated but user hydration is pending', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          // user is intentionally null (tokens-only session restore).
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse(AppRoutes.root),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, isNull);
+    });
+
+    test('captures intent and routes to / while hydration is pending', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          // user is intentionally null (tokens-only session restore).
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('/profile'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, AppRoutes.root);
+      expect(deepLinks.pendingLocation, '/profile');
+    });
+  });
 }
