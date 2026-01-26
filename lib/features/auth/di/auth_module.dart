@@ -19,11 +19,13 @@ import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_im
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
@@ -31,6 +33,8 @@ import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password
 import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
 
 class AuthModule {
@@ -114,6 +118,18 @@ class AuthModule {
       );
     }
 
+    if (!getIt.isRegistered<RequestPasswordResetUseCase>()) {
+      getIt.registerFactory<RequestPasswordResetUseCase>(
+        () => RequestPasswordResetUseCase(getIt<AuthRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ConfirmPasswordResetUseCase>()) {
+      getIt.registerFactory<ConfirmPasswordResetUseCase>(
+        () => ConfirmPasswordResetUseCase(getIt<AuthRepository>()),
+      );
+    }
+
     // Session manager
     if (!getIt.isRegistered<SessionManager>()) {
       getIt.registerLazySingleton<SessionManager>(
@@ -176,6 +192,21 @@ class AuthModule {
     if (!getIt.isRegistered<ChangePasswordCubit>()) {
       getIt.registerFactory<ChangePasswordCubit>(
         () => ChangePasswordCubit(getIt<ChangePasswordUseCase>()),
+      );
+    }
+
+    if (!getIt.isRegistered<PasswordResetRequestCubit>()) {
+      getIt.registerFactory<PasswordResetRequestCubit>(
+        () => PasswordResetRequestCubit(getIt<RequestPasswordResetUseCase>()),
+      );
+    }
+
+    if (!getIt.isRegistered<PasswordResetConfirmCubit>()) {
+      getIt.registerFactory<PasswordResetConfirmCubit>(
+        () => PasswordResetConfirmCubit(
+          getIt<ConfirmPasswordResetUseCase>(),
+          getIt<SessionManager>(),
+        ),
       );
     }
   }
