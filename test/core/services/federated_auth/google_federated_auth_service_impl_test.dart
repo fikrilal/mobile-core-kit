@@ -14,9 +14,7 @@ void main() {
 
       when(
         () => googleSignIn.initialize(
-          serverClientId: any<String?>(
-            named: 'serverClientId',
-          ),
+          serverClientId: any<String?>(named: 'serverClientId'),
         ),
       ).thenAnswer((_) async {});
       when(
@@ -41,9 +39,7 @@ void main() {
 
       when(
         () => googleSignIn.initialize(
-          serverClientId: any<String?>(
-            named: 'serverClientId',
-          ),
+          serverClientId: any<String?>(named: 'serverClientId'),
         ),
       ).thenAnswer((_) async {});
       when(

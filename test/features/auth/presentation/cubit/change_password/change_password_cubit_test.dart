@@ -9,7 +9,8 @@ import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password
 import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_state.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockChangePasswordUseCase extends Mock implements ChangePasswordUseCase {}
+class _MockChangePasswordUseCase extends Mock
+    implements ChangePasswordUseCase {}
 
 void main() {
   setUpAll(() {
@@ -43,7 +44,10 @@ void main() {
         emitted.single.currentPasswordError?.code,
         ValidationErrorCodes.required,
       );
-      expect(emitted.single.newPasswordError?.code, ValidationErrorCodes.required);
+      expect(
+        emitted.single.newPasswordError?.code,
+        ValidationErrorCodes.required,
+      );
       expect(emitted.single.confirmNewPasswordError, isNull);
 
       verifyNever(() => changePassword(any()));
@@ -65,7 +69,10 @@ void main() {
       await cubit.submit();
       await pumpEventQueue();
 
-      expect(emitted.any((s) => s.status == ChangePasswordStatus.submitting), true);
+      expect(
+        emitted.any((s) => s.status == ChangePasswordStatus.submitting),
+        true,
+      );
       expect(emitted.last.status, ChangePasswordStatus.success);
 
       final captured = verify(() => changePassword(captureAny())).captured;
@@ -139,9 +146,9 @@ void main() {
     });
 
     test('emits failure for passwordNotSet', () async {
-      when(() => changePassword(any())).thenAnswer(
-        (_) async => left(const AuthFailure.passwordNotSet()),
-      );
+      when(
+        () => changePassword(any()),
+      ).thenAnswer((_) async => left(const AuthFailure.passwordNotSet()));
 
       final cubit = ChangePasswordCubit(changePassword);
       final emitted = <ChangePasswordState>[];
@@ -161,4 +168,3 @@ void main() {
     });
   });
 }
-

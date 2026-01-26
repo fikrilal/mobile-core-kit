@@ -16,29 +16,33 @@ void main() {
   });
 
   group('VerifyEmailUseCase', () {
-    test('returns validation failure and does not call repo when token is empty',
-        () async {
-      final repo = _MockAuthRepository();
-      final usecase = VerifyEmailUseCase(repo);
+    test(
+      'returns validation failure and does not call repo when token is empty',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = VerifyEmailUseCase(repo);
 
-      final result = await usecase(const VerifyEmailRequestEntity(token: ' '));
-
-      expect(result.isLeft(), true);
-      result.match((failure) {
-        expect(
-          failure,
-          const AuthFailure.validation([
-            ValidationError(
-              field: 'token',
-              message: '',
-              code: ValidationErrorCodes.required,
-            ),
-          ]),
+        final result = await usecase(
+          const VerifyEmailRequestEntity(token: ' '),
         );
-      }, (_) => fail('Expected Left'));
 
-      verifyNever(() => repo.verifyEmail(any()));
-    });
+        expect(result.isLeft(), true);
+        result.match((failure) {
+          expect(
+            failure,
+            const AuthFailure.validation([
+              ValidationError(
+                field: 'token',
+                message: '',
+                code: ValidationErrorCodes.required,
+              ),
+            ]),
+          );
+        }, (_) => fail('Expected Left'));
+
+        verifyNever(() => repo.verifyEmail(any()));
+      },
+    );
 
     test('normalizes token before calling repo', () async {
       final repo = _MockAuthRepository();
@@ -59,4 +63,3 @@ void main() {
     });
   });
 }
-
