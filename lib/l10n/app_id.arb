@@ -243,6 +243,34 @@
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
   },
+  "authChangePasswordTitle": "Ubah kata sandi",
+  "@authChangePasswordTitle": {
+    "description": "Title shown on the change password screen."
+  },
+  "authCurrentPassword": "Kata sandi saat ini",
+  "@authCurrentPassword": {
+    "description": "Field label for the current password."
+  },
+  "authNewPassword": "Kata sandi baru",
+  "@authNewPassword": {
+    "description": "Field label for the new password."
+  },
+  "authConfirmNewPassword": "Konfirmasi kata sandi baru",
+  "@authConfirmNewPassword": {
+    "description": "Field label for confirming the new password."
+  },
+  "authChangePasswordCta": "Perbarui kata sandi",
+  "@authChangePasswordCta": {
+    "description": "Primary CTA label for submitting a change password request."
+  },
+  "authChangePasswordSuccessTitle": "Kata sandi diperbarui",
+  "@authChangePasswordSuccessTitle": {
+    "description": "Title shown when changing password succeeds."
+  },
+  "authChangePasswordSuccessBody": "Kata sandi Anda telah diperbarui.",
+  "@authChangePasswordSuccessBody": {
+    "description": "Body copy shown when changing password succeeds."
+  },
   "onboardingWelcomeTitle": "Selamat datang",
   "@onboardingWelcomeTitle": {
     "description": "Title shown on the onboarding screen."

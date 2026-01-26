@@ -243,6 +243,34 @@
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
   },
+  "authChangePasswordTitle": "⟪RTL⟫ Change password",
+  "@authChangePasswordTitle": {
+    "description": "Title shown on the change password screen."
+  },
+  "authCurrentPassword": "⟪RTL⟫ Current password",
+  "@authCurrentPassword": {
+    "description": "Field label for the current password."
+  },
+  "authNewPassword": "⟪RTL⟫ New password",
+  "@authNewPassword": {
+    "description": "Field label for the new password."
+  },
+  "authConfirmNewPassword": "⟪RTL⟫ Confirm new password",
+  "@authConfirmNewPassword": {
+    "description": "Field label for confirming the new password."
+  },
+  "authChangePasswordCta": "⟪RTL⟫ Update password",
+  "@authChangePasswordCta": {
+    "description": "Primary CTA label for submitting a change password request."
+  },
+  "authChangePasswordSuccessTitle": "⟪RTL⟫ Password updated",
+  "@authChangePasswordSuccessTitle": {
+    "description": "Title shown when changing password succeeds."
+  },
+  "authChangePasswordSuccessBody": "⟪RTL⟫ Your password has been updated.",
+  "@authChangePasswordSuccessBody": {
+    "description": "Body copy shown when changing password succeeds."
+  },
   "authVerifyEmailTitle": "⟪RTL⟫ Verify email",
   "@authVerifyEmailTitle": {
     "description": "Title shown on the email verification handler screen."

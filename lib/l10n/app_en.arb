@@ -283,6 +283,34 @@
   "@authVerifyEmailSignInCta": {
     "description": "CTA label shown when the user must sign in before resending verification email."
   },
+  "authChangePasswordTitle": "Change password",
+  "@authChangePasswordTitle": {
+    "description": "Title shown on the change password screen."
+  },
+  "authCurrentPassword": "Current password",
+  "@authCurrentPassword": {
+    "description": "Field label for the current password."
+  },
+  "authNewPassword": "New password",
+  "@authNewPassword": {
+    "description": "Field label for the new password."
+  },
+  "authConfirmNewPassword": "Confirm new password",
+  "@authConfirmNewPassword": {
+    "description": "Field label for confirming the new password."
+  },
+  "authChangePasswordCta": "Update password",
+  "@authChangePasswordCta": {
+    "description": "Primary CTA label for submitting a change password request."
+  },
+  "authChangePasswordSuccessTitle": "Password updated",
+  "@authChangePasswordSuccessTitle": {
+    "description": "Title shown when changing password succeeds."
+  },
+  "authChangePasswordSuccessBody": "Your password has been updated.",
+  "@authChangePasswordSuccessBody": {
+    "description": "Body copy shown when changing password succeeds."
+  },
   "onboardingWelcomeTitle": "Welcome",
   "@onboardingWelcomeTitle": {
     "description": "Title shown on the onboarding screen."

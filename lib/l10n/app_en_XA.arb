@@ -243,6 +243,34 @@
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
   },
+  "authChangePasswordTitle": "⟪Çħåñğḗ ρåşşẇǿŗḓ⟫",
+  "@authChangePasswordTitle": {
+    "description": "Title shown on the change password screen."
+  },
+  "authCurrentPassword": "⟪Çüŗŗḗñŧ ρåşşẇǿŗḓ⟫",
+  "@authCurrentPassword": {
+    "description": "Field label for the current password."
+  },
+  "authNewPassword": "⟪Ńḗẇ ρåşşẇǿŗḓ⟫",
+  "@authNewPassword": {
+    "description": "Field label for the new password."
+  },
+  "authConfirmNewPassword": "⟪Çǿñƒīŗḿ ñḗẇ ρåşşẇǿŗḓ⟫",
+  "@authConfirmNewPassword": {
+    "description": "Field label for confirming the new password."
+  },
+  "authChangePasswordCta": "⟪Üρḓåŧḗ ρåşşẇǿŗḓ⟫",
+  "@authChangePasswordCta": {
+    "description": "Primary CTA label for submitting a change password request."
+  },
+  "authChangePasswordSuccessTitle": "⟪Ƥåşşẇǿŗḓ üρḓåŧḗḓ⟫",
+  "@authChangePasswordSuccessTitle": {
+    "description": "Title shown when changing password succeeds."
+  },
+  "authChangePasswordSuccessBody": "⟪Ẏǿüŗ ρåşşẇǿŗḓ ħåş ƀḗḗñ üρḓåŧḗḓ.⟫",
+  "@authChangePasswordSuccessBody": {
+    "description": "Body copy shown when changing password succeeds."
+  },
   "onboardingWelcomeTitle": "⟪Ẇḗŀçǿḿḗ⟫",
   "@onboardingWelcomeTitle": {
     "description": "Title shown on the onboarding screen."

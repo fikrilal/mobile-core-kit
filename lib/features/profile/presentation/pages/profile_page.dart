@@ -25,6 +25,7 @@ import 'package:mobile_core_kit/features/auth/presentation/localization/auth_fai
 import 'package:mobile_core_kit/features/profile/presentation/widgets/locale_setting_tile.dart';
 import 'package:mobile_core_kit/features/profile/presentation/widgets/theme_mode_setting_tile.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
+import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -183,6 +184,16 @@ class _ProfileContent extends StatelessWidget {
                 title: context.l10n.profileSecurityAndPrivacy,
                 subtitle: context.l10n.profileSecurityAndPrivacySubtitle,
                 onTap: () {},
+              ),
+              AppListTile(
+                leading: AppIconBadge(
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.key,
+                    size: AppSizing.iconSizeMedium,
+                  ),
+                ),
+                title: context.l10n.authChangePasswordTitle,
+                onTap: () => context.push(UserRoutes.changePassword),
               ),
               AppListTile(
                 leading: AppIconBadge(
