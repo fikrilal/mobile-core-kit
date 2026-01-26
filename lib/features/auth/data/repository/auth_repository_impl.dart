@@ -14,12 +14,16 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/change_password_
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_confirm_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -167,13 +171,7 @@ class AuthRepositoryImpl implements AuthRepository {
           .mapLeft(mapAuthFailure)
           .map((_) => unit);
     } catch (e, st) {
-      Log.error(
-        'Verify email unexpected error',
-        e,
-        st,
-        true,
-        'AuthRepository',
-      );
+      Log.error('Verify email unexpected error', e, st, true, 'AuthRepository');
       return left(const AuthFailure.unexpected());
     }
   }
@@ -212,6 +210,52 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e, st) {
       Log.error(
         'Change password unexpected error',
+        e,
+        st,
+        true,
+        'AuthRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> requestPasswordReset(
+    PasswordResetRequestEntity request,
+  ) async {
+    final apiRequest = PasswordResetRequestModel.fromEntity(request);
+    try {
+      final apiResponse = await _remote.requestPasswordReset(apiRequest);
+      return apiResponse
+          .toEitherWithFallback('Password reset request failed.')
+          .mapLeft(mapAuthFailure)
+          .map((_) => unit);
+    } catch (e, st) {
+      Log.error(
+        'Password reset request unexpected error',
+        e,
+        st,
+        true,
+        'AuthRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> confirmPasswordReset(
+    PasswordResetConfirmRequestEntity request,
+  ) async {
+    final apiRequest = PasswordResetConfirmRequestModel.fromEntity(request);
+    try {
+      final apiResponse = await _remote.confirmPasswordReset(apiRequest);
+      return apiResponse
+          .toEitherWithFallback('Password reset confirm failed.')
+          .mapLeft(mapAuthFailure)
+          .map((_) => unit);
+    } catch (e, st) {
+      Log.error(
+        'Password reset confirm unexpected error',
         e,
         st,
         true,

@@ -11,6 +11,8 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/change_password_
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_confirm_request_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
@@ -198,6 +200,51 @@ class AuthRemoteDataSource {
     if (response.isError) {
       Log.warning(
         'Change password failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
+    return response;
+  }
+
+  Future<ApiResponse<ApiNoData>> requestPasswordReset(
+    PasswordResetRequestModel requestModel,
+  ) async {
+    Log.info('Requesting password reset', name: _tag);
+
+    final response = await _apiHelper.post<ApiNoData>(
+      AuthEndpoint.passwordResetRequest,
+      data: requestModel.toJson(),
+      host: ApiHost.auth,
+      requiresAuth: false,
+      throwOnError: false,
+    );
+
+    if (response.isError) {
+      Log.warning(
+        'Password reset request failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
+    return response;
+  }
+
+  Future<ApiResponse<ApiNoData>> confirmPasswordReset(
+    PasswordResetConfirmRequestModel requestModel,
+  ) async {
+    final tokenLen = requestModel.token.length;
+    Log.info('Confirming password reset (tokenLen=$tokenLen)', name: _tag);
+
+    final response = await _apiHelper.post<ApiNoData>(
+      AuthEndpoint.passwordResetConfirm,
+      data: requestModel.toJson(),
+      host: ApiHost.auth,
+      requiresAuth: false,
+      throwOnError: false,
+    );
+
+    if (response.isError) {
+      Log.warning(
+        'Password reset confirm failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }
