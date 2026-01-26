@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChangePasswordState {
 
- String get currentPassword; String get newPassword; String get confirmNewPassword; ValidationError? get currentPasswordError; ValidationError? get newPasswordError; ValidationError? get confirmNewPasswordError; AuthFailure? get failure; ChangePasswordStatus get status;
+ String get currentPassword; String get newPassword; String get confirmNewPassword; bool get currentPasswordTouched; bool get newPasswordTouched; bool get confirmNewPasswordTouched; ValidationError? get currentPasswordError; ValidationError? get newPasswordError; ValidationError? get confirmNewPasswordError; AuthFailure? get failure; ChangePasswordStatus get status;
 /// Create a copy of ChangePasswordState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChangePasswordStateCopyWith<ChangePasswordState> get copyWith => _$ChangePasswo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChangePasswordState&&(identical(other.currentPassword, currentPassword) || other.currentPassword == currentPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.currentPasswordError, currentPasswordError) || other.currentPasswordError == currentPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError)&&(identical(other.confirmNewPasswordError, confirmNewPasswordError) || other.confirmNewPasswordError == confirmNewPasswordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChangePasswordState&&(identical(other.currentPassword, currentPassword) || other.currentPassword == currentPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.currentPasswordTouched, currentPasswordTouched) || other.currentPasswordTouched == currentPasswordTouched)&&(identical(other.newPasswordTouched, newPasswordTouched) || other.newPasswordTouched == newPasswordTouched)&&(identical(other.confirmNewPasswordTouched, confirmNewPasswordTouched) || other.confirmNewPasswordTouched == confirmNewPasswordTouched)&&(identical(other.currentPasswordError, currentPasswordError) || other.currentPasswordError == currentPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError)&&(identical(other.confirmNewPasswordError, confirmNewPasswordError) || other.confirmNewPasswordError == confirmNewPasswordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentPassword,newPassword,confirmNewPassword,currentPasswordError,newPasswordError,confirmNewPasswordError,failure,status);
+int get hashCode => Object.hash(runtimeType,currentPassword,newPassword,confirmNewPassword,currentPasswordTouched,newPasswordTouched,confirmNewPasswordTouched,currentPasswordError,newPasswordError,confirmNewPasswordError,failure,status);
 
 @override
 String toString() {
-  return 'ChangePasswordState(currentPassword: $currentPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, currentPasswordError: $currentPasswordError, newPasswordError: $newPasswordError, confirmNewPasswordError: $confirmNewPasswordError, failure: $failure, status: $status)';
+  return 'ChangePasswordState(currentPassword: $currentPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, currentPasswordTouched: $currentPasswordTouched, newPasswordTouched: $newPasswordTouched, confirmNewPasswordTouched: $confirmNewPasswordTouched, currentPasswordError: $currentPasswordError, newPasswordError: $newPasswordError, confirmNewPasswordError: $confirmNewPasswordError, failure: $failure, status: $status)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChangePasswordStateCopyWith<$Res>  {
   factory $ChangePasswordStateCopyWith(ChangePasswordState value, $Res Function(ChangePasswordState) _then) = _$ChangePasswordStateCopyWithImpl;
 @useResult
 $Res call({
- String currentPassword, String newPassword, String confirmNewPassword, ValidationError? currentPasswordError, ValidationError? newPasswordError, ValidationError? confirmNewPasswordError, AuthFailure? failure, ChangePasswordStatus status
+ String currentPassword, String newPassword, String confirmNewPassword, bool currentPasswordTouched, bool newPasswordTouched, bool confirmNewPasswordTouched, ValidationError? currentPasswordError, ValidationError? newPasswordError, ValidationError? confirmNewPasswordError, AuthFailure? failure, ChangePasswordStatus status
 });
 
 
@@ -62,12 +62,15 @@ class _$ChangePasswordStateCopyWithImpl<$Res>
 
 /// Create a copy of ChangePasswordState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentPassword = null,Object? newPassword = null,Object? confirmNewPassword = null,Object? currentPasswordError = freezed,Object? newPasswordError = freezed,Object? confirmNewPasswordError = freezed,Object? failure = freezed,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentPassword = null,Object? newPassword = null,Object? confirmNewPassword = null,Object? currentPasswordTouched = null,Object? newPasswordTouched = null,Object? confirmNewPasswordTouched = null,Object? currentPasswordError = freezed,Object? newPasswordError = freezed,Object? confirmNewPasswordError = freezed,Object? failure = freezed,Object? status = null,}) {
   return _then(_self.copyWith(
 currentPassword: null == currentPassword ? _self.currentPassword : currentPassword // ignore: cast_nullable_to_non_nullable
 as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
 as String,confirmNewPassword: null == confirmNewPassword ? _self.confirmNewPassword : confirmNewPassword // ignore: cast_nullable_to_non_nullable
-as String,currentPasswordError: freezed == currentPasswordError ? _self.currentPasswordError : currentPasswordError // ignore: cast_nullable_to_non_nullable
+as String,currentPasswordTouched: null == currentPasswordTouched ? _self.currentPasswordTouched : currentPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,newPasswordTouched: null == newPasswordTouched ? _self.newPasswordTouched : newPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,confirmNewPasswordTouched: null == confirmNewPasswordTouched ? _self.confirmNewPasswordTouched : confirmNewPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,currentPasswordError: freezed == currentPasswordError ? _self.currentPasswordError : currentPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,newPasswordError: freezed == newPasswordError ? _self.newPasswordError : newPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,confirmNewPasswordError: freezed == confirmNewPasswordError ? _self.confirmNewPasswordError : confirmNewPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
@@ -169,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String currentPassword,  String newPassword,  String confirmNewPassword,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String currentPassword,  String newPassword,  String confirmNewPassword,  bool currentPasswordTouched,  bool newPasswordTouched,  bool confirmNewPasswordTouched,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChangePasswordState() when $default != null:
-return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
+return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordTouched,_that.newPasswordTouched,_that.confirmNewPasswordTouched,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
   return orElse();
 
 }
@@ -190,10 +193,10 @@ return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String currentPassword,  String newPassword,  String confirmNewPassword,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String currentPassword,  String newPassword,  String confirmNewPassword,  bool currentPasswordTouched,  bool newPasswordTouched,  bool confirmNewPasswordTouched,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)  $default,) {final _that = this;
 switch (_that) {
 case _ChangePasswordState():
-return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
+return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordTouched,_that.newPasswordTouched,_that.confirmNewPasswordTouched,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +213,10 @@ return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String currentPassword,  String newPassword,  String confirmNewPassword,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String currentPassword,  String newPassword,  String confirmNewPassword,  bool currentPasswordTouched,  bool newPasswordTouched,  bool confirmNewPasswordTouched,  ValidationError? currentPasswordError,  ValidationError? newPasswordError,  ValidationError? confirmNewPasswordError,  AuthFailure? failure,  ChangePasswordStatus status)?  $default,) {final _that = this;
 switch (_that) {
 case _ChangePasswordState() when $default != null:
-return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
+return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword,_that.currentPasswordTouched,_that.newPasswordTouched,_that.confirmNewPasswordTouched,_that.currentPasswordError,_that.newPasswordError,_that.confirmNewPasswordError,_that.failure,_that.status);case _:
   return null;
 
 }
@@ -225,12 +228,15 @@ return $default(_that.currentPassword,_that.newPassword,_that.confirmNewPassword
 
 
 class _ChangePasswordState extends ChangePasswordState {
-  const _ChangePasswordState({this.currentPassword = '', this.newPassword = '', this.confirmNewPassword = '', this.currentPasswordError, this.newPasswordError, this.confirmNewPasswordError, this.failure, this.status = ChangePasswordStatus.initial}): super._();
+  const _ChangePasswordState({this.currentPassword = '', this.newPassword = '', this.confirmNewPassword = '', this.currentPasswordTouched = false, this.newPasswordTouched = false, this.confirmNewPasswordTouched = false, this.currentPasswordError, this.newPasswordError, this.confirmNewPasswordError, this.failure, this.status = ChangePasswordStatus.initial}): super._();
   
 
 @override@JsonKey() final  String currentPassword;
 @override@JsonKey() final  String newPassword;
 @override@JsonKey() final  String confirmNewPassword;
+@override@JsonKey() final  bool currentPasswordTouched;
+@override@JsonKey() final  bool newPasswordTouched;
+@override@JsonKey() final  bool confirmNewPasswordTouched;
 @override final  ValidationError? currentPasswordError;
 @override final  ValidationError? newPasswordError;
 @override final  ValidationError? confirmNewPasswordError;
@@ -247,16 +253,16 @@ _$ChangePasswordStateCopyWith<_ChangePasswordState> get copyWith => __$ChangePas
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangePasswordState&&(identical(other.currentPassword, currentPassword) || other.currentPassword == currentPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.currentPasswordError, currentPasswordError) || other.currentPasswordError == currentPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError)&&(identical(other.confirmNewPasswordError, confirmNewPasswordError) || other.confirmNewPasswordError == confirmNewPasswordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangePasswordState&&(identical(other.currentPassword, currentPassword) || other.currentPassword == currentPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.confirmNewPassword, confirmNewPassword) || other.confirmNewPassword == confirmNewPassword)&&(identical(other.currentPasswordTouched, currentPasswordTouched) || other.currentPasswordTouched == currentPasswordTouched)&&(identical(other.newPasswordTouched, newPasswordTouched) || other.newPasswordTouched == newPasswordTouched)&&(identical(other.confirmNewPasswordTouched, confirmNewPasswordTouched) || other.confirmNewPasswordTouched == confirmNewPasswordTouched)&&(identical(other.currentPasswordError, currentPasswordError) || other.currentPasswordError == currentPasswordError)&&(identical(other.newPasswordError, newPasswordError) || other.newPasswordError == newPasswordError)&&(identical(other.confirmNewPasswordError, confirmNewPasswordError) || other.confirmNewPasswordError == confirmNewPasswordError)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentPassword,newPassword,confirmNewPassword,currentPasswordError,newPasswordError,confirmNewPasswordError,failure,status);
+int get hashCode => Object.hash(runtimeType,currentPassword,newPassword,confirmNewPassword,currentPasswordTouched,newPasswordTouched,confirmNewPasswordTouched,currentPasswordError,newPasswordError,confirmNewPasswordError,failure,status);
 
 @override
 String toString() {
-  return 'ChangePasswordState(currentPassword: $currentPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, currentPasswordError: $currentPasswordError, newPasswordError: $newPasswordError, confirmNewPasswordError: $confirmNewPasswordError, failure: $failure, status: $status)';
+  return 'ChangePasswordState(currentPassword: $currentPassword, newPassword: $newPassword, confirmNewPassword: $confirmNewPassword, currentPasswordTouched: $currentPasswordTouched, newPasswordTouched: $newPasswordTouched, confirmNewPasswordTouched: $confirmNewPasswordTouched, currentPasswordError: $currentPasswordError, newPasswordError: $newPasswordError, confirmNewPasswordError: $confirmNewPasswordError, failure: $failure, status: $status)';
 }
 
 
@@ -267,7 +273,7 @@ abstract mixin class _$ChangePasswordStateCopyWith<$Res> implements $ChangePassw
   factory _$ChangePasswordStateCopyWith(_ChangePasswordState value, $Res Function(_ChangePasswordState) _then) = __$ChangePasswordStateCopyWithImpl;
 @override @useResult
 $Res call({
- String currentPassword, String newPassword, String confirmNewPassword, ValidationError? currentPasswordError, ValidationError? newPasswordError, ValidationError? confirmNewPasswordError, AuthFailure? failure, ChangePasswordStatus status
+ String currentPassword, String newPassword, String confirmNewPassword, bool currentPasswordTouched, bool newPasswordTouched, bool confirmNewPasswordTouched, ValidationError? currentPasswordError, ValidationError? newPasswordError, ValidationError? confirmNewPasswordError, AuthFailure? failure, ChangePasswordStatus status
 });
 
 
@@ -284,12 +290,15 @@ class __$ChangePasswordStateCopyWithImpl<$Res>
 
 /// Create a copy of ChangePasswordState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentPassword = null,Object? newPassword = null,Object? confirmNewPassword = null,Object? currentPasswordError = freezed,Object? newPasswordError = freezed,Object? confirmNewPasswordError = freezed,Object? failure = freezed,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentPassword = null,Object? newPassword = null,Object? confirmNewPassword = null,Object? currentPasswordTouched = null,Object? newPasswordTouched = null,Object? confirmNewPasswordTouched = null,Object? currentPasswordError = freezed,Object? newPasswordError = freezed,Object? confirmNewPasswordError = freezed,Object? failure = freezed,Object? status = null,}) {
   return _then(_ChangePasswordState(
 currentPassword: null == currentPassword ? _self.currentPassword : currentPassword // ignore: cast_nullable_to_non_nullable
 as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
 as String,confirmNewPassword: null == confirmNewPassword ? _self.confirmNewPassword : confirmNewPassword // ignore: cast_nullable_to_non_nullable
-as String,currentPasswordError: freezed == currentPasswordError ? _self.currentPasswordError : currentPasswordError // ignore: cast_nullable_to_non_nullable
+as String,currentPasswordTouched: null == currentPasswordTouched ? _self.currentPasswordTouched : currentPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,newPasswordTouched: null == newPasswordTouched ? _self.newPasswordTouched : newPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,confirmNewPasswordTouched: null == confirmNewPasswordTouched ? _self.confirmNewPasswordTouched : confirmNewPasswordTouched // ignore: cast_nullable_to_non_nullable
+as bool,currentPasswordError: freezed == currentPasswordError ? _self.currentPasswordError : currentPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,newPasswordError: freezed == newPasswordError ? _self.newPasswordError : newPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,confirmNewPasswordError: freezed == confirmNewPasswordError ? _self.confirmNewPasswordError : confirmNewPasswordError // ignore: cast_nullable_to_non_nullable
 as ValidationError?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable

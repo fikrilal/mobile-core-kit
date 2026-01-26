@@ -54,6 +54,9 @@ lib/
 │     │  │  │  └─ <feature>_remote_datasource.dart
 │     │  │  └─ local/
 │     │  │     └─ <feature>_local_datasource.dart
+│     │  ├─ error/                # API failure mapping + backend error codes
+│     │  │  ├─ <feature>_failure_mapper.dart
+│     │  │  └─ <feature>_error_codes.dart
 │     │  ├─ model/
 │     │  │  └─ <dto>.dart (+ generated *.g.dart)
 │     │  ├─ mapper/
@@ -198,7 +201,9 @@ Mapping & error policy:
 - Map DTOs to domain entities in repository implementations or dedicated mappers.
 - Translate transport/HTTP errors to domain Failures (keep user‑facing messages consistent).
 - Keep API endpoint strings centralized under `core/network/endpoints`.
-- Use `Paginated<T>` and `PaginationInfo` for paginated repository results.
+- For cursor‑paginated endpoints, prefer `ApiHelper.getPaginated` / `ApiHelper.postPaginated` and
+  return typed `ApiPaginatedResult<T>` (`nextCursor`, `limit`, `additionalMeta`) from datasources.
+  Feature domain can model pagination using `cursor`/`limit` Param VOs.
 
 ---
 

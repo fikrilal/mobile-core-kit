@@ -46,6 +46,7 @@ See also: `docs/engineering/project_architecture.md`.
   - On each field‑change event, call `VO.create(value)` and store `errorText` in state.
   - On submit event, check state errors and required inputs; short‑circuit if any error exists.
   - UI binds `errorText` from state and dispatches events on `onChanged`.
+  - Prefer storing `ValidationError` (field + code) rather than raw strings; localize in UI.
 
 - Use Case (final gate)
   - Re‑validate inputs using the same VOs (or a small helper) before calling repositories.
@@ -62,6 +63,7 @@ See also: `docs/engineering/project_architecture.md`.
 - Files:
   - `lib/features/auth/domain/value/value_failure.dart:1` → `ValueFailureX.userMessage`
   - `lib/features/auth/domain/failure/auth_failure.dart:1` → `AuthFailureX.userMessage`
+  - `lib/core/validation/validation_error_localizer.dart:1` → `messageForValidationError(...)`
 
 ## 5) Real‑Time + Submit‑Time Flow
 
@@ -72,6 +74,27 @@ Typical flow for a form field:
 - Repository: executes remote/local; maps server validation messages to domain failures.
 
 This gives fast feedback without compromising correctness if UI code is bypassed.
+
+### Error Display: touched‑aware (recommended)
+
+Real‑time validation does **not** mean “show every error immediately”.
+
+To avoid noisy UX, follow a **touched‑aware** display rule:
+
+- Validate on each change (so state is always consistent).
+- Track whether the user has interacted with each field (e.g. `emailTouched`, `passwordTouched`).
+- Only **display** a field error when that field is touched (or after an explicit submit attempt).
+
+This matters most for **cross‑field validation**, where typing in one field may re‑compute errors in another field (e.g., `confirmPassword` mismatch, or `newPassword != currentPassword`). Without touched gating, the UI can incorrectly show “required/empty” for untouched fields.
+
+Practical pattern:
+
+- In state:
+  - `String value`, `ValidationError? error`, `bool touched`
+- In Cubit/Bloc:
+  - On `...Changed(value)`: set `touched = true` and compute `error`
+- In UI:
+  - `errorText: touched ? messageForValidationError(error) : null`
 
 ## 6) Patterns You Can Reuse
 
@@ -89,7 +112,7 @@ This gives fast feedback without compromising correctness if UI code is bypassed
 - Naming
   - VO classes: `PascalCase` (e.g., `EmailAddress`, `Password`).
   - VO files: `snake_case.dart` (e.g., `email_address.dart`).
-  - State error fields: `String? xxxError` on Bloc/Cubit state.
+  - State error fields: `ValidationError? xxxError` on Bloc/Cubit state (use stable `code` and localize in UI via `messageForValidationError(...)`).
 
 - What a VO should do
   - Enforce invariants (length, allowed chars, format).
@@ -105,8 +128,8 @@ This gives fast feedback without compromising correctness if UI code is bypassed
 1) Create a Value Object in `domain/value/` with `create(String)`.
 2) Add or reuse a `ValueFailure` variant and a `userMessage` mapping if needed.
 3) In presentation (Bloc/Cubit):
-   - Add `FieldChanged` event/handler; call `VO.create()`; store `fieldError` string in state.
-   - Wire `onChanged: (v) => context.read<FormBloc>().add(FieldChanged(v))` and `errorText: state.fieldError` in the page.
+   - Add `FieldChanged` event/handler; call `VO.create()`; store `ValidationError?` on state (stable `code`).
+   - Wire `onChanged: (v) => context.read<FormBloc>().add(FieldChanged(v))` and `errorText: messageForValidationError(state.fieldError, l10n)` (touched‑aware) in the page.
 4) In the use case (final gate):
    - Re‑validate with VOs; build request entities only if all inputs are valid.
 5) In repository/data sources: no client‑side validation; map server responses only.

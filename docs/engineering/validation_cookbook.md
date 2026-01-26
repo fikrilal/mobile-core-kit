@@ -299,6 +299,14 @@ class SignUpUseCase {
 
 Blocs/Cubits expose field values + error strings in state and validate on every change using VOs. On submit, they check errors and call the use case.
 
+Tip: make error display **touched‑aware**.
+
+- Keep validation real‑time (so state is always consistent).
+- Track `...Touched` per field.
+- Only display errors when the user has interacted with that specific field (or after a submit attempt).
+
+This prevents “phantom errors” when cross‑field validation recomputes errors in fields the user has not interacted with yet (e.g., `confirmPassword` mismatch, `newPassword != currentPassword`).
+
 ```dart
 // presentation/bloc/sign_up_bloc.dart (sketch)
 import 'package:bloc/bloc.dart';
@@ -354,6 +362,22 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     );
   }
 }
+```
+
+### Touched‑aware UI wiring (example)
+
+```dart
+TextField(
+  onChanged: (v) => context.read<SignUpBloc>().add(EmailChanged(v)),
+  decoration: InputDecoration(
+    labelText: 'Email',
+    // Only show once the user touched the field.
+    errorText: context.select((SignUpBloc b) {
+      final s = b.state;
+      return s.emailTouched ? s.emailError : null;
+    }),
+  ),
+)
 ```
 
 ---

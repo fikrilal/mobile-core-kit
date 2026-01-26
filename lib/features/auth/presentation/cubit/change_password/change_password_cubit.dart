@@ -33,6 +33,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     emit(
       state.copyWith(
         currentPassword: value,
+        currentPasswordTouched: true,
         currentPasswordError: currentError,
         newPasswordError: newPasswordError,
         confirmNewPasswordError: _validateConfirmNewPassword(
@@ -57,6 +58,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     emit(
       state.copyWith(
         newPassword: value,
+        newPasswordTouched: true,
         newPasswordError: newPasswordError,
         confirmNewPasswordError: _validateConfirmNewPassword(
           newPassword: value,
@@ -75,6 +77,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     emit(
       state.copyWith(
         confirmNewPassword: value,
+        confirmNewPasswordTouched: true,
         confirmNewPasswordError: _validateConfirmNewPassword(
           newPassword: state.newPassword,
           confirmNewPassword: value,
@@ -244,4 +247,3 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     return null;
   }
 }
-

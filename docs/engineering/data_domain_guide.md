@@ -8,23 +8,29 @@ ambiguity between model mapping and query serialization.
 
 - Keep responsibilities clear between Domain, Data, and Presentation layers.
 - Standardize pagination and error handling with core helpers.
-- Make repositories thin (orchestration only) and datasources VO‑driven.
+- Make repositories thin (orchestration only) and keep HTTP/DB details in datasources.
 - Put model→domain mapping next to the model; keep mappers for query serialization only.
 
 ## Layer Responsibilities
 
 - Domain
     - Entities (Freezed): immutable, UI‑agnostic domain objects.
-    - Value Objects (VOs): typed query/input parameters (immutable).
+    - Value Objects (VOs): typed inputs and invariants (immutable).
+    - Param VOs: typed query parameters for GET endpoints (immutable).
     - Failures: feature‑scoped failure types (with `userMessage`).
     - Usecases: domain entry points. Return `Either<Failure, Domain>`.
 
 - Data
     - Models (remote/local): Freezed + JSON. Own model→domain mapping via extensions or helpers in
       the same file.
-    - Datasources (remote/local): own HTTP/DB specifics, build paths from VO, serialize VO to query
-      parameters internally, call core `ApiHelper`.
-    - Mappers: for VO→query parameter maps only (keep simple and pure).
+    - Datasources (remote/local): own HTTP/DB specifics (paths, headers, serialization) and call
+      core `ApiHelper` / DB adapters.
+      - GET endpoints: accept a Param VO and serialize via a mapper (`*_mapper.dart`) into query
+        parameters.
+      - POST/PATCH endpoints: accept a request model (built via `Model.fromEntity(...)`) and call
+        `toJson()` for request bodies.
+    - Mappers: for Param VO → query parameter maps only (keep simple and pure).
+    - Failure mappers: map `ApiFailure`/backend codes into feature failures (keep repo readable).
     - Repositories: orchestrate datasource calls, convert `ApiResponse<T>` to `Either`, map
       failures, and invoke model‑owned mapping to return domain types.
 
@@ -35,24 +41,30 @@ ambiguity between model mapping and query serialization.
 
 - Domain
     - `lib/features/<feature>/domain/entity/*_entity.dart`
+    - `lib/features/<feature>/domain/value/*` (Value Objects for inputs/invariants)
     - `lib/features/<feature>/domain/param/*_query.dart`
     - `lib/features/<feature>/domain/repository/*_repository.dart`
     - `lib/features/<feature>/domain/usecase/*_usecase.dart`
 
 - Data
     - `lib/features/<feature>/data/model/remote/*_model.dart`
+    - `lib/features/<feature>/data/model/local/*_model.dart`
     - `lib/features/<feature>/data/datasource/remote/*_remote_datasource.dart`
+    - `lib/features/<feature>/data/datasource/local/*_local_datasource.dart`
     - `lib/features/<feature>/data/repository/*_repository_impl.dart`
     - `lib/features/<feature>/data/mapper/*_mapper.dart` (VO→query params only)
+    - `lib/features/<feature>/data/error/*_failure_mapper.dart`
 
 - DI
     - `lib/features/<feature>/di/*_module.dart`
 
 ## Core Helpers You Should Use
 
-- Pagination (typed): `ApiHelper.getPaginated` + `ApiPaginatedResult<T>` + `PaginationMeta` (
-  offset‑aware)
-    - Offset getter: `PaginationMetaX.offset` (from core)
+- Pagination (cursor‑based, typed): `ApiHelper.getPaginated` / `ApiHelper.postPaginated` +
+  `ApiPaginatedResult<T>`
+    - Cursor: `ApiPaginatedResult.nextCursor`
+    - Limit: `ApiPaginatedResult.limit`
+    - Extra meta: `ApiPaginatedResult.additionalMeta` (all meta keys except `nextCursor`/`limit`)
 - Response to Either: `ApiResponseEitherX.toEitherWithFallback()`
 
 ## Canonical Pattern (example: Book Reviews)
@@ -65,13 +77,14 @@ class ReviewCommentsQuery {
   const ReviewCommentsQuery({
     required this.workId,
     this.limit = 10,
-    this.offset = 0,
+    this.cursor,
     this.sortBy = ReviewSortBy.recent,
     this.sortOrder = ReviewSortOrder.desc,
     this.visibility = ReviewVisibility.public,
     this.status = ReviewStatus.published,
   });
 // fields...
+  final String? cursor;
 }
 ```
 
@@ -81,7 +94,7 @@ class ReviewCommentsQuery {
 Map<String, dynamic> bookReviewsQueryToMap(ReviewCommentsQuery q) =>
     {
       'limit': q.limit,
-      'offset': q.offset,
+      if (q.cursor != null) 'cursor': q.cursor,
       'sortBy': q.sortBy.toJson(),
       'sortOrder': q.sortOrder.toJson(),
       'visibility': q.visibility.toJson(),
@@ -149,7 +162,6 @@ extension ReviewCommentModelX on ReviewCommentModel {
 
 ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentModel> result,) {
   final items = result.items.map((m) => m.toEntity()).toList(growable: false);
-  final p = result.toDomainOffsetPagination(); // uses PaginationMetaX.offset
   final meta = result.additionalMeta ?? const <String, dynamic>{};
   final f = (meta['filters'] is Map)
       ? Map<String, dynamic>.from(meta['filters'] as Map)
@@ -159,11 +171,9 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
     meta: ReviewCommentsMetaEntity(
       workId: (meta['workId'] as String?) ?? '',
       pagination: ReviewCommentsPaginationEntity(
-        total: p.total,
-        limit: p.limit,
-        offset: p.offset,
-        hasNext: p.hasNext,
-        hasPrev: p.hasPrev,
+        limit: result.limit ?? 0,
+        nextCursor: result.nextCursor,
+        hasNext: result.nextCursor != null && result.nextCursor!.isNotEmpty,
       ),
       filters: ReviewCommentFiltersEntity(
         visibility: ReviewVisibility.fromJson(f['visibility'] as String?),
@@ -186,10 +196,14 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
 
 ## Pagination Rules
 
-- Use `getPaginated` whenever the backend returns `meta.pagination`.
-- The core `PaginationMeta.fromJson` is offset‑aware (derives `page` from `offset/limit` when
-  needed).
-- Use `PaginationMetaX.offset` or `toDomainOffsetPagination()` to avoid recomputing offset.
+- Use `getPaginated` / `postPaginated` whenever the backend returns cursor pagination metadata
+  (`meta.nextCursor`, optionally `meta.limit`).
+- Model cursor pagination in a Param VO:
+  - `cursor: String?` (null means first page)
+  - `limit: int` (optional; keep a stable default)
+- Pass `cursor` as a query parameter (only when non‑null) and store the returned
+  `ApiPaginatedResult.nextCursor` for the next request.
+- Treat `nextCursor == null` (or empty) as “no next page”.
 - Read non‑pagination meta from `ApiPaginatedResult.additionalMeta`.
 
 ## Error Handling
@@ -221,11 +235,11 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
 
 ## Migration Notes
 
-- Prefer `getPaginated` for list endpoints that include `meta.pagination` (page or offset).
-- Move model→domain mapping into model files. Keep mappers for VO→params only.
-- Repos should not rebuild `meta` maps; rely on typed `ApiPaginatedResult` and core pagination
-  helpers.
-- Avoid legacy `normalize*` helpers for meta in new code (typed path supersedes them).
+- Prefer `getPaginated` / `postPaginated` for list endpoints that include cursor pagination metadata
+  (`meta.nextCursor`, `meta.limit`).
+- Move model→domain mapping into model files. Keep mappers for Param VO→query params only.
+- Repos should not rebuild `meta` maps; rely on typed `ApiPaginatedResult` and
+  `ApiPaginatedResult.additionalMeta`.
 
 ## FAQ
 
@@ -233,14 +247,15 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
     - Mapper: VO→query params only. Model mapping belongs to the model file (via extensions), so
       conversions are easy to find and test.
 - When to use `getList`?
-    - Only for plain arrays without pagination/meta. If there’s `meta.pagination`, use
-      `getPaginated`.
+    - Only for plain arrays without pagination/meta. If the backend returns cursor pagination
+      metadata (`meta.nextCursor`), use `getPaginated` / `postPaginated`.
 - How to add a new paginated endpoint?
     - Add VO (Domain), add VO→params mapper, add VO‑driven datasource with `getPaginated`, add
       repository method using `toEitherWithFallback` + model‑owned mapping.
 
 ## Related Docs
 
-- `docs/engineering/api_pagination_offset_support.md` — details on offset‑aware pagination and
-  `getPaginated`.
+- `docs/engineering/api/api_pagination_cursor_support.md` — cursor pagination contract (`nextCursor`).
+- `docs/engineering/api/api_error_handling_contract.md` — error payload + mapping rules.
+- `lib/core/network/api/api_documentation.md` — `ApiHelper` usage patterns and examples.
 - UI state, VO validation, and architecture docs under `docs/engineering/`.
