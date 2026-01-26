@@ -9,4 +9,3 @@ abstract class ChangePasswordRequestEntity with _$ChangePasswordRequestEntity {
     required String newPassword,
   }) = _ChangePasswordRequestEntity;
 }
-

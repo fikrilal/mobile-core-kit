@@ -20,4 +20,3 @@ abstract class VerifyEmailRequestModel with _$VerifyEmailRequestModel {
   factory VerifyEmailRequestModel.fromEntity(VerifyEmailRequestEntity entity) =>
       VerifyEmailRequestModel(token: entity.token);
 }
-

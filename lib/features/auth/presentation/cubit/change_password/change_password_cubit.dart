@@ -94,7 +94,9 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   Future<void> submit() async {
     if (state.isSubmitting) return;
 
-    final currentPasswordError = _validateCurrentPassword(state.currentPassword);
+    final currentPasswordError = _validateCurrentPassword(
+      state.currentPassword,
+    );
     final newPasswordError = _validateNewPassword(
       newPassword: state.newPassword,
       currentPassword: state.currentPassword,
@@ -121,10 +123,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     }
 
     emit(
-      state.copyWith(
-        status: ChangePasswordStatus.submitting,
-        failure: null,
-      ),
+      state.copyWith(status: ChangePasswordStatus.submitting, failure: null),
     );
 
     final result = await _changePassword(
@@ -207,15 +206,11 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       validation: (errors) {
         emit(
           state.copyWith(
-            currentPasswordError: _firstFieldError(
-              errors,
-              ['currentPassword'],
-            ),
+            currentPasswordError: _firstFieldError(errors, ['currentPassword']),
             newPasswordError: _firstFieldError(errors, ['newPassword']),
-            confirmNewPasswordError: _firstFieldError(
-              errors,
-              ['confirmNewPassword'],
-            ),
+            confirmNewPasswordError: _firstFieldError(errors, [
+              'confirmNewPassword',
+            ]),
             status: ChangePasswordStatus.failure,
             failure: failure,
           ),

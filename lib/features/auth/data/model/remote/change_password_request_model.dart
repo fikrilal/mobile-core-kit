@@ -26,4 +26,3 @@ abstract class ChangePasswordRequestModel with _$ChangePasswordRequestModel {
     );
   }
 }
-

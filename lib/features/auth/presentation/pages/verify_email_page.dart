@@ -15,10 +15,7 @@ import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 class VerifyEmailPage extends StatelessWidget {
-  const VerifyEmailPage({
-    super.key,
-    required this.canResendVerificationEmail,
-  });
+  const VerifyEmailPage({super.key, required this.canResendVerificationEmail});
 
   final bool canResendVerificationEmail;
 
@@ -159,8 +156,8 @@ class _VerifyEmailBody extends StatelessWidget {
             onPressed: state.isSubmitting
                 ? null
                 : () => context
-                    .read<EmailVerificationCubit>()
-                    .resendVerificationEmail(),
+                      .read<EmailVerificationCubit>()
+                      .resendVerificationEmail(),
           )
         else
           AppButton.primary(
@@ -173,4 +170,3 @@ class _VerifyEmailBody extends StatelessWidget {
     );
   }
 }
-

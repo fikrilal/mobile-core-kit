@@ -399,39 +399,42 @@ void main() {
       },
     );
 
-    test('redirects directly from auth to complete profile (no home blip)', () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'redirects directly from auth to complete profile (no home blip)',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startup = await _startupHarness(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-        session: const AuthSessionEntity(
-          tokens: AuthTokensEntity(
-            accessToken: 'access',
-            refreshToken: 'refresh',
-            tokenType: 'Bearer',
-            expiresIn: 900,
+        final startup = await _startupHarness(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+          session: const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access',
+              refreshToken: 'refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            user: UserEntity(
+              id: 'u1',
+              email: 'user@example.com',
+              roles: ['USER'],
+              authMethods: ['PASSWORD'],
+              profile: UserProfileEntity(),
+            ),
           ),
-          user: UserEntity(
-            id: 'u1',
-            email: 'user@example.com',
-            roles: ['USER'],
-            authMethods: ['PASSWORD'],
-            profile: UserProfileEntity(),
-          ),
-        ),
-      );
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse(AuthRoutes.signIn),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
+        final redirect = appRedirectUri(
+          Uri.parse(AuthRoutes.signIn),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, UserRoutes.completeProfile);
-    });
+        expect(redirect, UserRoutes.completeProfile);
+      },
+    );
 
     test('verify-email route bypasses profile completion gate', () async {
       final deepLinks = _deepLinks();
@@ -469,62 +472,68 @@ void main() {
   });
 
   group('appRedirectUri (user hydration gate)', () {
-    test('stays on / while authenticated but user hydration is pending', () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'stays on / while authenticated but user hydration is pending',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startup = await _startupHarness(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-        session: const AuthSessionEntity(
-          tokens: AuthTokensEntity(
-            accessToken: 'access',
-            refreshToken: 'refresh',
-            tokenType: 'Bearer',
-            expiresIn: 900,
+        final startup = await _startupHarness(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+          session: const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access',
+              refreshToken: 'refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            // user is intentionally null (tokens-only session restore).
           ),
-          // user is intentionally null (tokens-only session restore).
-        ),
-      );
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse(AppRoutes.root),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
+        final redirect = appRedirectUri(
+          Uri.parse(AppRoutes.root),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, isNull);
-    });
+        expect(redirect, isNull);
+      },
+    );
 
-    test('captures intent and routes to / while hydration is pending', () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'captures intent and routes to / while hydration is pending',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startup = await _startupHarness(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-        session: const AuthSessionEntity(
-          tokens: AuthTokensEntity(
-            accessToken: 'access',
-            refreshToken: 'refresh',
-            tokenType: 'Bearer',
-            expiresIn: 900,
+        final startup = await _startupHarness(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+          session: const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access',
+              refreshToken: 'refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            // user is intentionally null (tokens-only session restore).
           ),
-          // user is intentionally null (tokens-only session restore).
-        ),
-      );
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse('/profile'),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
+        final redirect = appRedirectUri(
+          Uri.parse('/profile'),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, AppRoutes.root);
-      expect(deepLinks.pendingLocation, '/profile');
-    });
+        expect(redirect, AppRoutes.root);
+        expect(deepLinks.pendingLocation, '/profile');
+      },
+    );
 
     test('verify-email deep link bypasses hydration gate', () async {
       final deepLinks = _deepLinks();

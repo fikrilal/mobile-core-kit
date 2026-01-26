@@ -28,10 +28,10 @@ abstract class EmailVerificationState with _$EmailVerificationState {
   bool get isResending =>
       isSubmitting && lastAction == EmailVerificationAction.resend;
 
-  bool get canVerify => !isSubmitting && token.trim().isNotEmpty && tokenError == null;
+  bool get canVerify =>
+      !isSubmitting && token.trim().isNotEmpty && tokenError == null;
 
   bool get canResend => !isSubmitting;
 
   factory EmailVerificationState.initial() => const EmailVerificationState();
 }
-

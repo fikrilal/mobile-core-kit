@@ -53,4 +53,3 @@ class ChangePasswordUseCase {
     return _repository.changePassword(request);
   }
 }
-

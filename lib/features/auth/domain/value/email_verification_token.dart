@@ -22,4 +22,3 @@ class EmailVerificationToken {
   @override
   int get hashCode => value.hashCode;
 }
-

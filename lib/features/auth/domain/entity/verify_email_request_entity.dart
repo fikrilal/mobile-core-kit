@@ -7,4 +7,3 @@ abstract class VerifyEmailRequestEntity with _$VerifyEmailRequestEntity {
   const factory VerifyEmailRequestEntity({required String token}) =
       _VerifyEmailRequestEntity;
 }
-

@@ -54,4 +54,12 @@ class AuthErrorCodes {
 
   /// Current password is invalid (change password).
   static const String currentPasswordInvalid = 'AUTH_CURRENT_PASSWORD_INVALID';
+
+  /// Password reset token is invalid (malformed/unknown/redeemed).
+  static const String passwordResetTokenInvalid =
+      'AUTH_PASSWORD_RESET_TOKEN_INVALID';
+
+  /// Password reset token is expired.
+  static const String passwordResetTokenExpired =
+      'AUTH_PASSWORD_RESET_TOKEN_EXPIRED';
 }

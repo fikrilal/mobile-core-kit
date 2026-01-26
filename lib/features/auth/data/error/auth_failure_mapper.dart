@@ -35,18 +35,32 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       case AuthErrorCodes.emailVerificationTokenInvalid:
       case AuthErrorCodes.emailVerificationTokenExpired:
         return const AuthFailure.unexpected();
+      case AuthErrorCodes.passwordResetTokenInvalid:
+        return AuthFailure.validation([
+          ValidationError(
+            field: 'token',
+            message: failure.message,
+            code: ValidationErrorCodes.passwordResetTokenInvalid,
+          ),
+        ]);
+      case AuthErrorCodes.passwordResetTokenExpired:
+        return AuthFailure.validation([
+          ValidationError(
+            field: 'token',
+            message: failure.message,
+            code: ValidationErrorCodes.passwordResetTokenExpired,
+          ),
+        ]);
       case AuthErrorCodes.passwordNotSet:
         return const AuthFailure.passwordNotSet();
       case AuthErrorCodes.currentPasswordInvalid:
-        return AuthFailure.validation(
-          const [
-            ValidationError(
-              field: 'currentPassword',
-              message: '',
-              code: ValidationErrorCodes.currentPasswordInvalid,
-            ),
-          ],
-        );
+        return AuthFailure.validation(const [
+          ValidationError(
+            field: 'currentPassword',
+            message: '',
+            code: ValidationErrorCodes.currentPasswordInvalid,
+          ),
+        ]);
       case AuthErrorCodes.userSuspended:
         return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:

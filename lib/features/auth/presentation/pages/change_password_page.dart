@@ -90,21 +90,25 @@ class _ChangePasswordBody extends StatelessWidget {
               fieldType: FieldType.password,
               labelText: context.l10n.authCurrentPassword,
               errorText:
-                  !state.currentPasswordTouched || state.currentPasswordError == null
-                      ? null
-                      : messageForValidationError(
-                          state.currentPasswordError!,
-                          context.l10n,
-                        ),
+                  !state.currentPasswordTouched ||
+                      state.currentPasswordError == null
+                  ? null
+                  : messageForValidationError(
+                      state.currentPasswordError!,
+                      context.l10n,
+                    ),
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.password],
-              onChanged: context.read<ChangePasswordCubit>().currentPasswordChanged,
+              onChanged: context
+                  .read<ChangePasswordCubit>()
+                  .currentPasswordChanged,
             ),
             const SizedBox(height: AppSpacing.space16),
             AppTextField(
               fieldType: FieldType.password,
               labelText: context.l10n.authNewPassword,
-              errorText: !state.newPasswordTouched || state.newPasswordError == null
+              errorText:
+                  !state.newPasswordTouched || state.newPasswordError == null
                   ? null
                   : messageForValidationError(
                       state.newPasswordError!,
@@ -118,7 +122,8 @@ class _ChangePasswordBody extends StatelessWidget {
             AppTextField(
               fieldType: FieldType.password,
               labelText: context.l10n.authConfirmNewPassword,
-              errorText: !state.confirmNewPasswordTouched ||
+              errorText:
+                  !state.confirmNewPasswordTouched ||
                       state.confirmNewPasswordError == null
                   ? null
                   : messageForValidationError(
@@ -127,8 +132,9 @@ class _ChangePasswordBody extends StatelessWidget {
                     ),
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.newPassword],
-              onChanged:
-                  context.read<ChangePasswordCubit>().confirmNewPasswordChanged,
+              onChanged: context
+                  .read<ChangePasswordCubit>()
+                  .confirmNewPasswordChanged,
             ),
             const SizedBox(height: AppSpacing.space24),
             AppButton.primary(

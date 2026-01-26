@@ -11,4 +11,3 @@ class ResendEmailVerificationUseCase {
     return _repository.resendEmailVerification();
   }
 }
-
