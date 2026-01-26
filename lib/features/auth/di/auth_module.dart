@@ -18,12 +18,17 @@ import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/refresh_token_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
@@ -91,6 +96,24 @@ class AuthModule {
       );
     }
 
+    if (!getIt.isRegistered<VerifyEmailUseCase>()) {
+      getIt.registerFactory<VerifyEmailUseCase>(
+        () => VerifyEmailUseCase(getIt<AuthRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ResendEmailVerificationUseCase>()) {
+      getIt.registerFactory<ResendEmailVerificationUseCase>(
+        () => ResendEmailVerificationUseCase(getIt<AuthRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ChangePasswordUseCase>()) {
+      getIt.registerFactory<ChangePasswordUseCase>(
+        () => ChangePasswordUseCase(getIt<AuthRepository>()),
+      );
+    }
+
     // Session manager
     if (!getIt.isRegistered<SessionManager>()) {
       getIt.registerLazySingleton<SessionManager>(
@@ -125,6 +148,15 @@ class AuthModule {
       );
     }
 
+    if (!getIt.isRegistered<EmailVerificationCubit>()) {
+      getIt.registerFactory<EmailVerificationCubit>(
+        () => EmailVerificationCubit(
+          getIt<VerifyEmailUseCase>(),
+          getIt<ResendEmailVerificationUseCase>(),
+        ),
+      );
+    }
+
     if (!getIt.isRegistered<RegisterCubit>()) {
       getIt.registerFactory<RegisterCubit>(
         () => RegisterCubit(
@@ -138,6 +170,12 @@ class AuthModule {
     if (!getIt.isRegistered<LogoutCubit>()) {
       getIt.registerFactory<LogoutCubit>(
         () => LogoutCubit(getIt<LogoutFlowUseCase>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ChangePasswordCubit>()) {
+      getIt.registerFactory<ChangePasswordCubit>(
+        () => ChangePasswordCubit(getIt<ChangePasswordUseCase>()),
       );
     }
   }
@@ -163,6 +201,7 @@ class _AuthRepositoryTokenRefresher implements TokenRefresher {
       network: () => const SessionFailure.network(),
       cancelled: () => const SessionFailure.unexpected(),
       unauthenticated: () => const SessionFailure.unauthenticated(),
+      passwordNotSet: () => const SessionFailure.unexpected(),
       emailTaken: () => const SessionFailure.unexpected(),
       emailNotVerified: () => const SessionFailure.unexpected(),
       validation: (_) => const SessionFailure.unexpected(),

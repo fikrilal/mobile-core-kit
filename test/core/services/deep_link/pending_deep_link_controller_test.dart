@@ -51,7 +51,7 @@ void main() {
         );
 
         await controller.setPendingFromExternalUri(
-          Uri.parse('https://orymu.com/profile?tab=security'),
+          Uri.parse('https://links.fikril.dev/profile?tab=security'),
         );
 
         expect(controller.pendingLocation, '/profile?tab=security');

@@ -9,6 +9,9 @@ part 'me_model.g.dart';
 /// Current signed-in user payload returned by backend-core-kit.
 ///
 /// Source: `MeDto` in `backend-core-kit` OpenAPI (`GET /v1/me`).
+///
+/// Kept in `core` because it is reused across multiple features (e.g. auth and
+/// user), and feature-to-feature imports are forbidden by architecture lints.
 @freezed
 abstract class MeModel with _$MeModel {
   const factory MeModel({

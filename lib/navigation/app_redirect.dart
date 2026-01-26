@@ -41,7 +41,9 @@ String? appRedirectUri(
   final shouldCanonicalizeExternalHttps =
       isExternalHttps && mappedExternal != null && uri.toString() != location;
   final pendingSource = isExternalHttps ? 'https' : 'router';
-  final zone = _routeZone(Uri.parse(location).path);
+  final locationPath = Uri.parse(location).path;
+  final zone = _routeZone(locationPath);
+  final isVerifyEmail = locationPath == AuthRoutes.verifyEmail;
 
   // Do not force navigation during startup (use a UI gate/overlay instead).
   if (!startup.isReady) {
@@ -68,6 +70,13 @@ String? appRedirectUri(
       return AuthRoutes.signIn;
     }
 
+    // If the session exists but the user is not yet hydrated (cold start with
+    // tokens only), stay on `/` and let the app-level startup overlay block UI
+    // until hydration completes. This avoids a flash to `/home`.
+    if (startup.shouldBlockRoutingForUserHydration) {
+      return null;
+    }
+
     if (startup.needsProfileCompletion) {
       return UserRoutes.completeProfile;
     }
@@ -80,6 +89,12 @@ String? appRedirectUri(
 
   if (shouldShowOnboarding) {
     if (zone == _RouteZone.onboarding) return null;
+
+    // Verification links should be handled immediately (even before onboarding)
+    // so the user can see a deterministic success/failure result.
+    if (isVerifyEmail) {
+      return shouldCanonicalizeExternalHttps ? location : null;
+    }
 
     deepLinks.setPendingLocationForRedirect(
       location,
@@ -100,8 +115,35 @@ String? appRedirectUri(
     return AuthRoutes.signIn;
   }
 
+  // Gate routing while hydrating the user (tokens present, no `/me` yet).
+  if (startup.shouldBlockRoutingForUserHydration) {
+    // Verification links should not be blocked by hydration gating.
+    if (isVerifyEmail) {
+      return shouldCanonicalizeExternalHttps ? location : null;
+    }
+    if (zone == _RouteZone.root) return null;
+
+    // Only store resumable intents. Auth/onboarding routes are never meaningful
+    // to resume into once authenticated.
+    if (zone != _RouteZone.auth && zone != _RouteZone.onboarding) {
+      deepLinks.setPendingLocationForRedirect(
+        location,
+        source: pendingSource,
+        reason: 'needs_user_hydration',
+      );
+    }
+
+    return AppRoutes.root;
+  }
+
   if (startup.needsProfileCompletion) {
     if (zone == _RouteZone.profileCompletion) return null;
+
+    // Allow verification links to proceed even when profile completion is
+    // required; after continuing, the router will re-apply prerequisites.
+    if (isVerifyEmail) {
+      return shouldCanonicalizeExternalHttps ? location : null;
+    }
 
     deepLinks.setPendingLocationForRedirect(
       location,
@@ -118,6 +160,10 @@ String? appRedirectUri(
   }
 
   if (zone == _RouteZone.auth || zone == _RouteZone.onboarding) {
+    if (zone == _RouteZone.auth && isVerifyEmail) {
+      return shouldCanonicalizeExternalHttps ? location : null;
+    }
+
     final pending = deepLinks.consumePendingLocationForRedirect();
     if (pending != null) return pending;
 

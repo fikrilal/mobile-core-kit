@@ -10,7 +10,7 @@ Examples in this repo:
 
 - `EmailAddress` — format check
 - `LoginPassword` — sign-in rule (non-empty)
-- `Password` — sign-up rule (≥ 8 characters)
+- `Password` — sign-up rule (≥ 10 characters)
 - `ConfirmPassword` — matches original password
 - `DisplayName` — name length bounds
 

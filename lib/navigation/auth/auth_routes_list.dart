@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/widgets/navigation/pending_deep_link_cancel_on_pop.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:mobile_core_kit/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 /// Auth feature routes (minimal: sign-in only for the boilerplate).
@@ -32,5 +37,24 @@ final List<GoRoute> authRoutes = [
         child: const RegisterPage(),
       ),
     ),
+  ),
+  GoRoute(
+    path: AuthRoutes.verifyEmail,
+    builder: (context, state) {
+      final token = state.uri.queryParameters['token'];
+      final startup = locator<AppStartupController>();
+
+      return BlocProvider<EmailVerificationCubit>(
+        create: (_) {
+          final cubit = locator<EmailVerificationCubit>();
+          cubit.tokenChanged(token ?? '');
+          unawaited(cubit.verify());
+          return cubit;
+        },
+        child: VerifyEmailPage(
+          canResendVerificationEmail: startup.isAuthenticated,
+        ),
+      );
+    },
   ),
 ];

@@ -27,9 +27,11 @@ import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
@@ -262,6 +264,18 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<Either<AuthFailure, Unit>> verifyEmail(
+    VerifyEmailRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> resendEmailVerification() async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
   Future<Either<AuthFailure, AuthSessionEntity>> login(
     LoginRequestEntity request,
   ) async {
@@ -297,6 +311,13 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> register(
     RegisterRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> changePassword(
+    ChangePasswordRequestEntity request,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

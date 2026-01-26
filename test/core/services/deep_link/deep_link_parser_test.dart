@@ -4,19 +4,25 @@ import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 void main() {
   group('DeepLinkParser', () {
     test(
-      'parses allowlisted https://orymu.com links to internal locations',
+      'parses allowlisted https://links.fikril.dev links to internal locations',
       () {
         final parser = DeepLinkParser();
 
         expect(
-          parser.parseExternalUri(Uri.parse('https://orymu.com/home')),
+          parser.parseExternalUri(Uri.parse('https://links.fikril.dev/home')),
           '/home',
         );
         expect(
           parser.parseExternalUri(
-            Uri.parse('https://orymu.com/profile?tab=security'),
+            Uri.parse('https://links.fikril.dev/profile?tab=security'),
           ),
           '/profile?tab=security',
+        );
+        expect(
+          parser.parseExternalUri(
+            Uri.parse('https://links.fikril.dev/verify-email?token=abc'),
+          ),
+          '/auth/email/verify?token=abc',
         );
       },
     );
@@ -29,7 +35,7 @@ void main() {
         isNull,
       );
       expect(
-        parser.parseExternalUri(Uri.parse('https://orymu.com/unknown')),
+        parser.parseExternalUri(Uri.parse('https://links.fikril.dev/unknown')),
         isNull,
       );
     });

@@ -45,6 +45,15 @@ class BuildConfig {
     BuildEnv.prod => _prodAnalyticsDebugLoggingEnabled,
   };
 
+  /// Google OIDC server client id used to mint an `idToken` that the backend can verify.
+  ///
+  /// Backend must include this value in `AUTH_OIDC_GOOGLE_CLIENT_IDS`.
+  static String get googleOidcServerClientId => switch (env) {
+    BuildEnv.dev => _devGoogleOidcServerClientId,
+    BuildEnv.stage => _stagingGoogleOidcServerClientId,
+    BuildEnv.prod => _prodGoogleOidcServerClientId,
+  };
+
   // ---------------- Network Logging Config ----------------
 
   /// Network log mode: off, summary, smallBodies, full

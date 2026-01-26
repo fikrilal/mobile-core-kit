@@ -2,7 +2,7 @@ class NameUtils {
   /// Returns 1–2 uppercase initials from a display name or email.
   /// - "Jane Doe" -> "JD"
   /// - "single" -> "S"
-  /// - "user@orymu.com" -> "UO"
+  /// - "user@example.com" -> "UE"
   static String? initialsFrom(String? source) {
     if (source == null || source.trim().isEmpty) return null;
     final s = source.trim();

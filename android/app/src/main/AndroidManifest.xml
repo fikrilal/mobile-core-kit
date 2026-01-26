@@ -20,8 +20,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="orymu.com" android:pathPrefix="/home" />
-                <data android:scheme="https" android:host="orymu.com" android:pathPrefix="/profile" />
+                <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/home" />
+                <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/profile" />
+                <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/verify-email" />
             </intent-filter>
 
             <!-- Specifies an Android theme to apply to this Activity as soon as

@@ -1,4 +1,5 @@
 import 'package:mobile_core_kit/navigation/app_routes.dart';
+import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 /// Parses and validates external deep links (e.g. HTTPS universal links) into
 /// internal GoRouter locations.
@@ -9,12 +10,18 @@ import 'package:mobile_core_kit/navigation/app_routes.dart';
 /// - Normalize paths to avoid duplicates (`/home/` -> `/home`).
 class DeepLinkParser {
   DeepLinkParser({
-    Set<String> allowedHosts = const {'orymu.com'},
-    Set<String> allowedPaths = const {AppRoutes.home, AppRoutes.profile},
+    Set<String> allowedHosts = const {'links.fikril.dev'},
+    Map<String, String> externalPathToLocation = const {
+      AppRoutes.home: AppRoutes.home,
+      AppRoutes.profile: AppRoutes.profile,
+      '/verify-email': AuthRoutes.verifyEmail,
+    },
   }) : _allowedHosts = allowedHosts,
-       _allowedPaths = allowedPaths;
+       _externalPathToLocation = externalPathToLocation,
+       _allowedPaths = externalPathToLocation.values.toSet();
 
   final Set<String> _allowedHosts;
+  final Map<String, String> _externalPathToLocation;
   final Set<String> _allowedPaths;
 
   bool isAllowedExternalUri(Uri uri) {
@@ -22,7 +29,7 @@ class DeepLinkParser {
     final host = uri.host.toLowerCase();
     if (!_allowedHosts.contains(host)) return false;
     final path = _normalizePath(uri.path);
-    return _allowedPaths.contains(path);
+    return _externalPathToLocation.containsKey(path);
   }
 
   /// Converts an allowed external HTTPS deep link into an internal location.
@@ -35,9 +42,12 @@ class DeepLinkParser {
     if (!isAllowedExternalUri(uri)) return null;
 
     final path = _normalizePath(uri.path);
+    final internal = _externalPathToLocation[path];
+    if (internal == null) return null;
+
     final query = uri.query;
-    if (query.isEmpty) return path;
-    return '$path?$query';
+    if (query.isEmpty) return internal;
+    return '$internal?$query';
   }
 
   /// Returns whether the internal GoRouter location is allowlisted.

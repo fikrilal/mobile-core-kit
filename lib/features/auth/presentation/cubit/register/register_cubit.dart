@@ -117,6 +117,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       network: (_) => _emitFailure(failure),
       cancelled: (_) => _emitFailure(failure),
       unauthenticated: (_) => _emitFailure(failure),
+      passwordNotSet: (_) => _emitFailure(failure),
       emailTaken: (_) {
         final emailTakenError = ValidationError(
           field: 'email',

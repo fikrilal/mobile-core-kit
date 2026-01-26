@@ -17,8 +17,9 @@ void main() {
       expect(Password.create('   ').isLeft(), true);
     });
 
-    test('rejects password shorter than 8 characters', () {
-      expect(Password.create('short').isLeft(), true);
+    test('rejects password shorter than 10 characters', () {
+      expect(Password.create('123456789').isLeft(), true);
+      expect(Password.create('1234567890').isRight(), true);
     });
   });
 }

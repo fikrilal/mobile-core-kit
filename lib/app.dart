@@ -62,7 +62,9 @@ class MyApp extends StatelessWidget {
                     ),
                     child: AppStartupGate(
                       listenable: startup,
-                      isReady: () => startup.isReady,
+                      isReady: () =>
+                          startup.isReady &&
+                          !startup.shouldBlockRoutingForUserHydration,
                       overlayBuilder: (context) =>
                           AppStartupOverlay(title: context.l10n.appTitle),
                       child: child ?? const SizedBox.shrink(),

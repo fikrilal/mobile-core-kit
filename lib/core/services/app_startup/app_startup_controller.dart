@@ -75,12 +75,30 @@ class AppStartupController extends ChangeNotifier {
   bool get isAuthPending => _sessionManager.isAuthPending;
   UserEntity? get user => _sessionManager.sessionNotifier.value?.user;
 
+  /// Whether routing/UI should be gated while the app hydrates the current user.
+  ///
+  /// This is used to avoid a "home flash" on cold start when tokens exist but
+  /// the user is not yet hydrated (needs `GET /v1/me`).
+  ///
+  /// Notes:
+  /// - Do not gate during onboarding.
+  /// - This is only relevant once [initialize] has completed.
+  bool get shouldBlockRoutingForUserHydration {
+    if (!isReady) return false;
+    if (_shouldShowOnboarding ?? true) return false;
+    if (!isAuthenticated) return false;
+    return needsUserHydration;
+  }
+
   /// Whether the app should fetch `GET /v1/me` to hydrate user data.
   ///
   /// The template treats `MeDto.roles` as a hydration marker:
-  /// - Auth responses (`AuthUserDto`) omit roles, so an auth-derived user will
-  ///   typically have `roles = []`.
-  /// - `/v1/me` always returns roles (and other profile fields).
+  /// - Auth *refresh* responses (`AuthUserDto`) omit roles, so a refresh-derived
+  ///   user will typically have `roles = []`.
+  /// - Auth session-establishing responses (login/register/OIDC) return a
+  ///   `MeDto` snapshot, so `roles` should be populated immediately.
+  /// - `/v1/me` always returns roles (and other profile fields) and remains the
+  ///   canonical source for hydration when needed.
   bool get needsUserHydration {
     final session = _sessionManager.sessionNotifier.value;
     if (session == null) return false;
