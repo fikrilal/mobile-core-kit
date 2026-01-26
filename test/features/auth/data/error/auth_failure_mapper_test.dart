@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -109,6 +110,35 @@ void main() {
 
         expect(mapAuthFailure(failure), const AuthFailure.unexpected());
       }
+    });
+
+    test('maps AUTH_PASSWORD_NOT_SET to passwordNotSet', () {
+      final failure = ApiFailure(
+        message: 'Password not set',
+        statusCode: 409,
+        code: AuthErrorCodes.passwordNotSet,
+      );
+
+      expect(mapAuthFailure(failure), const AuthFailure.passwordNotSet());
+    });
+
+    test('maps AUTH_CURRENT_PASSWORD_INVALID to field validation', () {
+      final failure = ApiFailure(
+        message: 'Current password invalid',
+        statusCode: 400,
+        code: AuthErrorCodes.currentPasswordInvalid,
+      );
+
+      expect(
+        mapAuthFailure(failure),
+        const AuthFailure.validation([
+          ValidationError(
+            field: 'currentPassword',
+            message: '',
+            code: ValidationErrorCodes.currentPasswordInvalid,
+          ),
+        ]),
+      );
     });
 
     test('maps RATE_LIMITED code to tooManyRequests', () {

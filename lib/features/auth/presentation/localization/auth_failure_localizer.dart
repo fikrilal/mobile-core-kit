@@ -15,6 +15,7 @@ String messageForAuthFailure(AuthFailure failure, AppLocalizations l10n) {
     network: () => l10n.errorsOffline,
     cancelled: () => l10n.errorsUnexpected,
     unauthenticated: () => l10n.errorsUnauthenticated,
+    passwordNotSet: () => l10n.authErrorsPasswordNotSet,
     emailTaken: () => l10n.authErrorsEmailTaken,
     emailNotVerified: () => l10n.authErrorsEmailNotVerified,
     validation: (_) => l10n.errorsValidation,

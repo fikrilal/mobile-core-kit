@@ -15,6 +15,13 @@ sealed class AuthFailure with _$AuthFailure {
   /// Use this for protected endpoints that return 401 (e.g. `GET /v1/me`),
   /// not for login failures (use [invalidCredentials] instead).
   const factory AuthFailure.unauthenticated() = _UnauthenticatedFailure;
+
+  /// The authenticated user does not have a password set (e.g. OIDC-only account).
+  ///
+  /// Relevant for password-specific flows like "Change password" where the backend
+  /// requires a current password.
+  const factory AuthFailure.passwordNotSet() = _PasswordNotSetFailure;
+
   const factory AuthFailure.emailTaken() = _EmailTakenFailure;
   const factory AuthFailure.emailNotVerified() = _EmailNotVerifiedFailure;
   const factory AuthFailure.validation(List<ValidationError> errors) =

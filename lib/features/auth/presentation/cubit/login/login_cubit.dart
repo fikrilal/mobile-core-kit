@@ -178,6 +178,7 @@ class LoginCubit extends Cubit<LoginState> {
       network: (_) => _emitFailure(failure),
       cancelled: (_) => _emitFailure(failure),
       unauthenticated: (_) => _emitFailure(failure),
+      passwordNotSet: (_) => _emitFailure(failure),
       emailTaken: (_) => _emitFailure(failure),
       emailNotVerified: (_) => _emitFailure(failure),
       validation: (v) {

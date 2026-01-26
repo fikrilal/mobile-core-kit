@@ -187,6 +187,7 @@ class _AuthRepositoryTokenRefresher implements TokenRefresher {
       network: () => const SessionFailure.network(),
       cancelled: () => const SessionFailure.unexpected(),
       unauthenticated: () => const SessionFailure.unauthenticated(),
+      passwordNotSet: () => const SessionFailure.unexpected(),
       emailTaken: () => const SessionFailure.unexpected(),
       emailNotVerified: () => const SessionFailure.unexpected(),
       validation: (_) => const SessionFailure.unexpected(),

@@ -3,9 +3,11 @@ import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/network/endpoints/auth_endpoint.dart';
+import 'package:mobile_core_kit/core/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_response_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_result_model.dart';
+import 'package:mobile_core_kit/features/auth/data/model/remote/change_password_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/logout_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
@@ -170,6 +172,32 @@ class AuthRemoteDataSource {
     if (response.isError) {
       Log.warning(
         'Resend verification email failed (status=${response.statusCode}): ${response.message}',
+        name: _tag,
+      );
+    }
+    return response;
+  }
+
+  Future<ApiResponse<ApiNoData>> changePassword(
+    ChangePasswordRequestModel requestModel, {
+    String? idempotencyKey,
+  }) async {
+    Log.info('Changing password', name: _tag);
+
+    final response = await _apiHelper.post<ApiNoData>(
+      AuthEndpoint.changePassword,
+      data: requestModel.toJson(),
+      host: ApiHost.auth,
+      requiresAuth: true,
+      throwOnError: false,
+      headers: <String, String>{
+        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
+      },
+    );
+
+    if (response.isError) {
+      Log.warning(
+        'Change password failed (status=${response.statusCode}): ${response.message}',
         name: _tag,
       );
     }

@@ -9,7 +9,9 @@ class Password {
     if (input.trim().isEmpty) {
       return left(ValueFailure.empty(input));
     }
-    if (input.length < 8) {
+    // Backend policy: min length 10 (see `PasswordRegisterRequestDto`,
+    // `ChangePasswordRequestDto`).
+    if (input.length < 10) {
       return left(ValueFailure.shortPassword(input));
     }
     return right(Password._(input));

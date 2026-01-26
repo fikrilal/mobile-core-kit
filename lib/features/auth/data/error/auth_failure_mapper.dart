@@ -1,5 +1,7 @@
 import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
@@ -33,6 +35,18 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
       case AuthErrorCodes.emailVerificationTokenInvalid:
       case AuthErrorCodes.emailVerificationTokenExpired:
         return const AuthFailure.unexpected();
+      case AuthErrorCodes.passwordNotSet:
+        return const AuthFailure.passwordNotSet();
+      case AuthErrorCodes.currentPasswordInvalid:
+        return AuthFailure.validation(
+          const [
+            ValidationError(
+              field: 'currentPassword',
+              message: '',
+              code: ValidationErrorCodes.currentPasswordInvalid,
+            ),
+          ],
+        );
       case AuthErrorCodes.userSuspended:
         return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:

@@ -48,4 +48,10 @@ class AuthErrorCodes {
   /// Email verification token is expired.
   static const String emailVerificationTokenExpired =
       'AUTH_EMAIL_VERIFICATION_TOKEN_EXPIRED';
+
+  /// User does not have a password set (OIDC-only account).
+  static const String passwordNotSet = 'AUTH_PASSWORD_NOT_SET';
+
+  /// Current password is invalid (change password).
+  static const String currentPasswordInvalid = 'AUTH_CURRENT_PASSWORD_INVALID';
 }
