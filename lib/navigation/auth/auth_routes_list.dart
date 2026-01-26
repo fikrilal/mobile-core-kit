@@ -47,10 +47,8 @@ final List<GoRoute> authRoutes = [
       return BlocProvider<EmailVerificationCubit>(
         create: (_) {
           final cubit = locator<EmailVerificationCubit>();
-          if (token != null && token.trim().isNotEmpty) {
-            cubit.tokenChanged(token);
-            unawaited(cubit.verify());
-          }
+          cubit.tokenChanged(token ?? '');
+          unawaited(cubit.verify());
           return cubit;
         },
         child: VerifyEmailPage(

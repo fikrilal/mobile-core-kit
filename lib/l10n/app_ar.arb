@@ -259,7 +259,7 @@
   "@authVerifyEmailFailureTitle": {
     "description": "Title shown when email verification fails."
   },
-  "authVerifyEmailFailureBody": "⟪RTL⟫ This verification link is invalid or expired. Please request a new one.",
+  "authVerifyEmailFailureBody": "⟪RTL⟫ This verification link is invalid, expired, or missing a token. Please request a new one.",
   "@authVerifyEmailFailureBody": {
     "description": "Body copy shown when email verification fails (invalid/expired link)."
   },
