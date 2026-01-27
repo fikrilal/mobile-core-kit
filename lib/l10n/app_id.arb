@@ -119,6 +119,14 @@
   "@validationPasswordsDoNotMatch": {
     "description": "Validation message shown when a password confirmation does not match."
   },
+  "validationPasswordResetTokenInvalid": "Token reset tidak valid",
+  "@validationPasswordResetTokenInvalid": {
+    "description": "Validation message shown when a password reset token is invalid."
+  },
+  "validationPasswordResetTokenExpired": "Token reset kedaluwarsa",
+  "@validationPasswordResetTokenExpired": {
+    "description": "Validation message shown when a password reset token is expired."
+  },
   "validationNameTooShort": "Minimal 2 karakter",
   "@validationNameTooShort": {
     "description": "Validation message shown when a name field is too short."
@@ -183,6 +191,10 @@
   "@commonContinue": {
     "description": "Generic CTA label for progressing to the next step."
   },
+  "commonBackToSignIn": "Kembali ke halaman masuk",
+  "@commonBackToSignIn": {
+    "description": "CTA label for navigating back to the sign-in screen."
+  },
   "commonLanguage": "Bahasa",
   "@commonLanguage": {
     "description": "Settings label for language/locale selection."
@@ -242,6 +254,66 @@
   "authHaveAccountCta": "Sudah punya akun? Masuk",
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
+  },
+  "authForgotPasswordCta": "Lupa kata sandi?",
+  "@authForgotPasswordCta": {
+    "description": "CTA text linking from sign-in to password reset."
+  },
+  "authPasswordResetRequestTitle": "Atur ulang kata sandi",
+  "@authPasswordResetRequestTitle": {
+    "description": "Title shown on the password reset request screen."
+  },
+  "authPasswordResetRequestBody": "Masukkan email Anda dan kami akan mengirim tautan reset kata sandi.",
+  "@authPasswordResetRequestBody": {
+    "description": "Body copy shown on the password reset request screen."
+  },
+  "authPasswordResetRequestCta": "Kirim tautan reset",
+  "@authPasswordResetRequestCta": {
+    "description": "Primary CTA label for requesting a password reset link."
+  },
+  "authPasswordResetRequestSuccessTitle": "Periksa email Anda",
+  "@authPasswordResetRequestSuccessTitle": {
+    "description": "Title shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestSuccessBody": "Jika ada akun dengan email tersebut, kami telah mengirim tautan reset.",
+  "@authPasswordResetRequestSuccessBody": {
+    "description": "Body copy shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestNewLinkCta": "Minta tautan baru",
+  "@authPasswordResetRequestNewLinkCta": {
+    "description": "CTA label for requesting a new password reset link."
+  },
+  "authPasswordResetConfirmTitle": "Buat kata sandi baru",
+  "@authPasswordResetConfirmTitle": {
+    "description": "Title shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmBody": "Buat kata sandi baru untuk akun Anda.",
+  "@authPasswordResetConfirmBody": {
+    "description": "Body copy shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmCta": "Atur ulang kata sandi",
+  "@authPasswordResetConfirmCta": {
+    "description": "Primary CTA label for confirming a password reset."
+  },
+  "authPasswordResetConfirmSubmittingBody": "Mengatur ulang kata sandi Anda…",
+  "@authPasswordResetConfirmSubmittingBody": {
+    "description": "Body copy shown while resetting the password from a deep link."
+  },
+  "authPasswordResetConfirmSuccessTitle": "Kata sandi direset",
+  "@authPasswordResetConfirmSuccessTitle": {
+    "description": "Title shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmSuccessBody": "Kata sandi Anda telah direset.",
+  "@authPasswordResetConfirmSuccessBody": {
+    "description": "Body copy shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmFailureTitle": "Reset gagal",
+  "@authPasswordResetConfirmFailureTitle": {
+    "description": "Title shown when password reset confirmation fails (invalid/expired/missing token)."
+  },
+  "authPasswordResetConfirmFailureBody": "Tautan reset ini tidak valid, kedaluwarsa, atau tidak memiliki token. Silakan minta tautan baru.",
+  "@authPasswordResetConfirmFailureBody": {
+    "description": "Body copy shown when password reset confirmation fails (invalid/expired/missing token)."
   },
   "authChangePasswordTitle": "Ubah kata sandi",
   "@authChangePasswordTitle": {

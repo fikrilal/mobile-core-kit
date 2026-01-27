@@ -12,6 +12,9 @@ abstract class ChangePasswordState with _$ChangePasswordState {
     @Default('') String currentPassword,
     @Default('') String newPassword,
     @Default('') String confirmNewPassword,
+    @Default(false) bool currentPasswordTouched,
+    @Default(false) bool newPasswordTouched,
+    @Default(false) bool confirmNewPasswordTouched,
     ValidationError? currentPasswordError,
     ValidationError? newPasswordError,
     ValidationError? confirmNewPasswordError,
@@ -34,4 +37,3 @@ abstract class ChangePasswordState with _$ChangePasswordState {
 
   factory ChangePasswordState.initial() => const ChangePasswordState();
 }
-

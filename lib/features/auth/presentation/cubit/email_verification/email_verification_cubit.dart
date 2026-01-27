@@ -10,7 +10,7 @@ import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verificat
 
 class EmailVerificationCubit extends Cubit<EmailVerificationState> {
   EmailVerificationCubit(this._verifyEmail, this._resendEmailVerification)
-      : super(EmailVerificationState.initial());
+    : super(EmailVerificationState.initial());
 
   final VerifyEmailUseCase _verifyEmail;
   final ResendEmailVerificationUseCase _resendEmailVerification;

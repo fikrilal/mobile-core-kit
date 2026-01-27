@@ -141,6 +141,41 @@ void main() {
       );
     });
 
+    test(
+      'maps AUTH_PASSWORD_RESET_TOKEN_* codes to token field validation',
+      () {
+        const cases = [
+          (
+            AuthErrorCodes.passwordResetTokenInvalid,
+            ValidationErrorCodes.passwordResetTokenInvalid,
+          ),
+          (
+            AuthErrorCodes.passwordResetTokenExpired,
+            ValidationErrorCodes.passwordResetTokenExpired,
+          ),
+        ];
+
+        for (final (apiCode, validationCode) in cases) {
+          final failure = ApiFailure(
+            message: 'Reset token error',
+            statusCode: 400,
+            code: apiCode,
+          );
+
+          expect(
+            mapAuthFailure(failure),
+            AuthFailure.validation([
+              ValidationError(
+                field: 'token',
+                message: 'Reset token error',
+                code: validationCode,
+              ),
+            ]),
+          );
+        }
+      },
+    );
+
     test('maps RATE_LIMITED code to tooManyRequests', () {
       final failure = ApiFailure(
         message: 'Too many requests',

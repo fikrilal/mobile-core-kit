@@ -77,6 +77,19 @@ class _SignInForm extends StatelessWidget {
                           ),
                     onChanged: context.read<LoginCubit>().passwordChanged,
                   ),
+                  const SizedBox(height: AppSpacing.space8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: state.isSubmitting
+                          ? null
+                          : () => context.go(AuthRoutes.passwordResetRequest),
+                      child: AppText.bodyMedium(
+                        context.l10n.authForgotPasswordCta,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: AppSpacing.space24),
                   AppButton.primary(
                     text: context.l10n.authSignIn,

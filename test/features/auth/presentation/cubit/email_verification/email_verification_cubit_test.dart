@@ -29,30 +29,32 @@ void main() {
       resendEmailVerification = _MockResendEmailVerificationUseCase();
     });
 
-    test('emits token error and does not call usecase when token is empty',
-        () async {
-      final cubit = EmailVerificationCubit(
-        verifyEmail,
-        resendEmailVerification,
-      );
-      final emitted = <EmailVerificationState>[];
-      final sub = cubit.stream.listen(emitted.add);
+    test(
+      'emits token error and does not call usecase when token is empty',
+      () async {
+        final cubit = EmailVerificationCubit(
+          verifyEmail,
+          resendEmailVerification,
+        );
+        final emitted = <EmailVerificationState>[];
+        final sub = cubit.stream.listen(emitted.add);
 
-      await cubit.verify();
-      await pumpEventQueue();
+        await cubit.verify();
+        await pumpEventQueue();
 
-      expect(emitted.length, 1);
-      expect(emitted.single.status, EmailVerificationStatus.initial);
-      expect(emitted.single.lastAction, EmailVerificationAction.verify);
-      expect(emitted.single.failure, isNull);
-      expect(emitted.single.tokenError?.code, ValidationErrorCodes.required);
+        expect(emitted.length, 1);
+        expect(emitted.single.status, EmailVerificationStatus.initial);
+        expect(emitted.single.lastAction, EmailVerificationAction.verify);
+        expect(emitted.single.failure, isNull);
+        expect(emitted.single.tokenError?.code, ValidationErrorCodes.required);
 
-      verifyNever(() => verifyEmail(any()));
-      verifyNever(() => resendEmailVerification());
+        verifyNever(() => verifyEmail(any()));
+        verifyNever(() => resendEmailVerification());
 
-      await sub.cancel();
-      await cubit.close();
-    });
+        await sub.cancel();
+        await cubit.close();
+      },
+    );
 
     test('verifies and emits submitting -> success', () async {
       when(() => verifyEmail(any())).thenAnswer((_) async => right(unit));
@@ -83,43 +85,46 @@ void main() {
       await cubit.close();
     });
 
-    test('resends verification email and emits submitting -> success', () async {
-      when(() => resendEmailVerification()).thenAnswer((_) async => right(unit));
+    test(
+      'resends verification email and emits submitting -> success',
+      () async {
+        when(
+          () => resendEmailVerification(),
+        ).thenAnswer((_) async => right(unit));
 
-      final cubit = EmailVerificationCubit(
-        verifyEmail,
-        resendEmailVerification,
-      );
-      final emitted = <EmailVerificationState>[];
-      final sub = cubit.stream.listen(emitted.add);
+        final cubit = EmailVerificationCubit(
+          verifyEmail,
+          resendEmailVerification,
+        );
+        final emitted = <EmailVerificationState>[];
+        final sub = cubit.stream.listen(emitted.add);
 
-      await cubit.resendVerificationEmail();
-      await pumpEventQueue();
+        await cubit.resendVerificationEmail();
+        await pumpEventQueue();
 
-      expect(emitted.length, 2);
-      expect(emitted[0].status, EmailVerificationStatus.submitting);
-      expect(emitted[0].lastAction, EmailVerificationAction.resend);
-      expect(emitted[1].status, EmailVerificationStatus.success);
-      expect(emitted[1].lastAction, EmailVerificationAction.resend);
+        expect(emitted.length, 2);
+        expect(emitted[0].status, EmailVerificationStatus.submitting);
+        expect(emitted[0].lastAction, EmailVerificationAction.resend);
+        expect(emitted[1].status, EmailVerificationStatus.success);
+        expect(emitted[1].lastAction, EmailVerificationAction.resend);
 
-      verify(() => resendEmailVerification()).called(1);
+        verify(() => resendEmailVerification()).called(1);
 
-      await sub.cancel();
-      await cubit.close();
-    });
+        await sub.cancel();
+        await cubit.close();
+      },
+    );
 
     test('maps validation failure to field error', () async {
       when(() => verifyEmail(any())).thenAnswer(
         (_) async => left(
-          AuthFailure.validation(
-            const [
-              ValidationError(
-                field: 'token',
-                message: '',
-                code: ValidationErrorCodes.required,
-              ),
-            ],
-          ),
+          AuthFailure.validation(const [
+            ValidationError(
+              field: 'token',
+              message: '',
+              code: ValidationErrorCodes.required,
+            ),
+          ]),
         ),
       );
 
@@ -144,4 +149,3 @@ void main() {
     });
   });
 }
-

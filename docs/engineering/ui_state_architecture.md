@@ -15,6 +15,7 @@ This document defines the presentation‑layer architecture using Flutter BLoC/C
 - State shape: single Equatable class with `status` enum + UI‑shaped fields; derived getters (`isLoading`, `hasNextPage`, etc.). Example: `lib/features/discover/presentation/bloc/trending/trending_books_state.dart:1`.
 - Builders: one `BlocBuilder` switches on `state.status` and returns dedicated methods (`_buildLoading/_buildSuccess/_buildError/_buildLoadingMore`). Example: `lib/features/discover/presentation/pages/discover_page.dart:393`.
 - Skeletons: colocate under `presentation/widgets/skeleton/` per feature; keep loading placeholders lightweight and consistent.
+- Forms: keep validation real‑time in state, but make error display **touched‑aware** (only show errors for fields the user interacted with). This prevents cross‑field validation from showing “required/empty” on untouched fields.
 - DI: register datasources → repositories → usecases → blocs in `features/**/di/*_module.dart`; consume via `locator`.
 - Navigation: GoRouter + `ShellRoute` for tabs; shell UI state is a simple Cubit (`lib/features/main/presentation/cubit/shell_cubit.dart:1`).
 - Cross‑feature refresh: publish domain events on `AppEventBus`, BLoCs listen and refetch.

@@ -23,6 +23,7 @@
                 <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/home" />
                 <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/profile" />
                 <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/verify-email" />
+                <data android:scheme="https" android:host="links.fikril.dev" android:pathPrefix="/reset-password" />
             </intent-filter>
 
             <!-- Specifies an Android theme to apply to this Activity as soon as

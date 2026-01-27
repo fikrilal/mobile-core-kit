@@ -9,7 +9,11 @@ import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_contro
 import 'package:mobile_core_kit/core/widgets/navigation/pending_deep_link_cancel_on_pop.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/pages/password_reset_confirm_page.dart';
+import 'package:mobile_core_kit/features/auth/presentation/pages/password_reset_request_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/register_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/verify_email_page.dart';
@@ -37,6 +41,32 @@ final List<GoRoute> authRoutes = [
         child: const RegisterPage(),
       ),
     ),
+  ),
+  GoRoute(
+    path: AuthRoutes.passwordResetRequest,
+    builder: (context, state) => PendingDeepLinkCancelOnPop(
+      deepLinks: locator<PendingDeepLinkController>(),
+      clearWhenCanPop: false,
+      child: BlocProvider<PasswordResetRequestCubit>(
+        create: (_) => locator<PasswordResetRequestCubit>(),
+        child: const PasswordResetRequestPage(),
+      ),
+    ),
+  ),
+  GoRoute(
+    path: AuthRoutes.passwordResetConfirm,
+    builder: (context, state) {
+      final token = state.uri.queryParameters['token'];
+
+      return BlocProvider<PasswordResetConfirmCubit>(
+        create: (_) {
+          final cubit = locator<PasswordResetConfirmCubit>();
+          cubit.tokenChanged(token ?? '');
+          return cubit;
+        },
+        child: const PasswordResetConfirmPage(),
+      );
+    },
   ),
   GoRoute(
     path: AuthRoutes.verifyEmail,

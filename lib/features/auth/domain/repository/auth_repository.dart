@@ -5,6 +5,8 @@ import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart'
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -35,7 +37,9 @@ abstract class AuthRepository {
   /// Verifies a user email using a one-time token sent via email.
   ///
   /// Backend: `POST /v1/auth/email/verify` (204 No Content, does not require auth).
-  Future<Either<AuthFailure, Unit>> verifyEmail(VerifyEmailRequestEntity request);
+  Future<Either<AuthFailure, Unit>> verifyEmail(
+    VerifyEmailRequestEntity request,
+  );
 
   /// Resends the verification email for the current user (rate limited).
   ///
@@ -49,5 +53,21 @@ abstract class AuthRepository {
   /// Note: Backend revokes other sessions but keeps the current session active.
   Future<Either<AuthFailure, Unit>> changePassword(
     ChangePasswordRequestEntity request,
+  );
+
+  /// Request a password reset email (no account enumeration).
+  ///
+  /// Backend: `POST /v1/auth/password/reset/request` (204 No Content, public).
+  Future<Either<AuthFailure, Unit>> requestPasswordReset(
+    PasswordResetRequestEntity request,
+  );
+
+  /// Confirm a password reset using a one-time token.
+  ///
+  /// Backend: `POST /v1/auth/password/reset/confirm` (204 No Content, public).
+  ///
+  /// Note: Backend revokes all sessions/refresh tokens on success.
+  Future<Either<AuthFailure, Unit>> confirmPasswordReset(
+    PasswordResetConfirmRequestEntity request,
   );
 }

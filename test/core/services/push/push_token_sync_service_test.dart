@@ -57,7 +57,9 @@ void main() {
         () => tokenProvider.onTokenRefresh,
       ).thenAnswer((_) => tokenRefreshController.stream);
 
-      when(() => store.readPushNotConfiguredUntil()).thenAnswer((_) async => null);
+      when(
+        () => store.readPushNotConfiguredUntil(),
+      ).thenAnswer((_) async => null);
       when(() => store.clearPushNotConfiguredUntil()).thenAnswer((_) async {});
       when(
         () => store.isDeduped(
@@ -71,7 +73,9 @@ void main() {
           token: any(named: 'token'),
         ),
       ).thenAnswer((_) async {});
-      when(() => store.writePushNotConfiguredUntil(any())).thenAnswer((_) async {});
+      when(
+        () => store.writePushNotConfiguredUntil(any()),
+      ).thenAnswer((_) async {});
     });
 
     tearDown(() async {
@@ -102,10 +106,12 @@ void main() {
       await service.init();
       service.dispose();
 
-      verify(() => registrar.upsert(platform: PushPlatform.android, token: 'token1'))
-          .called(1);
-      verify(() => store.writeLastSent(sessionKey: 'rt1', token: 'token1'))
-          .called(1);
+      verify(
+        () => registrar.upsert(platform: PushPlatform.android, token: 'token1'),
+      ).called(1);
+      verify(
+        () => store.writeLastSent(sessionKey: 'rt1', token: 'token1'),
+      ).called(1);
     });
 
     test('token refresh while session active → upserts', () async {
@@ -143,10 +149,12 @@ void main() {
 
       service.dispose();
 
-      verify(() => registrar.upsert(platform: PushPlatform.android, token: 'token2'))
-          .called(1);
-      verify(() => store.writeLastSent(sessionKey: 'rt1', token: 'token2'))
-          .called(1);
+      verify(
+        () => registrar.upsert(platform: PushPlatform.android, token: 'token2'),
+      ).called(1);
+      verify(
+        () => store.writeLastSent(sessionKey: 'rt1', token: 'token2'),
+      ).called(1);
     });
 
     test('PUSH_NOT_CONFIGURED sets cooldown', () async {
@@ -182,7 +190,9 @@ void main() {
           now.add(const Duration(hours: 24)),
         ),
       ).called(1);
-      verifyNever(() => store.writeLastSent(sessionKey: 'rt1', token: 'token1'));
+      verifyNever(
+        () => store.writeLastSent(sessionKey: 'rt1', token: 'token1'),
+      );
     });
   });
 }
@@ -198,4 +208,3 @@ AuthSessionEntity _session({required String refreshToken}) {
     ),
   );
 }
-

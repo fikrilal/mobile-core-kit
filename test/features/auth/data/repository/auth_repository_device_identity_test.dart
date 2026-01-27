@@ -58,9 +58,8 @@ void main() {
     );
 
     when(() => remote.register(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResponseModel>.success(
-        data: _authResponse(),
-      ),
+      (_) async =>
+          ApiResponse<AuthResponseModel>.success(data: _authResponse()),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
@@ -87,9 +86,8 @@ void main() {
     );
 
     when(() => remote.login(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResponseModel>.success(
-        data: _authResponse(),
-      ),
+      (_) async =>
+          ApiResponse<AuthResponseModel>.success(data: _authResponse()),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
@@ -119,9 +117,8 @@ void main() {
     );
 
     when(() => remote.oidcExchange(any())).thenAnswer(
-      (_) async => ApiResponse<AuthResponseModel>.success(
-        data: _authResponse(),
-      ),
+      (_) async =>
+          ApiResponse<AuthResponseModel>.success(data: _authResponse()),
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);

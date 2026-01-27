@@ -119,6 +119,14 @@
   "@validationPasswordsDoNotMatch": {
     "description": "Validation message shown when a password confirmation does not match."
   },
+  "validationPasswordResetTokenInvalid": "⟪RTL⟫ Reset token is invalid",
+  "@validationPasswordResetTokenInvalid": {
+    "description": "Validation message shown when a password reset token is invalid."
+  },
+  "validationPasswordResetTokenExpired": "⟪RTL⟫ Reset token has expired",
+  "@validationPasswordResetTokenExpired": {
+    "description": "Validation message shown when a password reset token is expired."
+  },
   "validationNameTooShort": "⟪RTL⟫ Must be at least 2 characters",
   "@validationNameTooShort": {
     "description": "Validation message shown when a name field is too short."
@@ -183,6 +191,10 @@
   "@commonContinue": {
     "description": "Generic CTA label for progressing to the next step."
   },
+  "commonBackToSignIn": "⟪RTL⟫ Back to sign in",
+  "@commonBackToSignIn": {
+    "description": "CTA label for navigating back to the sign-in screen."
+  },
   "commonLanguage": "⟪RTL⟫ Language",
   "@commonLanguage": {
     "description": "Settings label for language/locale selection."
@@ -242,6 +254,66 @@
   "authHaveAccountCta": "⟪RTL⟫ Already have an account? Sign in",
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
+  },
+  "authForgotPasswordCta": "⟪RTL⟫ Forgot password?",
+  "@authForgotPasswordCta": {
+    "description": "CTA text linking from sign-in to password reset."
+  },
+  "authPasswordResetRequestTitle": "⟪RTL⟫ Reset password",
+  "@authPasswordResetRequestTitle": {
+    "description": "Title shown on the password reset request screen."
+  },
+  "authPasswordResetRequestBody": "⟪RTL⟫ Enter your email and we’ll send a password reset link.",
+  "@authPasswordResetRequestBody": {
+    "description": "Body copy shown on the password reset request screen."
+  },
+  "authPasswordResetRequestCta": "⟪RTL⟫ Send reset link",
+  "@authPasswordResetRequestCta": {
+    "description": "Primary CTA label for requesting a password reset link."
+  },
+  "authPasswordResetRequestSuccessTitle": "⟪RTL⟫ Check your email",
+  "@authPasswordResetRequestSuccessTitle": {
+    "description": "Title shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestSuccessBody": "⟪RTL⟫ If an account exists for that email, we’ve sent a reset link.",
+  "@authPasswordResetRequestSuccessBody": {
+    "description": "Body copy shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestNewLinkCta": "⟪RTL⟫ Request new link",
+  "@authPasswordResetRequestNewLinkCta": {
+    "description": "CTA label for requesting a new password reset link."
+  },
+  "authPasswordResetConfirmTitle": "⟪RTL⟫ Set new password",
+  "@authPasswordResetConfirmTitle": {
+    "description": "Title shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmBody": "⟪RTL⟫ Create a new password for your account.",
+  "@authPasswordResetConfirmBody": {
+    "description": "Body copy shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmCta": "⟪RTL⟫ Reset password",
+  "@authPasswordResetConfirmCta": {
+    "description": "Primary CTA label for confirming a password reset."
+  },
+  "authPasswordResetConfirmSubmittingBody": "⟪RTL⟫ Resetting your password…",
+  "@authPasswordResetConfirmSubmittingBody": {
+    "description": "Body copy shown while resetting the password from a deep link."
+  },
+  "authPasswordResetConfirmSuccessTitle": "⟪RTL⟫ Password reset",
+  "@authPasswordResetConfirmSuccessTitle": {
+    "description": "Title shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmSuccessBody": "⟪RTL⟫ Your password has been reset.",
+  "@authPasswordResetConfirmSuccessBody": {
+    "description": "Body copy shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmFailureTitle": "⟪RTL⟫ Reset failed",
+  "@authPasswordResetConfirmFailureTitle": {
+    "description": "Title shown when password reset confirmation fails (invalid/expired/missing token)."
+  },
+  "authPasswordResetConfirmFailureBody": "⟪RTL⟫ This reset link is invalid, expired, or missing a token. Please request a new one.",
+  "@authPasswordResetConfirmFailureBody": {
+    "description": "Body copy shown when password reset confirmation fails (invalid/expired/missing token)."
   },
   "authChangePasswordTitle": "⟪RTL⟫ Change password",
   "@authChangePasswordTitle": {

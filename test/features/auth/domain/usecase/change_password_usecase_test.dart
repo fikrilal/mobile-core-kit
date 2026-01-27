@@ -21,73 +21,81 @@ void main() {
   });
 
   group('ChangePasswordUseCase', () {
-    test('returns validation failure and does not call repo when invalid', () async {
-      final repo = _MockAuthRepository();
-      final usecase = ChangePasswordUseCase(repo);
+    test(
+      'returns validation failure and does not call repo when invalid',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = ChangePasswordUseCase(repo);
 
-      final result = await usecase(
-        const ChangePasswordRequestEntity(
-          currentPassword: '',
-          newPassword: '123456789',
-        ),
-      );
+        final result = await usecase(
+          const ChangePasswordRequestEntity(
+            currentPassword: '',
+            newPassword: '123456789',
+          ),
+        );
 
-      expect(result.isLeft(), true);
-      result.match(
-        (failure) => expect(
-          failure,
-          const AuthFailure.validation([
-            ValidationError(
-              field: 'currentPassword',
-              message: '',
-              code: ValidationErrorCodes.required,
-            ),
-            ValidationError(
-              field: 'newPassword',
-              message: '',
-              code: ValidationErrorCodes.passwordTooShort,
-            ),
-          ]),
-        ),
-        (_) => fail('Expected Left'),
-      );
+        expect(result.isLeft(), true);
+        result.match(
+          (failure) => expect(
+            failure,
+            const AuthFailure.validation([
+              ValidationError(
+                field: 'currentPassword',
+                message: '',
+                code: ValidationErrorCodes.required,
+              ),
+              ValidationError(
+                field: 'newPassword',
+                message: '',
+                code: ValidationErrorCodes.passwordTooShort,
+              ),
+            ]),
+          ),
+          (_) => fail('Expected Left'),
+        );
 
-      verifyNever(() => repo.changePassword(any()));
-    });
+        verifyNever(() => repo.changePassword(any()));
+      },
+    );
 
-    test('returns validation failure when new password equals current password', () async {
-      final repo = _MockAuthRepository();
-      final usecase = ChangePasswordUseCase(repo);
+    test(
+      'returns validation failure when new password equals current password',
+      () async {
+        final repo = _MockAuthRepository();
+        final usecase = ChangePasswordUseCase(repo);
 
-      const password = 'samepassword';
-      final result = await usecase(
-        const ChangePasswordRequestEntity(
-          currentPassword: password,
-          newPassword: password,
-        ),
-      );
+        const password = 'samepassword';
+        final result = await usecase(
+          const ChangePasswordRequestEntity(
+            currentPassword: password,
+            newPassword: password,
+          ),
+        );
 
-      expect(result.isLeft(), true);
-      result.match(
-        (failure) => expect(
-          failure,
-          const AuthFailure.validation([
-            ValidationError(
-              field: 'newPassword',
-              message: '',
-              code: ValidationErrorCodes.passwordSameAsCurrent,
-            ),
-          ]),
-        ),
-        (_) => fail('Expected Left'),
-      );
+        expect(result.isLeft(), true);
+        result.match(
+          (failure) => expect(
+            failure,
+            const AuthFailure.validation([
+              ValidationError(
+                field: 'newPassword',
+                message: '',
+                code: ValidationErrorCodes.passwordSameAsCurrent,
+              ),
+            ]),
+          ),
+          (_) => fail('Expected Left'),
+        );
 
-      verifyNever(() => repo.changePassword(any()));
-    });
+        verifyNever(() => repo.changePassword(any()));
+      },
+    );
 
     test('calls repo when valid', () async {
       final repo = _MockAuthRepository();
-      when(() => repo.changePassword(any())).thenAnswer((_) async => right(unit));
+      when(
+        () => repo.changePassword(any()),
+      ).thenAnswer((_) async => right(unit));
 
       final usecase = ChangePasswordUseCase(repo);
 
@@ -105,4 +113,3 @@ void main() {
     });
   });
 }
-

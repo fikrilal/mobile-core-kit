@@ -87,9 +87,9 @@ class DeepLinkListener {
       }
 
       if (canNavigate) {
-        // Preserve the absolute URI so redirect logic can apply canonicalization
-        // and gating semantics (startup/onboarding/auth).
-        _navigation.go(rawLocation);
+        // Drive navigation using the mapped internal location. GoRouter does not
+        // support absolute HTTPS locations (it expects an internal `/path?...`).
+        _navigation.go(mapped);
         return;
       }
 

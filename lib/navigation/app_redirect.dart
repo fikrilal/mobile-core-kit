@@ -44,6 +44,7 @@ String? appRedirectUri(
   final locationPath = Uri.parse(location).path;
   final zone = _routeZone(locationPath);
   final isVerifyEmail = locationPath == AuthRoutes.verifyEmail;
+  final isPasswordResetConfirm = locationPath == AuthRoutes.passwordResetConfirm;
 
   // Do not force navigation during startup (use a UI gate/overlay instead).
   if (!startup.isReady) {
@@ -90,9 +91,9 @@ String? appRedirectUri(
   if (shouldShowOnboarding) {
     if (zone == _RouteZone.onboarding) return null;
 
-    // Verification links should be handled immediately (even before onboarding)
-    // so the user can see a deterministic success/failure result.
-    if (isVerifyEmail) {
+    // High-priority auth links should be handled immediately (even before
+    // onboarding) so the user can see a deterministic success/failure result.
+    if (isVerifyEmail || isPasswordResetConfirm) {
       return shouldCanonicalizeExternalHttps ? location : null;
     }
 
@@ -117,8 +118,8 @@ String? appRedirectUri(
 
   // Gate routing while hydrating the user (tokens present, no `/me` yet).
   if (startup.shouldBlockRoutingForUserHydration) {
-    // Verification links should not be blocked by hydration gating.
-    if (isVerifyEmail) {
+    // High-priority auth links should not be blocked by hydration gating.
+    if (isVerifyEmail || isPasswordResetConfirm) {
       return shouldCanonicalizeExternalHttps ? location : null;
     }
     if (zone == _RouteZone.root) return null;
@@ -141,7 +142,7 @@ String? appRedirectUri(
 
     // Allow verification links to proceed even when profile completion is
     // required; after continuing, the router will re-apply prerequisites.
-    if (isVerifyEmail) {
+    if (isVerifyEmail || isPasswordResetConfirm) {
       return shouldCanonicalizeExternalHttps ? location : null;
     }
 
@@ -160,7 +161,7 @@ String? appRedirectUri(
   }
 
   if (zone == _RouteZone.auth || zone == _RouteZone.onboarding) {
-    if (zone == _RouteZone.auth && isVerifyEmail) {
+    if (zone == _RouteZone.auth && (isVerifyEmail || isPasswordResetConfirm)) {
       return shouldCanonicalizeExternalHttps ? location : null;
     }
 
