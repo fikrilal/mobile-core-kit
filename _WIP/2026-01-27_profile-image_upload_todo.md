@@ -98,22 +98,22 @@ Goal: Keep orchestration in user domain; isolate infra details behind abstractio
 
 Goal: Map API failures and storage-related errors into domain failures consistently.
 
-- [ ] Implement repository:
-  - [ ] `lib/features/user/data/repository/profile_image_repository_impl.dart`
-  - [ ] Uses:
-    - [ ] `ProfileImageRemoteDataSource`
-    - [ ] `PresignedUploadClient`
-    - [ ] Existing `GetMeUseCase` / cache strategy to refresh `profileImageFileId`
-- [ ] Failure mapping (initial approach: reuse `AuthFailure`):
-  - [ ] `UNAUTHORIZED` → `AuthFailure.unauthenticated()`
-  - [ ] `RATE_LIMITED` → `AuthFailure.tooManyRequests()`
-  - [ ] `VALIDATION_FAILED` → `AuthFailure.validation([...])`
-  - [ ] `USERS_OBJECT_STORAGE_NOT_CONFIGURED` → `AuthFailure.serverError(<localized>)`
-  - [ ] `USERS_PROFILE_IMAGE_*` mismatches → `AuthFailure.serverError(<localized>)`
-  - [ ] Upload (presigned URL) failures → `AuthFailure.network()` or `AuthFailure.serverError()` based on status
-- [ ] Tests:
-  - [ ] “Maps backend error codes correctly”
-  - [ ] “Presigned upload failure does not call complete”
+- [x] Implement repository:
+  - [x] `lib/features/user/data/repository/profile_image_repository_impl.dart`
+  - [x] Uses:
+    - [x] `ProfileImageRemoteDataSource`
+    - [x] `PresignedUploadClient`
+    - [x] Use cases refresh `/me` after upload/clear (so UI can re-render using updated `profileImageFileId`)
+- [x] Failure mapping (initial approach: reuse `AuthFailure`):
+  - [x] `UNAUTHORIZED` → `AuthFailure.unauthenticated()`
+  - [x] `RATE_LIMITED` → `AuthFailure.tooManyRequests()`
+  - [x] `VALIDATION_FAILED` → `AuthFailure.validation([...])`
+  - [x] `USERS_OBJECT_STORAGE_NOT_CONFIGURED` → `AuthFailure.serverError()`
+  - [x] `USERS_PROFILE_IMAGE_*` mismatches → `AuthFailure.validation([...])` (best-effort mapping to file constraints)
+  - [x] Upload (presigned URL) failures → `AuthFailure.network()` for offline/timeout, otherwise `AuthFailure.unexpected()`
+- [x] Tests:
+  - [x] “Maps backend error codes correctly”
+  - [x] “Presigned upload failure does not call complete”
 
 ---
 

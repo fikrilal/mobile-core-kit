@@ -160,5 +160,44 @@ void main() {
         () => getMe(),
       ]);
     });
+
+    test('does not call complete/getMe when upload fails', () async {
+      final repo = _MockProfileImageRepository();
+      final getMe = _MockGetMeUseCase();
+
+      final plan = ProfileImageUploadPlanEntity(
+        fileId: 'f1',
+        upload: const ProfileImagePresignedUploadEntity(
+          method: 'PUT',
+          url: 'https://example.com/upload',
+          headers: {'Content-Type': 'image/jpeg'},
+        ),
+        expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
+      );
+
+      when(() => repo.createUploadPlan(any())).thenAnswer((_) async => right(plan));
+      when(
+        () => repo.uploadToPresignedUrl(
+          plan: any(named: 'plan'),
+          bytes: any(named: 'bytes'),
+        ),
+      ).thenAnswer((_) async => left(const AuthFailure.network()));
+
+      final usecase = UploadProfileImageUseCase(repo, getMe);
+
+      final result = await usecase(
+        UploadProfileImageRequestEntity(
+          bytes: Uint8List.fromList([1, 2, 3]),
+          contentType: 'image/jpeg',
+        ),
+      );
+
+      expect(result, left(const AuthFailure.network()));
+
+      verify(() => repo.createUploadPlan(any())).called(1);
+      verify(() => repo.uploadToPresignedUrl(plan: any(named: 'plan'), bytes: any(named: 'bytes'))).called(1);
+      verifyNever(() => repo.completeUpload(any()));
+      verifyNever(() => getMe());
+    });
   });
 }
