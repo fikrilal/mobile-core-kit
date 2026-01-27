@@ -32,6 +32,10 @@ String messageForValidationError(ValidationError error, AppLocalizations l10n) {
         return l10n.validationNameTooShort;
       case ValidationErrorCodes.nameTooLong:
         return l10n.validationNameTooLong;
+      case ValidationErrorCodes.fileTypeNotSupported:
+        return l10n.validationFileTypeNotSupported;
+      case ValidationErrorCodes.fileTooLarge:
+        return l10n.validationFileTooLarge;
     }
   }
 

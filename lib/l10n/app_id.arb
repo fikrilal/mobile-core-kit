@@ -135,6 +135,14 @@
   "@validationNameTooLong": {
     "description": "Validation message shown when a name field is too long."
   },
+  "validationFileTypeNotSupported": "Tipe file tidak didukung",
+  "@validationFileTypeNotSupported": {
+    "description": "Validation message shown when a user selects an unsupported file type."
+  },
+  "validationFileTooLarge": "Ukuran file terlalu besar (maks 5 MB)",
+  "@validationFileTooLarge": {
+    "description": "Validation message shown when a user selects a file larger than the allowed limit."
+  },
   "authErrorsInvalidCredentials": "Email atau kata sandi salah",
   "@authErrorsInvalidCredentials": {
     "description": "Message shown when the user enters invalid login credentials."

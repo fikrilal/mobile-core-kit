@@ -13,6 +13,9 @@ abstract final class ValidationErrorCodes {
   static const nameTooShort = 'name_too_short';
   static const nameTooLong = 'name_too_long';
 
+  static const fileTypeNotSupported = 'file_type_not_supported';
+  static const fileTooLarge = 'file_too_large';
+
   // Legacy / backend-provided (best-effort support).
   static const weakPassword = 'weak_password';
   static const invalidFirstName = 'invalid_first_name';

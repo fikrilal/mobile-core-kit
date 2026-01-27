@@ -20,20 +20,20 @@ Related docs:
 
 Goal: Execute presigned uploads safely (no backend auth headers, no baseUrl rewriting, no interceptor retries/logging).
 
-- [ ] Add core upload module:
-  - [ ] `lib/core/network/upload/presigned_upload_request.dart`
-  - [ ] `lib/core/network/upload/presigned_upload_client.dart`
-  - [ ] `lib/core/network/upload/dio_presigned_upload_client.dart`
-- [ ] Implementation requirements:
-  - [ ] Accept absolute URL + required headers
-  - [ ] Ensure `Authorization` is NOT added
-  - [ ] No retries by default (upload is non-idempotent at HTTP layer)
+- [x] Add core upload module:
+  - [x] `lib/core/network/upload/presigned_upload_request.dart`
+  - [x] `lib/core/network/upload/presigned_upload_client.dart`
+  - [x] `lib/core/network/upload/dio_presigned_upload_client.dart`
+- [x] Implementation requirements:
+  - [x] Accept absolute URL + required headers
+  - [x] Ensure `Authorization` is NOT added
+  - [x] No retries by default (upload is non-idempotent at HTTP layer)
   - [ ] Optional: progress + cancellation support
-  - [ ] Never log presigned URL (can contain temporary creds/signature)
-- [ ] Tests:
-  - [ ] “Sends PUT to absolute URL with headers”
-  - [ ] “Does not attach backend-only headers”
-  - [ ] “Surfacing non-2xx as failure (no retry)”
+  - [x] Never log presigned URL (can contain temporary creds/signature)
+- [x] Tests:
+  - [x] “Sends PUT to absolute URL with headers”
+  - [x] “Does not attach backend-only headers”
+  - [x] “Surfacing non-2xx as failure (no retry)”
 
 ---
 
@@ -41,28 +41,28 @@ Goal: Execute presigned uploads safely (no backend auth headers, no baseUrl rewr
 
 Goal: Add typed backend calls for profile image endpoints (not the presigned upload itself).
 
-- [ ] Add endpoint constants:
-  - [ ] `UserEndpoint.meProfileImageUpload = '/me/profile-image/upload'`
-  - [ ] `UserEndpoint.meProfileImageComplete = '/me/profile-image/complete'`
-  - [ ] `UserEndpoint.meProfileImage = '/me/profile-image'`
-  - [ ] `UserEndpoint.meProfileImageUrl = '/me/profile-image/url'`
-- [ ] Add remote models:
-  - [ ] `lib/features/user/data/model/remote/create_profile_image_upload_request_model.dart`
-  - [ ] `lib/features/user/data/model/remote/profile_image_upload_plan_model.dart` (incl `PresignedUploadDto` shape)
-  - [ ] `lib/features/user/data/model/remote/complete_profile_image_upload_request_model.dart`
-  - [ ] `lib/features/user/data/model/remote/profile_image_url_model.dart`
-- [ ] Add remote datasource:
-  - [ ] `lib/features/user/data/datasource/remote/profile_image_remote_datasource.dart`
-    - [ ] `createUploadPlan(...) -> ApiResponse<ProfileImageUploadPlanModel>`
-    - [ ] `completeUpload(fileId) -> ApiResponse<ApiNoData>`
-    - [ ] `clearProfileImage() -> ApiResponse<ApiNoData>`
-    - [ ] `getProfileImageUrl() -> ApiResponse<ProfileImageUrlModel?>` (204 => null)
-- [ ] Ensure idempotency behavior:
-  - [ ] `upload` request uses `Idempotency-Key`
-  - [ ] `complete` does NOT auto-retry after refresh (no idempotency key in contract)
-- [ ] Tests:
-  - [ ] “Correct paths/hosts + envelope parsing”
-  - [ ] “204 from profile-image/url maps to null model”
+- [x] Add endpoint constants:
+  - [x] `UserEndpoint.meProfileImageUpload = '/me/profile-image/upload'`
+  - [x] `UserEndpoint.meProfileImageComplete = '/me/profile-image/complete'`
+  - [x] `UserEndpoint.meProfileImage = '/me/profile-image'`
+  - [x] `UserEndpoint.meProfileImageUrl = '/me/profile-image/url'`
+- [x] Add remote models:
+  - [x] `lib/features/user/data/model/remote/create_profile_image_upload_request_model.dart`
+  - [x] `lib/features/user/data/model/remote/profile_image_upload_plan_model.dart` (incl `PresignedUploadDto` shape)
+  - [x] `lib/features/user/data/model/remote/complete_profile_image_upload_request_model.dart`
+  - [x] `lib/features/user/data/model/remote/profile_image_url_model.dart`
+- [x] Add remote datasource:
+  - [x] `lib/features/user/data/datasource/remote/profile_image_remote_datasource.dart`
+    - [x] `createUploadPlan(...) -> ApiResponse<ProfileImageUploadPlanModel>`
+    - [x] `completeUpload(fileId) -> ApiResponse<ApiNoData>`
+    - [x] `clearProfileImage() -> ApiResponse<ApiNoData>`
+    - [x] `getProfileImageUrl() -> ApiResponse<ProfileImageUrlModel?>` (204 => null)
+- [x] Ensure idempotency behavior:
+  - [x] `upload` request uses `Idempotency-Key`
+  - [x] `complete` does NOT auto-retry after refresh (no idempotency key in contract)
+- [x] Tests:
+  - [x] “Correct paths/hosts + envelope parsing”
+  - [x] “204 from profile-image/url maps to null model”
 
 ---
 
@@ -70,27 +70,27 @@ Goal: Add typed backend calls for profile image endpoints (not the presigned upl
 
 Goal: Keep orchestration in user domain; isolate infra details behind abstractions.
 
-- [ ] Domain entities:
-  - [ ] `ProfileImageUploadPlanEntity` (fileId, upload method/url/headers, expiresAt)
-  - [ ] `ProfileImageUrlEntity` (url, expiresAt)
-- [ ] Repository contract:
-  - [ ] `ProfileImageRepository` with:
-    - [ ] `createUploadPlan(...)`
-    - [ ] `uploadToPresignedUrl(...)` (or “execute plan”)
-    - [ ] `completeUpload(fileId)`
-    - [ ] `clearProfileImage()`
-    - [ ] `getProfileImageUrl()`
-- [ ] Use cases (suggested):
-  - [ ] `UploadProfileImageUseCase` (plan → upload → complete → refresh cached user)
-  - [ ] `ClearProfileImageUseCase` (clear → refresh cached user)
-  - [ ] `GetProfileImageUrlUseCase`
-- [ ] Validation:
-  - [ ] Validate `contentType` is one of allowed enum values
-  - [ ] Validate `sizeBytes <= 5_000_000`
+- [x] Domain entities:
+  - [x] `ProfileImageUploadPlanEntity` (fileId, upload method/url/headers, expiresAt)
+  - [x] `ProfileImageUrlEntity` (url, expiresAt)
+- [x] Repository contract:
+  - [x] `ProfileImageRepository` with:
+    - [x] `createUploadPlan(...)`
+    - [x] `uploadToPresignedUrl(...)` (or “execute plan”)
+    - [x] `completeUpload(fileId)`
+    - [x] `clearProfileImage()`
+    - [x] `getProfileImageUrl()`
+- [x] Use cases (suggested):
+  - [x] `UploadProfileImageUseCase` (plan → upload → complete → refresh cached user)
+  - [x] `ClearProfileImageUseCase` (clear → refresh cached user)
+  - [x] `GetProfileImageUrlUseCase`
+- [x] Validation:
+  - [x] Validate `contentType` is one of allowed enum values
+  - [x] Validate `sizeBytes <= 5_000_000`
   - [ ] Consider VOs if we want reusable constraints (optional for first pass)
-- [ ] Tests:
-  - [ ] “Invalid input fails early (repo not called)”
-  - [ ] “Happy path orchestration calls steps in order”
+- [x] Tests:
+  - [x] “Invalid input fails early (repo not called)”
+  - [x] “Happy path orchestration calls steps in order”
 
 ---
 
@@ -155,4 +155,3 @@ Goal: Wire to a profile screen without over-designing UX.
   - [ ] 204-as-null pattern for URL endpoint
 - [ ] Add examples/snippets:
   - [ ] Example: “profile image upload in a feature slice”
-

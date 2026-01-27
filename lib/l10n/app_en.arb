@@ -135,6 +135,14 @@
   "@validationNameTooLong": {
     "description": "Validation message shown when a name field is too long."
   },
+  "validationFileTypeNotSupported": "File type is not supported",
+  "@validationFileTypeNotSupported": {
+    "description": "Validation message shown when a user selects an unsupported file type."
+  },
+  "validationFileTooLarge": "File is too large (max 5 MB)",
+  "@validationFileTooLarge": {
+    "description": "Validation message shown when a user selects a file larger than the allowed limit."
+  },
   "authErrorsInvalidCredentials": "Invalid email or password",
   "@authErrorsInvalidCredentials": {
     "description": "Message shown when the user enters invalid login credentials."
