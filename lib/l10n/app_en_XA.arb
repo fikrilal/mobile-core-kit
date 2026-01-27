@@ -119,6 +119,14 @@
   "@validationPasswordsDoNotMatch": {
     "description": "Validation message shown when a password confirmation does not match."
   },
+  "validationPasswordResetTokenInvalid": "⟪Řḗşḗŧ ŧǿķḗñ īş īñṽåŀīḓ⟫",
+  "@validationPasswordResetTokenInvalid": {
+    "description": "Validation message shown when a password reset token is invalid."
+  },
+  "validationPasswordResetTokenExpired": "⟪Řḗşḗŧ ŧǿķḗñ ħåş ḗẋρīŗḗḓ⟫",
+  "@validationPasswordResetTokenExpired": {
+    "description": "Validation message shown when a password reset token is expired."
+  },
   "validationNameTooShort": "⟪Ḿüşŧ ƀḗ åŧ ŀḗåşŧ 2 çħåŗåçŧḗŗş⟫",
   "@validationNameTooShort": {
     "description": "Validation message shown when a name field is too short."
@@ -183,6 +191,10 @@
   "@commonContinue": {
     "description": "Generic CTA label for progressing to the next step."
   },
+  "commonBackToSignIn": "⟪Ɓåçķ ŧǿ şīğñ īñ⟫",
+  "@commonBackToSignIn": {
+    "description": "CTA label for navigating back to the sign-in screen."
+  },
   "commonLanguage": "⟪Ļåñğüåğḗ⟫",
   "@commonLanguage": {
     "description": "Settings label for language/locale selection."
@@ -242,6 +254,66 @@
   "authHaveAccountCta": "⟪Åŀŗḗåḓẏ ħåṽḗ åñ åççǿüñŧ? Şīğñ īñ⟫",
   "@authHaveAccountCta": {
     "description": "CTA text linking from registration back to sign-in."
+  },
+  "authForgotPasswordCta": "⟪Ḟǿŗğǿŧ ρåşşẇǿŗḓ?⟫",
+  "@authForgotPasswordCta": {
+    "description": "CTA text linking from sign-in to password reset."
+  },
+  "authPasswordResetRequestTitle": "⟪Řḗşḗŧ ρåşşẇǿŗḓ⟫",
+  "@authPasswordResetRequestTitle": {
+    "description": "Title shown on the password reset request screen."
+  },
+  "authPasswordResetRequestBody": "⟪Ḗñŧḗŗ ẏǿüŗ ḗḿåīŀ åñḓ ẇḗ’ŀŀ şḗñḓ å ρåşşẇǿŗḓ ŗḗşḗŧ ŀīñķ.⟫",
+  "@authPasswordResetRequestBody": {
+    "description": "Body copy shown on the password reset request screen."
+  },
+  "authPasswordResetRequestCta": "⟪Şḗñḓ ŗḗşḗŧ ŀīñķ⟫",
+  "@authPasswordResetRequestCta": {
+    "description": "Primary CTA label for requesting a password reset link."
+  },
+  "authPasswordResetRequestSuccessTitle": "⟪Çħḗçķ ẏǿüŗ ḗḿåīŀ⟫",
+  "@authPasswordResetRequestSuccessTitle": {
+    "description": "Title shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestSuccessBody": "⟪Īƒ åñ åççǿüñŧ ḗẋīşŧş ƒǿŗ ŧħåŧ ḗḿåīŀ, ẇḗ’ṽḗ şḗñŧ å ŗḗşḗŧ ŀīñķ.⟫",
+  "@authPasswordResetRequestSuccessBody": {
+    "description": "Body copy shown when a password reset request succeeds."
+  },
+  "authPasswordResetRequestNewLinkCta": "⟪Řḗqüḗşŧ ñḗẇ ŀīñķ⟫",
+  "@authPasswordResetRequestNewLinkCta": {
+    "description": "CTA label for requesting a new password reset link."
+  },
+  "authPasswordResetConfirmTitle": "⟪Şḗŧ ñḗẇ ρåşşẇǿŗḓ⟫",
+  "@authPasswordResetConfirmTitle": {
+    "description": "Title shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmBody": "⟪Çŗḗåŧḗ å ñḗẇ ρåşşẇǿŗḓ ƒǿŗ ẏǿüŗ åççǿüñŧ.⟫",
+  "@authPasswordResetConfirmBody": {
+    "description": "Body copy shown on the password reset confirm screen."
+  },
+  "authPasswordResetConfirmCta": "⟪Řḗşḗŧ ρåşşẇǿŗḓ⟫",
+  "@authPasswordResetConfirmCta": {
+    "description": "Primary CTA label for confirming a password reset."
+  },
+  "authPasswordResetConfirmSubmittingBody": "⟪Řḗşḗŧŧīñğ ẏǿüŗ ρåşşẇǿŗḓ…⟫",
+  "@authPasswordResetConfirmSubmittingBody": {
+    "description": "Body copy shown while resetting the password from a deep link."
+  },
+  "authPasswordResetConfirmSuccessTitle": "⟪Ƥåşşẇǿŗḓ ŗḗşḗŧ⟫",
+  "@authPasswordResetConfirmSuccessTitle": {
+    "description": "Title shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmSuccessBody": "⟪Ẏǿüŗ ρåşşẇǿŗḓ ħåş ƀḗḗñ ŗḗşḗŧ.⟫",
+  "@authPasswordResetConfirmSuccessBody": {
+    "description": "Body copy shown when password reset confirmation succeeds."
+  },
+  "authPasswordResetConfirmFailureTitle": "⟪Řḗşḗŧ ƒåīŀḗḓ⟫",
+  "@authPasswordResetConfirmFailureTitle": {
+    "description": "Title shown when password reset confirmation fails (invalid/expired/missing token)."
+  },
+  "authPasswordResetConfirmFailureBody": "⟪Ŧħīş ŗḗşḗŧ ŀīñķ īş īñṽåŀīḓ, ḗẋρīŗḗḓ, ǿŗ ḿīşşīñğ å ŧǿķḗñ. Ƥŀḗåşḗ ŗḗɋüḗşŧ å ñḗẇ ǿñḗ.⟫",
+  "@authPasswordResetConfirmFailureBody": {
+    "description": "Body copy shown when password reset confirmation fails (invalid/expired/missing token)."
   },
   "authChangePasswordTitle": "⟪Çħåñğḗ ρåşşẇǿŗḓ⟫",
   "@authChangePasswordTitle": {

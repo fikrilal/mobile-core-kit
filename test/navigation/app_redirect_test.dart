@@ -310,6 +310,28 @@ void main() {
       expect(deepLinks.pendingLocation, isNull);
     });
 
+    test('reset-password deep link bypasses onboarding gate', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startupOnboarding = await _startup(
+        shouldShowOnboarding: true,
+        isAuthenticated: false,
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('https://links.fikril.dev/reset-password?token=abc'),
+        startupOnboarding,
+        deepLinks,
+        parser,
+      );
+
+      // Should canonicalize to the internal auth route instead of redirecting
+      // to onboarding or capturing a pending deep link.
+      expect(redirect, '${AuthRoutes.passwordResetConfirm}?token=abc');
+      expect(deepLinks.pendingLocation, isNull);
+    });
+
     test('authenticated user is allowed to open verify-email route', () async {
       final deepLinks = _deepLinks();
       final parser = DeepLinkParser();
@@ -328,6 +350,28 @@ void main() {
 
       expect(redirect, isNull);
     });
+
+    test(
+      'authenticated user is allowed to open reset-password confirm route',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
+
+        final startupAuthed = await _startup(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+        );
+
+        final redirect = appRedirectUri(
+          Uri.parse('${AuthRoutes.passwordResetConfirm}?token=abc'),
+          startupAuthed,
+          deepLinks,
+          parser,
+        );
+
+        expect(redirect, isNull);
+      },
+    );
   });
 
   group('appRedirectUri (profile completion)', () {
@@ -469,6 +513,41 @@ void main() {
 
       expect(redirect, isNull);
     });
+
+    test('reset-password confirm route bypasses profile completion gate',
+        () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          user: UserEntity(
+            id: 'u1',
+            email: 'user@example.com',
+            roles: ['USER'],
+            authMethods: ['PASSWORD'],
+            profile: UserProfileEntity(),
+          ),
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('${AuthRoutes.passwordResetConfirm}?token=abc'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, isNull);
+    });
   });
 
   group('appRedirectUri (user hydration gate)', () {
@@ -561,6 +640,35 @@ void main() {
       );
 
       expect(redirect, '${AuthRoutes.verifyEmail}?token=abc');
+      expect(deepLinks.pendingLocation, isNull);
+    });
+
+    test('reset-password deep link bypasses hydration gate', () async {
+      final deepLinks = _deepLinks();
+      final parser = DeepLinkParser();
+
+      final startup = await _startupHarness(
+        shouldShowOnboarding: false,
+        isAuthenticated: true,
+        session: const AuthSessionEntity(
+          tokens: AuthTokensEntity(
+            accessToken: 'access',
+            refreshToken: 'refresh',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+          ),
+          // user is intentionally null (tokens-only session restore).
+        ),
+      );
+
+      final redirect = appRedirectUri(
+        Uri.parse('https://links.fikril.dev/reset-password?token=abc'),
+        startup.controller,
+        deepLinks,
+        parser,
+      );
+
+      expect(redirect, '${AuthRoutes.passwordResetConfirm}?token=abc');
       expect(deepLinks.pendingLocation, isNull);
     });
   });

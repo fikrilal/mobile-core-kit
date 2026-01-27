@@ -22,6 +22,10 @@ String messageForValidationError(ValidationError error, AppLocalizations l10n) {
         return l10n.validationPasswordsDoNotMatch;
       case ValidationErrorCodes.currentPasswordInvalid:
         return l10n.validationCurrentPasswordInvalid;
+      case ValidationErrorCodes.passwordResetTokenInvalid:
+        return l10n.validationPasswordResetTokenInvalid;
+      case ValidationErrorCodes.passwordResetTokenExpired:
+        return l10n.validationPasswordResetTokenExpired;
       case ValidationErrorCodes.nameTooShort:
       case ValidationErrorCodes.invalidFirstName:
       case ValidationErrorCodes.invalidLastName:

@@ -24,6 +24,12 @@ void main() {
           ),
           '/auth/email/verify?token=abc',
         );
+        expect(
+          parser.parseExternalUri(
+            Uri.parse('https://links.fikril.dev/reset-password?token=abc'),
+          ),
+          '/auth/password/reset/confirm?token=abc',
+        );
       },
     );
 

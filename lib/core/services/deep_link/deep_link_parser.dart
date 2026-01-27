@@ -15,6 +15,7 @@ class DeepLinkParser {
       AppRoutes.home: AppRoutes.home,
       AppRoutes.profile: AppRoutes.profile,
       '/verify-email': AuthRoutes.verifyEmail,
+      '/reset-password': AuthRoutes.passwordResetConfirm,
     },
   }) : _allowedHosts = allowedHosts,
        _externalPathToLocation = externalPathToLocation,

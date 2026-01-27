@@ -64,6 +64,30 @@ void main() {
         expect(
           messageForValidationError(
             const ValidationError(
+              field: 'token',
+              message: '',
+              code: ValidationErrorCodes.passwordResetTokenInvalid,
+            ),
+            l10n,
+          ),
+          l10n.validationPasswordResetTokenInvalid,
+        );
+
+        expect(
+          messageForValidationError(
+            const ValidationError(
+              field: 'token',
+              message: '',
+              code: ValidationErrorCodes.passwordResetTokenExpired,
+            ),
+            l10n,
+          ),
+          l10n.validationPasswordResetTokenExpired,
+        );
+
+        expect(
+          messageForValidationError(
+            const ValidationError(
               field: 'firstName',
               message: '',
               code: ValidationErrorCodes.nameTooShort,

@@ -25,6 +25,7 @@ void main() {
         expect(avatarFor, contains('Ari'));
 
         expect(l10n.commonChangeProfilePhoto, isNotEmpty);
+        expect(l10n.commonBackToSignIn, isNotEmpty);
 
         expect(l10n.errorsUnexpected, isNotEmpty);
         expect(l10n.errorsOffline, isNotEmpty);
@@ -39,6 +40,8 @@ void main() {
         expect(l10n.validationRequired, isNotEmpty);
         expect(l10n.validationPasswordTooShort, isNotEmpty);
         expect(l10n.validationPasswordsDoNotMatch, isNotEmpty);
+        expect(l10n.validationPasswordResetTokenInvalid, isNotEmpty);
+        expect(l10n.validationPasswordResetTokenExpired, isNotEmpty);
         expect(l10n.validationNameTooShort, isNotEmpty);
         expect(l10n.validationNameTooLong, isNotEmpty);
 
@@ -47,6 +50,21 @@ void main() {
         expect(l10n.authErrorsEmailNotVerified, isNotEmpty);
         expect(l10n.authErrorsUserSuspended, isNotEmpty);
         expect(l10n.authErrorsLogoutFailed, isNotEmpty);
+        expect(l10n.authForgotPasswordCta, isNotEmpty);
+        expect(l10n.authPasswordResetRequestTitle, isNotEmpty);
+        expect(l10n.authPasswordResetRequestBody, isNotEmpty);
+        expect(l10n.authPasswordResetRequestCta, isNotEmpty);
+        expect(l10n.authPasswordResetRequestSuccessTitle, isNotEmpty);
+        expect(l10n.authPasswordResetRequestSuccessBody, isNotEmpty);
+        expect(l10n.authPasswordResetRequestNewLinkCta, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmTitle, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmBody, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmCta, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmSubmittingBody, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmSuccessTitle, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmSuccessBody, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmFailureTitle, isNotEmpty);
+        expect(l10n.authPasswordResetConfirmFailureBody, isNotEmpty);
 
         expect(l10n.commonItemsCount(count: 0), isNotEmpty);
         expect(l10n.commonItemsCount(count: 1), isNotEmpty);
