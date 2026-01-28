@@ -6,7 +6,8 @@ import 'package:mobile_core_kit/features/user/domain/repository/profile_image_re
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockProfileImageRepository extends Mock implements ProfileImageRepository {}
+class _MockProfileImageRepository extends Mock
+    implements ProfileImageRepository {}
 
 void main() {
   group('GetProfileImageUrlUseCase', () {
@@ -42,4 +43,3 @@ void main() {
     });
   });
 }
-

@@ -15,7 +15,8 @@ import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockProfileImageRepository extends Mock implements ProfileImageRepository {}
+class _MockProfileImageRepository extends Mock
+    implements ProfileImageRepository {}
 
 class _MockGetMeUseCase extends Mock implements GetMeUseCase {}
 
@@ -27,7 +28,9 @@ void main() {
         sizeBytes: 1,
       ),
     );
-    registerFallbackValue(const CompleteProfileImageUploadRequestEntity(fileId: 'f1'));
+    registerFallbackValue(
+      const CompleteProfileImageUploadRequestEntity(fileId: 'f1'),
+    );
     registerFallbackValue(Uint8List(0));
     registerFallbackValue(
       ProfileImageUploadPlanEntity(
@@ -71,7 +74,12 @@ void main() {
         );
 
         verifyNever(() => repo.createUploadPlan(any()));
-        verifyNever(() => repo.uploadToPresignedUrl(plan: any(named: 'plan'), bytes: any(named: 'bytes')));
+        verifyNever(
+          () => repo.uploadToPresignedUrl(
+            plan: any(named: 'plan'),
+            bytes: any(named: 'bytes'),
+          ),
+        );
         verifyNever(() => repo.completeUpload(any()));
         verifyNever(() => getMe());
       },
@@ -103,7 +111,12 @@ void main() {
       );
 
       verifyNever(() => repo.createUploadPlan(any()));
-      verifyNever(() => repo.uploadToPresignedUrl(plan: any(named: 'plan'), bytes: any(named: 'bytes')));
+      verifyNever(
+        () => repo.uploadToPresignedUrl(
+          plan: any(named: 'plan'),
+          bytes: any(named: 'bytes'),
+        ),
+      );
       verifyNever(() => repo.completeUpload(any()));
       verifyNever(() => getMe());
     });
@@ -124,14 +137,18 @@ void main() {
 
       const user = UserEntity(id: 'u1', email: 'user@example.com');
 
-      when(() => repo.createUploadPlan(any())).thenAnswer((_) async => right(plan));
+      when(
+        () => repo.createUploadPlan(any()),
+      ).thenAnswer((_) async => right(plan));
       when(
         () => repo.uploadToPresignedUrl(
           plan: any(named: 'plan'),
           bytes: any(named: 'bytes'),
         ),
       ).thenAnswer((_) async => right(unit));
-      when(() => repo.completeUpload(any())).thenAnswer((_) async => right(unit));
+      when(
+        () => repo.completeUpload(any()),
+      ).thenAnswer((_) async => right(unit));
       when(() => getMe()).thenAnswer((_) async => right(user));
 
       final usecase = UploadProfileImageUseCase(repo, getMe);
@@ -147,15 +164,21 @@ void main() {
 
       expect(result, right(user));
 
-      final capturedCreate = verify(() => repo.createUploadPlan(captureAny())).captured;
+      final capturedCreate = verify(
+        () => repo.createUploadPlan(captureAny()),
+      ).captured;
       expect(capturedCreate.length, 1);
-      final createReq = capturedCreate.single as CreateProfileImageUploadPlanRequestEntity;
+      final createReq =
+          capturedCreate.single as CreateProfileImageUploadPlanRequestEntity;
       expect(createReq.contentType, 'image/jpeg');
       expect(createReq.sizeBytes, bytes.lengthInBytes);
       expect(createReq.idempotencyKey, 'idem-1');
 
       verifyInOrder([
-        () => repo.uploadToPresignedUrl(plan: any(named: 'plan'), bytes: any(named: 'bytes')),
+        () => repo.uploadToPresignedUrl(
+          plan: any(named: 'plan'),
+          bytes: any(named: 'bytes'),
+        ),
         () => repo.completeUpload(any()),
         () => getMe(),
       ]);
@@ -175,7 +198,9 @@ void main() {
         expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
       );
 
-      when(() => repo.createUploadPlan(any())).thenAnswer((_) async => right(plan));
+      when(
+        () => repo.createUploadPlan(any()),
+      ).thenAnswer((_) async => right(plan));
       when(
         () => repo.uploadToPresignedUrl(
           plan: any(named: 'plan'),
@@ -195,7 +220,12 @@ void main() {
       expect(result, left(const AuthFailure.network()));
 
       verify(() => repo.createUploadPlan(any())).called(1);
-      verify(() => repo.uploadToPresignedUrl(plan: any(named: 'plan'), bytes: any(named: 'bytes'))).called(1);
+      verify(
+        () => repo.uploadToPresignedUrl(
+          plan: any(named: 'plan'),
+          bytes: any(named: 'bytes'),
+        ),
+      ).called(1);
       verifyNever(() => repo.completeUpload(any()));
       verifyNever(() => getMe());
     });

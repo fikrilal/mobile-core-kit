@@ -8,7 +8,8 @@ import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_image
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockProfileImageRepository extends Mock implements ProfileImageRepository {}
+class _MockProfileImageRepository extends Mock
+    implements ProfileImageRepository {}
 
 class _MockGetMeUseCase extends Mock implements GetMeUseCase {}
 
@@ -23,7 +24,9 @@ void main() {
       final getMe = _MockGetMeUseCase();
       const user = UserEntity(id: 'u1', email: 'user@example.com');
 
-      when(() => repo.clearProfileImage(any())).thenAnswer((_) async => right(unit));
+      when(
+        () => repo.clearProfileImage(any()),
+      ).thenAnswer((_) async => right(unit));
       when(() => getMe()).thenAnswer((_) async => right(user));
 
       final usecase = ClearProfileImageUseCase(repo, getMe);
@@ -32,10 +35,7 @@ void main() {
 
       expect(result, right(user));
 
-      verifyInOrder([
-        () => repo.clearProfileImage(any()),
-        () => getMe(),
-      ]);
+      verifyInOrder([() => repo.clearProfileImage(any()), () => getMe()]);
     });
 
     test('returns failure and does not call getMe when clear fails', () async {
@@ -57,4 +57,3 @@ void main() {
     });
   });
 }
-

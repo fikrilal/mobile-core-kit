@@ -5,9 +5,8 @@ part 'profile_image_upload_plan_model.g.dart';
 
 // ignore_for_file: invalid_annotation_target
 
-Map<String, String> _headersFromJson(Map<String, dynamic> json) => json.map(
-  (k, v) => MapEntry(k, v == null ? '' : v.toString()),
-);
+Map<String, String> _headersFromJson(Map<String, dynamic> json) =>
+    json.map((k, v) => MapEntry(k, v == null ? '' : v.toString()));
 
 Map<String, dynamic> _headersToJson(Map<String, String> json) => json;
 
@@ -44,4 +43,3 @@ abstract class PresignedUploadModel with _$PresignedUploadModel {
   factory PresignedUploadModel.fromJson(Map<String, dynamic> json) =>
       _$PresignedUploadModelFromJson(json);
 }
-

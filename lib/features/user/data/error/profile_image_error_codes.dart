@@ -8,9 +8,10 @@ abstract final class ProfileImageErrorCodes {
   static const usersObjectStorageNotConfigured =
       'USERS_OBJECT_STORAGE_NOT_CONFIGURED';
 
-  static const usersProfileImageNotUploaded = 'USERS_PROFILE_IMAGE_NOT_UPLOADED';
-  static const usersProfileImageSizeMismatch = 'USERS_PROFILE_IMAGE_SIZE_MISMATCH';
+  static const usersProfileImageNotUploaded =
+      'USERS_PROFILE_IMAGE_NOT_UPLOADED';
+  static const usersProfileImageSizeMismatch =
+      'USERS_PROFILE_IMAGE_SIZE_MISMATCH';
   static const usersProfileImageContentTypeMismatch =
       'USERS_PROFILE_IMAGE_CONTENT_TYPE_MISMATCH';
 }
-

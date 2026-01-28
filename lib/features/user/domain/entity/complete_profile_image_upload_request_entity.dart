@@ -9,4 +9,3 @@ abstract class CompleteProfileImageUploadRequestEntity
     required String fileId,
   }) = _CompleteProfileImageUploadRequestEntity;
 }
-

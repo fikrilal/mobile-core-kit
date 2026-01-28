@@ -88,7 +88,10 @@ void main() {
 
     test('non-2xx surfaces as PresignedUploadFailure', () async {
       final dio = Dio();
-      final adapter = _RecordingAdapter(statusCode: 403, responseBody: 'Forbidden');
+      final adapter = _RecordingAdapter(
+        statusCode: 403,
+        responseBody: 'Forbidden',
+      );
       dio.httpClientAdapter = adapter;
 
       final client = DioPresignedUploadClient(dio: dio);

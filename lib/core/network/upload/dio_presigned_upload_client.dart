@@ -66,7 +66,8 @@ final class DioPresignedUploadClient implements PresignedUploadClient {
     } on DioException catch (e) {
       // Network/timeouts/cancel are surfaced as DioException.
       // Map them to a stable failure type that higher layers can interpret.
-      final statusCode = e.response?.statusCode ?? _statusCodeForDioException(e);
+      final statusCode =
+          e.response?.statusCode ?? _statusCodeForDioException(e);
       final responseBody = e.response?.data;
       throw PresignedUploadFailure(
         statusCode: statusCode,

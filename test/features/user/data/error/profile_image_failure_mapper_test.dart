@@ -30,24 +30,27 @@ void main() {
       expect(mapProfileImageFailure(failure), const AuthFailure.unexpected());
     });
 
-    test('maps USERS_PROFILE_IMAGE_SIZE_MISMATCH to validation(fileTooLarge)', () {
-      final failure = ApiFailure(
-        message: 'Size mismatch',
-        statusCode: 400,
-        code: ProfileImageErrorCodes.usersProfileImageSizeMismatch,
-      );
+    test(
+      'maps USERS_PROFILE_IMAGE_SIZE_MISMATCH to validation(fileTooLarge)',
+      () {
+        final failure = ApiFailure(
+          message: 'Size mismatch',
+          statusCode: 400,
+          code: ProfileImageErrorCodes.usersProfileImageSizeMismatch,
+        );
 
-      expect(
-        mapProfileImageFailure(failure),
-        AuthFailure.validation([
-          const ValidationError(
-            field: 'file',
-            message: '',
-            code: ValidationErrorCodes.fileTooLarge,
-          ),
-        ]),
-      );
-    });
+        expect(
+          mapProfileImageFailure(failure),
+          AuthFailure.validation([
+            const ValidationError(
+              field: 'file',
+              message: '',
+              code: ValidationErrorCodes.fileTooLarge,
+            ),
+          ]),
+        );
+      },
+    );
 
     test(
       'maps USERS_PROFILE_IMAGE_CONTENT_TYPE_MISMATCH to validation(fileTypeNotSupported)',
@@ -78,7 +81,10 @@ void main() {
         code: ApiErrorCodes.unauthorized,
       );
 
-      expect(mapProfileImageFailure(failure), const AuthFailure.unauthenticated());
+      expect(
+        mapProfileImageFailure(failure),
+        const AuthFailure.unauthenticated(),
+      );
     });
   });
 
@@ -108,4 +114,3 @@ void main() {
     });
   });
 }
-

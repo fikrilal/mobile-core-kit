@@ -78,29 +78,27 @@ class UploadProfileImageUseCase {
       ),
     );
 
-    return planResult.match(
-      (failure) => Future.value(left(failure)),
-      (plan) async {
-        final uploadResult = await _repository.uploadToPresignedUrl(
-          plan: plan,
-          bytes: request.bytes,
+    return planResult.match((failure) => Future.value(left(failure)), (
+      plan,
+    ) async {
+      final uploadResult = await _repository.uploadToPresignedUrl(
+        plan: plan,
+        bytes: request.bytes,
+      );
+
+      return uploadResult.match((failure) => Future.value(left(failure)), (
+        _,
+      ) async {
+        final completeResult = await _repository.completeUpload(
+          CompleteProfileImageUploadRequestEntity(fileId: plan.fileId),
         );
 
-        return uploadResult.match(
+        return completeResult.match(
           (failure) => Future.value(left(failure)),
-          (_) async {
-            final completeResult = await _repository.completeUpload(
-              CompleteProfileImageUploadRequestEntity(fileId: plan.fileId),
-            );
-
-            return completeResult.match(
-              (failure) => Future.value(left(failure)),
-              (_) => _getMe(),
-            );
-          },
+          (_) => _getMe(),
         );
-      },
-    );
+      });
+    });
   }
 
   static String _normalizeContentType(String input) {

@@ -9,4 +9,3 @@ abstract class ProfileImageUrlEntity with _$ProfileImageUrlEntity {
     required DateTime expiresAt,
   }) = _ProfileImageUrlEntity;
 }
-

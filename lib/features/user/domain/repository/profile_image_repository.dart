@@ -29,4 +29,3 @@ abstract class ProfileImageRepository {
 
   Future<Either<AuthFailure, ProfileImageUrlEntity?>> getProfileImageUrl();
 }
-

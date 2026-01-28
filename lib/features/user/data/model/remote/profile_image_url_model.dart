@@ -19,4 +19,3 @@ abstract class ProfileImageUrlModel with _$ProfileImageUrlModel {
   factory ProfileImageUrlModel.fromJson(Map<String, dynamic> json) =>
       _$ProfileImageUrlModelFromJson(json);
 }
-

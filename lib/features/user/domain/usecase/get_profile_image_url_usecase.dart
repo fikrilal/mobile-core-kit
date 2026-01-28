@@ -12,4 +12,3 @@ class GetProfileImageUrlUseCase {
   Future<Either<AuthFailure, ProfileImageUrlEntity?>> call() =>
       _repository.getProfileImageUrl();
 }
-

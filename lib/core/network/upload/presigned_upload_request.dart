@@ -53,4 +53,3 @@ final class PresignedUploadRequest {
     return uri;
   }
 }
-

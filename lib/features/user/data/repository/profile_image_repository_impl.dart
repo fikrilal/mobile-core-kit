@@ -133,7 +133,8 @@ class ProfileImageRepositoryImpl implements ProfileImageRepository {
   }
 
   @override
-  Future<Either<AuthFailure, ProfileImageUrlEntity?>> getProfileImageUrl() async {
+  Future<Either<AuthFailure, ProfileImageUrlEntity?>>
+  getProfileImageUrl() async {
     try {
       final apiResponse = await _remote.getProfileImageUrl();
 

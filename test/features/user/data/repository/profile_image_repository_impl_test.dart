@@ -21,7 +21,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockProfileImageRemoteDataSource extends Mock
     implements ProfileImageRemoteDataSource {}
 
-class _MockPresignedUploadClient extends Mock implements PresignedUploadClient {}
+class _MockPresignedUploadClient extends Mock
+    implements PresignedUploadClient {}
 
 void main() {
   setUpAll(() {
@@ -70,16 +71,16 @@ void main() {
 
       expect(result.isRight(), true);
 
-      result.match(
-        (_) => fail('Expected Right'),
-        (plan) {
-          expect(plan.fileId, 'f1');
-          expect(plan.upload.method, 'PUT');
-          expect(plan.upload.url, 'https://example.com/upload');
-          expect(plan.upload.headers['Content-Type'], 'image/jpeg');
-          expect(plan.expiresAt.toUtc().toIso8601String(), '1970-01-01T00:00:00.000Z');
-        },
-      );
+      result.match((_) => fail('Expected Right'), (plan) {
+        expect(plan.fileId, 'f1');
+        expect(plan.upload.method, 'PUT');
+        expect(plan.upload.url, 'https://example.com/upload');
+        expect(plan.upload.headers['Content-Type'], 'image/jpeg');
+        expect(
+          plan.expiresAt.toUtc().toIso8601String(),
+          '1970-01-01T00:00:00.000Z',
+        );
+      });
 
       verify(
         () => remote.createUploadPlan(
@@ -120,75 +121,84 @@ void main() {
       expect(result, left(const AuthFailure.unauthenticated()));
     });
 
-    test('uploadToPresignedUrl uses PresignedUploadClient with correct request', () async {
-      final remote = _MockProfileImageRemoteDataSource();
-      final upload = _MockPresignedUploadClient();
+    test(
+      'uploadToPresignedUrl uses PresignedUploadClient with correct request',
+      () async {
+        final remote = _MockProfileImageRemoteDataSource();
+        final upload = _MockPresignedUploadClient();
 
-      when(
-        () => upload.uploadBytes(any(), bytes: any(named: 'bytes')),
-      ).thenAnswer((_) async {});
+        when(
+          () => upload.uploadBytes(any(), bytes: any(named: 'bytes')),
+        ).thenAnswer((_) async {});
 
-      final repo = ProfileImageRepositoryImpl(remote, upload);
+        final repo = ProfileImageRepositoryImpl(remote, upload);
 
-      final plan = ProfileImageUploadPlanEntity(
-        fileId: 'f1',
-        upload: const ProfileImagePresignedUploadEntity(
-          method: 'PUT',
-          url: 'https://example.com/upload',
-          headers: {'Content-Type': 'image/jpeg'},
-        ),
-        expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
-      );
+        final plan = ProfileImageUploadPlanEntity(
+          fileId: 'f1',
+          upload: const ProfileImagePresignedUploadEntity(
+            method: 'PUT',
+            url: 'https://example.com/upload',
+            headers: {'Content-Type': 'image/jpeg'},
+          ),
+          expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
+        );
 
-      final bytes = Uint8List.fromList([1, 2, 3]);
+        final bytes = Uint8List.fromList([1, 2, 3]);
 
-      final result = await repo.uploadToPresignedUrl(plan: plan, bytes: bytes);
+        final result = await repo.uploadToPresignedUrl(
+          plan: plan,
+          bytes: bytes,
+        );
 
-      expect(result, right(unit));
+        expect(result, right(unit));
 
-      final captured = verify(
-        () => upload.uploadBytes(
-          captureAny(),
-          bytes: captureAny(named: 'bytes'),
-        ),
-      ).captured;
+        final captured = verify(
+          () => upload.uploadBytes(
+            captureAny(),
+            bytes: captureAny(named: 'bytes'),
+          ),
+        ).captured;
 
-      final request = captured[0] as PresignedUploadRequest;
-      final sentBytes = captured[1] as List<int>;
+        final request = captured[0] as PresignedUploadRequest;
+        final sentBytes = captured[1] as List<int>;
 
-      expect(request.method, PresignedUploadMethod.put);
-      expect(request.uri.toString(), 'https://example.com/upload');
-      expect(request.headers['Content-Type'], 'image/jpeg');
-      expect(sentBytes, bytes);
-    });
+        expect(request.method, PresignedUploadMethod.put);
+        expect(request.uri.toString(), 'https://example.com/upload');
+        expect(request.headers['Content-Type'], 'image/jpeg');
+        expect(sentBytes, bytes);
+      },
+    );
 
-    test('uploadToPresignedUrl maps offline upload failure to network', () async {
-      final remote = _MockProfileImageRemoteDataSource();
-      final upload = _MockPresignedUploadClient();
+    test(
+      'uploadToPresignedUrl maps offline upload failure to network',
+      () async {
+        final remote = _MockProfileImageRemoteDataSource();
+        final upload = _MockPresignedUploadClient();
 
-      when(
-        () => upload.uploadBytes(any(), bytes: any(named: 'bytes')),
-      ).thenThrow(PresignedUploadFailure(message: 'offline', statusCode: -1));
+        when(
+          () => upload.uploadBytes(any(), bytes: any(named: 'bytes')),
+        ).thenThrow(PresignedUploadFailure(message: 'offline', statusCode: -1));
 
-      final repo = ProfileImageRepositoryImpl(remote, upload);
+        final repo = ProfileImageRepositoryImpl(remote, upload);
 
-      final plan = ProfileImageUploadPlanEntity(
-        fileId: 'f1',
-        upload: const ProfileImagePresignedUploadEntity(
-          method: 'PUT',
-          url: 'https://example.com/upload',
-          headers: {'Content-Type': 'image/jpeg'},
-        ),
-        expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
-      );
+        final plan = ProfileImageUploadPlanEntity(
+          fileId: 'f1',
+          upload: const ProfileImagePresignedUploadEntity(
+            method: 'PUT',
+            url: 'https://example.com/upload',
+            headers: {'Content-Type': 'image/jpeg'},
+          ),
+          expiresAt: DateTime.fromMillisecondsSinceEpoch(0),
+        );
 
-      final result = await repo.uploadToPresignedUrl(
-        plan: plan,
-        bytes: Uint8List.fromList([1]),
-      );
+        final result = await repo.uploadToPresignedUrl(
+          plan: plan,
+          bytes: Uint8List.fromList([1]),
+        );
 
-      expect(result, left(const AuthFailure.network()));
-    });
+        expect(result, left(const AuthFailure.network()));
+      },
+    );
 
     test('completeUpload returns Unit on success', () async {
       final remote = _MockProfileImageRemoteDataSource();
@@ -213,7 +223,9 @@ void main() {
       final upload = _MockPresignedUploadClient();
 
       when(
-        () => remote.clearProfileImage(idempotencyKey: any(named: 'idempotencyKey')),
+        () => remote.clearProfileImage(
+          idempotencyKey: any(named: 'idempotencyKey'),
+        ),
       ).thenAnswer((_) async => ApiResponse.success(data: const ApiNoData()));
 
       final repo = ProfileImageRepositoryImpl(remote, upload);
@@ -230,9 +242,7 @@ void main() {
       final remote = _MockProfileImageRemoteDataSource();
       final upload = _MockPresignedUploadClient();
 
-      when(
-        () => remote.getProfileImageUrl(),
-      ).thenAnswer(
+      when(() => remote.getProfileImageUrl()).thenAnswer(
         (_) async => ApiResponse<ProfileImageUrlModel?>.success(data: null),
       );
 

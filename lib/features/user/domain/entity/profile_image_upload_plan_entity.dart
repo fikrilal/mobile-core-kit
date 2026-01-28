@@ -3,7 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'profile_image_upload_plan_entity.freezed.dart';
 
 @freezed
-abstract class ProfileImageUploadPlanEntity with _$ProfileImageUploadPlanEntity {
+abstract class ProfileImageUploadPlanEntity
+    with _$ProfileImageUploadPlanEntity {
   const factory ProfileImageUploadPlanEntity({
     required String fileId,
     required ProfileImagePresignedUploadEntity upload,
@@ -20,4 +21,3 @@ abstract class ProfileImagePresignedUploadEntity
     required Map<String, String> headers,
   }) = _ProfileImagePresignedUploadEntity;
 }
-

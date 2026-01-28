@@ -56,7 +56,9 @@ class ProfileImageRemoteDataSource {
   /// Note:
   /// - The backend contract does not define idempotency keys for this endpoint.
   /// - Auth-refresh retry is disabled by default (writes require idempotency).
-  Future<ApiResponse<ApiNoData>> completeUpload({required String fileId}) async {
+  Future<ApiResponse<ApiNoData>> completeUpload({
+    required String fileId,
+  }) async {
     Log.info('Completing profile image upload (fileId=$fileId)', name: _tag);
 
     final response = await _apiHelper.post<ApiNoData>(

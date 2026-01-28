@@ -13,4 +13,3 @@ abstract class UploadProfileImageRequestEntity
     String? idempotencyKey,
   }) = _UploadProfileImageRequestEntity;
 }
-

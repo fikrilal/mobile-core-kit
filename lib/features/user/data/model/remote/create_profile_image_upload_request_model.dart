@@ -25,4 +25,3 @@ abstract class CreateProfileImageUploadRequestModel
     Map<String, dynamic> json,
   ) => _$CreateProfileImageUploadRequestModelFromJson(json);
 }
-

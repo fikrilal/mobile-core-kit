@@ -514,40 +514,42 @@ void main() {
       expect(redirect, isNull);
     });
 
-    test('reset-password confirm route bypasses profile completion gate',
-        () async {
-      final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+    test(
+      'reset-password confirm route bypasses profile completion gate',
+      () async {
+        final deepLinks = _deepLinks();
+        final parser = DeepLinkParser();
 
-      final startup = await _startupHarness(
-        shouldShowOnboarding: false,
-        isAuthenticated: true,
-        session: const AuthSessionEntity(
-          tokens: AuthTokensEntity(
-            accessToken: 'access',
-            refreshToken: 'refresh',
-            tokenType: 'Bearer',
-            expiresIn: 900,
+        final startup = await _startupHarness(
+          shouldShowOnboarding: false,
+          isAuthenticated: true,
+          session: const AuthSessionEntity(
+            tokens: AuthTokensEntity(
+              accessToken: 'access',
+              refreshToken: 'refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            ),
+            user: UserEntity(
+              id: 'u1',
+              email: 'user@example.com',
+              roles: ['USER'],
+              authMethods: ['PASSWORD'],
+              profile: UserProfileEntity(),
+            ),
           ),
-          user: UserEntity(
-            id: 'u1',
-            email: 'user@example.com',
-            roles: ['USER'],
-            authMethods: ['PASSWORD'],
-            profile: UserProfileEntity(),
-          ),
-        ),
-      );
+        );
 
-      final redirect = appRedirectUri(
-        Uri.parse('${AuthRoutes.passwordResetConfirm}?token=abc'),
-        startup.controller,
-        deepLinks,
-        parser,
-      );
+        final redirect = appRedirectUri(
+          Uri.parse('${AuthRoutes.passwordResetConfirm}?token=abc'),
+          startup.controller,
+          deepLinks,
+          parser,
+        );
 
-      expect(redirect, isNull);
-    });
+        expect(redirect, isNull);
+      },
+    );
   });
 
   group('appRedirectUri (user hydration gate)', () {

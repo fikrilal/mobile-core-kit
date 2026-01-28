@@ -33,4 +33,3 @@ class PresignedUploadFailure implements Exception {
   String toString() =>
       'PresignedUploadFailure(statusCode: $statusCode, message: $message)';
 }
-
