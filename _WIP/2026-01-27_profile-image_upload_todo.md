@@ -135,15 +135,15 @@ Goal: Provide a clean slice that UI can integrate without leaking infra details.
 
 Goal: Wire to a profile screen without over-designing UX.
 
-- [ ] Add “Change profile image” entry in profile page
+- [x] Add “Change profile image” entry in profile page
 - [ ] For first pass:
-  - [ ] Pick image (source: gallery/camera) — decide approach/package
-  - [ ] Call `UploadProfileImageUseCase` via cubit
-  - [ ] Show progress + success/error snackbars
-  - [ ] Re-render UI using updated cached `/me` (`profileImageFileId`)
+  - [x] Pick image (source: gallery/camera) — `ImagePickerService` (`image_picker`) + optimizer in `lib/core/services/media/`
+  - [x] Call `UploadProfileImageUseCase` via cubit
+  - [x] Show progress + success/error snackbars
+  - [x] Re-render UI using updated cached `/me` (`profileImageFileId`)
 - [ ] Optional follow-ups:
   - [ ] “View profile image” using `GET /v1/me/profile-image/url`
-  - [ ] “Remove profile image” using `DELETE /v1/me/profile-image`
+  - [x] “Remove profile image” using `DELETE /v1/me/profile-image`
 
 ---
 

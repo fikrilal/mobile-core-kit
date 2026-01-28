@@ -11,11 +11,13 @@ import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.d
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_core_kit/features/profile/presentation/pages/profile_page.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
@@ -66,12 +68,20 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.profile,
                 name: 'profile',
-                builder: (context, state) => BlocProvider<LogoutCubit>(
-                  create: (_) => locator<LogoutCubit>(),
+                builder: (context, state) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<LogoutCubit>(
+                      create: (_) => locator<LogoutCubit>(),
+                    ),
+                    BlocProvider<ProfileImageCubit>(
+                      create: (_) => locator<ProfileImageCubit>()..loadUrl(),
+                    ),
+                  ],
                   child: ProfilePage(
                     userContext: locator<UserContextService>(),
                     themeModeController: locator<ThemeModeController>(),
                     localeController: locator<LocaleController>(),
+                    imagePicker: locator<ImagePickerService>(),
                   ),
                 ),
               ),

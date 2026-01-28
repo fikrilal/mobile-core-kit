@@ -53,6 +53,18 @@
   "@commonChangeProfilePhoto": {
     "description": "Accessibility label for the action that changes the profile photo/avatar."
   },
+  "commonChooseFromGallery": "Pilih dari galeri",
+  "@commonChooseFromGallery": {
+    "description": "Action label for choosing an image from the device photo library/gallery."
+  },
+  "commonTakePhoto": "Ambil foto",
+  "@commonTakePhoto": {
+    "description": "Action label for taking a photo with the device camera."
+  },
+  "commonRemovePhoto": "Hapus foto",
+  "@commonRemovePhoto": {
+    "description": "Action label for removing an existing profile photo."
+  },
   "commonItemsCount": "{count, plural, =0{Tidak ada item} other{{count} item}}",
   "@commonItemsCount": {
     "description": "Human-friendly label for an item count with proper pluralization.",
@@ -94,6 +106,22 @@
   "errorsValidation": "Silakan perbaiki kesalahan yang ditandai.",
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "mediaErrorsCameraPermissionDenied": "Izin kamera ditolak. Aktifkan di Pengaturan untuk melanjutkan.",
+  "@mediaErrorsCameraPermissionDenied": {
+    "description": "Message shown when the app does not have camera permission while attempting to take a photo."
+  },
+  "mediaErrorsPhotoPermissionDenied": "Izin foto ditolak. Aktifkan di Pengaturan untuk melanjutkan.",
+  "@mediaErrorsPhotoPermissionDenied": {
+    "description": "Message shown when the app does not have photo library permission while attempting to pick an image."
+  },
+  "mediaErrorsUnsupportedImageFormat": "Format gambar tidak didukung. Silakan pilih gambar JPEG, PNG, atau WebP.",
+  "@mediaErrorsUnsupportedImageFormat": {
+    "description": "Message shown when the selected image cannot be decoded or is not in a supported format."
+  },
+  "mediaErrorsImageTooLarge": "Gambar terlalu besar. Silakan pilih gambar yang lebih kecil.",
+  "@mediaErrorsImageTooLarge": {
+    "description": "Message shown when the selected image cannot be resized/compressed under the maximum upload size."
   },
   "validationInvalidEmail": "Masukkan alamat email yang valid",
   "@validationInvalidEmail": {
@@ -430,6 +458,22 @@
   "profileLoggingOut": "Sedang keluar...",
   "@profileLoggingOut": {
     "description": "Loading overlay message shown while logging out."
+  },
+  "profilePhotoUploading": "Mengunggah foto profil...",
+  "@profilePhotoUploading": {
+    "description": "Loading overlay message shown while uploading a profile photo."
+  },
+  "profilePhotoRemoving": "Menghapus foto profil...",
+  "@profilePhotoRemoving": {
+    "description": "Loading overlay message shown while removing a profile photo."
+  },
+  "profilePhotoUpdated": "Foto profil diperbarui",
+  "@profilePhotoUpdated": {
+    "description": "Success message shown after a profile photo upload completes."
+  },
+  "profilePhotoRemoved": "Foto profil dihapus",
+  "@profilePhotoRemoved": {
+    "description": "Success message shown after a profile photo is removed."
   },
   "profileLogoutDialogTitle": "Keluar?",
   "@profileLogoutDialogTitle": {
