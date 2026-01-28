@@ -36,6 +36,8 @@ import 'package:mobile_core_kit/core/services/federated_auth/google_federated_au
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service_impl.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service_impl.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider_impl.dart';
@@ -178,6 +180,12 @@ void registerLocator() {
   if (!locator.isRegistered<DeviceIdentityService>()) {
     locator.registerLazySingleton<DeviceIdentityService>(
       () => DeviceIdentityServiceImpl(),
+    );
+  }
+
+  if (!locator.isRegistered<ImagePickerService>()) {
+    locator.registerLazySingleton<ImagePickerService>(
+      () => ImagePickerServiceImpl(),
     );
   }
 
