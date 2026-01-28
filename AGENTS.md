@@ -47,14 +47,16 @@ tool/
 └─ verify.dart                     # full verify pipeline
 ```
 
-## Build, Test, Develop
+## Simplicity First
 
-- Install deps: `fvm flutter pub get`
-- Generate config: `dart run tool/gen_config.dart --env dev` (or `staging`/`prod`)
-- Codegen (Freezed/JSON): `dart run build_runner build --delete-conflicting-outputs`
-- Run app (dev): `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`
-- Analyze: `fvm flutter analyze`  • Format: `fvm dart format .`
-- Tests: `fvm flutter test`
+- Minimum code that solves the problem. Nothing speculative.
+- Combat the tendency toward overengineering:
+  - No features beyond what was asked
+  - No abstractions for single-use code
+  - No "flexibility" or "configurability" that wasn't requested
+  - No error handling for impossible scenarios
+  - If 200 lines could be 50, rewrite it
+- The test: Would a senior engineer say this is overcomplicated? If yes, simplify.
 
 ## Coding Style & Naming
 
@@ -89,20 +91,10 @@ tool/
 
 ## Git, Commits & PRs
 
-- Conventional commits (e.g., `feat:`, `fix:`, `chore:`, optional scope `feat(flashcard): ...`).
 - PRs: clear description, linked issues, steps to test, and screenshots/GIFs for UI.
-- Ensure CI passes: analyze, tests, and generated code up to date.
-- **Do not run `git commit` unless the user explicitly asks for it.**
-
-### Git commands (use `tool/agent/gitw`)
-
-When running in WSL, use `tool/agent/gitw` so git uses the Windows credential manager (and avoids WSL/CRLF edge cases).
-
-Examples:
-
-- Stage: `tool/agent/gitw --no-stdin add -A`
-- Commit: `tool/agent/gitw --no-stdin commit -m "feat(scope): message"`
-- Push: `tool/agent/gitw --no-stdin push origin <branch>`
+- Keep CI green: analyze, tests, and generated code up to date.
+- Use `tool/agent/gitw --no-stdin` for git commands in WSL.
+- Don’t commit or push unless explicitly asked; if committing, use Conventional Commits.
 
 ## Agent Verification (required)
 
