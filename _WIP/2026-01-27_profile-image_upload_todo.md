@@ -121,13 +121,13 @@ Goal: Map API failures and storage-related errors into domain failures consisten
 
 Goal: Provide a clean slice that UI can integrate without leaking infra details.
 
-- [ ] Add `ProfileImageCubit` + state under `lib/features/user/presentation/cubit/profile_image/`
-  - [ ] State includes:
-    - [ ] `status` enum (idle/loading/success/failure)
-    - [ ] touched-field validation strategy (if there are fields; otherwise simple)
-    - [ ] one-shot effects for snackbars/navigation
-- [ ] Tests:
-  - [ ] `bloc_test` for success/failure states + effect emission
+- [x] Add `ProfileImageCubit` + state under `lib/features/user/presentation/cubit/profile_image/`
+  - [x] State includes:
+    - [x] `status` enum (idle/loading/success/failure)
+    - [x] touched-field validation strategy (if there are fields; otherwise simple)
+    - [x] one-shot effects for snackbars/navigation
+- [x] Tests:
+  - [x] `bloc_test` for success/failure states + effect emission
 
 ---
 

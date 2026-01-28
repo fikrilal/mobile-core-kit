@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
@@ -13,17 +14,24 @@ import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_draft_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/me_push_token_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_image_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/data/repository/profile_image_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_draft_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/profile_image_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -59,6 +67,12 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<ProfileImageRemoteDataSource>()) {
+      getIt.registerLazySingleton<ProfileImageRemoteDataSource>(
+        () => ProfileImageRemoteDataSource(getIt<ApiHelper>()),
+      );
+    }
+
     if (!getIt.isRegistered<PushTokenRegistrar>()) {
       getIt.registerLazySingleton<PushTokenRegistrar>(
         () => MePushTokenRemoteDataSource(getIt<ApiHelper>()),
@@ -74,6 +88,15 @@ class UserModule {
     if (!getIt.isRegistered<ProfileDraftRepository>()) {
       getIt.registerLazySingleton<ProfileDraftRepository>(
         () => ProfileDraftRepositoryImpl(getIt<ProfileDraftLocalDataSource>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileImageRepository>()) {
+      getIt.registerLazySingleton<ProfileImageRepository>(
+        () => ProfileImageRepositoryImpl(
+          getIt<ProfileImageRemoteDataSource>(),
+          getIt<PresignedUploadClient>(),
+        ),
       );
     }
 
@@ -107,6 +130,30 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<UploadProfileImageUseCase>()) {
+      getIt.registerFactory<UploadProfileImageUseCase>(
+        () => UploadProfileImageUseCase(
+          getIt<ProfileImageRepository>(),
+          getIt<GetMeUseCase>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<ClearProfileImageUseCase>()) {
+      getIt.registerFactory<ClearProfileImageUseCase>(
+        () => ClearProfileImageUseCase(
+          getIt<ProfileImageRepository>(),
+          getIt<GetMeUseCase>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<GetProfileImageUrlUseCase>()) {
+      getIt.registerFactory<GetProfileImageUrlUseCase>(
+        () => GetProfileImageUrlUseCase(getIt<ProfileImageRepository>()),
+      );
+    }
+
     // Presentation
     if (!getIt.isRegistered<CompleteProfileCubit>()) {
       getIt.registerFactory<CompleteProfileCubit>(
@@ -116,6 +163,16 @@ class UserModule {
           getIt<ClearProfileDraftUseCase>(),
           getIt<PatchMeProfileUseCase>(),
           getIt<SessionManager>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileImageCubit>()) {
+      getIt.registerFactory<ProfileImageCubit>(
+        () => ProfileImageCubit(
+          getIt<UploadProfileImageUseCase>(),
+          getIt<ClearProfileImageUseCase>(),
+          getIt<GetProfileImageUrlUseCase>(),
         ),
       );
     }
