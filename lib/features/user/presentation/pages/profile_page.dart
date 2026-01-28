@@ -23,13 +23,11 @@ import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
 import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/widgets/snackbar/app_snackbar.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
-import 'package:mobile_core_kit/features/profile/presentation/widgets/locale_setting_tile.dart';
-import 'package:mobile_core_kit/features/profile/presentation/widgets/theme_mode_setting_tile.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_state.dart';
+import 'package:mobile_core_kit/features/user/presentation/widgets/locale_setting_tile.dart';
+import 'package:mobile_core_kit/features/user/presentation/widgets/theme_mode_setting_tile.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:mobile_core_kit/navigation/user/user_routes.dart';
@@ -42,18 +40,19 @@ class ProfilePage extends StatelessWidget {
     required this.themeModeController,
     required this.localeController,
     required this.imagePicker,
+    required this.isLoggingOut,
+    required this.onLogout,
   });
 
   final UserContextService userContext;
   final ThemeModeController themeModeController;
   final LocaleController localeController;
   final ImagePickerService imagePicker;
+  final bool isLoggingOut;
+  final Future<void> Function() onLogout;
 
   @override
   Widget build(BuildContext context) {
-    final isLoggingOut = context.select(
-      (LogoutCubit c) => c.state.isSubmitting,
-    );
     final isProfileImageBusy = context.select(
       (ProfileImageCubit c) => c.state.isUploading || c.state.isClearing,
     );
@@ -71,59 +70,45 @@ class ProfilePage extends StatelessWidget {
           }
         : context.l10n.commonLoading;
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<LogoutCubit, LogoutState>(
-          listenWhen: (prev, curr) =>
-              prev.failure != curr.failure && curr.failure != null,
-          listener: (context, state) {
-            AppSnackBar.showError(
+    return BlocListener<ProfileImageCubit, ProfileImageState>(
+      listenWhen: (prev, curr) =>
+          prev.status != curr.status ||
+          prev.action != curr.action ||
+          prev.failure != curr.failure,
+      listener: (context, state) async {
+        if (state.status == ProfileImageStatus.failure &&
+            state.action != ProfileImageAction.loadUrl &&
+            state.failure != null) {
+          AppSnackBar.showError(
+            context,
+            message: messageForAuthFailure(state.failure!, context.l10n),
+          );
+          context.read<ProfileImageCubit>().resetStatus();
+          return;
+        }
+
+        if (state.status != ProfileImageStatus.success) return;
+
+        switch (state.action) {
+          case ProfileImageAction.upload:
+            AppSnackBar.showSuccess(
               context,
-              message: messageForLogoutFailure(state.failure!, context.l10n),
+              message: context.l10n.profilePhotoUpdated,
             );
-          },
-        ),
-        BlocListener<ProfileImageCubit, ProfileImageState>(
-          listenWhen: (prev, curr) =>
-              prev.status != curr.status ||
-              prev.action != curr.action ||
-              prev.failure != curr.failure,
-          listener: (context, state) async {
-            if (state.status == ProfileImageStatus.failure &&
-                state.action != ProfileImageAction.loadUrl &&
-                state.failure != null) {
-              AppSnackBar.showError(
-                context,
-                message: messageForAuthFailure(state.failure!, context.l10n),
-              );
-              context.read<ProfileImageCubit>().resetStatus();
-              return;
-            }
+          case ProfileImageAction.clear:
+            AppSnackBar.showSuccess(
+              context,
+              message: context.l10n.profilePhotoRemoved,
+            );
+          case ProfileImageAction.loadUrl:
+          case ProfileImageAction.none:
+            return;
+        }
 
-            if (state.status != ProfileImageStatus.success) return;
-
-            switch (state.action) {
-              case ProfileImageAction.upload:
-                AppSnackBar.showSuccess(
-                  context,
-                  message: context.l10n.profilePhotoUpdated,
-                );
-              case ProfileImageAction.clear:
-                AppSnackBar.showSuccess(
-                  context,
-                  message: context.l10n.profilePhotoRemoved,
-                );
-              case ProfileImageAction.loadUrl:
-              case ProfileImageAction.none:
-                return;
-            }
-
-            final cubit = context.read<ProfileImageCubit>();
-            await cubit.loadUrl();
-            cubit.resetStatus();
-          },
-        ),
-      ],
+        final cubit = context.read<ProfileImageCubit>();
+        await cubit.loadUrl();
+        cubit.resetStatus();
+      },
       child: AppLoadingOverlay(
         isLoading: isOverlayLoading,
         message: overlayMessage,
@@ -134,6 +119,7 @@ class ProfilePage extends StatelessWidget {
           themeModeController: themeModeController,
           localeController: localeController,
           imagePicker: imagePicker,
+          onLogout: onLogout,
         ),
       ),
     );
@@ -148,6 +134,7 @@ class _ProfileContent extends StatelessWidget {
     required this.themeModeController,
     required this.localeController,
     required this.imagePicker,
+    required this.onLogout,
   });
 
   final bool isLoggingOut;
@@ -156,6 +143,7 @@ class _ProfileContent extends StatelessWidget {
   final ThemeModeController themeModeController;
   final LocaleController localeController;
   final ImagePickerService imagePicker;
+  final Future<void> Function() onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -424,7 +412,7 @@ class _ProfileContent extends StatelessWidget {
 
                   if (confirmed != true) return;
                   if (!context.mounted) return;
-                  await context.read<LogoutCubit>().logout();
+                  await onLogout();
                 },
               ),
             ],
