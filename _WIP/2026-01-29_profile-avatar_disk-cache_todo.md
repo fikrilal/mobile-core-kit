@@ -56,29 +56,26 @@
 
 ### 2.1 Domain entity (small, stable)
 
-- [ ] Add `lib/features/user/domain/entity/profile_avatar_cache_entry_entity.dart` (or `.../profile_avatar_cache_entity.dart`)
-  - [ ] `String filePath`
-  - [ ] `DateTime cachedAt`
-  - [ ] `bool isExpired`
+- [x] Add `lib/features/user/domain/entity/profile_avatar_cache_entry_entity.dart`
+  - [x] `String filePath`
+  - [x] `DateTime cachedAt`
+  - [x] `bool isExpired`
 
 ### 2.2 Repository contract
 
-- [ ] Extend `ProfileImageRepository` OR add a dedicated `ProfileAvatarRepository` (preferred to keep responsibilities sharp):
-  - [ ] `Future<Either<AuthFailure, ProfileAvatarCacheEntryEntity?>> getCachedAvatar({required String userId, required String? profileImageFileId})`
-  - [ ] `Future<Either<AuthFailure, ProfileAvatarCacheEntryEntity?>> refreshAvatar({required String userId, required String profileImageFileId})`
-    - calls `GET /v1/me/profile-image/url` internally (no URL stored in state)
-    - downloads bytes → save to cache → returns entry
-    - on `204` → clears cache and returns null
-  - [ ] `Future<Either<AuthFailure, Unit>> clearAvatar({required String userId})`
-  - [ ] `Future<Either<AuthFailure, Unit>> clearAllAvatars()` (optional)
+- [x] Add dedicated `ProfileAvatarRepository` (preferred)
+  - [x] `getCachedAvatar({userId, profileImageFileId})`
+  - [x] `refreshAvatar({userId, profileImageFileId})`
+  - [x] `clearAvatar({userId})`
+  - [x] `clearAllAvatars()`
 
 ### 2.3 Usecases
 
-- [ ] Create usecases:
-  - [ ] `GetCachedProfileAvatarUseCase`
-  - [ ] `RefreshProfileAvatarCacheUseCase`
-  - [ ] `ClearProfileAvatarCacheUseCase`
-  - [ ] `ClearAllProfileAvatarCachesUseCase` (optional, if used by session)
+- [x] Create usecases:
+  - [x] `GetCachedProfileAvatarUseCase`
+  - [x] `RefreshProfileAvatarCacheUseCase`
+  - [x] `ClearProfileAvatarCacheUseCase`
+  - [x] `ClearAllProfileAvatarCachesUseCase`
 
 ---
 
