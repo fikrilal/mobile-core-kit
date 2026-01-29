@@ -5,14 +5,14 @@ part 'profile_image_state.freezed.dart';
 
 enum ProfileImageStatus { initial, loading, success, failure }
 
-enum ProfileImageAction { none, upload, clear, loadUrl }
+enum ProfileImageAction { none, upload, clear, loadAvatar }
 
 @freezed
 abstract class ProfileImageState with _$ProfileImageState {
   const factory ProfileImageState({
     @Default(ProfileImageStatus.initial) ProfileImageStatus status,
     @Default(ProfileImageAction.none) ProfileImageAction action,
-    String? imageUrl,
+    String? cachedFilePath,
     AuthFailure? failure,
   }) = _ProfileImageState;
 
@@ -24,7 +24,8 @@ abstract class ProfileImageState with _$ProfileImageState {
 
   bool get isClearing => isLoading && action == ProfileImageAction.clear;
 
-  bool get isLoadingUrl => isLoading && action == ProfileImageAction.loadUrl;
+  bool get isLoadingAvatar =>
+      isLoading && action == ProfileImageAction.loadAvatar;
 
   factory ProfileImageState.initial() => const ProfileImageState();
 }

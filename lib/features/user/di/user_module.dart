@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
@@ -37,6 +38,7 @@ import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_u
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
@@ -193,7 +195,14 @@ class UserModule {
 
     if (!getIt.isRegistered<RefreshProfileAvatarCacheUseCase>()) {
       getIt.registerFactory<RefreshProfileAvatarCacheUseCase>(
-        () => RefreshProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+        () =>
+            RefreshProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<SaveProfileAvatarCacheUseCase>()) {
+      getIt.registerFactory<SaveProfileAvatarCacheUseCase>(
+        () => SaveProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
       );
     }
 
@@ -205,7 +214,9 @@ class UserModule {
 
     if (!getIt.isRegistered<ClearAllProfileAvatarCachesUseCase>()) {
       getIt.registerFactory<ClearAllProfileAvatarCachesUseCase>(
-        () => ClearAllProfileAvatarCachesUseCase(getIt<ProfileAvatarRepository>()),
+        () => ClearAllProfileAvatarCachesUseCase(
+          getIt<ProfileAvatarRepository>(),
+        ),
       );
     }
 
@@ -225,9 +236,13 @@ class UserModule {
     if (!getIt.isRegistered<ProfileImageCubit>()) {
       getIt.registerFactory<ProfileImageCubit>(
         () => ProfileImageCubit(
+          getIt<UserContextService>(),
           getIt<UploadProfileImageUseCase>(),
           getIt<ClearProfileImageUseCase>(),
-          getIt<GetProfileImageUrlUseCase>(),
+          getIt<GetCachedProfileAvatarUseCase>(),
+          getIt<RefreshProfileAvatarCacheUseCase>(),
+          getIt<SaveProfileAvatarCacheUseCase>(),
+          getIt<ClearProfileAvatarCacheUseCase>(),
         ),
       );
     }

@@ -78,7 +78,7 @@ GoRouter createRouter() {
                       create: (_) => locator<LogoutCubit>(),
                     ),
                     BlocProvider<ProfileImageCubit>(
-                      create: (_) => locator<ProfileImageCubit>()..loadUrl(),
+                      create: (_) => locator<ProfileImageCubit>()..loadAvatar(),
                     ),
                   ],
                   child: BlocListener<LogoutCubit, LogoutState>(
@@ -101,8 +101,7 @@ GoRouter createRouter() {
                           localeController: locator<LocaleController>(),
                           imagePicker: locator<ImagePickerService>(),
                           isLoggingOut: logoutState.isSubmitting,
-                          onLogout: () =>
-                              context.read<LogoutCubit>().logout(),
+                          onLogout: () => context.read<LogoutCubit>().logout(),
                         );
                       },
                     ),

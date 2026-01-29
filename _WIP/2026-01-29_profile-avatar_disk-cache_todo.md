@@ -107,40 +107,40 @@
 
 ### 5.1 State changes
 
-- [ ] Update `lib/features/user/presentation/cubit/profile_image/profile_image_state.dart`
-  - [ ] Remove `imageUrl`
-  - [ ] Add `String? cachedFilePath`
+- [x] Update `lib/features/user/presentation/cubit/profile_image/profile_image_state.dart`
+  - [x] Remove `imageUrl`
+  - [x] Add `String? cachedFilePath`
   - [ ] Add `bool isStaleCacheShown` or derive from `cachedFilePath != null && isRefreshing` (optional)
 
 ### 5.2 Cubit changes
 
-- [ ] Update `ProfileImageCubit`:
-  - [ ] Replace `loadUrl()` with `loadAvatar()` (or `init()`)
-    - [ ] Read `userId` + `profileImageFileId` from `UserContextService` (inject or pass in call).
-    - [ ] Call `GetCachedProfileAvatarUseCase`
-    - [ ] If cache hit (not expired) → emit `cachedFilePath` and stop.
-    - [ ] If cache hit (expired) → emit `cachedFilePath` then refresh in background.
-    - [ ] If cache miss → refresh immediately.
-  - [ ] Upload flow:
-    - [ ] After successful upload: save picked bytes to cache immediately using `profileImageFileId` (may require pulling updated `/me` or returning it from upload completion).
-  - [ ] Clear flow:
-    - [ ] After successful clear: clear cache + clear `cachedFilePath`.
-  - [ ] Ensure no UI relies on URL string anymore.
+- [x] Update `ProfileImageCubit`:
+  - [x] Replace `loadUrl()` with `loadAvatar()` (or `init()`)
+    - [x] Read `userId` + `profileImageFileId` from `UserContextService` (inject or pass in call).
+    - [x] Call `GetCachedProfileAvatarUseCase`
+    - [x] If cache hit (not expired) → emit `cachedFilePath` and stop.
+    - [x] If cache hit (expired) → emit `cachedFilePath` then refresh in background.
+    - [x] If cache miss → refresh immediately.
+  - [x] Upload flow:
+    - [x] After successful upload: save picked bytes to cache immediately using `profileImageFileId` (may require pulling updated `/me` or returning it from upload completion).
+  - [x] Clear flow:
+    - [x] After successful clear: clear cache + clear `cachedFilePath`.
+  - [x] Ensure no UI relies on URL string anymore.
 
 ### 5.3 Router initialization
 
-- [ ] Update `lib/navigation/app_router.dart`
-  - [ ] Replace `..loadUrl()` with `..loadAvatar()` (or equivalent)
+- [x] Update `lib/navigation/app_router.dart`
+  - [x] Replace `..loadUrl()` with `..loadAvatar()` (or equivalent)
 
 ---
 
 ## Phase 6 — UI integration (Profile page)
 
-- [ ] Update `lib/features/user/presentation/pages/profile_page.dart`
-  - [ ] Read `cachedFilePath` from cubit state
-  - [ ] Use `AppAvatar(imageProvider: FileImage(File(path)))`
-  - [ ] Remove `imageUrl` usage entirely
-  - [ ] Expected UX:
+- [x] Update `lib/features/user/presentation/pages/profile_page.dart`
+  - [x] Read `cachedFilePath` from cubit state
+  - [x] Use `AppAvatar(imageProvider: FileImage(File(path)))`
+  - [x] Remove `imageUrl` usage entirely
+  - [x] Expected UX:
     - Cached file exists → instant avatar (no placeholder)
     - Missing cache → placeholder until download completes
     - Expired cache → show stale immediately, refresh silently
@@ -177,9 +177,9 @@
 
 ## Phase 9 — Verification + docs
 
-- [ ] Run:
-  - [ ] `tool/agent/flutterw --no-stdin analyze`
-  - [ ] `tool/agent/dartw --no-stdin run custom_lint`
-  - [ ] `tool/agent/flutterw --no-stdin test`
+- [x] Run:
+  - [x] `tool/agent/flutterw --no-stdin analyze`
+  - [x] `tool/agent/dartw --no-stdin run custom_lint`
+  - [x] `tool/agent/flutterw --no-stdin test`
 - [ ] Update explainer:
   - [ ] `docs/explainers/features/user/profile_image_upload.md` add a “Caching” section summarizing TTL + fileId invalidation.

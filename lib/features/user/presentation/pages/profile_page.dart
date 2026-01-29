@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -77,7 +79,7 @@ class ProfilePage extends StatelessWidget {
           prev.failure != curr.failure,
       listener: (context, state) async {
         if (state.status == ProfileImageStatus.failure &&
-            state.action != ProfileImageAction.loadUrl &&
+            state.action != ProfileImageAction.loadAvatar &&
             state.failure != null) {
           AppSnackBar.showError(
             context,
@@ -100,13 +102,13 @@ class ProfilePage extends StatelessWidget {
               context,
               message: context.l10n.profilePhotoRemoved,
             );
-          case ProfileImageAction.loadUrl:
+          case ProfileImageAction.loadAvatar:
           case ProfileImageAction.none:
             return;
         }
 
         final cubit = context.read<ProfileImageCubit>();
-        await cubit.loadUrl();
+        await cubit.loadAvatar();
         cubit.resetStatus();
       },
       child: AppLoadingOverlay(
@@ -150,14 +152,20 @@ class _ProfileContent extends StatelessWidget {
     final layout = context.adaptiveLayout;
     final sectionSpacing = layout.gutter * 3;
     final showDevTools = BuildConfig.env == BuildEnv.dev;
-    final imageUrl = context.select((ProfileImageCubit c) => c.state.imageUrl);
+    final cachedFilePath = context.select(
+      (ProfileImageCubit c) => c.state.cachedFilePath,
+    );
     final profileImageFileId = userContext.user?.profile.profileImageFileId;
     final canRemoveProfilePhoto =
         profileImageFileId != null && profileImageFileId.trim().isNotEmpty;
+    final avatarProvider =
+        cachedFilePath == null || cachedFilePath.trim().isEmpty
+        ? null
+        : FileImage(File(cachedFilePath));
 
     Future<void> handleProfilePhotoAction(_ProfilePhotoAction action) async {
       final cubit = context.read<ProfileImageCubit>();
-      if (cubit.state.isLoading) return;
+      if (cubit.state.isUploading || cubit.state.isClearing) return;
 
       switch (action) {
         case _ProfilePhotoAction.gallery:
@@ -240,7 +248,7 @@ class _ProfileContent extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             AppAvatar(
-                              imageUrl: imageUrl,
+                              imageProvider: avatarProvider,
                               displayName: displayName ?? email,
                               onChangePhoto: showProfilePhotoPicker,
                               size: AppAvatarSize.xl,

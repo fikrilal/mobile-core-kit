@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
@@ -51,7 +53,9 @@ class ProfileAvatarRepositoryImpl implements ProfileAvatarRepository {
       final apiResponse = await _remote.getProfileImageUrl();
 
       if (apiResponse.isError) {
-        return left(mapProfileImageFailure(ApiFailure.fromApiResponse(apiResponse)));
+        return left(
+          mapProfileImageFailure(ApiFailure.fromApiResponse(apiResponse)),
+        );
       }
 
       final model = apiResponse.data;
@@ -93,7 +97,35 @@ class ProfileAvatarRepositoryImpl implements ProfileAvatarRepository {
   }
 
   @override
-  Future<Either<AuthFailure, Unit>> clearAvatar({required String userId}) async {
+  Future<Either<AuthFailure, ProfileAvatarCacheEntryEntity?>> saveAvatarBytes({
+    required String userId,
+    required String profileImageFileId,
+    required Uint8List bytes,
+  }) async {
+    try {
+      final saved = await _cache.save(
+        userId: userId,
+        profileImageFileId: profileImageFileId,
+        bytes: bytes,
+      );
+      if (saved == null) return left(const AuthFailure.unexpected());
+      return right(_toEntity(saved));
+    } on Exception catch (e, st) {
+      Log.error(
+        'Save profile avatar bytes unexpected error',
+        e,
+        st,
+        true,
+        'ProfileAvatarRepository',
+      );
+      return left(const AuthFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> clearAvatar({
+    required String userId,
+  }) async {
     try {
       await _cache.clear(userId: userId);
       return right(unit);

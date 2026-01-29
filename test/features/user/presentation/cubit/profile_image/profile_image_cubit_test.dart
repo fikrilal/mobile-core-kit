@@ -3,17 +3,24 @@ import 'dart:typed_data';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/clear_profile_image_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/profile_image_url_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/profile_avatar_cache_entry_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/upload_profile_image_request_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_image_usecase.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_cached_profile_avatar_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_state.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _MockUserContextService extends Mock implements UserContextService {}
 
 class _MockUploadProfileImageUseCase extends Mock
     implements UploadProfileImageUseCase {}
@@ -21,8 +28,17 @@ class _MockUploadProfileImageUseCase extends Mock
 class _MockClearProfileImageUseCase extends Mock
     implements ClearProfileImageUseCase {}
 
-class _MockGetProfileImageUrlUseCase extends Mock
-    implements GetProfileImageUrlUseCase {}
+class _MockGetCachedProfileAvatarUseCase extends Mock
+    implements GetCachedProfileAvatarUseCase {}
+
+class _MockRefreshProfileAvatarCacheUseCase extends Mock
+    implements RefreshProfileAvatarCacheUseCase {}
+
+class _MockSaveProfileAvatarCacheUseCase extends Mock
+    implements SaveProfileAvatarCacheUseCase {}
+
+class _MockClearProfileAvatarCacheUseCase extends Mock
+    implements ClearProfileAvatarCacheUseCase {}
 
 void main() {
   setUpAll(() {
@@ -37,12 +53,20 @@ void main() {
 
   late _MockUploadProfileImageUseCase uploadProfileImage;
   late _MockClearProfileImageUseCase clearProfileImage;
-  late _MockGetProfileImageUrlUseCase getProfileImageUrl;
+  late _MockUserContextService userContext;
+  late _MockGetCachedProfileAvatarUseCase getCachedProfileAvatar;
+  late _MockRefreshProfileAvatarCacheUseCase refreshProfileAvatarCache;
+  late _MockSaveProfileAvatarCacheUseCase saveProfileAvatarCache;
+  late _MockClearProfileAvatarCacheUseCase clearProfileAvatarCache;
 
   setUp(() {
     uploadProfileImage = _MockUploadProfileImageUseCase();
     clearProfileImage = _MockClearProfileImageUseCase();
-    getProfileImageUrl = _MockGetProfileImageUrlUseCase();
+    userContext = _MockUserContextService();
+    getCachedProfileAvatar = _MockGetCachedProfileAvatarUseCase();
+    refreshProfileAvatarCache = _MockRefreshProfileAvatarCacheUseCase();
+    saveProfileAvatarCache = _MockSaveProfileAvatarCacheUseCase();
+    clearProfileAvatarCache = _MockClearProfileAvatarCacheUseCase();
   });
 
   const user = UserEntity(id: 'user-1', email: 'user@example.com');
@@ -54,9 +78,13 @@ void main() {
         () => uploadProfileImage(any()),
       ).thenAnswer((_) async => right(user));
       return ProfileImageCubit(
+        userContext,
         uploadProfileImage,
         clearProfileImage,
-        getProfileImageUrl,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
       );
     },
     act: (cubit) async => cubit.upload(
@@ -82,9 +110,13 @@ void main() {
         () => uploadProfileImage(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
       return ProfileImageCubit(
+        userContext,
         uploadProfileImage,
         clearProfileImage,
-        getProfileImageUrl,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
       );
     },
     act: (cubit) async => cubit.upload(
@@ -109,9 +141,13 @@ void main() {
     build: () {
       when(() => clearProfileImage(any())).thenAnswer((_) async => right(user));
       return ProfileImageCubit(
+        userContext,
         uploadProfileImage,
         clearProfileImage,
-        getProfileImageUrl,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
       );
     },
     act: (cubit) async => cubit.clear(),
@@ -134,9 +170,13 @@ void main() {
         () => clearProfileImage(any()),
       ).thenAnswer((_) async => left(const AuthFailure.serverError()));
       return ProfileImageCubit(
+        userContext,
         uploadProfileImage,
         clearProfileImage,
-        getProfileImageUrl,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
       );
     },
     act: (cubit) async => cubit.clear(),
@@ -154,32 +194,47 @@ void main() {
   );
 
   blocTest<ProfileImageCubit, ProfileImageState>(
-    'emits loading then initial (with url) when loadUrl succeeds',
+    'emits loading then initial (with cached path) when loadAvatar hits cache',
     build: () {
-      when(() => getProfileImageUrl()).thenAnswer(
+      when(() => userContext.user).thenReturn(
+        user.copyWith(
+          profile: const UserProfileEntity(profileImageFileId: 'file-1'),
+        ),
+      );
+      when(
+        () => getCachedProfileAvatar(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      ).thenAnswer(
         (_) async => right(
-          ProfileImageUrlEntity(
-            url: 'https://example.com/image.jpg',
-            expiresAt: DateTime(2030, 1, 1),
+          ProfileAvatarCacheEntryEntity(
+            filePath: '/tmp/avatar.bin',
+            cachedAt: DateTime(2026, 1, 1),
+            isExpired: false,
           ),
         ),
       );
       return ProfileImageCubit(
+        userContext,
         uploadProfileImage,
         clearProfileImage,
-        getProfileImageUrl,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
       );
     },
-    act: (cubit) async => cubit.loadUrl(),
+    act: (cubit) async => cubit.loadAvatar(),
     expect: () => const [
       ProfileImageState(
         status: ProfileImageStatus.loading,
-        action: ProfileImageAction.loadUrl,
+        action: ProfileImageAction.loadAvatar,
       ),
       ProfileImageState(
         status: ProfileImageStatus.initial,
         action: ProfileImageAction.none,
-        imageUrl: 'https://example.com/image.jpg',
+        cachedFilePath: '/tmp/avatar.bin',
       ),
     ],
   );

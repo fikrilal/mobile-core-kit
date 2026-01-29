@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProfileImageState {
 
- ProfileImageStatus get status; ProfileImageAction get action; String? get imageUrl; AuthFailure? get failure;
+ ProfileImageStatus get status; ProfileImageAction get action; String? get cachedFilePath; AuthFailure? get failure;
 /// Create a copy of ProfileImageState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ProfileImageStateCopyWith<ProfileImageState> get copyWith => _$ProfileImageStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileImageState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileImageState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.cachedFilePath, cachedFilePath) || other.cachedFilePath == cachedFilePath)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,action,imageUrl,failure);
+int get hashCode => Object.hash(runtimeType,status,action,cachedFilePath,failure);
 
 @override
 String toString() {
-  return 'ProfileImageState(status: $status, action: $action, imageUrl: $imageUrl, failure: $failure)';
+  return 'ProfileImageState(status: $status, action: $action, cachedFilePath: $cachedFilePath, failure: $failure)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ProfileImageStateCopyWith<$Res>  {
   factory $ProfileImageStateCopyWith(ProfileImageState value, $Res Function(ProfileImageState) _then) = _$ProfileImageStateCopyWithImpl;
 @useResult
 $Res call({
- ProfileImageStatus status, ProfileImageAction action, String? imageUrl, AuthFailure? failure
+ ProfileImageStatus status, ProfileImageAction action, String? cachedFilePath, AuthFailure? failure
 });
 
 
@@ -62,11 +62,11 @@ class _$ProfileImageStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileImageState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? action = null,Object? imageUrl = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? action = null,Object? cachedFilePath = freezed,Object? failure = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProfileImageStatus,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ProfileImageAction,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as ProfileImageAction,cachedFilePath: freezed == cachedFilePath ? _self.cachedFilePath : cachedFilePath // ignore: cast_nullable_to_non_nullable
 as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as AuthFailure?,
   ));
@@ -165,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProfileImageStatus status,  ProfileImageAction action,  String? imageUrl,  AuthFailure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProfileImageStatus status,  ProfileImageAction action,  String? cachedFilePath,  AuthFailure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfileImageState() when $default != null:
-return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
+return $default(_that.status,_that.action,_that.cachedFilePath,_that.failure);case _:
   return orElse();
 
 }
@@ -186,10 +186,10 @@ return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProfileImageStatus status,  ProfileImageAction action,  String? imageUrl,  AuthFailure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProfileImageStatus status,  ProfileImageAction action,  String? cachedFilePath,  AuthFailure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _ProfileImageState():
-return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
+return $default(_that.status,_that.action,_that.cachedFilePath,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +206,10 @@ return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProfileImageStatus status,  ProfileImageAction action,  String? imageUrl,  AuthFailure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProfileImageStatus status,  ProfileImageAction action,  String? cachedFilePath,  AuthFailure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfileImageState() when $default != null:
-return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
+return $default(_that.status,_that.action,_that.cachedFilePath,_that.failure);case _:
   return null;
 
 }
@@ -221,12 +221,12 @@ return $default(_that.status,_that.action,_that.imageUrl,_that.failure);case _:
 
 
 class _ProfileImageState extends ProfileImageState {
-  const _ProfileImageState({this.status = ProfileImageStatus.initial, this.action = ProfileImageAction.none, this.imageUrl, this.failure}): super._();
+  const _ProfileImageState({this.status = ProfileImageStatus.initial, this.action = ProfileImageAction.none, this.cachedFilePath, this.failure}): super._();
   
 
 @override@JsonKey() final  ProfileImageStatus status;
 @override@JsonKey() final  ProfileImageAction action;
-@override final  String? imageUrl;
+@override final  String? cachedFilePath;
 @override final  AuthFailure? failure;
 
 /// Create a copy of ProfileImageState
@@ -239,16 +239,16 @@ _$ProfileImageStateCopyWith<_ProfileImageState> get copyWith => __$ProfileImageS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileImageState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileImageState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.cachedFilePath, cachedFilePath) || other.cachedFilePath == cachedFilePath)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,action,imageUrl,failure);
+int get hashCode => Object.hash(runtimeType,status,action,cachedFilePath,failure);
 
 @override
 String toString() {
-  return 'ProfileImageState(status: $status, action: $action, imageUrl: $imageUrl, failure: $failure)';
+  return 'ProfileImageState(status: $status, action: $action, cachedFilePath: $cachedFilePath, failure: $failure)';
 }
 
 
@@ -259,7 +259,7 @@ abstract mixin class _$ProfileImageStateCopyWith<$Res> implements $ProfileImageS
   factory _$ProfileImageStateCopyWith(_ProfileImageState value, $Res Function(_ProfileImageState) _then) = __$ProfileImageStateCopyWithImpl;
 @override @useResult
 $Res call({
- ProfileImageStatus status, ProfileImageAction action, String? imageUrl, AuthFailure? failure
+ ProfileImageStatus status, ProfileImageAction action, String? cachedFilePath, AuthFailure? failure
 });
 
 
@@ -276,11 +276,11 @@ class __$ProfileImageStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileImageState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? action = null,Object? imageUrl = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? action = null,Object? cachedFilePath = freezed,Object? failure = freezed,}) {
   return _then(_ProfileImageState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProfileImageStatus,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ProfileImageAction,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as ProfileImageAction,cachedFilePath: freezed == cachedFilePath ? _self.cachedFilePath : cachedFilePath // ignore: cast_nullable_to_non_nullable
 as String?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as AuthFailure?,
   ));

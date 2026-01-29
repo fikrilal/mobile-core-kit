@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:fpdart/fpdart.dart';
 
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -28,9 +30,18 @@ abstract interface class ProfileAvatarRepository {
     required String profileImageFileId,
   });
 
+  /// Saves avatar bytes to the local disk cache.
+  ///
+  /// Intended for seeding the cache after a successful upload, so UI can render
+  /// immediately without re-downloading the newly uploaded image.
+  Future<Either<AuthFailure, ProfileAvatarCacheEntryEntity?>> saveAvatarBytes({
+    required String userId,
+    required String profileImageFileId,
+    required Uint8List bytes,
+  });
+
   Future<Either<AuthFailure, Unit>> clearAvatar({required String userId});
 
   /// Clears caches for all users (safe default for session teardown).
   Future<Either<AuthFailure, Unit>> clearAllAvatars();
 }
-
