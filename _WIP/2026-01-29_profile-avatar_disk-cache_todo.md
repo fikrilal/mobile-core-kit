@@ -81,20 +81,25 @@
 
 ## Phase 3 — Data layer: repository implementation
 
-- [ ] Implement repository:
-  - [ ] Wire `ProfileImageRemoteDataSource` (existing `getProfileImageUrl`) + new download DS + new local cache DS.
-  - [ ] Avoid `imageUrl` persistence:
-    - URL is requested, used immediately to download bytes, then discarded.
-  - [ ] Handle failures:
-    - If cache exists and refresh fails → keep stale cache (presentation decides).
-    - If cache missing and refresh fails → return failure.
+- [x] Implement repository:
+  - [x] Wire `ProfileImageRemoteDataSource` (existing `getProfileImageUrl`) + download datasource + local cache datasource.
+  - [x] Avoid `imageUrl` persistence (URL is used only to download bytes).
+  - [x] Map API failures via `mapProfileImageFailure` and download failures to `AuthFailure`.
 
 ---
 
 ## Phase 4 — DI wiring
 
-- [ ] Register datasources + repository + usecases in `lib/features/user/di/user_module.dart`
-  - [ ] Ensure no duplicate registrations / pattern matches other user feature registrations.
+- [x] Register datasources + repository + usecases in DI:
+  - [x] `lib/core/di/service_locator.dart` registers `PresignedDownloadClient`.
+  - [x] `lib/features/user/di/user_module.dart` registers:
+    - [x] `ProfileAvatarCacheLocalDataSource`
+    - [x] `ProfileAvatarDownloadDataSource`
+    - [x] `ProfileAvatarRepository`
+    - [x] `GetCachedProfileAvatarUseCase`
+    - [x] `RefreshProfileAvatarCacheUseCase`
+    - [x] `ClearProfileAvatarCacheUseCase`
+    - [x] `ClearAllProfileAvatarCachesUseCase`
 
 ---
 

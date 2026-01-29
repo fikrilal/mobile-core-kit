@@ -8,6 +8,8 @@ import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/download/dio_presigned_download_client.dart';
+import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
 import 'package:mobile_core_kit/core/network/upload/dio_presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
@@ -224,6 +226,12 @@ void registerLocator() {
   if (!locator.isRegistered<PresignedUploadClient>()) {
     locator.registerLazySingleton<PresignedUploadClient>(
       () => DioPresignedUploadClient(),
+    );
+  }
+
+  if (!locator.isRegistered<PresignedDownloadClient>()) {
+    locator.registerLazySingleton<PresignedDownloadClient>(
+      () => DioPresignedDownloadClient(),
     );
   }
 
