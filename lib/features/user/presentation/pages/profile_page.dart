@@ -17,7 +17,7 @@ import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/utilities/idempotency_key_utils.dart';
-import 'package:mobile_core_kit/core/widgets/avatar/app_avatar.dart';
+import 'package:mobile_core_kit/core/widgets/avatar/avatar.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart';
 import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
@@ -235,6 +235,7 @@ class _ProfileContent extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const SizedBox(height: AppSpacing.space16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -242,6 +243,7 @@ class _ProfileContent extends StatelessWidget {
                               imageUrl: imageUrl,
                               displayName: displayName ?? email,
                               onChangePhoto: showProfilePhotoPicker,
+                              size: AppAvatarSize.xl,
                             ),
                           ],
                         ),
