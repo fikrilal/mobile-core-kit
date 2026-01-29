@@ -97,11 +97,13 @@ class ProfilePage extends StatelessWidget {
               context,
               message: context.l10n.profilePhotoUpdated,
             );
+            break;
           case ProfileImageAction.clear:
             AppSnackBar.showSuccess(
               context,
               message: context.l10n.profilePhotoRemoved,
             );
+            break;
           case ProfileImageAction.loadAvatar:
           case ProfileImageAction.none:
             return;

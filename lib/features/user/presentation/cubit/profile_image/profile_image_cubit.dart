@@ -114,6 +114,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
       ClearProfileImageRequestEntity(idempotencyKey: idempotencyKey),
     );
 
+    if (isClosed) return;
     result.match(
       (failure) => emit(
         state.copyWith(
@@ -238,6 +239,8 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     required String userId,
     required String profileImageFileId,
   }) async {
+    if (isClosed) return;
+
     final key = '$userId:$profileImageFileId';
     final existing = _refreshFuture;
     if (existing != null && _refreshKey == key) {
@@ -247,6 +250,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
 
     _refreshKey = key;
     final Future<void> future = () async {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ProfileImageStatus.loading,
@@ -311,6 +315,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     required String userId,
     required String profileImageFileId,
   }) {
+    if (isClosed) return;
     unawaited(
       _refreshAndEmit(userId: userId, profileImageFileId: profileImageFileId),
     );
