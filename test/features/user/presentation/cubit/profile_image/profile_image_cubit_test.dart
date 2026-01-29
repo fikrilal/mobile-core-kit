@@ -237,5 +237,136 @@ void main() {
         cachedFilePath: '/tmp/avatar.bin',
       ),
     ],
+    verify: (_) {
+      verifyNever(
+        () => refreshProfileAvatarCache(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      );
+    },
+  );
+
+  blocTest<ProfileImageCubit, ProfileImageState>(
+    'expired cache emits cached path then refreshes in background',
+    build: () {
+      when(() => userContext.user).thenReturn(
+        user.copyWith(
+          profile: const UserProfileEntity(profileImageFileId: 'file-1'),
+        ),
+      );
+      when(
+        () => getCachedProfileAvatar(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      ).thenAnswer(
+        (_) async => right(
+          ProfileAvatarCacheEntryEntity(
+            filePath: '/tmp/avatar_stale.bin',
+            cachedAt: DateTime(2026, 1, 1),
+            isExpired: true,
+          ),
+        ),
+      );
+      when(
+        () => refreshProfileAvatarCache(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      ).thenAnswer(
+        (_) async => right(
+          ProfileAvatarCacheEntryEntity(
+            filePath: '/tmp/avatar_fresh.bin',
+            cachedAt: DateTime(2026, 1, 2),
+            isExpired: false,
+          ),
+        ),
+      );
+      return ProfileImageCubit(
+        userContext,
+        uploadProfileImage,
+        clearProfileImage,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
+      );
+    },
+    act: (cubit) async => cubit.loadAvatar(),
+    wait: const Duration(milliseconds: 10),
+    expect: () => const [
+      ProfileImageState(
+        status: ProfileImageStatus.loading,
+        action: ProfileImageAction.loadAvatar,
+      ),
+      ProfileImageState(
+        status: ProfileImageStatus.initial,
+        action: ProfileImageAction.none,
+        cachedFilePath: '/tmp/avatar_stale.bin',
+      ),
+      ProfileImageState(
+        status: ProfileImageStatus.loading,
+        action: ProfileImageAction.loadAvatar,
+        cachedFilePath: '/tmp/avatar_stale.bin',
+      ),
+      ProfileImageState(
+        status: ProfileImageStatus.initial,
+        action: ProfileImageAction.none,
+        cachedFilePath: '/tmp/avatar_fresh.bin',
+      ),
+    ],
+  );
+
+  blocTest<ProfileImageCubit, ProfileImageState>(
+    'cache miss refreshes and emits cached path',
+    build: () {
+      when(() => userContext.user).thenReturn(
+        user.copyWith(
+          profile: const UserProfileEntity(profileImageFileId: 'file-1'),
+        ),
+      );
+      when(
+        () => getCachedProfileAvatar(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      ).thenAnswer((_) async => right(null));
+      when(
+        () => refreshProfileAvatarCache(
+          userId: any(named: 'userId'),
+          profileImageFileId: any(named: 'profileImageFileId'),
+        ),
+      ).thenAnswer(
+        (_) async => right(
+          ProfileAvatarCacheEntryEntity(
+            filePath: '/tmp/avatar.bin',
+            cachedAt: DateTime(2026, 1, 1),
+            isExpired: false,
+          ),
+        ),
+      );
+      return ProfileImageCubit(
+        userContext,
+        uploadProfileImage,
+        clearProfileImage,
+        getCachedProfileAvatar,
+        refreshProfileAvatarCache,
+        saveProfileAvatarCache,
+        clearProfileAvatarCache,
+      );
+    },
+    act: (cubit) async => cubit.loadAvatar(),
+    expect: () => const [
+      ProfileImageState(
+        status: ProfileImageStatus.loading,
+        action: ProfileImageAction.loadAvatar,
+      ),
+      ProfileImageState(
+        status: ProfileImageStatus.initial,
+        action: ProfileImageAction.none,
+        cachedFilePath: '/tmp/avatar.bin',
+      ),
+    ],
   );
 }

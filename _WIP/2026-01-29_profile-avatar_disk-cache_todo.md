@@ -149,10 +149,10 @@
 
 ## Phase 7 — Session integration (cache cleanup)
 
-- [ ] Clear avatar cache on:
-  - [ ] `SessionCleared`
-  - [ ] `SessionExpired`
-- [ ] Prefer `clearAll()` (simpler, avoids needing userId during teardown).
+- [x] Clear avatar cache on:
+  - [x] `SessionCleared`
+  - [x] `SessionExpired`
+- [x] Prefer `clearAll()` (simpler, avoids needing userId during teardown).
 
 ---
 
@@ -160,18 +160,18 @@
 
 ### 8.1 Local datasource tests
 
-- [ ] Add tests under `test/features/user/data/datasource/local/`:
-  - [ ] save + get returns entry
-  - [ ] expired sets `isExpired=true` but still returns path
-  - [ ] file missing clears prefs
-  - [ ] fileId mismatch invalidates + deletes file
-  - [ ] clear removes file + prefs
+- [x] Add tests under `test/features/user/data/datasource/local/`:
+  - [x] save + get returns entry
+  - [x] expired sets `isExpired=true` but still returns path
+  - [x] file missing clears prefs
+  - [x] fileId mismatch invalidates + deletes file
+  - [x] clear removes file + prefs
 
 ### 8.2 Cubit tests (bloc_test)
 
-- [ ] Cache hit (not expired) → emits cached path, no refresh called
-- [ ] Cache expired → emits cached path, refresh invoked
-- [ ] Cache miss → refresh invoked, emits cached path
+- [x] Cache hit (not expired) → emits cached path, no refresh called
+- [x] Cache expired → emits cached path, refresh invoked
+- [x] Cache miss → refresh invoked, emits cached path
 
 ---
 
@@ -181,5 +181,5 @@
   - [x] `tool/agent/flutterw --no-stdin analyze`
   - [x] `tool/agent/dartw --no-stdin run custom_lint`
   - [x] `tool/agent/flutterw --no-stdin test`
-- [ ] Update explainer:
-  - [ ] `docs/explainers/features/user/profile_image_upload.md` add a “Caching” section summarizing TTL + fileId invalidation.
+- [x] Update explainer:
+  - [x] `docs/explainers/features/user/profile_image_upload.md` add a “Caching” section summarizing TTL + fileId invalidation.

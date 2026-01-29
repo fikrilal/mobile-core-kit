@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/database/app_database.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
@@ -24,6 +25,7 @@ import 'package:mobile_core_kit/features/user/data/repository/profile_avatar_rep
 import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_image_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/data/services/user_avatar_cache_session_listener.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_image_repository.dart';
@@ -218,6 +220,23 @@ class UserModule {
           getIt<ProfileAvatarRepository>(),
         ),
       );
+    }
+
+    // Feature-level session cleanup. Safe to initialize only when AppEventBus
+    // exists (e.g. production DI); unit tests may register this module without
+    // the full core stack.
+    if (!getIt.isRegistered<UserAvatarCacheSessionListener>()) {
+      getIt.registerLazySingleton<UserAvatarCacheSessionListener>(
+        () => UserAvatarCacheSessionListener(
+          events: getIt<AppEventBus>(),
+          cache: getIt<ProfileAvatarCacheLocalDataSource>(),
+        ),
+        dispose: (listener) => listener.dispose(),
+      );
+    }
+
+    if (getIt.isRegistered<AppEventBus>()) {
+      getIt<UserAvatarCacheSessionListener>();
     }
 
     // Presentation

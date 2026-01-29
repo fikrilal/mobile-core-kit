@@ -151,18 +151,17 @@ test/features/user/
 
 ## Runtime behavior (step-by-step)
 
-### 1) Render (load current profile image URL)
+### 1) Render (disk-first avatar)
 
-On profile tab entry, we create `ProfileImageCubit` and call `loadUrl()`:
+On profile tab entry, we create `ProfileImageCubit` and call `loadAvatar()`:
 
-- `GET /v1/me/profile-image/url`
-  - `200` → update `state.imageUrl`
-  - `204` → set `state.imageUrl = null` (no photo)
+1) Look up the signed-in user + `profile.profileImageFileId` via `UserContextService`
+2) Try disk cache (fast path)
+3) If missing/expired and `profileImageFileId` exists → request a short-lived render URL and download bytes to disk
 
-Important detail:
+The backend render URL is still produced by:
 
-- `ProfileImageRemoteDataSource.getProfileImageUrl()` uses `ApiHelper.getOne<ProfileImageUrlModel?>`
-  so `204` maps to a *valid* `null` model, not an exception.
+- `GET /v1/me/profile-image/url` (`200` → `{ url, expiresAt }`, `204` → no avatar set)
 
 ### 2) Upload (change photo)
 
@@ -183,7 +182,7 @@ Then the UI:
 
 - shows a loading overlay while upload is in-flight
 - shows a success/error snackbar
-- calls `ProfileImageCubit.loadUrl()` again so the avatar re-renders with a fresh render URL
+- calls `ProfileImageCubit.loadAvatar()` so the avatar re-renders from disk
 
 ### 3) Clear (remove photo)
 
@@ -196,7 +195,31 @@ ProfilePage -> ProfileImageCubit.clear(idempotencyKey)
      -> GetMeUseCase                                 (GET /v1/me)
 ```
 
-Then the UI re-loads the render URL (which becomes `204` → `null`).
+Then the UI re-loads the avatar, which becomes `null` (placeholder) when there is no profile image.
+
+---
+
+## Caching (disk + TTL)
+
+The avatar is rendered from a **disk cache**, not from the presigned URL directly.
+
+Policy:
+
+- TTL default: **7 days**
+- Cache key: `(userId, profileImageFileId)`
+- Invalidation:
+  - If `profileImageFileId` changes, the old cache is deleted and treated as a miss.
+  - If the cache file is missing/corrupt, metadata is cleared (fail-safe).
+- UX:
+  - Cache hit (fresh) → show instantly (no network).
+  - Cache hit (expired) → show stale immediately, refresh in background.
+  - Cache miss → download and then render.
+
+Implementation:
+
+- Local cache: `ProfileAvatarCacheLocalDataSource` (disk + SharedPreferences metadata)
+- Orchestration: `ProfileAvatarRepository` (get URL → download bytes → save to disk)
+- Session safety: cache is cleared on `SessionCleared` and `SessionExpired`.
 
 ---
 
