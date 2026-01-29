@@ -61,6 +61,8 @@ dependencies:
   app_links: ^7.0.0
   phosphor_flutter: ^2.1.0
   device_info_plus: ^12.3.0
+  image_picker: ^1.2.1
+  image: ^4.7.2
 
 dev_dependencies:
   flutter_test:
@@ -78,13 +80,13 @@ dev_dependencies:
   mobile_core_kit_lints:
     path: packages/mobile_core_kit_lints
   fake_async: ^1.3.3
+  bloc_test: ^10.0.0
   mocktail: ^1.0.4
   sqflite_common_ffi: ^2.4.0+2
   build_runner: ^2.10.4
   freezed: ^3.2.3
   json_serializable: ^6.11.2
   flutter_native_splash: 2.4.7
-  image: ^4.7.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

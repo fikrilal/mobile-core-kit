@@ -63,29 +63,30 @@ class _PasswordResetConfirmBody extends StatelessWidget {
         safeArea: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
-          child: BlocBuilder<PasswordResetConfirmCubit, PasswordResetConfirmState>(
-            builder: (context, state) {
-              final hasTokenInputError =
-                  state.status == PasswordResetConfirmStatus.initial &&
-                  state.tokenError != null;
+          child:
+              BlocBuilder<PasswordResetConfirmCubit, PasswordResetConfirmState>(
+                builder: (context, state) {
+                  final hasTokenInputError =
+                      state.status == PasswordResetConfirmStatus.initial &&
+                      state.tokenError != null;
 
-              if (state.status == PasswordResetConfirmStatus.submitting) {
-                return _buildSubmitting(context);
-              }
+                  if (state.status == PasswordResetConfirmStatus.submitting) {
+                    return _buildSubmitting(context);
+                  }
 
-              if (state.status == PasswordResetConfirmStatus.success) {
-                return _buildSuccess(context);
-              }
+                  if (state.status == PasswordResetConfirmStatus.success) {
+                    return _buildSuccess(context);
+                  }
 
-              if (state.tokenError != null &&
-                  (state.status == PasswordResetConfirmStatus.failure ||
-                      hasTokenInputError)) {
-                return _buildTokenFailure(context, state);
-              }
+                  if (state.tokenError != null &&
+                      (state.status == PasswordResetConfirmStatus.failure ||
+                          hasTokenInputError)) {
+                    return _buildTokenFailure(context, state);
+                  }
 
-              return _buildForm(context, state);
-            },
-          ),
+                  return _buildForm(context, state);
+                },
+              ),
         ),
       ),
     );
@@ -181,18 +182,25 @@ class _PasswordResetConfirmBody extends StatelessWidget {
             AppTextField(
               fieldType: FieldType.password,
               labelText: context.l10n.authNewPassword,
-              errorText: !state.newPasswordTouched || state.newPasswordError == null
+              errorText:
+                  !state.newPasswordTouched || state.newPasswordError == null
                   ? null
-                  : messageForValidationError(state.newPasswordError!, context.l10n),
+                  : messageForValidationError(
+                      state.newPasswordError!,
+                      context.l10n,
+                    ),
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.newPassword],
-              onChanged: context.read<PasswordResetConfirmCubit>().newPasswordChanged,
+              onChanged: context
+                  .read<PasswordResetConfirmCubit>()
+                  .newPasswordChanged,
             ),
             const SizedBox(height: AppSpacing.space16),
             AppTextField(
               fieldType: FieldType.password,
               labelText: context.l10n.authConfirmNewPassword,
-              errorText: !state.confirmNewPasswordTouched ||
+              errorText:
+                  !state.confirmNewPasswordTouched ||
                       state.confirmNewPasswordError == null
                   ? null
                   : messageForValidationError(

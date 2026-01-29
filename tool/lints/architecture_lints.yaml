@@ -43,14 +43,6 @@ rules:
         allow:
           - lib/features/onboarding/**
 
-      - from: lib/features/profile/**
-        allow:
-          - lib/features/profile/**
-          # TEMP: profile reuses auth logout UI + failure localizer.
-          # TODO(guardrails): move shared auth UX contracts to `lib/core/**`.
-          - lib/features/auth/presentation/cubit/logout/**
-          - lib/features/auth/presentation/localization/auth_failure_localizer.dart
-
       - from: lib/features/user/**
         allow:
           - lib/features/user/**

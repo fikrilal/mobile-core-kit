@@ -44,7 +44,8 @@ String? appRedirectUri(
   final locationPath = Uri.parse(location).path;
   final zone = _routeZone(locationPath);
   final isVerifyEmail = locationPath == AuthRoutes.verifyEmail;
-  final isPasswordResetConfirm = locationPath == AuthRoutes.passwordResetConfirm;
+  final isPasswordResetConfirm =
+      locationPath == AuthRoutes.passwordResetConfirm;
 
   // Do not force navigation during startup (use a UI gate/overlay instead).
   if (!startup.isReady) {

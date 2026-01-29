@@ -1,8 +1,12 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/database/app_database.dart';
+import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
+import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
+import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
@@ -10,20 +14,37 @@ import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_draft_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/me_push_token_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_avatar_download_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_image_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/repository/profile_avatar_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/data/repository/profile_image_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/data/services/user_avatar_cache_session_listener.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_draft_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/profile_image_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_all_profile_avatar_caches_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_image_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_cached_profile_avatar_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -47,6 +68,12 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<ProfileAvatarCacheLocalDataSource>()) {
+      getIt.registerLazySingleton<ProfileAvatarCacheLocalDataSource>(
+        () => ProfileAvatarCacheLocalDataSource(),
+      );
+    }
+
     if (!getIt.isRegistered<CachedUserStore>()) {
       getIt.registerLazySingleton<CachedUserStore>(
         () => getIt<UserLocalDataSource>(),
@@ -56,6 +83,18 @@ class UserModule {
     if (!getIt.isRegistered<UserRemoteDataSource>()) {
       getIt.registerLazySingleton<UserRemoteDataSource>(
         () => UserRemoteDataSource(getIt<ApiHelper>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileImageRemoteDataSource>()) {
+      getIt.registerLazySingleton<ProfileImageRemoteDataSource>(
+        () => ProfileImageRemoteDataSource(getIt<ApiHelper>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileAvatarDownloadDataSource>()) {
+      getIt.registerLazySingleton<ProfileAvatarDownloadDataSource>(
+        () => ProfileAvatarDownloadDataSource(getIt<PresignedDownloadClient>()),
       );
     }
 
@@ -74,6 +113,25 @@ class UserModule {
     if (!getIt.isRegistered<ProfileDraftRepository>()) {
       getIt.registerLazySingleton<ProfileDraftRepository>(
         () => ProfileDraftRepositoryImpl(getIt<ProfileDraftLocalDataSource>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileImageRepository>()) {
+      getIt.registerLazySingleton<ProfileImageRepository>(
+        () => ProfileImageRepositoryImpl(
+          getIt<ProfileImageRemoteDataSource>(),
+          getIt<PresignedUploadClient>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileAvatarRepository>()) {
+      getIt.registerLazySingleton<ProfileAvatarRepository>(
+        () => ProfileAvatarRepositoryImpl(
+          getIt<ProfileImageRemoteDataSource>(),
+          getIt<ProfileAvatarDownloadDataSource>(),
+          getIt<ProfileAvatarCacheLocalDataSource>(),
+        ),
       );
     }
 
@@ -107,6 +165,80 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<UploadProfileImageUseCase>()) {
+      getIt.registerFactory<UploadProfileImageUseCase>(
+        () => UploadProfileImageUseCase(
+          getIt<ProfileImageRepository>(),
+          getIt<GetMeUseCase>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<ClearProfileImageUseCase>()) {
+      getIt.registerFactory<ClearProfileImageUseCase>(
+        () => ClearProfileImageUseCase(
+          getIt<ProfileImageRepository>(),
+          getIt<GetMeUseCase>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<GetProfileImageUrlUseCase>()) {
+      getIt.registerFactory<GetProfileImageUrlUseCase>(
+        () => GetProfileImageUrlUseCase(getIt<ProfileImageRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<GetCachedProfileAvatarUseCase>()) {
+      getIt.registerFactory<GetCachedProfileAvatarUseCase>(
+        () => GetCachedProfileAvatarUseCase(getIt<ProfileAvatarRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<RefreshProfileAvatarCacheUseCase>()) {
+      getIt.registerFactory<RefreshProfileAvatarCacheUseCase>(
+        () =>
+            RefreshProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<SaveProfileAvatarCacheUseCase>()) {
+      getIt.registerFactory<SaveProfileAvatarCacheUseCase>(
+        () => SaveProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ClearProfileAvatarCacheUseCase>()) {
+      getIt.registerFactory<ClearProfileAvatarCacheUseCase>(
+        () => ClearProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ClearAllProfileAvatarCachesUseCase>()) {
+      getIt.registerFactory<ClearAllProfileAvatarCachesUseCase>(
+        () => ClearAllProfileAvatarCachesUseCase(
+          getIt<ProfileAvatarRepository>(),
+        ),
+      );
+    }
+
+    // Feature-level session cleanup. Safe to initialize only when AppEventBus
+    // exists (e.g. production DI); unit tests may register this module without
+    // the full core stack.
+    if (!getIt.isRegistered<UserAvatarCacheSessionListener>()) {
+      getIt.registerLazySingleton<UserAvatarCacheSessionListener>(
+        () => UserAvatarCacheSessionListener(
+          events: getIt<AppEventBus>(),
+          cache: getIt<ProfileAvatarCacheLocalDataSource>(),
+        ),
+        dispose: (listener) => listener.dispose(),
+      );
+    }
+
+    if (getIt.isRegistered<AppEventBus>()) {
+      getIt<UserAvatarCacheSessionListener>();
+    }
+
     // Presentation
     if (!getIt.isRegistered<CompleteProfileCubit>()) {
       getIt.registerFactory<CompleteProfileCubit>(
@@ -116,6 +248,20 @@ class UserModule {
           getIt<ClearProfileDraftUseCase>(),
           getIt<PatchMeProfileUseCase>(),
           getIt<SessionManager>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<ProfileImageCubit>()) {
+      getIt.registerFactory<ProfileImageCubit>(
+        () => ProfileImageCubit(
+          getIt<UserContextService>(),
+          getIt<UploadProfileImageUseCase>(),
+          getIt<ClearProfileImageUseCase>(),
+          getIt<GetCachedProfileAvatarUseCase>(),
+          getIt<RefreshProfileAvatarCacheUseCase>(),
+          getIt<SaveProfileAvatarCacheUseCase>(),
+          getIt<ClearProfileAvatarCacheUseCase>(),
         ),
       );
     }

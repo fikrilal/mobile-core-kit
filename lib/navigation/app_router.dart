@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_route_observer.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
@@ -11,11 +12,16 @@ import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.d
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/core/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
+import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
+import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
-import 'package:mobile_core_kit/features/profile/presentation/pages/profile_page.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
+import 'package:mobile_core_kit/features/user/presentation/pages/profile_page.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
@@ -66,12 +72,39 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.profile,
                 name: 'profile',
-                builder: (context, state) => BlocProvider<LogoutCubit>(
-                  create: (_) => locator<LogoutCubit>(),
-                  child: ProfilePage(
-                    userContext: locator<UserContextService>(),
-                    themeModeController: locator<ThemeModeController>(),
-                    localeController: locator<LocaleController>(),
+                builder: (context, state) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider<LogoutCubit>(
+                      create: (_) => locator<LogoutCubit>(),
+                    ),
+                    BlocProvider<ProfileImageCubit>(
+                      create: (_) => locator<ProfileImageCubit>()..loadAvatar(),
+                    ),
+                  ],
+                  child: BlocListener<LogoutCubit, LogoutState>(
+                    listenWhen: (prev, curr) =>
+                        prev.failure != curr.failure && curr.failure != null,
+                    listener: (context, state) {
+                      AppSnackBar.showError(
+                        context,
+                        message: messageForLogoutFailure(
+                          state.failure!,
+                          context.l10n,
+                        ),
+                      );
+                    },
+                    child: BlocBuilder<LogoutCubit, LogoutState>(
+                      builder: (context, logoutState) {
+                        return ProfilePage(
+                          userContext: locator<UserContextService>(),
+                          themeModeController: locator<ThemeModeController>(),
+                          localeController: locator<LocaleController>(),
+                          imagePicker: locator<ImagePickerService>(),
+                          isLoggingOut: logoutState.isSubmitting,
+                          onLogout: () => context.read<LogoutCubit>().logout(),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

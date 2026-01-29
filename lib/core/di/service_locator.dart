@@ -8,7 +8,11 @@ import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/network/download/dio_presigned_download_client.dart';
+import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
+import 'package:mobile_core_kit/core/network/upload/dio_presigned_upload_client.dart';
+import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service_impl.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
@@ -34,6 +38,8 @@ import 'package:mobile_core_kit/core/services/federated_auth/google_federated_au
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service_impl.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
+import 'package:mobile_core_kit/core/services/media/image_picker_service_impl.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider_impl.dart';
@@ -179,6 +185,12 @@ void registerLocator() {
     );
   }
 
+  if (!locator.isRegistered<ImagePickerService>()) {
+    locator.registerLazySingleton<ImagePickerService>(
+      () => ImagePickerServiceImpl(),
+    );
+  }
+
   if (!locator.isRegistered<FcmTokenProvider>()) {
     locator.registerLazySingleton<FcmTokenProvider>(
       () => FcmTokenProviderImpl(),
@@ -208,6 +220,18 @@ void registerLocator() {
         locator<ApiClient>().dio,
         connectivity: locator<ConnectivityService>(),
       ),
+    );
+  }
+
+  if (!locator.isRegistered<PresignedUploadClient>()) {
+    locator.registerLazySingleton<PresignedUploadClient>(
+      () => DioPresignedUploadClient(),
+    );
+  }
+
+  if (!locator.isRegistered<PresignedDownloadClient>()) {
+    locator.registerLazySingleton<PresignedDownloadClient>(
+      () => DioPresignedDownloadClient(),
     );
   }
 

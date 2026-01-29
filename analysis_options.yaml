@@ -107,6 +107,7 @@ custom_lint:
           allow:
             - lib/core/services/**
             - lib/features/user/data/datasource/local/profile_draft_local_datasource.dart
+            - lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart
           message: Use shared preferences only in stores/services; avoid direct usage in most features.
         - uri: package:flutter_secure_storage/flutter_secure_storage.dart
           allow:

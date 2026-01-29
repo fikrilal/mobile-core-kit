@@ -77,9 +77,10 @@ class _PasswordResetRequestBody extends StatelessWidget {
         safeArea: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
-          child: BlocBuilder<PasswordResetRequestCubit, PasswordResetRequestState>(
-            builder: (context, state) => _buildForm(context, state),
-          ),
+          child:
+              BlocBuilder<PasswordResetRequestCubit, PasswordResetRequestState>(
+                builder: (context, state) => _buildForm(context, state),
+              ),
         ),
       ),
     );
@@ -116,7 +117,9 @@ class _PasswordResetRequestBody extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.space12),
         TextButton(
-          onPressed: state.isSubmitting ? null : () => context.go(AuthRoutes.signIn),
+          onPressed: state.isSubmitting
+              ? null
+              : () => context.go(AuthRoutes.signIn),
           child: AppText.bodyMedium(
             context.l10n.authSignIn,
             textAlign: TextAlign.center,

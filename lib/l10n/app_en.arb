@@ -53,6 +53,18 @@
   "@commonChangeProfilePhoto": {
     "description": "Accessibility label for the action that changes the profile photo/avatar."
   },
+  "commonChooseFromGallery": "Choose from gallery",
+  "@commonChooseFromGallery": {
+    "description": "Action label for choosing an image from the device photo library/gallery."
+  },
+  "commonTakePhoto": "Take photo",
+  "@commonTakePhoto": {
+    "description": "Action label for taking a photo with the device camera."
+  },
+  "commonRemovePhoto": "Remove photo",
+  "@commonRemovePhoto": {
+    "description": "Action label for removing an existing profile photo."
+  },
   "commonItemsCount": "{count, plural, =0{No items} one{1 item} other{{count} items}}",
   "@commonItemsCount": {
     "description": "Human-friendly label for an item count with proper pluralization.",
@@ -95,6 +107,22 @@
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
   },
+  "mediaErrorsCameraPermissionDenied": "Camera permission denied. Enable it in Settings to continue.",
+  "@mediaErrorsCameraPermissionDenied": {
+    "description": "Message shown when the app does not have camera permission while attempting to take a photo."
+  },
+  "mediaErrorsPhotoPermissionDenied": "Photos permission denied. Enable it in Settings to continue.",
+  "@mediaErrorsPhotoPermissionDenied": {
+    "description": "Message shown when the app does not have photo library permission while attempting to pick an image."
+  },
+  "mediaErrorsUnsupportedImageFormat": "Unsupported image format. Please choose a JPEG, PNG, or WebP image.",
+  "@mediaErrorsUnsupportedImageFormat": {
+    "description": "Message shown when the selected image cannot be decoded or is not in a supported format."
+  },
+  "mediaErrorsImageTooLarge": "Image is too large. Please choose a smaller image.",
+  "@mediaErrorsImageTooLarge": {
+    "description": "Message shown when the selected image cannot be resized/compressed under the maximum upload size."
+  },
   "validationInvalidEmail": "Please enter a valid email address",
   "@validationInvalidEmail": {
     "description": "Validation message shown when an email address is invalid."
@@ -134,6 +162,14 @@
   "validationNameTooLong": "Cannot exceed 50 characters",
   "@validationNameTooLong": {
     "description": "Validation message shown when a name field is too long."
+  },
+  "validationFileTypeNotSupported": "File type is not supported",
+  "@validationFileTypeNotSupported": {
+    "description": "Validation message shown when a user selects an unsupported file type."
+  },
+  "validationFileTooLarge": "File is too large (max 5 MB)",
+  "@validationFileTooLarge": {
+    "description": "Validation message shown when a user selects a file larger than the allowed limit."
   },
   "authErrorsInvalidCredentials": "Invalid email or password",
   "@authErrorsInvalidCredentials": {
@@ -462,6 +498,22 @@
   "profileLoggingOut": "Logging out...",
   "@profileLoggingOut": {
     "description": "Loading overlay message shown while logging out."
+  },
+  "profilePhotoUploading": "Uploading profile photo...",
+  "@profilePhotoUploading": {
+    "description": "Loading overlay message shown while uploading a profile photo."
+  },
+  "profilePhotoRemoving": "Removing profile photo...",
+  "@profilePhotoRemoving": {
+    "description": "Loading overlay message shown while removing a profile photo."
+  },
+  "profilePhotoUpdated": "Profile photo updated",
+  "@profilePhotoUpdated": {
+    "description": "Success message shown after a profile photo upload completes."
+  },
+  "profilePhotoRemoved": "Profile photo removed",
+  "@profilePhotoRemoved": {
+    "description": "Success message shown after a profile photo is removed."
   },
   "profileLogoutDialogTitle": "Log out?",
   "@profileLogoutDialogTitle": {
