@@ -10,4 +10,3 @@ class ClearAllProfileAvatarCachesUseCase {
 
   Future<Either<AuthFailure, Unit>> call() => _repository.clearAllAvatars();
 }
-

@@ -17,4 +17,3 @@ class RefreshProfileAvatarCacheUseCase {
     profileImageFileId: profileImageFileId,
   );
 }
-

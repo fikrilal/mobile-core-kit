@@ -59,7 +59,8 @@ final class DioPresignedDownloadClient implements PresignedDownloadClient {
     } on DioException catch (e) {
       // Network/timeouts are surfaced as DioException.
       // Map them to a stable failure type that higher layers can interpret.
-      final statusCode = e.response?.statusCode ?? _statusCodeForDioException(e);
+      final statusCode =
+          e.response?.statusCode ?? _statusCodeForDioException(e);
       throw PresignedDownloadFailure(
         statusCode: statusCode,
         message: e.message ?? 'Presigned download failed.',
@@ -88,4 +89,3 @@ final class DioPresignedDownloadClient implements PresignedDownloadClient {
     }
   }
 }
-

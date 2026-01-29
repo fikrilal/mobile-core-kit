@@ -62,7 +62,9 @@ class ProfileAvatarCacheLocalDataSource {
 
     final prefs = await _prefsFuture;
 
-    final storedFileId = _normalizeId(prefs.getString(_fileIdKeyFor(normalizedUserId)));
+    final storedFileId = _normalizeId(
+      prefs.getString(_fileIdKeyFor(normalizedUserId)),
+    );
     final cachedAtMs = prefs.getInt(_cachedAtKeyFor(normalizedUserId));
 
     // If metadata is missing/corrupt, clear cache (fail-safe).
@@ -114,7 +116,10 @@ class ProfileAvatarCacheLocalDataSource {
 
     final now = _now();
     final prefs = await _prefsFuture;
-    await prefs.setInt(_cachedAtKeyFor(normalizedUserId), now.millisecondsSinceEpoch);
+    await prefs.setInt(
+      _cachedAtKeyFor(normalizedUserId),
+      now.millisecondsSinceEpoch,
+    );
     await prefs.setString(_fileIdKeyFor(normalizedUserId), normalizedFileId);
 
     return ProfileAvatarCacheEntryLocal(
@@ -181,7 +186,10 @@ class ProfileAvatarCacheLocalDataSource {
     }
   }
 
-  Future<void> _clearPrefsForUser(SharedPreferences prefs, String userId) async {
+  Future<void> _clearPrefsForUser(
+    SharedPreferences prefs,
+    String userId,
+  ) async {
     await prefs.remove(_cachedAtKeyFor(userId));
     await prefs.remove(_fileIdKeyFor(userId));
   }
@@ -209,4 +217,3 @@ class ProfileAvatarCacheEntryLocal {
   final DateTime cachedAt;
   final bool isExpired;
 }
-

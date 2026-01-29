@@ -17,4 +17,3 @@ class GetCachedProfileAvatarUseCase {
     profileImageFileId: profileImageFileId,
   );
 }
-

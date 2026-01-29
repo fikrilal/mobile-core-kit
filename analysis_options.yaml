@@ -23,6 +23,7 @@ custom_lint:
         - lib/**
       allow_prefixes:
         - lib/core/adaptive/widgets/
+        - lib/core/design_system/adaptive/
     - hardcoded_ui_colors:
       include:
         - lib/core/widgets/**
@@ -87,31 +88,37 @@ custom_lint:
         - uri: package:dio/dio.dart
           allow:
             - lib/core/network/**
+            - lib/core/infra/network/**
           message: Use `lib/core/network/**` wrappers (ApiClient/ApiHelper).
         - uri: package:firebase_analytics/firebase_analytics.dart
           allow:
             - lib/core/services/analytics/**
+            - lib/core/runtime/analytics/**
           message: Use analytics wrappers under `lib/core/services/analytics/**`.
         - uri: package:firebase_crashlytics/firebase_crashlytics.dart
           allow:
             - lib/core/services/early_errors/**
+            - lib/core/runtime/startup/**
             - lib/core/utilities/log_utils.dart
             - lib/core/di/**
           message: Use crash reporting wrappers under `lib/core/services/early_errors/**`.
         - uri: package:firebase_messaging/firebase_messaging.dart
           allow:
             - lib/core/services/push/**
+            - lib/core/platform/push/**
             - lib/main*.dart
           message: Use push wrappers under `lib/core/services/push/**`.
         - uri: package:shared_preferences/shared_preferences.dart
           allow:
             - lib/core/services/**
+            - lib/core/infra/storage/**
             - lib/features/user/data/datasource/local/profile_draft_local_datasource.dart
             - lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart
           message: Use shared preferences only in stores/services; avoid direct usage in most features.
         - uri: package:flutter_secure_storage/flutter_secure_storage.dart
           allow:
             - lib/core/storage/secure/**
+            - lib/core/infra/storage/secure/**
           message: Use secure storage wrappers under `lib/core/storage/secure/**`.
         - uri: dart:developer
           allow:

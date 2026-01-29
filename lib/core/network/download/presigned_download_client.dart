@@ -22,4 +22,3 @@ class PresignedDownloadFailure implements Exception {
   String toString() =>
       'PresignedDownloadFailure(statusCode=$statusCode, message=$message)';
 }
-

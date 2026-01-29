@@ -8,4 +8,3 @@ AuthFailure mapProfileAvatarDownloadFailure(PresignedDownloadFailure failure) {
   }
   return const AuthFailure.unexpected();
 }
-

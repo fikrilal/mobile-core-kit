@@ -25,4 +25,3 @@ class ProfileAvatarDownloadDataSource {
     return _download.downloadBytes(uri);
   }
 }
-
