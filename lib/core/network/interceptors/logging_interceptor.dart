@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/network/logging/net_log_mode.dart';
 import 'package:mobile_core_kit/core/network/logging/network_log_config.dart';
 import 'package:mobile_core_kit/core/network/logging/redactor.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 /// Enhanced network logging interceptor with configurable verbosity levels.
 ///

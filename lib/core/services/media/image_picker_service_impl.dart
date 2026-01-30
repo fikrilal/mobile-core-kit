@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/media/image_bytes_optimizer.dart';
 import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
 import 'package:mobile_core_kit/core/services/media/media_pick_exception.dart';
 import 'package:mobile_core_kit/core/services/media/picked_image.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:path/path.dart' as p;
 
 class ImagePickerServiceImpl implements ImagePickerService {

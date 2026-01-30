@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/push_error_codes.dart';
@@ -8,7 +9,6 @@ import 'package:mobile_core_kit/core/services/push/push_platform.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_sync_store.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 /// Template-level orchestration for syncing push registration tokens to backend.
 ///

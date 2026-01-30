@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:mobile_core_kit/core/utilities/uuid_v4_utils.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/uuid_v4_utils.dart';
 
 abstract interface class RequestIdGenerator {
   String generate();

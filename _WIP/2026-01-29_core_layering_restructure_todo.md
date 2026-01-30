@@ -71,7 +71,7 @@ Checkpoint:
 
 ## Phase 2 — Create the new `lib/core/**` layer directories (no file moves yet)
 
-- [ ] Create directories (empty) per proposal:
+- [x] Create directories (empty) per proposal:
   - `lib/core/foundation/**`
   - `lib/core/domain/**`
   - `lib/core/infra/**`
@@ -81,18 +81,19 @@ Checkpoint:
 - [ ] Add placeholder `README.md` files only if the repo convention wants them (optional).
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 3 — Move pure code first (lowest coupling)
 
 Goal: move the least-dependent code first to reduce churn.
 
-- [ ] Move `lib/core/validation/**` → `lib/core/foundation/validation/**`
-- [ ] Move `lib/core/utilities/**` → `lib/core/foundation/utilities/**`
-- [ ] Update imports across repo.
+- [x] Move `lib/core/validation/**` → `lib/core/foundation/validation/**` (types/codes only)
+- [x] Move `lib/core/utilities/**` → `lib/core/foundation/utilities/**`
+- [x] Move `validation_error_localizer.dart` → `lib/core/design_system/localization/**` (uses `AppLocalizations`)
+- [x] Update imports across repo (and mirrored core tests).
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 4 — Move design system (UI-only)
 

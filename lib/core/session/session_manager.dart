@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_repository.dart';
 import 'package:mobile_core_kit/core/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class SessionManager {
   SessionManager(

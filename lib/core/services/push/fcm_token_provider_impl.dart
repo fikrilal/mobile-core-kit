@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/push_permission_state.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 class FcmTokenProviderImpl implements FcmTokenProvider {
   FcmTokenProviderImpl({FirebaseMessaging? firebaseMessaging})

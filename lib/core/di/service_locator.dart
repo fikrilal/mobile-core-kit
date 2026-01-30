@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/network/api/api_client.dart';
 import 'package:mobile_core_kit/core/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/network/download/dio_presigned_download_client.dart';
@@ -52,7 +53,6 @@ import 'package:mobile_core_kit/core/services/user_context/user_context_service.
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/di/auth_module.dart';
 import 'package:mobile_core_kit/features/user/di/user_module.dart';
 import 'package:mobile_core_kit/firebase_options.dart';

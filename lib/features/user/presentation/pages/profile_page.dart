@@ -8,6 +8,7 @@ import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
@@ -18,7 +19,6 @@ import 'package:mobile_core_kit/core/services/user_context/user_context_service.
 import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
-import 'package:mobile_core_kit/core/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/widgets/avatar/avatar.dart';
 import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/widgets/dialog/app_confirmation_dialog.dart';

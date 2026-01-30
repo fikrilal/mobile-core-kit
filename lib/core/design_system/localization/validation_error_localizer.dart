@@ -1,5 +1,5 @@
-import 'package:mobile_core_kit/core/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
 /// Localizes a field-level [ValidationError] into user-facing copy.

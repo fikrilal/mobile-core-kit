@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/core/utilities/jwt_utils.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/jwt_utils.dart';
 
 String _jwtWithPayload(Map<String, dynamic> payload) {
   final header = <String, dynamic>{'alg': 'none', 'typ': 'JWT'};

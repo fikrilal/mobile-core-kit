@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_events.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 enum StartupMilestone {
   dartMainStart,

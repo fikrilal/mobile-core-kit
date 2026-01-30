@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_source.dart';
 import 'package:mobile_core_kit/core/services/deep_link/deep_link_telemetry.dart';
 import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 
 /// Listens to platform deep link sources and drives router navigation.
 ///

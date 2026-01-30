@@ -99,7 +99,7 @@ custom_lint:
           allow:
             - lib/core/services/early_errors/**
             - lib/core/runtime/startup/**
-            - lib/core/utilities/log_utils.dart
+            - lib/core/foundation/utilities/log_utils.dart
             - lib/core/di/**
           message: Use crash reporting wrappers under `lib/core/services/early_errors/**`.
         - uri: package:firebase_messaging/firebase_messaging.dart
@@ -122,8 +122,8 @@ custom_lint:
           message: Use secure storage wrappers under `lib/core/storage/secure/**`.
         - uri: dart:developer
           allow:
-            - lib/core/utilities/log_utils.dart
-          message: Use `Log.*` helpers from `lib/core/utilities/log_utils.dart`.
+            - lib/core/foundation/utilities/log_utils.dart
+          message: Use `Log.*` helpers from `lib/core/foundation/utilities/log_utils.dart`.
     - hardcoded_ui_strings:
       include:
         - lib/core/widgets/**

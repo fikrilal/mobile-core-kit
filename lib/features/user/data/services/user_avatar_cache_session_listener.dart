@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:mobile_core_kit/core/events/app_event.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart';
 
 /// Clears user-scoped avatar caches when the session ends.

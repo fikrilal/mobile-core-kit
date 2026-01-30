@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
 import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_avatar_download_datasource.dart';
