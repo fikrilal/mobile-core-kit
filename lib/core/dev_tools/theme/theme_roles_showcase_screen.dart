@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_core_kit/core/theme/extensions/theme_extensions_utils.dart';
-import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/theme/extensions/theme_extensions_utils.dart';
+import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 
 /// Developer screen that visualizes the current theme roles.
 ///

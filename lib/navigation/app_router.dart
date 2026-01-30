@@ -3,8 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
-import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_route_observer.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
@@ -15,7 +16,6 @@ import 'package:mobile_core_kit/core/services/localization/locale_controller.dar
 import 'package:mobile_core_kit/core/services/media/image_picker_service.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
-import 'package:mobile_core_kit/core/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_core_kit/core/adaptive/adaptive_scope.dart';
-import 'package:mobile_core_kit/core/adaptive/policies/navigation_policy.dart';
-import 'package:mobile_core_kit/core/adaptive/policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_scope.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/policies/navigation_policy.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
+import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/listener/app_event_listener.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/localization/l10n.dart';
 import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
-import 'package:mobile_core_kit/core/theme/theme.dart';
-import 'package:mobile_core_kit/core/widgets/listener/app_event_listener.dart';
-import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/app_router.dart';
 

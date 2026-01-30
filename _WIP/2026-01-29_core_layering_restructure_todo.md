@@ -97,18 +97,24 @@ Checkpoint:
 
 ## Phase 4 — Move design system (UI-only)
 
-- [ ] Move `lib/core/theme/**` → `lib/core/design_system/theme/**`
-- [ ] Move `lib/core/adaptive/**` → `lib/core/design_system/adaptive/**`
-- [ ] Move `lib/core/widgets/**` → `lib/core/design_system/widgets/**`
-- [ ] Move `lib/core/localization/**` → `lib/core/design_system/localization/**`
-- [ ] Update imports in:
+- [x] Move `lib/core/theme/**` → `lib/core/design_system/theme/**`
+- [x] Move `lib/core/adaptive/**` → `lib/core/design_system/adaptive/**`
+- [x] Move `lib/core/widgets/**` → `lib/core/design_system/widgets/**`
+- [x] Move `lib/core/localization/l10n.dart` → `lib/core/design_system/localization/l10n.dart`
+- [x] Move mirrored tests:
+  - `test/core/adaptive/**` → `test/core/design_system/adaptive/**`
+  - `test/core/theme/**` → `test/core/design_system/theme/**`
+  - `test/core/widgets/**` → `test/core/design_system/widgets/**`
+  - `test/core/localization/**` → `test/core/design_system/localization/**`
+- [x] Update imports in:
   - `lib/app.dart`
   - `lib/navigation/**`
   - `lib/features/**/presentation/**`
-- [ ] Re-check design-token custom-lint include globs still cover new paths.
+- [x] Re-check design-token custom-lint include globs still cover new paths.
+- [x] Update `tool/verify_modal_entrypoints.dart` allowlist for new `design_system/adaptive/widgets/**` home.
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 5 — Move infra (network/storage/database/config)
 
