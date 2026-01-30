@@ -22,16 +22,16 @@ These docs are intentionally **detailed** because this repository is a **templat
 
 Core:
 
-- Session orchestration: `lib/core/session/session_manager.dart`
-- Persistence boundary: `lib/core/session/session_repository.dart`
-- Persistence implementation: `lib/core/session/session_repository_impl.dart`
-- Token refresh abstraction: `lib/core/session/token_refresher.dart`
-- Failure semantics: `lib/core/session/session_failure.dart`
-- Cached user abstraction: `lib/core/session/cached_user_store.dart`
-- Current user fetch abstraction: `lib/core/user/current_user_fetcher.dart`
-- Startup hydration: `lib/core/services/app_startup/app_startup_controller.dart`
-- UI-friendly current user: `lib/core/services/user_context/user_context_service.dart`
-- Network refresh + retry: `lib/core/network/interceptors/auth_token_interceptor.dart`
+- Session orchestration: `lib/core/runtime/session/session_manager.dart`
+- Persistence boundary: `lib/core/domain/session/session_repository.dart`
+- Persistence implementation: `lib/core/runtime/session/session_repository_impl.dart`
+- Token refresh abstraction: `lib/core/domain/session/token_refresher.dart`
+- Failure semantics: `lib/core/domain/session/session_failure.dart`
+- Cached user abstraction: `lib/core/domain/session/cached_user_store.dart`
+- Current user fetch abstraction: `lib/core/domain/user/current_user_fetcher.dart`
+- Startup hydration: `lib/core/runtime/startup/app_startup_controller.dart`
+- UI-friendly current user: `lib/core/runtime/user_context/user_context_service.dart`
+- Network refresh + retry: `lib/core/infra/network/interceptors/auth_token_interceptor.dart`
 
 Feature adapters (implement core abstractions):
 

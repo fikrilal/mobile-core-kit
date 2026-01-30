@@ -26,7 +26,7 @@ Recommended pattern:
 - Presentation layer: map failures to localized copy using `context.l10n`.
 
 If you need generic network error copy, use the core localizer:
-`lib/core/network/exceptions/api_failure_localizer.dart`
+`lib/core/infra/network/exceptions/api_failure_localizer.dart`
 
 ---
 
@@ -123,8 +123,8 @@ Behavior:
 - Entry points load the persisted override before first frame to avoid a language flash.
 
 Where to look:
-- Persistence: `lib/core/services/localization/locale_store.dart`
-- Runtime controller: `lib/core/services/localization/locale_controller.dart`
+- Persistence: `lib/core/infra/storage/prefs/localization/locale_store.dart`
+- Runtime controller: `lib/core/runtime/localization/locale_controller.dart`
 - App shell wiring: `lib/app.dart`
 - UI entrypoint: `lib/features/profile/presentation/pages/profile_page.dart`
 
@@ -153,7 +153,7 @@ When adding new keys:
 ## 8) Localized network errors (ApiFailure)
 
 Use the core localizer to show safe, localized error messages:
-- `lib/core/network/exceptions/api_failure_localizer.dart`
+- `lib/core/infra/network/exceptions/api_failure_localizer.dart`
 
 Example integration (UI layer):
 

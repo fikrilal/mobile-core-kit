@@ -1,6 +1,6 @@
 # Typography System Review (Current State + Recommendations)
 
-This is a deep review of the current typography system under `lib/core/theme/typography/`, with an “enterprise standard” lens: clarity of contract, accessibility correctness, governance/guardrails, and long-term maintainability.
+This is a deep review of the current typography system under `lib/core/design_system/theme/typography/`, with an “enterprise standard” lens: clarity of contract, accessibility correctness, governance/guardrails, and long-term maintainability.
 
 ## Executive summary
 
@@ -23,15 +23,15 @@ If you do one thing next: pick a **single canonical API** and demote everything 
 ### Tokens → Theme
 
 - Tokens:
-  - `lib/core/theme/typography/tokens/typefaces.dart` (font families)
-  - `lib/core/theme/typography/tokens/type_scale.dart` (size ramp)
-  - `lib/core/theme/typography/tokens/type_weights.dart` (weight ramp)
-  - `lib/core/theme/typography/tokens/type_metrics.dart` (line height, letter spacing, paragraph width heuristics)
+  - `lib/core/design_system/theme/typography/tokens/typefaces.dart` (font families)
+  - `lib/core/design_system/theme/typography/tokens/type_scale.dart` (size ramp)
+  - `lib/core/design_system/theme/typography/tokens/type_weights.dart` (weight ramp)
+  - `lib/core/design_system/theme/typography/tokens/type_metrics.dart` (line height, letter spacing, paragraph width heuristics)
 - Theme builder:
-  - `lib/core/theme/typography/styles/text_theme_builder.dart` → builds a full `TextTheme` (currently static sizes; color derived from `ColorScheme.onSurface`)
+  - `lib/core/design_system/theme/typography/styles/text_theme_builder.dart` → builds a full `TextTheme` (currently static sizes; color derived from `ColorScheme.onSurface`)
 - Theme wiring:
-  - `lib/core/theme/typography/typography_system.dart` → applies `textTheme` + a few component styles (AppBar/BottomNav/TabBar)
-  - `lib/core/theme/theme.dart` → `AppTheme.light()/dark()` calls `TypographySystem.applyTypography(...)`
+  - `lib/core/design_system/theme/typography/typography_system.dart` → applies `textTheme` + a few component styles (AppBar/BottomNav/TabBar)
+  - `lib/core/design_system/theme/theme.dart` → `AppTheme.light()/dark()` calls `TypographySystem.applyTypography(...)`
 
 ### Tokens → Components
 
@@ -39,9 +39,9 @@ There are some compatibility helpers around typography, but the intent is a sing
 
 - Canonical: `Theme.of(context).textTheme.*` (from `TextThemeBuilder`)
 - Components:
-  - `lib/core/theme/typography/components/text.dart` (`AppText.*`)
-  - `lib/core/theme/typography/components/heading.dart` (`Heading.h1` … `Heading.h6`)
-  - `lib/core/theme/typography/components/paragraph.dart` (`Paragraph`, with optional width constraining)
+  - `lib/core/design_system/theme/typography/components/text.dart` (`AppText.*`)
+  - `lib/core/design_system/theme/typography/components/heading.dart` (`Heading.h1` … `Heading.h6`)
+  - `lib/core/design_system/theme/typography/components/paragraph.dart` (`Paragraph`, with optional width constraining)
 
 Compatibility helpers that bypassed theme access (e.g., `ResponsiveTextStyles`, `TypographyExtensions`, and large legacy wrappers) have been removed as part of the v2 rollout. Governance is now enforced via custom lints (see `packages/mobile_core_kit_lints`).
 
@@ -197,7 +197,7 @@ Status: not implemented (by design). Needs an explicit decision when you want to
 
 ### Recommendation E — Fix and consolidate docs
 
-`lib/core/theme/typography/typography-guide.md` currently over-promises breakpoint behavior. Options:
+`lib/core/design_system/theme/typography/typography-guide.md` currently over-promises breakpoint behavior. Options:
 
 - Move it to `docs/explainers/core/theme/` and align it with the actual implementation.
 - Or delete it and keep one canonical typography doc under `docs/explainers/`.

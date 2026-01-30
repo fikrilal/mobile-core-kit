@@ -37,7 +37,7 @@ If you only need the big picture: see `docs/core/session/flows.md`.
 
 ### `SessionManager`
 
-**File:** `lib/core/session/session_manager.dart`
+**File:** `lib/core/runtime/session/session_manager.dart`
 
 **Role:** the single source of truth for session state within the process.
 
@@ -84,7 +84,7 @@ Why publish both?
 
 ### `SessionRepository` (interface)
 
-**File:** `lib/core/session/session_repository.dart`
+**File:** `lib/core/domain/session/session_repository.dart`
 
 **Role:** persistence boundary for session data.
 
@@ -97,7 +97,7 @@ Why publish both?
 
 ### `SessionRepositoryImpl` (implementation)
 
-**File:** `lib/core/session/session_repository_impl.dart`
+**File:** `lib/core/runtime/session/session_repository_impl.dart`
 
 **Role:** concrete persistence policy used by `SessionManager`.
 
@@ -116,7 +116,7 @@ This prevents a common bug:
 
 ### `TokenSecureStorage`
 
-**File:** `lib/core/storage/secure/token_secure_storage.dart`
+**File:** `lib/core/infra/storage/secure/token_secure_storage.dart`
 
 **Role:** isolated secure storage wrapper with platform-safe configuration.
 
@@ -130,7 +130,7 @@ This prevents a common bug:
 
 ### `SessionFailure`
 
-**File:** `lib/core/session/session_failure.dart`
+**File:** `lib/core/domain/session/session_failure.dart`
 
 **Role:** a core-level failure type used only for decisions needed by session orchestration.
 
@@ -148,7 +148,7 @@ This keeps `core/**` stable while features evolve.
 
 ### `TokenRefresher`
 
-**File:** `lib/core/session/token_refresher.dart`
+**File:** `lib/core/domain/session/token_refresher.dart`
 
 **Role:** core abstraction for refreshing tokens, implemented by the auth feature.
 
@@ -171,7 +171,7 @@ Core uses this inside `SessionManager.refreshTokens()` and does not care whether
 
 ### `UserEntity`
 
-**File:** `lib/core/user/entity/user_entity.dart`
+**File:** `lib/core/domain/user/entity/user_entity.dart`
 
 **Role:** core domain identity object for “me”.
 
@@ -182,7 +182,7 @@ Notes:
 
 ### `CurrentUserFetcher`
 
-**File:** `lib/core/user/current_user_fetcher.dart`
+**File:** `lib/core/domain/user/current_user_fetcher.dart`
 
 **Role:** core abstraction for fetching “me” from remote source.
 
@@ -196,7 +196,7 @@ Key design choice:
 
 ### `AppStartupController`
 
-**File:** `lib/core/services/app_startup/app_startup_controller.dart`
+**File:** `lib/core/runtime/startup/app_startup_controller.dart`
 
 **Role:** determines when the app becomes “startup ready”, and performs best-effort user hydration when needed.
 
@@ -226,7 +226,7 @@ Why ignore if refresh token changes?
 
 ### `UserContextService`
 
-**File:** `lib/core/services/user_context/user_context_service.dart`
+**File:** `lib/core/runtime/user_context/user_context_service.dart`
 
 **Role:** a small template-level service that exposes **safe, UI-friendly access** to the current user.
 
@@ -256,7 +256,7 @@ Concurrency details (`refreshUser()`):
 
 ### `CurrentUserState`
 
-**File:** `lib/core/services/user_context/current_user_state.dart`
+**File:** `lib/core/runtime/user_context/current_user_state.dart`
 
 **Role:** immutable state snapshot for `UserContextService`.
 
@@ -279,7 +279,7 @@ Why keep `lastFailure/lastRefreshedAt`?
 
 ### `ApiClient` (interceptor composition)
 
-**File:** `lib/core/network/api/api_client.dart`
+**File:** `lib/core/infra/network/api/api_client.dart`
 
 Important because ordering matters:
 
@@ -291,7 +291,7 @@ Important because ordering matters:
 
 ### `AuthTokenInterceptor`
 
-**File:** `lib/core/network/interceptors/auth_token_interceptor.dart`
+**File:** `lib/core/infra/network/interceptors/auth_token_interceptor.dart`
 
 Role:
 
@@ -357,7 +357,7 @@ Important note:
 
 ### `AppDatabase`
 
-**File:** `lib/core/database/app_database.dart`
+**File:** `lib/core/infra/database/app_database.dart`
 
 Role:
 

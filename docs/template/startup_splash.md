@@ -25,16 +25,16 @@ and easy to customize without over-engineering.
 - Entry point: `lib/main_dev.dart` (and `lib/main_staging.dart`, `lib/main_prod.dart`)
   - `registerLocator()` runs before `runApp()` to keep first frame fast.
   - `bootstrapLocator()` runs after first frame for heavier init (Firebase, etc.).
-- Startup orchestration: `lib/core/services/app_startup/app_startup_controller.dart`
+- Startup orchestration: `lib/core/runtime/startup/app_startup_controller.dart`
   - Controls readiness + onboarding decision.
   - Uses timeouts and fail-open defaults for safety.
-- UI gate: `lib/core/widgets/loading/app_startup_gate.dart`
+- UI gate: `lib/core/design_system/widgets/loading/app_startup_gate.dart`
   - Immediate backdrop + barrier while not ready.
   - Delayed spinner overlay (`showDelay`) to prevent flicker.
 - Router gating: `lib/navigation/app_redirect.dart`
   - During startup not-ready, protected locations are captured and redirected to `/`.
   - `AppStartupGate` prevents interaction during that period.
-- Metrics: `lib/core/services/startup_metrics/startup_metrics.dart`
+- Metrics: `lib/core/runtime/startup/startup_metrics.dart`
   - Logs startup milestones (TTFF, ready, bootstrap steps).
 
 ## How the Gate Works (UX Semantics)
@@ -81,7 +81,7 @@ Guideline: keep these builders **pure UI** (no IO, no async, no service calls).
 
 ### 2) Tune timing (delay/fade/min-visible)
 
-Default tokens live in `lib/core/theme/system/motion_durations.dart`:
+Default tokens live in `lib/core/design_system/theme/system/motion_durations.dart`:
 
 - `startupGateShowDelay` (spinner delay)
 - `startupGateMinVisible` (avoid blink)
@@ -120,5 +120,5 @@ Common pitfalls:
 
 ## Tests & Verification
 
-- Startup safety: `test/core/services/app_startup/app_startup_controller_test.dart`
-- Gate behavior: `test/core/widgets/loading/app_startup_gate_test.dart`
+- Startup safety: `test/core/runtime/startup/app_startup_controller_test.dart`
+- Gate behavior: `test/core/design_system/widgets/loading/app_startup_gate_test.dart`

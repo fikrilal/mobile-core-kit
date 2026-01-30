@@ -1,5 +1,5 @@
 # Color System: Rationale, Guardrails, and Extension Guide
-**Scope:** `lib/core/theme/**`  
+**Scope:** `lib/core/design_system/theme/**`  
 **Goal:** keep colors accessible, consistent, and governable at enterprise scale  
 **Last updated:** 2026-01-16
 
@@ -52,7 +52,7 @@ Seeds are the source of truth for color derivation:
 - Status: `successSeed`, `infoSeed`, `warningSeed`
 
 Seeds live in:
-- `lib/core/theme/system/app_color_seeds.dart`
+- `lib/core/design_system/theme/system/app_color_seeds.dart`
 
 Design guidance:
 
@@ -81,7 +81,7 @@ Policy decision (this template):
 - **Neutral elevation**: `ColorScheme.surfaceTint` is sourced from the neutral scheme so elevated surfaces don’t pick up a brand tint.
 
 Derivation happens in:
-- `lib/core/theme/system/app_color_scheme_builder.dart`
+- `lib/core/design_system/theme/system/app_color_scheme_builder.dart`
 
 ---
 
@@ -160,7 +160,7 @@ Rule: if a spec mentions a ramp step (e.g. `neutral/200`), it must include inten
 
 ## 8) Change protocol (safe updates over time)
 
-1) Update seeds: `lib/core/theme/system/app_color_seeds.dart`
+1) Update seeds: `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) Run:
    - `tool/agent/flutterw --no-stdin analyze`
    - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`

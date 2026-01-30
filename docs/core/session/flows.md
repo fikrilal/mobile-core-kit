@@ -18,8 +18,8 @@ At a high level:
 Key files:
 
 - DI composition: `lib/core/di/service_locator.dart`
-- Startup orchestrator: `lib/core/services/app_startup/app_startup_controller.dart`
-- Startup gate UI: `lib/core/widgets/loading/app_startup_gate.dart`
+- Startup orchestrator: `lib/core/runtime/startup/app_startup_controller.dart`
+- Startup gate UI: `lib/core/design_system/widgets/loading/app_startup_gate.dart`
 
 ---
 

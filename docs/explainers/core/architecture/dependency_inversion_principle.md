@@ -41,6 +41,10 @@ Typically:
     - use cases (`*_usecase.dart`)
     - entities / value objects
     - repository interfaces
+- `lib/core/domain/**`
+    - cross-feature ports/contracts (pure, stable)
+- `lib/core/runtime/**`
+    - app-wide policy/orchestration (session, startup, user context)
 
 Examples:
 - “When logging out, clear the local session.”
@@ -49,10 +53,10 @@ Examples:
 ### Low-level (mechanisms / details / volatile)
 
 Typically:
-- `lib/core/network/**` (HTTP, interceptors, retries)
-- `lib/core/storage/**` (secure storage / preferences wrappers)
-- `lib/core/database/**` (sqflite)
-- `lib/core/services/**` (SDK wrappers: Firebase, Google sign-in, device info, etc.)
+- `lib/core/infra/network/**` (HTTP, interceptors, retries)
+- `lib/core/infra/storage/**` (secure storage / preferences wrappers)
+- `lib/core/infra/database/**` (sqflite)
+- `lib/core/platform/**` (SDK wrappers: Firebase, Google sign-in, device info, etc.)
 - `lib/features/*/data/**` (remote/local datasources, DTO models, repository implementations)
 
 Examples:
@@ -69,10 +73,13 @@ This repo enforces the dependency direction via custom lints:
 - Architecture import boundaries:
     - `tool/lints/architecture_lints.yaml`
     - Notably: `feature_domain_no_infra` blocks feature domain code from importing:
-        - `lib/core/services/**`
-        - `lib/core/network/**`
-        - `lib/core/storage/**`
-        - `lib/core/database/**`
+        - `lib/core/infra/**`
+        - `lib/core/platform/**`
+        - `lib/core/runtime/**`
+        - `lib/core/design_system/**`
+        - `lib/core/di/**`
+        - `lib/core/dev_tools/**`
+        - `lib/l10n/**`
 
 - Restricted imports (low-level packages):
     - `analysis_options.yaml` (`restricted_imports`)
@@ -108,22 +115,22 @@ Goal:
 Constraints:
 - Logout orchestration is a feature **domain** use case:
     - `lib/features/auth/domain/usecase/logout_flow_usecase.dart`
-- Domain cannot import `lib/core/services/**` (enforced by `feature_domain_no_infra`).
+- Domain cannot import infra/platform/runtime (enforced by `feature_domain_no_infra`).
 
 Solution (DIP):
 
 ### Port (domain-safe contract)
 
-- `lib/core/session/session_push_token_revoker.dart`
+- `lib/core/domain/session/session_push_token_revoker.dart`
 
-This interface is placed under `core/session/**` because it models **session teardown policy** and
-because feature domain is allowed to depend on `core/session` but not on `core/services`.
+This interface is placed under `core/domain/session/**` because it models **session teardown policy**
+and because feature domain is allowed to depend on `core/domain/**` but not on infra/platform/runtime.
 
 ### Adapter (infra implementation)
 
-- `lib/core/services/push/session_push_token_revoker_impl.dart`
+- `lib/core/runtime/push/session_push_token_revoker_impl.dart`
 
-This implementation can depend on infra (HTTP wrapper / registrar) because it’s in `core/services`.
+This implementation can depend on infra/platform (HTTP wrapper / registrar) because it’s outside of pure domain.
 
 ### Consumer (policy)
 
@@ -151,9 +158,9 @@ Token refresh touches HTTP and storage, but session policy should remain stable.
 Pattern:
 
 - Policy/orchestration:
-    - `lib/core/session/session_manager.dart` (session lifecycle)
+    - `lib/core/runtime/session/session_manager.dart` (session lifecycle)
 - Port:
-    - `lib/core/session/token_refresher.dart` (interface)
+    - `lib/core/domain/session/token_refresher.dart` (interface)
 - Adapter:
     - Provided by feature data/repo (e.g. auth repository implements refresh using backend endpoints)
 
@@ -169,8 +176,9 @@ The session manager doesn’t “know” how refresh is implemented; it knows on
 - Model domain needs via **interfaces**.
 - Put the implementation at the edges:
     - feature `data/**` for feature-owned endpoints/storage
-    - `core/services/**` for SDK/platform wrappers
-    - `core/network/**` for HTTP infrastructure
+    - `core/platform/**` for SDK/platform wrappers
+    - `core/infra/**` for HTTP/storage/DB infrastructure
+    - `core/runtime/**` for app-wide orchestration/adapters
 - Wire dependencies in DI, not inside domain constructors.
 - When in doubt: follow existing patterns:
     - `GoogleFederatedAuthService` / `GoogleFederatedAuthServiceImpl`
@@ -199,12 +207,13 @@ The session manager doesn’t “know” how refresh is implemented; it knows on
 
 This repo uses a pragmatic “core kernel” approach:
 
+- If the port is used by multiple features (shared contract), prefer:
+    - `lib/core/domain/**`
 - If the port is about **session lifecycle** (logout, refresh, hydration), prefer:
-    - `lib/core/session/**`
-- If it is a pure “core contract” used by many features, consider adding a dedicated folder:
-    - `lib/core/contracts/**` (only if we see recurring need; propose before adding)
+    - `lib/core/domain/session/**`
 - Implementations typically live in:
-    - `lib/core/services/**` (SDK/platform)
+    - `lib/core/platform/**` (SDK/platform)
+    - `lib/core/runtime/**` (app-wide orchestration/adapters)
     - `lib/features/*/data/**` (feature-owned backend/data)
 
 ---

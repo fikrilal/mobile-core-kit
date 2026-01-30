@@ -28,9 +28,9 @@ Feature domain code (`lib/features/*/domain/**`) MUST remain framework- and infr
 
 - It MUST NOT import feature data/presentation or navigation.
 - It MUST NOT import infrastructure concerns such as:
-  - networking (`lib/core/network/**`)
-  - persistence (`lib/core/database/**`, `lib/core/storage/**`)
-  - UI/theme (`lib/core/widgets/**`, `lib/core/theme/**`, `lib/core/adaptive/**`)
+  - networking (`lib/core/infra/network/**`)
+  - persistence (`lib/core/infra/database/**`, `lib/core/infra/storage/**`)
+  - UI/theme (`lib/core/design_system/widgets/**`, `lib/core/design_system/theme/**`, `lib/core/design_system/adaptive/**`)
   - DI (`lib/core/di/**`)
   - generated localization (`lib/l10n/**`)
 
@@ -58,8 +58,8 @@ Allowed scopes:
 
 Disallowed scopes (examples):
 - `lib/features/*/presentation/**`
-- `lib/core/network/**`
-- `lib/core/widgets/**`
+- `lib/core/infra/network/**`
+- `lib/core/design_system/widgets/**`
 
 Pattern to follow:
 - Resolve dependencies in navigation/DI.
@@ -75,11 +75,11 @@ It prevents low-level packages from being imported directly in feature code (unl
 so we keep migrations and refactors cheap.
 
 Examples of restricted dependencies:
-- `dio` → must live under `lib/core/network/**`
-- `firebase_analytics` → must live under `lib/core/services/analytics/**`
-- `firebase_crashlytics` → must live under `lib/core/services/early_errors/**` / logging utilities
+- `dio` → must live under `lib/core/infra/network/**`
+- `firebase_analytics` → must live under `lib/core/runtime/analytics/**`
+- `firebase_crashlytics` → must live under `lib/core/platform/crash_reporting/**` / logging utilities
 - `shared_preferences` → only allowed in store/service implementations (plus explicit template allowlists)
-- `flutter_secure_storage` → must live under `lib/core/storage/secure/**`
+- `flutter_secure_storage` → must live under `lib/core/infra/storage/secure/**`
 
 ### Content & Navigation Guardrails
 

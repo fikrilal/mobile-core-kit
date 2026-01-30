@@ -77,7 +77,7 @@ Key idea: **features don’t compute “responsive” directly**. They consume t
 
 ## 2) Why `InheritedModel` + aspects
 
-`AdaptiveScope` uses `InheritedModel<AdaptiveAspect>` (`AdaptiveModel` in `lib/core/adaptive/adaptive_scope.dart`).
+`AdaptiveScope` uses `InheritedModel<AdaptiveAspect>` (`AdaptiveModel` in `lib/core/design_system/adaptive/adaptive_scope.dart`).
 
 This enables **aspect-scoped rebuilds**:
 

@@ -14,9 +14,9 @@ This template ships with a bundled custom font so teams can clone it and keep ty
 - License: `assets/fonts/OFL.txt` (SIL Open Font License; covers Inter + Space Grotesk)
 - Registration: `pubspec.yaml` → `flutter: fonts:`
 - Default selection:
-  - `lib/core/theme/typography/tokens/typefaces.dart` → `Typefaces.primary`
-  - `lib/core/theme/typography/typography_system.dart` → `TypographySystem.fontFamily` (wired to `Typefaces.primary`)
-  - Theme text styles are built from that choice (see `lib/core/theme/typography/`).
+  - `lib/core/design_system/theme/typography/tokens/typefaces.dart` → `Typefaces.primary`
+  - `lib/core/design_system/theme/typography/typography_system.dart` → `TypographySystem.fontFamily` (wired to `Typefaces.primary`)
+  - Theme text styles are built from that choice (see `lib/core/design_system/theme/typography/`).
 
 ## How To Change The Font
 
@@ -27,7 +27,7 @@ This template ships with a bundled custom font so teams can clone it and keep ty
    - Provide italic variants where available.
 
 3) Update the default font family:
-   - Update `lib/core/theme/typography/tokens/typefaces.dart` and set `Typefaces.primary` to your new family name.
+   - Update `lib/core/design_system/theme/typography/tokens/typefaces.dart` and set `Typefaces.primary` to your new family name.
 
 4) Run:
    - `fvm flutter pub get` (WSL: `tool/agent/flutterw pub get`)

@@ -46,12 +46,12 @@ Typical implementation: `MaterialApp.router(builder: ...)` wraps the router `chi
   - `lib/navigation/app_router.dart` sets `initialLocation: AppRoutes.root` and registers a `GoRoute` for it.
   - `lib/navigation/app_routes.dart` defines `AppRoutes.root = '/'`.
 - Startup gating:
-  - `lib/core/services/app_startup/app_startup_controller.dart` is a `ChangeNotifier` used as `refreshListenable` in GoRouter.
+  - `lib/core/runtime/startup/app_startup_controller.dart` is a `ChangeNotifier` used as `refreshListenable` in GoRouter.
     - It loads persisted auth session (secure storage + local DB) and reads the onboarding flag before reporting `isReady`.
   - `lib/navigation/app_redirect.dart` routes to onboarding/auth/home based on onboarding and auth state (and does **not** force a splash route during startup).
   - `lib/core/di/service_locator.dart` runs `AppStartupController.initialize()` during `bootstrapLocator()` (which is triggered after the first Flutter frame from `main_*.dart`).
 - Startup overlay gate:
-  - `lib/app.dart` wraps `MaterialApp.router` with `AppStartupGate` (`lib/core/widgets/loading/app_startup_gate.dart`), which shows a full-screen overlay only if startup isn’t ready after a short delay (to avoid flicker).
+  - `lib/app.dart` wraps `MaterialApp.router` with `AppStartupGate` (`lib/core/design_system/widgets/loading/app_startup_gate.dart`), which shows a full-screen overlay only if startup isn’t ready after a short delay (to avoid flicker).
 
 ### Startup performance note (native launch screen time)
 
@@ -159,8 +159,8 @@ Make the Android/iOS launch screens branded and consistent. This avoids double-s
 Use a startup overlay only when there is a real gating requirement.
 
 In this repo, the current “startup” checks are lightweight:
-- Onboarding flag is `SharedPreferences` (`AppLaunchServiceImpl` in `lib/core/services/app_launch/app_launch_service_impl.dart`).
-- Auth session restore is local IO (secure storage + local DB) via `SessionManager.init()` (`lib/core/session/session_manager.dart`).
+- Onboarding flag is `SharedPreferences` (`AppLaunchServiceImpl` in `lib/core/infra/storage/prefs/app_launch/app_launch_service_impl.dart`).
+- Auth session restore is local IO (secure storage + local DB) via `SessionManager.init()` (`lib/core/runtime/session/session_manager.dart`).
 - Auth hydration (`GetMeUseCase`) is already best-effort and should generally **not** block showing onboarding/auth/home UI.
 
 So the industry-aligned default is: **no Flutter splash route** (use native + optional overlay gate only when needed).

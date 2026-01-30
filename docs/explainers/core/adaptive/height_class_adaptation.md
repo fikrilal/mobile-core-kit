@@ -85,5 +85,5 @@ If height is compact, assume:
 
 ## What to do when this isn’t enough
 
-If teams repeatedly need “height-aware tokens” (e.g., toolbar heights, vertical spacing scales), add them as **first-class tokens** in `lib/core/adaptive/tokens/` and cover them with unit tests.
+If teams repeatedly need “height-aware tokens” (e.g., toolbar heights, vertical spacing scales), add them as **first-class tokens** in `lib/core/design_system/adaptive/tokens/` and cover them with unit tests.
 

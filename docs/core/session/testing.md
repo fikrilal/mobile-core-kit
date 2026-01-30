@@ -18,7 +18,7 @@ Goal: ensure tokens + cached user behave deterministically across app restarts a
 
 Covered by:
 
-- `test/core/session/session_repository_impl_test.dart`
+- `test/core/runtime/session/session_repository_impl_test.dart`
 
 Key assertions:
 
@@ -33,8 +33,8 @@ Goal: ensure async restores/refresh cannot overwrite a new session.
 
 Covered by:
 
-- `test/core/session/session_manager_test.dart`
-- `test/core/session/session_manager_refresh_logout_persistence_test.dart`
+- `test/core/runtime/session/session_manager_test.dart`
+- `test/core/runtime/session/session_manager_refresh_logout_persistence_test.dart`
 
 Key assertions:
 
@@ -49,7 +49,7 @@ Goal: ensure startup always becomes ready and hydration is conservative, single-
 
 Covered by:
 
-- `test/core/services/app_startup/app_startup_controller_test.dart`
+- `test/core/runtime/startup/app_startup_controller_test.dart`
 
 Key assertions:
 
@@ -65,7 +65,7 @@ Goal: ensure UI consumes a stable API and refresh semantics are correct.
 
 Covered by:
 
-- `test/core/services/user_context/user_context_service_test.dart`
+- `test/core/runtime/user_context/user_context_service_test.dart`
 
 Key assertions:
 
@@ -83,8 +83,8 @@ Key assertions:
 
 Where:
 
-- `lib/core/network/interceptors/auth_token_interceptor.dart`
-- `lib/core/session/session_manager.dart`
+- `lib/core/infra/network/interceptors/auth_token_interceptor.dart`
+- `lib/core/runtime/session/session_manager.dart`
 - `lib/features/auth/di/auth_module.dart` (adapter mapping)
 
 Checklist:
@@ -99,9 +99,9 @@ Checklist:
 
 Where:
 
-- core contract: `lib/core/session/cached_user_store.dart`
+- core contract: `lib/core/domain/session/cached_user_store.dart`
 - implementation: `lib/features/user/data/datasource/local/user_local_datasource.dart`
-- db bootstrap: `lib/core/database/app_database.dart`, `lib/features/user/di/user_module.dart`
+- db bootstrap: `lib/core/infra/database/app_database.dart`, `lib/features/user/di/user_module.dart`
 
 Checklist:
 
@@ -115,8 +115,8 @@ Checklist:
 
 Where:
 
-- `lib/core/services/app_startup/app_startup_controller.dart`
-- `lib/core/user/current_user_fetcher.dart`
+- `lib/core/runtime/startup/app_startup_controller.dart`
+- `lib/core/domain/user/current_user_fetcher.dart`
 - `lib/features/user/di/user_module.dart` (adapter mapping)
 
 Checklist:
@@ -130,8 +130,8 @@ Checklist:
 
 Where:
 
-- `lib/core/services/user_context/user_context_service.dart`
-- `lib/core/services/user_context/current_user_state.dart`
+- `lib/core/runtime/user_context/user_context_service.dart`
+- `lib/core/runtime/user_context/current_user_state.dart`
 
 Checklist:
 
@@ -162,4 +162,3 @@ Enable logging (dev builds) and inspect:
 - session init logs (`SessionManager`)
 - hydration logs (`AppStartupController`)
 - interceptor logs (`AuthTokenInterceptor`)
-

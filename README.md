@@ -36,7 +36,7 @@ If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md
    ```bash
    dart run tool/gen_config.dart --env dev
    ```
-   or `staging` / `prod` as needed. This writes `lib/core/configs/build_config.g.dart`.
+   or `staging` / `prod` as needed. This writes `lib/core/foundation/config/build_config_values.dart`.
 
 3. **Run code generation (Freezed + JSON)**
    ```bash
@@ -89,12 +89,14 @@ cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\d
 ## Project Structure
 
 - `lib/core/`
-  - `configs/` – `BuildConfig` + `AppConfig` (env & runtime config).
+  - `design_system/` – tokens + adaptive widgets + shared UI components (UI-only).
+  - `foundation/` – pure utilities + compile-time config surfaces.
+  - `domain/` – cross-cutting pure contracts (session/user).
+  - `infra/` – networking/storage/database wrappers.
+  - `platform/` – plugin/vendor adapters (connectivity, app links, etc.).
+  - `runtime/` – app orchestration/services (startup/session/user context).
   - `di/` – global service locator (`service_locator.dart`).
-  - `network/` – `ApiClient`, `ApiHelper`, interceptors, endpoints.
-  - `services/` – cross-cutting services (analytics, connectivity, navigation).
-  - `theme/` – color, typography, spacing, responsive utilities.
-  - `events/` – app-level event bus + event types.
+  - `dev_tools/` – dev-only tooling.
 - `lib/features/`
   - `auth/` – core auth slice (data/domain/presentation, value objects).
   - Each future feature follows the same vertical slice layout.
@@ -111,7 +113,7 @@ Docs index: `docs/README.md`.
 ## Configuration & Flavors
 
 - `.env/<env>.yaml` holds environment-specific values like API hosts, logging, and analytics flags.
-- `tool/gen_config.dart` reads these files and generates `lib/core/configs/build_config_values.dart` used by `BuildConfig`.
+- `tool/gen_config.dart` reads these files and generates `lib/core/foundation/config/build_config_values.dart` used by `BuildConfig`.
 - Entry points:
   - `lib/main_dev.dart`
   - `lib/main_staging.dart`
@@ -128,7 +130,7 @@ See `docs/engineering/firebase_setup.md` for full details, including how to poin
 ## Analytics
 
 - Core abstraction:
-  - `IAnalyticsService` (`lib/core/services/analytics/analytics_service.dart`)
+  - `IAnalyticsService` (`lib/core/runtime/analytics/analytics_service.dart`)
   - `AnalyticsServiceImpl` (`analytics_service_impl.dart`) backed by `FirebaseAnalytics`.
   - `AnalyticsTracker` (`analytics_tracker.dart`) – feature-facing facade (screen views, logins, button clicks, searches).
   - `AnalyticsRouteObserver` – GoRouter observer that auto-tracks screen views.

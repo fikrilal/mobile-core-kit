@@ -30,22 +30,14 @@ lib/
 ├─ main_staging.dart              # entrypoint (ENV=staging) [optional]
 ├─ main_prod.dart                 # entrypoint (ENV=prod) [optional]
 ├─ core/                          # cross‑cutting infrastructure
-│  ├─ adaptive/                   # responsive layout + tokens
-│  ├─ configs/                    # AppConfig/BuildConfig (env‑driven)
-│  ├─ database/                   # sqflite bootstrap + schema registration
-│  ├─ di/                         # service locator (GetIt)
-│  ├─ dev_tools/                  # dev-only tooling (guarded by env)
-│  ├─ events/                     # AppEventBus (cross-feature lifecycle)
-│  ├─ localization/               # l10n helpers + locale extensions
-│  ├─ network/                    # ApiClient, ApiHelper, endpoints, interceptors
-│  ├─ services/                   # app-wide services (startup, deep links, etc.)
-│  ├─ session/                    # session + token orchestration
-│  ├─ storage/                    # secure storage + prefs
-│  ├─ theme/                      # tokens, typography, responsive spacing
-│  ├─ user/                       # core user abstractions/entities
-│  ├─ utilities/                  # small shared helpers
-│  ├─ validation/                 # value objects + validation contracts
-│  └─ widgets/                    # shared UI components
+│  ├─ design_system/              # UI tokens + adaptive widgets + shared components (UI-only)
+│  ├─ foundation/                 # pure foundation utilities + compile-time config surfaces
+│  ├─ domain/                     # pure cross-cutting domain contracts (session/user)
+│  ├─ infra/                      # app-owned infrastructure (network/storage/database)
+│  ├─ platform/                   # plugin/vendor adapters (connectivity, app links, etc.)
+│  ├─ runtime/                    # app orchestration/services (startup/session/user context)
+│  ├─ di/                         # service locator (GetIt) composition
+│  └─ dev_tools/                  # dev-only tooling (guarded by env)
 ├─ features/
 │  └─ <feature>/
 │     ├─ data/                    # datasource, model, mapper, repository impl
@@ -107,12 +99,13 @@ lib/
 
 This template separates responsibilities explicitly:
 
-- **Session orchestration** lives in `lib/core/session/` (`SessionManager`, `SessionRepository`, `TokenRefresher`, `SessionFailure`).
-- **User identity (“me”)** is exposed to UI via `lib/core/services/user_context/` (`UserContextService`).
+- **Session contracts** live in `lib/core/domain/session/` (entities + ports like `SessionRepository`, `TokenRefresher`, `SessionFailure`, `CachedUserStore`, `SessionDriver`).
+- **Session orchestration** lives in `lib/core/runtime/session/` (`SessionManager`, `SessionRepositoryImpl`).
+- **User identity (“me”)** is exposed to UI via `lib/core/runtime/user_context/` (`UserContextService`).
 - **Auth feature** owns login/refresh/logout flows and provides the `TokenRefresher` adapter via DI.
 - **User feature** owns `GET /me` and cached-user persistence (sqflite) and provides:
-  - `CurrentUserFetcher` implementation (`lib/core/user/current_user_fetcher.dart`)
-  - `CachedUserStore` implementation (`lib/core/session/cached_user_store.dart`)
+  - `CurrentUserFetcher` implementation (interface in `lib/core/domain/user/current_user_fetcher.dart`)
+  - `CachedUserStore` implementation (interface in `lib/core/domain/session/cached_user_store.dart`)
 
 Usage guide: `docs/template/current_user.md`
 
@@ -195,7 +188,7 @@ Contains datasource/ (remote/local), model/ (DTOs), mapper/, and repository/ (im
 Examples in repo for reference:
 - Remote datasource: `lib/features/<feature>/data/datasource/remote/...`
 - Repository impl: `lib/features/<feature>/data/repository/...`
-- API plumbing: `lib/core/network/api/api_client.dart`, `lib/core/network/api/api_helper.dart`
+- API plumbing: `lib/core/infra/network/api/api_client.dart`, `lib/core/infra/network/api/api_helper.dart`
 
 Mapping & error policy:
 - Map DTOs to domain entities in repository implementations or dedicated mappers.
@@ -265,7 +258,7 @@ Conventions:
 
 ## 8) Config & Environments
 
-- Environment YAMLs live under `.env/`. The generator `tool/gen_config.dart` produces `lib/core/configs/build_config_values.dart`.
+- Environment YAMLs live under `.env/`. The generator `tool/gen_config.dart` produces `lib/core/foundation/config/build_config_values.dart`.
 - `BuildConfig` reads compile‑time env via `--dart-define=ENV=<env>` and exposes URLs, logging flags, and OAuth client IDs.
 - `AppConfig` holds runtime config (e.g., access token) and proxies to `BuildConfig` for hosts and flags.
 

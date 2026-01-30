@@ -58,7 +58,7 @@ Disk-caching bytes gives:
 Core infra (absolute URL download, no backend interceptors):
 
 ```
-lib/core/network/download/
+lib/core/infra/network/download/
 ├─ presigned_download_client.dart          # interface
 └─ dio_presigned_download_client.dart      # dedicated Dio (no interceptors)
 ```

@@ -438,7 +438,7 @@ Notes
 
 - Publish domain events after successful mutations (`ReadingSessionFinished`, `LibraryEntryChanged`).
 - Listen in presentation BLoCs and dispatch refresh events; cancel subscription in `close()`.
-- Bus: `lib/core/events/app_event_bus.dart:1` (usage patterns in `lib/core/events/README.md:1`).
+- Bus: `lib/core/runtime/events/app_event_bus.dart:1` (usage patterns in `lib/core/runtime/events/README.md:1`).
 
 ## 13) Checklists
 

@@ -81,7 +81,7 @@ Important nuance:
 
 ### Localized network errors
 
-`lib/core/network/exceptions/api_failure_localizer.dart` provides:
+`lib/core/infra/network/exceptions/api_failure_localizer.dart` provides:
 - `messageFor(ApiFailure failure, AppLocalizations l10n)`
 
 This maps common `ApiFailure.code` / HTTP status codes to localized, user‑friendly copy and avoids showing raw backend strings by default.
@@ -93,6 +93,5 @@ This maps common `ApiFailure.code` / HTTP status codes to localized, user‑frie
 Contract-level coverage:
 - `test/core/localization/app_localizations_smoke_test.dart`
 - `test/core/localization/pluralization_test.dart`
-- `test/core/services/localization/locale_controller_test.dart`
-- `test/core/network/exceptions/api_failure_localizer_test.dart`
-
+- `test/core/runtime/localization/locale_controller_test.dart`
+- `test/core/infra/network/exceptions/api_failure_localizer_test.dart`

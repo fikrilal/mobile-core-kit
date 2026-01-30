@@ -24,7 +24,7 @@ As of 2026-01-16:
 
 ### 1.1 Docs clean-up (truthful + non-duplicative)
 
-- Update or replace `lib/core/theme/typography/typography-guide.md`
+- Update or replace `lib/core/design_system/theme/typography/typography-guide.md`
   - Remove claims about breakpoint-driven typography (unless implemented).
   - Point to:
     - `docs/explainers/core/theme/typography_system_proposal.md`
@@ -34,9 +34,9 @@ As of 2026-01-16:
 
 Goal: stop presenting multiple “sources of truth” to feature developers.
 
-- Removed `lib/core/theme/typography/styles/responsive_text_styles.dart`
+- Removed `lib/core/design_system/theme/typography/styles/responsive_text_styles.dart`
   - Replaced with theme-driven access (`Theme.of(context).textTheme.*`).
-- Removed `lib/core/theme/typography/utils/typography_extensions.dart`
+- Removed `lib/core/design_system/theme/typography/utils/typography_extensions.dart`
   - Replaced with direct `Theme.of(context).textTheme.*` access.
 
 Deliverable: a clear README section that says “use textTheme; don’t bypass theme typography”.
@@ -54,18 +54,18 @@ Deliverable: a clear README section that says “use textTheme; don’t bypass t
 
 Create new slim components (don’t break existing usage yet):
 
-- `lib/core/theme/typography/components/app_text.dart`
+- `lib/core/design_system/theme/typography/components/app_text.dart`
   - API:
     - role selection: `AppText.bodyMedium(...)` OR `AppText(text, role: AppTextRole.bodyMedium)`
     - overrides: `color`, `textAlign`, `maxLines`, `overflow`, `selectable`, `semanticsLabel`
   - Implementation: always reads `Theme.of(context).textTheme` as the style source.
 
-- `lib/core/theme/typography/components/heading.dart`
+- `lib/core/design_system/theme/typography/components/heading.dart`
   - Reduce to `h1/h2/h3` (optional: keep h4-h6 if needed)
   - Use `Semantics(header: true, ...)`
   - Map to `TextTheme` roles (document mapping)
 
-- `lib/core/theme/typography/components/paragraph.dart`
+- `lib/core/design_system/theme/typography/components/paragraph.dart`
   - Always uses `TextTheme.body*`
   - Constrain readable width on tablet/large widths:
     - use `LayoutBuilder` to clamp maxWidth to `TypeMetrics.maxCharactersPerLine` heuristic
@@ -87,11 +87,11 @@ Find the existing lint infrastructure (likely under `packages/` or `tool/` depen
 1) `hardcoded_font_sizes`
    - Disallow `TextStyle(fontSize: ...)` in:
      - `lib/features/**`
-     - `lib/core/widgets/**`
+     - `lib/core/design_system/widgets/**`
      - optionally `lib/presentation/**`
 2) `manual_text_scaling`
    - Disallow `TextScaler.linear(...)` usage outside:
-     - `lib/core/adaptive/**`
+     - `lib/core/design_system/adaptive/**`
      - policy code paths
 3) `typography_style_mutation` (optional)
    - Disallow `.copyWith(fontSize: ...)` and `.apply(fontSizeFactor: ...)` in UI layers.

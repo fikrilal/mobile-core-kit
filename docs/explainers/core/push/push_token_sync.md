@@ -72,17 +72,21 @@ Why “hash only”:
 Core push subsystem:
 
 ```
-lib/core/services/push/
+lib/core/platform/push/
 ├─ fcm_token_provider.dart                  # port: SDK wrapper
 ├─ fcm_token_provider_impl.dart             # adapter: FirebaseMessaging
 ├─ push_permission_state.dart               # enum for permission result
-├─ push_platform.dart                       # ANDROID|IOS|WEB mapping
+└─ push_platform.dart                       # ANDROID|IOS|WEB mapping
+
+lib/core/runtime/push/
 ├─ push_token_registrar.dart                # port: upsert/revoke for current session
-├─ push_token_sync_store.dart               # SharedPreferences: hashes + cooldown
 ├─ push_token_sync_service.dart             # orchestrator: session + token events
 └─ session_push_token_revoker_impl.dart     # adapter: revoke via registrar (best-effort)
 
-lib/core/session/
+lib/core/infra/storage/prefs/push/
+└─ push_token_sync_store.dart               # SharedPreferences: hashes + cooldown
+
+lib/core/domain/session/
 └─ session_push_token_revoker.dart          # port: domain-safe revoke hook for logout
 ```
 
@@ -113,8 +117,10 @@ lib/features/auth/domain/usecase/
 Tests:
 
 ```
-test/core/services/push/
-├─ push_token_sync_store_test.dart
+test/core/infra/storage/prefs/push/
+└─ push_token_sync_store_test.dart
+
+test/core/runtime/push/
 └─ push_token_sync_service_test.dart
 
 test/features/auth/domain/usecase/
@@ -191,10 +197,10 @@ Race-safety:
 
 This is enforced via a domain-safe port:
 
-- `lib/core/session/session_push_token_revoker.dart` (port)
-- `lib/core/services/push/session_push_token_revoker_impl.dart` (adapter)
+- `lib/core/domain/session/session_push_token_revoker.dart` (port)
+- `lib/core/runtime/push/session_push_token_revoker_impl.dart` (adapter)
 
-That keeps feature domain code from importing infrastructure (`core/services/**`) directly.
+That keeps feature domain code from importing infra/platform/runtime (`core/infra/**`, `core/platform/**`, `core/runtime/**`) directly.
 
 ---
 
@@ -232,10 +238,10 @@ ApiHelper -> PUT/DELETE /v1/me/push-token (backend-core-kit)
 LogoutFlowUseCase (auth/domain)
         |
         v
-SessionPushTokenRevoker (port in core/session)
+SessionPushTokenRevoker (port in core/domain/session)
         |
         v
-SessionPushTokenRevokerImpl (core/services)
+SessionPushTokenRevokerImpl (core/runtime)
         |
         v
 PushTokenRegistrar.revoke()  ->  DELETE /v1/me/push-token
@@ -255,9 +261,9 @@ This subsystem is protected by lints so template clones don’t accidentally vio
 
 - `restricted_imports` bans direct `package:firebase_messaging/firebase_messaging.dart` imports
   outside of:
-  - `lib/core/services/push/**`
+  - `lib/core/platform/push/**`
   - `lib/main*.dart`
-- `architecture_imports` forbids feature domain imports of infra (e.g. `core/services/**`).
+- `architecture_imports` forbids feature domain imports of infra/platform/runtime (e.g. `core/infra/**`, `core/platform/**`, `core/runtime/**`).
 
 See:
 
@@ -277,9 +283,9 @@ Fast checks:
 Subsystem tests:
 
 - store behavior (hash-only, dedupe, cooldown):
-  - `test/core/services/push/push_token_sync_store_test.dart`
+  - `test/core/infra/storage/prefs/push/push_token_sync_store_test.dart`
 - service orchestration (session active, token refresh, cooldown):
-  - `test/core/services/push/push_token_sync_service_test.dart`
+  - `test/core/runtime/push/push_token_sync_service_test.dart`
 - logout ordering and best-effort behavior:
   - `test/features/auth/domain/usecase/logout_flow_usecase_test.dart`
 
@@ -296,4 +302,3 @@ If a downstream app wants more push features, layer them without breaking this c
   - keep routing policy out of this sync layer (avoid mixing concerns)
 - Web push:
   - implement a different provider that returns tokens on web, then flip the `FcmTokenProvider` binding (or add a dedicated web provider)
-

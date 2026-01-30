@@ -1,6 +1,6 @@
 # Adaptive (Responsive + Adaptive UI)
 
-Canonical docs for the in-house responsive + adaptive system under `lib/core/adaptive/`.
+Canonical docs for the in-house responsive + adaptive system under `lib/core/design_system/adaptive/`.
 
 Reading order:
 

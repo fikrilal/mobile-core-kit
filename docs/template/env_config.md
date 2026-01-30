@@ -24,11 +24,11 @@ Examples live next to them:
 
 3) The script writes:
 
-`lib/core/configs/build_config_values.dart` (generated; do not edit)
+`lib/core/foundation/config/build_config_values.dart` (generated; do not edit)
 
 4) App code reads values via:
 
-`lib/core/configs/build_config.dart` (`BuildConfig.*`)
+`lib/core/foundation/config/build_config.dart` (`BuildConfig.*`)
 
 ## Schema
 
