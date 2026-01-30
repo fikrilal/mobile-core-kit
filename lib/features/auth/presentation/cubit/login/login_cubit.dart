@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
+import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';

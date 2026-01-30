@@ -139,15 +139,21 @@ Checkpoint:
 
 Goal: remove the `core/services/**` bucket by re-homing code based on intent.
 
-- [ ] Identify and move plugin wrappers → `lib/core/platform/**`
-  - connectivity, device identity, media picker, app links source, federated auth, push token provider
-- [ ] Identify and move orchestrators/controllers → `lib/core/runtime/**`
-  - app startup gate, user context, push token sync service, navigation service, deep link orchestration, analytics tracker/observer (decide runtime vs platform)
-- [ ] Update DI wiring (`lib/core/di/service_locator.dart`) to import new homes.
-- [ ] Ensure runtime does not depend on design system (enforced by lints).
+- [x] Identify and move plugin wrappers → `lib/core/platform/**`
+  - connectivity, device identity, media picker, app links source, federated auth, push (FCM token provider)
+  - crash reporting wrapper → `lib/core/platform/crash_reporting/**`
+- [x] Identify and move orchestrators/controllers → `lib/core/runtime/**`
+  - app startup gate, user context, push token sync, navigation service, deep link orchestration, analytics
+  - early error buffering → `lib/core/runtime/early_errors/**`
+- [x] Move SharedPreferences-backed stores → `lib/core/infra/storage/prefs/**`
+  - app launch, theme mode, locale, pending deep link, push token sync
+- [x] Update DI wiring (`lib/core/di/service_locator.dart`) to import new homes.
+- [x] Ensure runtime does not depend on design system (enforced by lints).
+  - exception: allow `lib/core/runtime/navigation/**` → `lib/navigation/**` for deep link parsing
+  - moved navigation-specific widget out of design system: `PendingDeepLinkCancelOnPop` → `lib/navigation/widgets/**`
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 7 — Split core domain vs runtime (session/user)
 

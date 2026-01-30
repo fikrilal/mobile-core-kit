@@ -6,7 +6,7 @@ import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
-import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LocaleSettingTile extends StatelessWidget {

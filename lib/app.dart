@@ -9,10 +9,10 @@ import 'package:mobile_core_kit/core/design_system/widgets/listener/app_event_li
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
-import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
-import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
-import 'package:mobile_core_kit/core/services/navigation/navigation_service.dart';
+import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/runtime/navigation/navigation_service.dart';
+import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/app_router.dart';
 

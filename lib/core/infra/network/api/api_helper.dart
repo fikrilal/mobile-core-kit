@@ -5,8 +5,8 @@ import 'package:mobile_core_kit/core/infra/network/api/api_paginated_result.dart
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
-import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
-import 'package:mobile_core_kit/core/services/connectivity/connectivity_service_impl.dart';
+import 'package:mobile_core_kit/core/platform/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/platform/connectivity/connectivity_service_impl.dart';
 
 typedef JsonParser<R> = R Function(Map<String, dynamic> json);
 typedef ItemParser<R> = JsonParser<R>;

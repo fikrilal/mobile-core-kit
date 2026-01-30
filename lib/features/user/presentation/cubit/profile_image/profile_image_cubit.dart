@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/painting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/upload_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_avatar_cache_usecase.dart';

@@ -4,8 +4,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
-import 'package:mobile_core_kit/core/services/connectivity/connectivity_service.dart';
-import 'package:mobile_core_kit/core/services/connectivity/network_status.dart';
+import 'package:mobile_core_kit/core/platform/connectivity/connectivity_service.dart';
+import 'package:mobile_core_kit/core/platform/connectivity/network_status.dart';
 
 class _FakeConnectivityService implements ConnectivityService {
   _FakeConnectivityService({required this.isConnected});

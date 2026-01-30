@@ -90,26 +90,23 @@ custom_lint:
           message: Use `lib/core/infra/network/**` wrappers (ApiClient/ApiHelper).
         - uri: package:firebase_analytics/firebase_analytics.dart
           allow:
-            - lib/core/services/analytics/**
             - lib/core/runtime/analytics/**
-          message: Use analytics wrappers under `lib/core/services/analytics/**`.
+          message: Use analytics wrappers under `lib/core/runtime/analytics/**`.
         - uri: package:firebase_crashlytics/firebase_crashlytics.dart
           allow:
-            - lib/core/services/early_errors/**
-            - lib/core/runtime/startup/**
+            - lib/core/platform/crash_reporting/**
+            - lib/core/runtime/early_errors/**
             - lib/core/foundation/utilities/log_utils.dart
             - lib/core/di/**
-          message: Use crash reporting wrappers under `lib/core/services/early_errors/**`.
+          message: Use crash reporting wrappers under `lib/core/platform/crash_reporting/**`.
         - uri: package:firebase_messaging/firebase_messaging.dart
           allow:
-            - lib/core/services/push/**
             - lib/core/platform/push/**
             - lib/main*.dart
-          message: Use push wrappers under `lib/core/services/push/**`.
+          message: Use push wrappers under `lib/core/platform/push/**`.
         - uri: package:shared_preferences/shared_preferences.dart
           allow:
-            - lib/core/services/**
-            - lib/core/infra/storage/**
+            - lib/core/infra/storage/prefs/**
             - lib/features/user/data/datasource/local/profile_draft_local_datasource.dart
             - lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart
           message: Use shared preferences only in stores/services; avoid direct usage in most features.

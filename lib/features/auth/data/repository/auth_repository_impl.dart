@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
-import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
-import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
+import 'package:mobile_core_kit/core/platform/device_identity/device_identity_service.dart';
+import 'package:mobile_core_kit/core/platform/federated_auth/google_federated_auth_service.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';

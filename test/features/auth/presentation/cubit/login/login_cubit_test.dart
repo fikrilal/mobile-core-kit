@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
+import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';

@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
-import 'package:mobile_core_kit/core/services/deep_link/deep_link_parser.dart';
-import 'package:mobile_core_kit/core/services/deep_link/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/core/runtime/navigation/deep_link_parser.dart';
+import 'package:mobile_core_kit/core/runtime/navigation/pending_deep_link_controller.dart';
+import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';

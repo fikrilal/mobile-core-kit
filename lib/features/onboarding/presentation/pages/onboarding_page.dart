@@ -6,7 +6,7 @@ import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
-import 'package:mobile_core_kit/core/services/app_startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 class OnboardingPage extends StatelessWidget {

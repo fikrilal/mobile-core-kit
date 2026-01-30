@@ -5,8 +5,8 @@ import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
-import 'package:mobile_core_kit/core/services/push/push_platform.dart';
-import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
+import 'package:mobile_core_kit/core/platform/push/push_platform.dart';
+import 'package:mobile_core_kit/core/runtime/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/me_push_token_upsert_request_model.dart';
 
 class MePushTokenRemoteDataSource implements PushTokenRegistrar {

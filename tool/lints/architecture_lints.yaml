@@ -65,13 +65,6 @@ rules:
     reason: Domain must not depend on infrastructure/UI framework concerns.
     from: lib/features/*/domain/**
     deny:
-      - lib/core/network/**
-      - lib/core/services/**
-      - lib/core/storage/**
-      - lib/core/database/**
-      - lib/core/theme/**
-      - lib/core/widgets/**
-      - lib/core/adaptive/**
       - lib/core/infra/**
       - lib/core/platform/**
       - lib/core/runtime/**
@@ -133,6 +126,10 @@ rules:
       - lib/core/dev_tools/**
       - lib/features/**
       - lib/navigation/**
+    exceptions:
+      - from: lib/core/runtime/navigation/**
+        allow:
+          - lib/navigation/**
 
   - id: core_design_system_ui_only
     reason: Design system must not depend on infra/platform/runtime or feature code.
