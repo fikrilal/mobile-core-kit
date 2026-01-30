@@ -4,7 +4,7 @@ import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
-import 'package:mobile_core_kit/core/user/model/remote/me_model.dart';
+import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/patch_me_request_model.dart';
 
 class UserRemoteDataSource {

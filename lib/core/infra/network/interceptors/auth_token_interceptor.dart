@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 
 class AuthTokenInterceptor extends dio.Interceptor {
   AuthTokenInterceptor({

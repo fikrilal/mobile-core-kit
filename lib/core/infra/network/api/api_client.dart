@@ -9,7 +9,7 @@ import 'package:mobile_core_kit/core/infra/network/interceptors/logging_intercep
 import 'package:mobile_core_kit/core/infra/network/interceptors/request_id_interceptor.dart';
 import 'package:mobile_core_kit/core/infra/network/logging/net_log_mode.dart';
 import 'package:mobile_core_kit/core/infra/network/logging/network_log_config.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();

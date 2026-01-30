@@ -34,8 +34,8 @@ Subscribe from presentation-layer BLoCs that show data affected by those events.
 Inside a Bloc/use case handler after success:
 
 ```dart
-import 'package:orymu_mobile/core/events/app_event.dart';
-import 'package:orymu_mobile/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
 
 // In FinishFocusSessionBloc on success
 _events.publish(ReadingSessionFinished(editionId, session.id));
@@ -105,7 +105,7 @@ _sub = _events.stream.listen((e) {
 ```
 
 ## DI Wiring
-- Bus registered in `lib/core/di/core_module.dart`.
+- Bus registered in `lib/core/di/service_locator.dart`.
 - Inject bus into feature DI (e.g., `LibraryModule.register`) and pass to blocs via factories:
 
 ```dart
@@ -140,4 +140,3 @@ AppEventBus: signal changes  →  Repositories: cache + watch streams  →  BLoC
 - [ ] Subscribe, filter, dispatch refresh
 - [ ] Cancel subscription in `close()`
 - [ ] Add tests for publish/subscribe paths
-

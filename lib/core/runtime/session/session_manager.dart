@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:mobile_core_kit/core/events/app_event.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/session_driver.dart';
+import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
+import 'package:mobile_core_kit/core/domain/session/session_repository.dart';
+import 'package:mobile_core_kit/core/domain/session/token_refresher.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/session_failure.dart';
-import 'package:mobile_core_kit/core/session/session_repository.dart';
-import 'package:mobile_core_kit/core/session/token_refresher.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
 
-class SessionManager {
+class SessionManager implements SessionDriver {
   SessionManager(
     this._repository, {
     required TokenRefresher tokenRefresher,
@@ -63,6 +64,7 @@ class SessionManager {
     }
   }
 
+  @override
   AuthSessionEntity? get session => _currentSession;
   bool get isAuthenticated => _currentSession != null;
   bool get isAuthPending =>
@@ -212,6 +214,7 @@ class SessionManager {
     );
   }
 
+  @override
   Future<void> logout({String reason = 'manual_logout'}) async {
     Log.info('Logout: clearing session', name: 'SessionManager');
     await _repository.clearSession();

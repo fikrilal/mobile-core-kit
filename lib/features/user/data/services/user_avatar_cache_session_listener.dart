@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:mobile_core_kit/core/events/app_event.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart';
 
 /// Clears user-scoped avatar caches when the session ends.
 ///
 /// This lives in the user feature because the cache belongs to the user
-/// feature, and architecture lints forbid core/session from importing feature
+/// feature, and architecture lints forbid runtime session orchestration from importing feature
 /// code directly.
 class UserAvatarCacheSessionListener {
   UserAvatarCacheSessionListener({

@@ -1,11 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/infra/storage/secure/token_secure_storage.dart';
-import 'package:mobile_core_kit/core/session/cached_user_store.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_repository_impl.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}

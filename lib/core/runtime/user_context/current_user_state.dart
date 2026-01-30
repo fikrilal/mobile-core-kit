@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:mobile_core_kit/core/session/session_failure.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 
 enum CurrentUserStatus { signedOut, authPending, available }
 

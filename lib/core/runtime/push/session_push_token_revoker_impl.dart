@@ -1,6 +1,6 @@
+import 'package:mobile_core_kit/core/domain/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/runtime/push/push_token_registrar.dart';
-import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
 
 class SessionPushTokenRevokerImpl implements SessionPushTokenRevoker {
   SessionPushTokenRevokerImpl(this._registrar);

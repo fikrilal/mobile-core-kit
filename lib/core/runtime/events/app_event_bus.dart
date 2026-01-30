@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:mobile_core_kit/core/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
 
 /// Simple application-wide event bus using a broadcast stream.
 class AppEventBus {

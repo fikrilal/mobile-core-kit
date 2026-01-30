@@ -159,16 +159,19 @@ Checkpoint:
 
 Goal: keep cross-cutting entities + ports pure while moving orchestration into runtime.
 
-- [ ] Move pure session/user contracts:
-  - `lib/core/user/**` → `lib/core/domain/user/**`
-  - `lib/core/session/entity/**` + ports/interfaces → `lib/core/domain/session/**`
-- [ ] Move orchestrators:
-  - `SessionManager` → `lib/core/runtime/session/**`
-  - startup/user_context/event bus → `lib/core/runtime/**`
-- [ ] Re-wire DI and update imports.
+- [x] Move pure session/user contracts:
+  - `lib/core/domain/session/**` now owns: entities + ports (repo, refresh, push revoke, etc.)
+  - `lib/core/domain/user/**` now owns: user entities + `CurrentUserFetcher`
+  - added `SessionDriver` so feature domain can depend on session abstraction (not runtime)
+- [x] Move runtime orchestration:
+  - `SessionManager` + `SessionRepositoryImpl` → `lib/core/runtime/session/**`
+  - `AppEventBus` → `lib/core/runtime/events/**` (and moved `AppEventListener` widget out of design system)
+- [x] Move shared remote DTO/model:
+  - `MeModel` → `lib/core/infra/network/model/remote/**`
+- [x] Re-wire DI and update imports/tests.
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 8 — Update docs + project map (post-move)
 

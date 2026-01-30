@@ -1,5 +1,5 @@
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
+import 'package:mobile_core_kit/core/domain/session/session_driver.dart';
+import 'package:mobile_core_kit/core/domain/session/session_push_token_revoker.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 
@@ -10,20 +10,20 @@ class LogoutFlowUseCase {
   LogoutFlowUseCase({
     required LogoutRemoteUseCase logoutRemote,
     required SessionPushTokenRevoker pushTokenRevoker,
-    required SessionManager sessionManager,
+    required SessionDriver session,
   }) : _logoutRemote = logoutRemote,
        _pushTokenRevoker = pushTokenRevoker,
-       _sessionManager = sessionManager;
+       _session = session;
 
   final LogoutRemoteUseCase _logoutRemote;
   final SessionPushTokenRevoker _pushTokenRevoker;
-  final SessionManager _sessionManager;
+  final SessionDriver _session;
 
   static const Duration _pushRevokeTimeout = Duration(seconds: 2);
   static const Duration _remoteRevokeTimeout = Duration(seconds: 5);
 
   Future<void> call({String reason = 'manual_logout'}) async {
-    final refreshToken = _sessionManager.session?.tokens.refreshToken;
+    final refreshToken = _session.session?.tokens.refreshToken;
 
     if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
@@ -41,6 +41,6 @@ class LogoutFlowUseCase {
       }
     }
 
-    await _sessionManager.logout(reason: reason);
+    await _session.logout(reason: reason);
   }
 }

@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/core/events/app_event.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
+import 'package:mobile_core_kit/core/domain/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/session_failure.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
-import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSessionManager extends Mock implements SessionManager {}

@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
-import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/account_deletion_entity.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart';
 
 part 'user_entity.freezed.dart';
 

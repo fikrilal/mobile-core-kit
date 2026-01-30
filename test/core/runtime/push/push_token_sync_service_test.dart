@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/storage/prefs/push/push_token_sync_store.dart';
@@ -10,9 +12,7 @@ import 'package:mobile_core_kit/core/platform/push/push_platform.dart';
 import 'package:mobile_core_kit/core/runtime/push/push_error_codes.dart';
 import 'package:mobile_core_kit/core/runtime/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/core/runtime/push/push_token_sync_service.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSessionManager extends Mock implements SessionManager {}

@@ -1,19 +1,19 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
+import 'package:mobile_core_kit/core/domain/session/session_push_token_revoker.dart';
+import 'package:mobile_core_kit/core/domain/session/session_repository.dart';
+import 'package:mobile_core_kit/core/domain/session/token_refresher.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/platform/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/platform/federated_auth/google_federated_auth_service.dart';
 import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
-import 'package:mobile_core_kit/core/session/cached_user_store.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/refresh_request_entity.dart';
-import 'package:mobile_core_kit/core/session/session_failure.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
-import 'package:mobile_core_kit/core/session/session_repository.dart';
-import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
-import 'package:mobile_core_kit/core/session/token_refresher.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
@@ -147,7 +147,7 @@ class AuthModule {
         () => LogoutFlowUseCase(
           logoutRemote: getIt<LogoutRemoteUseCase>(),
           pushTokenRevoker: getIt<SessionPushTokenRevoker>(),
-          sessionManager: getIt<SessionManager>(),
+          session: getIt<SessionManager>(),
         ),
       );
     }

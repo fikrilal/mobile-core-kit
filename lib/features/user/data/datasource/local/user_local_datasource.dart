@@ -1,6 +1,6 @@
+import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/infra/database/app_database.dart';
-import 'package:mobile_core_kit/core/session/cached_user_store.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/user/data/model/local/user_local_model.dart';
 import 'package:sqflite/sqflite.dart';

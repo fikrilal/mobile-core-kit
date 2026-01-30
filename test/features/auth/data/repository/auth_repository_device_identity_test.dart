@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
 import 'package:mobile_core_kit/core/platform/device_identity/device_identity.dart';
 import 'package:mobile_core_kit/core/platform/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/platform/federated_auth/google_federated_auth_service.dart';
-import 'package:mobile_core_kit/core/user/model/remote/me_model.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/auth_response_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_model.dart';

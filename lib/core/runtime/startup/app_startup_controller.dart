@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
+import 'package:mobile_core_kit/core/domain/user/current_user_fetcher.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/platform/connectivity/connectivity_service.dart';
 import 'package:mobile_core_kit/core/platform/connectivity/network_status.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/startup_metrics.dart';
-import 'package:mobile_core_kit/core/session/session_failure.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/user/current_user_fetcher.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 
 enum AppStartupStatus { idle, initializing, ready }
 

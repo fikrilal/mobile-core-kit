@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mobile_core_kit/core/events/app_event.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
 
 /// Listens to global [AppEvent]s and surfaces cross-cutting UI side-effects.
 ///
