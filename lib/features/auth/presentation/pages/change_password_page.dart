@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
+import 'package:mobile_core_kit/core/design_system/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/localization/validation_error_localizer.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
@@ -12,7 +13,6 @@ import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_state.dart';
-import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 
 class ChangePasswordPage extends StatelessWidget {

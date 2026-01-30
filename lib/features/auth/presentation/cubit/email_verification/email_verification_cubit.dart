@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_state.dart';
 
 class EmailVerificationCubit extends Cubit<EmailVerificationState> {

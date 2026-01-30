@@ -1,8 +1,8 @@
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/upload/presigned_upload_client.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/error/profile_image_error_codes.dart';
 import 'package:mobile_core_kit/features/user/data/error/user_failure_mapper.dart';
 

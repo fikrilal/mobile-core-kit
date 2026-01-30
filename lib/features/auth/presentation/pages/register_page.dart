@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
+import 'package:mobile_core_kit/core/design_system/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
@@ -11,7 +12,6 @@ import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_state.dart';
-import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
 class RegisterPage extends StatelessWidget {

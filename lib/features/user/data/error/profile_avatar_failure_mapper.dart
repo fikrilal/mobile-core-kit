@@ -1,5 +1,5 @@
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/download/presigned_download_client.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 
 AuthFailure mapProfileAvatarDownloadFailure(PresignedDownloadFailure failure) {
   final statusCode = failure.statusCode;

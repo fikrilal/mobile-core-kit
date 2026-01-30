@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
+import 'package:mobile_core_kit/core/design_system/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/localization/validation_error_localizer.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
@@ -9,7 +10,6 @@ import 'package:mobile_core_kit/core/design_system/theme/typography/components/t
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
-import 'package:mobile_core_kit/features/auth/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_state.dart';
 

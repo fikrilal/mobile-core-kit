@@ -7,6 +7,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
@@ -34,7 +35,6 @@ import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confi
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';

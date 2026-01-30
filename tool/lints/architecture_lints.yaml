@@ -46,11 +46,6 @@ rules:
       - from: lib/features/user/**
         allow:
           - lib/features/user/**
-          # TEMP: user feature reuses auth failure + VO contract.
-          # TODO(guardrails): move shared auth/user failures + value failures to `lib/core/**`.
-          - lib/features/auth/domain/failure/**
-          - lib/features/auth/domain/value/value_failure.dart
-          - lib/features/auth/presentation/localization/auth_failure_localizer.dart
 
   # Clean Architecture boundaries inside features.
   - id: feature_domain_no_data_or_presentation

@@ -11,12 +11,12 @@ lint-enforced.
 
 ## Target outcomes (definition of done)
 
-- [ ] **Core layering exists and is discoverable**: new folder tree under `lib/core/` matches the proposal.
-- [ ] **Core dependency rules are enforced** by `custom_lint` (`tool/lints/architecture_lints.yaml`).
-- [ ] **No catch-all `core/services/**` bucket** remains (classes may still be named `*Service`).
-- [ ] **Feature architecture unchanged**: `lib/features/*/{data,domain,presentation,di}/` remains stable.
-- [ ] **No new cross-feature imports** are introduced; existing TEMP allowlists do not expand.
-- [ ] **Verification is green**: `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`.
+- [x] **Core layering exists and is discoverable**: new folder tree under `lib/core/` matches the proposal.
+- [x] **Core dependency rules are enforced** by `custom_lint` (`tool/lints/architecture_lints.yaml`).
+- [x] **No catch-all `core/services/**` bucket** remains (classes may still be named `*Service`).
+- [x] **Feature architecture unchanged**: `lib/features/*/{data,domain,presentation,di}/` remains stable.
+- [x] **No new cross-feature imports** are introduced; existing TEMP allowlists do not expand.
+- [x] **Verification is green**: `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`.
 
 ## Working agreements
 
@@ -175,24 +175,24 @@ Checkpoint:
 
 ## Phase 8 — Update docs + project map (post-move)
 
-- [ ] Update `docs/engineering/project_architecture.md` core tree.
-- [ ] Update `README.md` “Project Structure” section.
-- [ ] Update any deep docs referencing moved paths (especially `docs/core/session/**`).
+- [x] Update `docs/engineering/project_architecture.md` core tree.
+- [x] Update `README.md` “Project Structure” section.
+- [x] Update any deep docs referencing moved paths (especially `docs/core/session/**`).
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 9 — Clean up temporary architecture allowlists (separate, intentional)
 
 Not part of the mechanical move, but enabled by it.
 
-- [ ] Remove TEMP auth↔user allowlists in `tool/lints/architecture_lints.yaml` by promoting shared contracts into:
+- [x] Remove TEMP auth↔user allowlists in `tool/lints/architecture_lints.yaml` by promoting shared contracts into:
   - `lib/core/foundation/**` (generic failures/validation/value failures)
   - `lib/core/domain/**` (cross-cutting domain contracts)
   - `lib/core/design_system/**` (shared localizers/widgets)
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Notes / Risks
 

@@ -58,12 +58,12 @@ See also: `docs/engineering/project_architecture.md`.
 
 ## 4) Error Messages & Localization
 
-- Domain failures (e.g., `ValueFailure`, feature‑specific failures) expose `userMessage` for UI‑friendly copy.
-- Keep message mapping close to domain so both Bloc/Cubit and use cases reuse them.
+- Domain failures (e.g., `ValueFailure`, feature‑specific failures) expose stable codes and/or typed variants.
+- Localize in UI (or UI-adjacent helpers) via the template localizers.
 - Files:
-  - `lib/features/auth/domain/value/value_failure.dart:1` → `ValueFailureX.userMessage`
-  - `lib/features/auth/domain/failure/auth_failure.dart:1` → `AuthFailureX.userMessage`
-  - `lib/core/validation/validation_error_localizer.dart:1` → `messageForValidationError(...)`
+  - `lib/core/foundation/validation/value_failure.dart:1` → `ValueFailureX.code`
+  - `lib/core/domain/auth/auth_failure.dart:1` → `AuthFailure` (typed variants)
+  - `lib/core/design_system/localization/validation_error_localizer.dart:1` → `messageForValidationError(...)`
 
 ## 5) Real‑Time + Submit‑Time Flow
 
@@ -157,8 +157,8 @@ Practical pattern:
   - `lib/features/auth/domain/usecase/register_user_usecase.dart:1`
 
 - Failures and messages
-  - `lib/features/auth/domain/value/value_failure.dart:1`
-  - `lib/features/auth/domain/failure/auth_failure.dart:1`
+  - `lib/core/foundation/validation/value_failure.dart:1`
+  - `lib/core/domain/auth/auth_failure.dart:1`
 
 - Bloc/Cubit patterns (real‑time validation)
   - `lib/features/auth/presentation/cubit/login/login_cubit.dart:1`

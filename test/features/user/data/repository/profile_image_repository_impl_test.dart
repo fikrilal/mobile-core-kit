@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/infra/network/upload/presigned_upload_request.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_image_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/profile_image_upload_plan_model.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/profile_image_url_model.dart';

@@ -264,7 +264,7 @@ For now, profile image failures map into `AuthFailure` for consistency with exis
 
 UI uses the existing localizer:
 
-- `features/auth/presentation/localization/auth_failure_localizer.dart`
+- `core/design_system/localization/auth_failure_localizer.dart`
 
 ---
 

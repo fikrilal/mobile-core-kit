@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
@@ -16,7 +17,6 @@ import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/data/datasource/remote/auth_remote_datasource.dart';
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';

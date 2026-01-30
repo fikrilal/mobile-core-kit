@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 
 part 'profile_image_state.freezed.dart';
 

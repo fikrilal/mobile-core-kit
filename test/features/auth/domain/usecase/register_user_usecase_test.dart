@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
@@ -7,7 +8,6 @@ import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mocktail/mocktail.dart';

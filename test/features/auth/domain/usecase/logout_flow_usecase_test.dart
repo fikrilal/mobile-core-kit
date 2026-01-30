@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
@@ -13,7 +14,6 @@ import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mocktail/mocktail.dart';
