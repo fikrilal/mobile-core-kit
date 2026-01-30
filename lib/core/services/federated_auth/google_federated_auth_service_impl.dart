@@ -1,5 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';
 

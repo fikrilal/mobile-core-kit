@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/core/network/api/api_response.dart';
-import 'package:mobile_core_kit/core/network/api/no_data.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/push_error_codes.dart';
 import 'package:mobile_core_kit/core/services/push/push_platform.dart';

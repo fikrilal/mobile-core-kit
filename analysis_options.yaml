@@ -86,9 +86,8 @@ custom_lint:
       rules:
         - uri: package:dio/dio.dart
           allow:
-            - lib/core/network/**
             - lib/core/infra/network/**
-          message: Use `lib/core/network/**` wrappers (ApiClient/ApiHelper).
+          message: Use `lib/core/infra/network/**` wrappers (ApiClient/ApiHelper).
         - uri: package:firebase_analytics/firebase_analytics.dart
           allow:
             - lib/core/services/analytics/**
@@ -116,9 +115,8 @@ custom_lint:
           message: Use shared preferences only in stores/services; avoid direct usage in most features.
         - uri: package:flutter_secure_storage/flutter_secure_storage.dart
           allow:
-            - lib/core/storage/secure/**
             - lib/core/infra/storage/secure/**
-          message: Use secure storage wrappers under `lib/core/storage/secure/**`.
+          message: Use secure storage wrappers under `lib/core/infra/storage/secure/**`.
         - uri: dart:developer
           allow:
             - lib/core/foundation/utilities/log_utils.dart

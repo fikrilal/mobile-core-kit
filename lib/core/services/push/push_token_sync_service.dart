@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
-import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
+import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/services/push/fcm_token_provider.dart';
 import 'package:mobile_core_kit/core/services/push/push_error_codes.dart';
 import 'package:mobile_core_kit/core/services/push/push_platform.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';

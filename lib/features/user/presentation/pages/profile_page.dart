@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_context.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/adaptive_modal.dart';
@@ -18,6 +17,7 @@ import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmati
 import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';

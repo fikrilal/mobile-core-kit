@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/localization/locale_store.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';

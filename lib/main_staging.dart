@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/app.dart';
-import 'package:mobile_core_kit/core/configs/app_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/foundation/config/app_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/services/early_errors/early_error_buffer.dart';

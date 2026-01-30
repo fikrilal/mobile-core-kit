@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/core/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';

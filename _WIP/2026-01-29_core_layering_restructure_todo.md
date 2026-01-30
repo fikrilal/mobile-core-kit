@@ -118,18 +118,22 @@ Checkpoint:
 
 ## Phase 5 — Move infra (network/storage/database/config)
 
-- [ ] Move `lib/core/network/**` → `lib/core/infra/network/**`
-- [ ] Move `lib/core/storage/**` → `lib/core/infra/storage/**`
-- [ ] Move `lib/core/database/**` → `lib/core/infra/database/**`
-- [ ] Move `lib/core/configs/**` → `lib/core/infra/config/**` (or `infra/configs/**`, decide once)
-- [ ] Update imports in:
+- [x] Move `lib/core/network/**` → `lib/core/infra/network/**`
+- [x] Move `lib/core/storage/**` → `lib/core/infra/storage/**`
+- [x] Move `lib/core/database/**` → `lib/core/infra/database/**`
+- [x] Move `lib/core/configs/**` → `lib/core/foundation/config/**` (compile-time config; used by foundation logging)
+- [x] Update imports in:
   - `lib/core/di/**`
   - feature datasources (`lib/features/*/data/datasource/**`)
   - runtime/session/interceptors
-- [ ] Update `restricted_imports` allowlists for `dio`, `sqflite`, storage packages.
+- [x] Update `restricted_imports` allowlists for `dio`, `sqflite`, storage packages.
+ - [x] Move mirrored tests:
+   - `test/core/network/**` → `test/core/infra/network/**`
+ - [x] Update `tool/gen_config.dart` output path for the moved build config values.
+ - [x] Update `.gitignore` entry for generated `build_config_values.dart`.
 
 Checkpoint:
-- [ ] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ## Phase 6 — Split “services” into `platform/**` vs `runtime/**`
 

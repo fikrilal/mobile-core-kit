@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 
 /// Centralized logging utility for the app.
 ///

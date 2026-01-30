@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
-import 'package:mobile_core_kit/core/network/api/api_response_either.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';

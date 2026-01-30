@@ -54,7 +54,7 @@ app.*.map.json
 # Environment configuration
 .env/*.yaml
 !.env/*.example.yaml
-lib/core/configs/build_config_values.dart
+lib/core/foundation/config/build_config_values.dart
 
 # Localization (gen-l10n)
 lib/l10n/gen/

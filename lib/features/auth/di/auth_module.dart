@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/services/federated_auth/google_federated_auth_service.dart';

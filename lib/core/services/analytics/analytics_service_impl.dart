@@ -1,6 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:mobile_core_kit/core/configs/app_config.dart';
-import 'package:mobile_core_kit/core/configs/build_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/app_config.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_events.dart';
 import 'package:mobile_core_kit/core/services/analytics/analytics_service.dart';

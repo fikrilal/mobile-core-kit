@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:mobile_core_kit/core/foundation/utilities/uuid_v4_utils.dart';
+import 'package:mobile_core_kit/core/infra/storage/secure/device_identity_secure_storage.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity_service.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_info_plus_device_name_resolver.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_name_resolver.dart';
-import 'package:mobile_core_kit/core/storage/secure/device_identity_secure_storage.dart';
 
 class DeviceIdentityServiceImpl implements DeviceIdentityService {
   DeviceIdentityServiceImpl({

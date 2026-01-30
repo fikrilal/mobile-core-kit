@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/infra/storage/secure/token_secure_storage.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
@@ -9,7 +10,6 @@ import 'package:mobile_core_kit/core/session/session_failure.dart';
 import 'package:mobile_core_kit/core/session/session_manager.dart';
 import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/core/session/token_refresher.dart';
-import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mocktail/mocktail.dart';
 

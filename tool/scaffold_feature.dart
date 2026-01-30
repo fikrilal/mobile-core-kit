@@ -575,7 +575,7 @@ final class ${failureClass}Unexpected extends $failureClass {
 String _remoteDatasourceStub(String featurePascal) {
   final datasourceClass = '${featurePascal}RemoteDataSource';
   return '''
-import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 
 class $datasourceClass {
   $datasourceClass(this._apiHelper);

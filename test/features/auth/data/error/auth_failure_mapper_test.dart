@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/core/network/exceptions/api_error_codes.dart';
-import 'package:mobile_core_kit/core/network/exceptions/api_failure.dart';
+import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
+import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_error_codes.dart';
 import 'package:mobile_core_kit/features/auth/data/error/auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';

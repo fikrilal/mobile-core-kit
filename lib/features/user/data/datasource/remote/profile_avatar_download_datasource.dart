@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
+import 'package:mobile_core_kit/core/infra/network/download/presigned_download_client.dart';
 
 /// Feature-level wrapper around [PresignedDownloadClient] for downloading the
 /// profile avatar bytes from a presigned render URL.

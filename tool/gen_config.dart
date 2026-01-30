@@ -132,7 +132,7 @@ void main(List<String> argv) {
       );
   }
 
-  const outputPath = 'lib/core/configs/build_config_values.dart';
+  const outputPath = 'lib/core/foundation/config/build_config_values.dart';
   File(outputPath).writeAsStringSync(buffer.toString());
 
   final formatResult = Process.runSync(Platform.resolvedExecutable, [

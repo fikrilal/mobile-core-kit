@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_core_kit/core/database/app_database.dart';
-import 'package:mobile_core_kit/core/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/database/app_database.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/user/entity/user_profile_entity.dart';

@@ -1,10 +1,10 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_core_kit/core/database/app_database.dart';
 import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/network/api/api_helper.dart';
-import 'package:mobile_core_kit/core/network/download/presigned_download_client.dart';
-import 'package:mobile_core_kit/core/network/upload/presigned_upload_client.dart';
+import 'package:mobile_core_kit/core/infra/database/app_database.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/download/presigned_download_client.dart';
+import 'package:mobile_core_kit/core/infra/network/upload/presigned_upload_client.dart';
 import 'package:mobile_core_kit/core/services/push/push_token_registrar.dart';
 import 'package:mobile_core_kit/core/services/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/core/session/cached_user_store.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_core_kit/core/infra/storage/secure/device_identity_secure_storage.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_identity_service_impl.dart';
 import 'package:mobile_core_kit/core/services/device_identity/device_name_resolver.dart';
-import 'package:mobile_core_kit/core/storage/secure/device_identity_secure_storage.dart';
 
 class _FakeDeviceIdentitySecureStorage implements DeviceIdentitySecureStorage {
   String? _deviceId;
