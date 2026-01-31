@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fpdart/fpdart.dart';
 
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/complete_profile_image_upload_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/create_profile_image_upload_plan_request_entity.dart';

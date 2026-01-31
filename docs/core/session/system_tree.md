@@ -17,11 +17,13 @@ This is enforced by architecture linting (`custom_lint`), so the system remains 
 
 ## High-level directory ownership
 
-- `lib/core/session/**` — session orchestration (tokens, restore, refresh, logout) and the **interfaces** needed by core to stay independent.
-- `lib/core/user/**` — core user entity + user-fetch abstraction.
-- `lib/core/services/app_startup/**` — startup hydration gate (runs once on boot; best-effort + safe).
-- `lib/core/services/user_context/**` — UI-facing “current user” view model and refresh API.
-- `lib/core/network/**` — request-time auth header injection + refresh/retry policy.
+- `lib/core/domain/session/**` — session entities + ports (persist, refresh, logout policy).
+- `lib/core/runtime/session/**` — session orchestration (restore/login/logout/refresh).
+- `lib/core/domain/user/**` — user identity entities + “fetch me” port.
+- `lib/core/runtime/startup/**` — startup hydration gate (runs once on boot; best-effort + safe).
+- `lib/core/runtime/user_context/**` — UI-facing “current user” view model and refresh API.
+- `lib/core/runtime/events/**` — app-level event bus + event types.
+- `lib/core/infra/network/**` — request-time auth header injection + refresh/retry policy.
 - `lib/features/auth/**` — login/logout/refresh flows + adapter implementing `TokenRefresher`.
 - `lib/features/user/**` — `GET /me` + local persistence + adapters implementing:
   - `CurrentUserFetcher`
@@ -36,37 +38,39 @@ lib/
 ├─ core/
 │  ├─ di/
 │  │  └─ service_locator.dart
-│  ├─ events/
-│  │  ├─ app_event.dart
-│  │  └─ app_event_bus.dart
-│  ├─ network/
-│  │  ├─ api/
-│  │  │  └─ api_client.dart
-│  │  └─ interceptors/
-│  │     └─ auth_token_interceptor.dart
-│  ├─ services/
-│  │  ├─ app_startup/
-│  │  │  └─ app_startup_controller.dart
-│  │  └─ user_context/
-│  │     ├─ current_user_state.dart
-│  │     └─ user_context_service.dart
-│  ├─ session/
-│  │  ├─ cached_user_store.dart
-│  │  ├─ entity/
-│  │  │  ├─ auth_session_entity.dart
-│  │  │  └─ auth_tokens_entity.dart
-│  │  ├─ session_failure.dart
-│  │  ├─ session_manager.dart
-│  │  ├─ session_repository.dart
-│  │  ├─ session_repository_impl.dart
-│  │  └─ token_refresher.dart
-│  ├─ storage/
-│  │  └─ secure/
-│  │     └─ token_secure_storage.dart
-│  └─ user/
-│     ├─ current_user_fetcher.dart
-│     └─ entity/
-│        └─ user_entity.dart
+│  ├─ domain/
+│  │  ├─ session/
+│  │  │  ├─ entity/
+│  │  │  │  ├─ auth_session_entity.dart
+│  │  │  │  └─ auth_tokens_entity.dart
+│  │  │  ├─ session_failure.dart
+│  │  │  ├─ session_repository.dart
+│  │  │  └─ token_refresher.dart
+│  │  └─ user/
+│  │     ├─ current_user_fetcher.dart
+│  │     └─ entity/
+│  │        └─ user_entity.dart
+│  ├─ infra/
+│  │  ├─ network/
+│  │  │  ├─ api/
+│  │  │  │  └─ api_client.dart
+│  │  │  └─ interceptors/
+│  │  │     └─ auth_token_interceptor.dart
+│  │  └─ storage/
+│  │     └─ secure/
+│  │        └─ token_secure_storage.dart
+│  └─ runtime/
+│     ├─ events/
+│     │  ├─ app_event.dart
+│     │  └─ app_event_bus.dart
+│     ├─ startup/
+│     │  └─ app_startup_controller.dart
+│     ├─ user_context/
+│     │  ├─ current_user_state.dart
+│     │  └─ user_context_service.dart
+│     └─ session/
+│        ├─ session_manager.dart
+│        └─ session_repository_impl.dart
 └─ features/
    ├─ auth/
    │  └─ di/
@@ -95,24 +99,24 @@ lib/
 
 | Concept | Class / Type | File | Owned by |
 |---|---|---|---|
-| Session lifecycle | `SessionManager` | `lib/core/session/session_manager.dart` | Core |
-| Persist session | `SessionRepository` | `lib/core/session/session_repository.dart` | Core |
-| Persist session (impl) | `SessionRepositoryImpl` | `lib/core/session/session_repository_impl.dart` | Core |
-| Secure token IO | `TokenSecureStorage` | `lib/core/storage/secure/token_secure_storage.dart` | Core |
-| Cached user IO (interface) | `CachedUserStore` | `lib/core/session/cached_user_store.dart` | Core |
+| Session lifecycle | `SessionManager` | `lib/core/runtime/session/session_manager.dart` | Core |
+| Persist session | `SessionRepository` | `lib/core/domain/session/session_repository.dart` | Core |
+| Persist session (impl) | `SessionRepositoryImpl` | `lib/core/runtime/session/session_repository_impl.dart` | Core |
+| Secure token IO | `TokenSecureStorage` | `lib/core/infra/storage/secure/token_secure_storage.dart` | Core |
+| Cached user IO (interface) | `CachedUserStore` | `lib/core/domain/session/cached_user_store.dart` | Core |
 | Cached user IO (impl) | `UserLocalDataSource` | `lib/features/user/data/datasource/local/user_local_datasource.dart` | User feature |
-| Refresh tokens (interface) | `TokenRefresher` | `lib/core/session/token_refresher.dart` | Core |
+| Refresh tokens (interface) | `TokenRefresher` | `lib/core/domain/session/token_refresher.dart` | Core |
 | Refresh tokens (impl adapter) | `_AuthRepositoryTokenRefresher` | `lib/features/auth/di/auth_module.dart` | Auth feature |
-| Failure semantics | `SessionFailure` | `lib/core/session/session_failure.dart` | Core |
-| User identity | `UserEntity` | `lib/core/user/entity/user_entity.dart` | Core |
-| Fetch “me” (interface) | `CurrentUserFetcher` | `lib/core/user/current_user_fetcher.dart` | Core |
+| Failure semantics | `SessionFailure` | `lib/core/domain/session/session_failure.dart` | Core |
+| User identity | `UserEntity` | `lib/core/domain/user/entity/user_entity.dart` | Core |
+| Fetch “me” (interface) | `CurrentUserFetcher` | `lib/core/domain/user/current_user_fetcher.dart` | Core |
 | Fetch “me” (impl adapter) | `_GetMeCurrentUserFetcher` | `lib/features/user/di/user_module.dart` | User feature |
-| Startup hydration | `AppStartupController` | `lib/core/services/app_startup/app_startup_controller.dart` | Core |
-| UI current user | `UserContextService` | `lib/core/services/user_context/user_context_service.dart` | Core |
-| UI state | `CurrentUserState` | `lib/core/services/user_context/current_user_state.dart` | Core |
-| Refresh/retry policy | `AuthTokenInterceptor` | `lib/core/network/interceptors/auth_token_interceptor.dart` | Core |
-| Event bus | `AppEventBus` | `lib/core/events/app_event_bus.dart` | Core |
-| Session events | `SessionCleared`, `SessionExpired` | `lib/core/events/app_event.dart` | Core |
+| Startup hydration | `AppStartupController` | `lib/core/runtime/startup/app_startup_controller.dart` | Core |
+| UI current user | `UserContextService` | `lib/core/runtime/user_context/user_context_service.dart` | Core |
+| UI state | `CurrentUserState` | `lib/core/runtime/user_context/current_user_state.dart` | Core |
+| Refresh/retry policy | `AuthTokenInterceptor` | `lib/core/infra/network/interceptors/auth_token_interceptor.dart` | Core |
+| Event bus | `AppEventBus` | `lib/core/runtime/events/app_event_bus.dart` | Core |
+| Session events | `SessionCleared`, `SessionExpired` | `lib/core/runtime/events/app_event.dart` | Core |
 
 ## Why the system is split this way
 

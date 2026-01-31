@@ -27,8 +27,8 @@ Most endpoints should return:
 - Some endpoints may intentionally return a raw JSON body (e.g. health checks).
 
 Where it’s implemented:
-- Parsing is handled in `lib/core/network/api/api_helper.dart` (single place).
-- The parsed result type is `ApiResponse<T>` (`lib/core/network/api/api_response.dart`).
+- Parsing is handled in `lib/core/infra/network/api/api_helper.dart` (single place).
+- The parsed result type is `ApiResponse<T>` (`lib/core/infra/network/api/api_response.dart`).
 
 ### 1.2 Errors: RFC 7807 (`application/problem+json`)
 
@@ -46,7 +46,7 @@ Errors are expected to use Problem Details:
 ```
 
 Where it’s implemented:
-- Dio error mapping lives in `lib/core/network/exceptions/api_failure.dart`.
+- Dio error mapping lives in `lib/core/infra/network/exceptions/api_failure.dart`.
 - `ApiFailure.traceId` prefers `X-Request-Id` header, falling back to body `traceId`.
 
 ### 1.3 Request correlation: `X-Request-Id`
@@ -71,8 +71,8 @@ Cursor-list endpoints should return:
 ```
 
 Where it’s implemented:
-- `ApiPaginatedResult<T>` is cursor-based: `nextCursor`, `limit` (`lib/core/network/api/api_paginated_result.dart`).
-- Domain helpers are cursor-based: `DomainCursorPagination` (`lib/core/network/api/pagination_utils.dart`).
+- `ApiPaginatedResult<T>` is cursor-based: `nextCursor`, `limit` (`lib/core/infra/network/api/api_paginated_result.dart`).
+- Domain helpers are cursor-based: `DomainCursorPagination` (`lib/core/infra/network/api/pagination_utils.dart`).
 
 ### 1.5 Auth session payloads: `{ user, accessToken, refreshToken }`
 
@@ -107,7 +107,7 @@ The template aligns its automatic auth-retry policy with backend-core-kit’s id
 
 Where it’s implemented:
 
-- `AuthTokenInterceptor` enforces the retry rule: `lib/core/network/interceptors/auth_token_interceptor.dart`
+- `AuthTokenInterceptor` enforces the retry rule: `lib/core/infra/network/interceptors/auth_token_interceptor.dart`
 - Feature datasources must set `Idempotency-Key` when the operation is safe to retry (example: `PATCH /v1/me`).
 
 ---
@@ -121,7 +121,7 @@ Edit `.env/dev.yaml`, `.env/staging.yaml`, `.env/prod.yaml` and regenerate:
 `dart run tool/gen_config.dart --env dev`
 
 Then use:
-- `BuildConfig.apiUrl(ApiHost.core|auth|profile)` from `lib/core/configs/build_config.dart`.
+- `BuildConfig.apiUrl(ApiHost.core|auth|profile)` from `lib/core/foundation/config/build_config.dart`.
 
 See: `docs/template/env_config.md`.
 
@@ -138,16 +138,16 @@ In `.env/dev.yaml`, set `core/auth/profile` to a base URL reachable from your cl
 ### 2.2 Endpoint paths
 
 Endpoint constants live under:
-- `lib/core/network/endpoints/`
+- `lib/core/infra/network/endpoints/`
 
 Update those paths to match your backend routing (and keep feature routes grouped).
 
 ### 2.3 Auth header + token refresh behavior
 
 The request auth policy is driven by:
-- `requiresAuth` parameter in `ApiHelper` calls (`lib/core/network/api/api_helper.dart`)
-- `AuthTokenInterceptor` (Bearer token injection + refresh) (`lib/core/network/interceptors/auth_token_interceptor.dart`)
-- Session persistence and refresh logic (`lib/core/session/session_manager.dart`)
+- `requiresAuth` parameter in `ApiHelper` calls (`lib/core/infra/network/api/api_helper.dart`)
+- `AuthTokenInterceptor` (Bearer token injection + refresh) (`lib/core/infra/network/interceptors/auth_token_interceptor.dart`)
+- Session persistence and refresh logic (`lib/core/runtime/session/session_manager.dart`)
 
 If your backend’s auth scheme differs (header name, token type, refresh flow), change these in
 the interceptor/session layer (not in each feature datasource).
@@ -155,7 +155,7 @@ the interceptor/session layer (not in each feature datasource).
 ### 2.4 Response envelope changes (if your backend differs)
 
 If your backend does **not** return `{ data, meta? }`:
-- Update parsing in one place: `lib/core/network/api/api_helper.dart`
+- Update parsing in one place: `lib/core/infra/network/api/api_helper.dart`
   - `_processResponse(...)` should recognize the backend shape
   - `_parseData(...)` should extract the payload and preserve metadata
 - Update `ApiFailure.fromDioException` only if your error shape is not RFC 7807.
@@ -173,7 +173,7 @@ If your backend uses offset/page pagination instead of cursor:
 
 ## 3) Adding a new API call (recommended pattern)
 
-1) Add/confirm the endpoint constant under `lib/core/network/endpoints/...`.
+1) Add/confirm the endpoint constant under `lib/core/infra/network/endpoints/...`.
 2) In the feature `RemoteDataSource`, call `ApiHelper` with a typed parser:
    - `getOne<T>()` for objects
    - `getList<T>()` for arrays

@@ -22,10 +22,10 @@ custom_lint:
       include:
         - lib/**
       allow_prefixes:
-        - lib/core/adaptive/widgets/
+        - lib/core/design_system/adaptive/widgets/
     - hardcoded_ui_colors:
       include:
-        - lib/core/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
@@ -33,50 +33,50 @@ custom_lint:
         - Colors.transparent
     - hardcoded_font_sizes:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - manual_text_scaling:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - spacing_tokens:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - radius_tokens:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - state_opacity_tokens:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - motion_durations:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
     - icon_size_tokens:
       include:
-        - lib/core/adaptive/widgets/**
-        - lib/core/widgets/**
+        - lib/core/design_system/adaptive/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**
@@ -86,40 +86,41 @@ custom_lint:
       rules:
         - uri: package:dio/dio.dart
           allow:
-            - lib/core/network/**
-          message: Use `lib/core/network/**` wrappers (ApiClient/ApiHelper).
+            - lib/core/infra/network/**
+          message: Use `lib/core/infra/network/**` wrappers (ApiClient/ApiHelper).
         - uri: package:firebase_analytics/firebase_analytics.dart
           allow:
-            - lib/core/services/analytics/**
-          message: Use analytics wrappers under `lib/core/services/analytics/**`.
+            - lib/core/runtime/analytics/**
+          message: Use analytics wrappers under `lib/core/runtime/analytics/**`.
         - uri: package:firebase_crashlytics/firebase_crashlytics.dart
           allow:
-            - lib/core/services/early_errors/**
-            - lib/core/utilities/log_utils.dart
+            - lib/core/platform/crash_reporting/**
+            - lib/core/runtime/early_errors/**
+            - lib/core/foundation/utilities/log_utils.dart
             - lib/core/di/**
-          message: Use crash reporting wrappers under `lib/core/services/early_errors/**`.
+          message: Use crash reporting wrappers under `lib/core/platform/crash_reporting/**`.
         - uri: package:firebase_messaging/firebase_messaging.dart
           allow:
-            - lib/core/services/push/**
+            - lib/core/platform/push/**
             - lib/main*.dart
-          message: Use push wrappers under `lib/core/services/push/**`.
+          message: Use push wrappers under `lib/core/platform/push/**`.
         - uri: package:shared_preferences/shared_preferences.dart
           allow:
-            - lib/core/services/**
+            - lib/core/infra/storage/prefs/**
             - lib/features/user/data/datasource/local/profile_draft_local_datasource.dart
             - lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart
           message: Use shared preferences only in stores/services; avoid direct usage in most features.
         - uri: package:flutter_secure_storage/flutter_secure_storage.dart
           allow:
-            - lib/core/storage/secure/**
-          message: Use secure storage wrappers under `lib/core/storage/secure/**`.
+            - lib/core/infra/storage/secure/**
+          message: Use secure storage wrappers under `lib/core/infra/storage/secure/**`.
         - uri: dart:developer
           allow:
-            - lib/core/utilities/log_utils.dart
-          message: Use `Log.*` helpers from `lib/core/utilities/log_utils.dart`.
+            - lib/core/foundation/utilities/log_utils.dart
+          message: Use `Log.*` helpers from `lib/core/foundation/utilities/log_utils.dart`.
     - hardcoded_ui_strings:
       include:
-        - lib/core/widgets/**
+        - lib/core/design_system/widgets/**
         - lib/features/**
         - lib/navigation/**
         - lib/presentation/**

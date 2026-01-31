@@ -35,7 +35,7 @@ Future<int> _run(List<String> argv) async {
     return 2;
   }
 
-  final allowPrefixes = <String>['lib/core/adaptive/widgets/'];
+  final allowPrefixes = <String>['lib/core/design_system/adaptive/widgets/'];
 
   final bannedCalls = <_BannedCall>[
     _BannedCall('showDialog', RegExp(r'\bshowDialog\s*(?:<|\()')),

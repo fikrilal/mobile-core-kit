@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_core_kit/core/adaptive/widgets/adaptive_modal.dart';
-import 'package:mobile_core_kit/core/localization/l10n.dart';
-import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
-import 'package:mobile_core_kit/core/theme/tokens/sizing.dart';
-import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
-import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
-import 'package:mobile_core_kit/core/widgets/badge/app_icon_badge.dart';
-import 'package:mobile_core_kit/core/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/widgets/adaptive_modal.dart';
+import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
+import 'package:mobile_core_kit/core/design_system/theme/tokens/sizing.dart';
+import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/badge/app_icon_badge.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ThemeModeSettingTile extends StatelessWidget {

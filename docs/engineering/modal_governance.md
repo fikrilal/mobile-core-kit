@@ -16,8 +16,8 @@ The goal is to keep UX consistent across phone + tablet, avoid duplicated heuris
   - `showCupertinoModalPopup`
   - `showCupertinoDialog`
 - Feature code MUST use one of:
-  - `showAdaptiveModal` (`lib/core/adaptive/widgets/adaptive_modal.dart`)
-  - `showAdaptiveSideSheet` (`lib/core/adaptive/widgets/adaptive_side_sheet.dart`)
+  - `showAdaptiveModal` (`lib/core/design_system/adaptive/widgets/adaptive_modal.dart`)
+  - `showAdaptiveSideSheet` (`lib/core/design_system/adaptive/widgets/adaptive_side_sheet.dart`)
   - A core wrapper (example: `showAppConfirmationDialog`)
 - New modal entrypoints SHOULD be added as **core wrappers** (not copied per feature).
 
@@ -40,7 +40,7 @@ The repo includes a guardrail script:
 dart run tool/verify_modal_entrypoints.dart
 ```
 
-It fails the build if disallowed modal APIs are used outside the allowlist (currently only `lib/core/adaptive/widgets/`).
+It fails the build if disallowed modal APIs are used outside the allowlist (currently only `lib/core/design_system/adaptive/widgets/`).
 
 `dart run tool/verify.dart` runs this check automatically.
 
@@ -85,7 +85,7 @@ if (confirmed == true) {
 }
 ```
 
-If you need a new modal type, create a wrapper under `lib/core/widgets/…` (or `lib/core/adaptive/widgets/…` if it’s purely adaptive) that delegates to `showAdaptiveModal` / `showAdaptiveSideSheet`.
+If you need a new modal type, create a wrapper under `lib/core/design_system/widgets/…` (or `lib/core/design_system/adaptive/widgets/…` if it’s purely adaptive) that delegates to `showAdaptiveModal` / `showAdaptiveSideSheet`.
 
 ## Anti-patterns
 

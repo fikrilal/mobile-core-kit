@@ -257,5 +257,5 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
 
 - `docs/engineering/api/api_pagination_cursor_support.md` — cursor pagination contract (`nextCursor`).
 - `docs/engineering/api/api_error_handling_contract.md` — error payload + mapping rules.
-- `lib/core/network/api/api_documentation.md` — `ApiHelper` usage patterns and examples.
+- `lib/core/infra/network/api/api_documentation.md` — `ApiHelper` usage patterns and examples.
 - UI state, VO validation, and architecture docs under `docs/engineering/`.

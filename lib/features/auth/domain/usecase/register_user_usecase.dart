@@ -1,12 +1,12 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 class RegisterUserUseCase {
   final AuthRepository _repository;

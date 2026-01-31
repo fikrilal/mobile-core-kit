@@ -11,7 +11,7 @@ Use semantic roles:
 - `context.textPrimary`, `context.textSecondary`, `context.border`, `context.hairline`, etc. — convenience aliases in `ThemeRoleColors`.
 
 In this repo, the roles are generated from seeds in:
-- `lib/core/theme/system/app_color_seeds.dart:1`
+- `lib/core/design_system/theme/system/app_color_seeds.dart:1`
 
 Design/engineering handoff for seeds:
 - `docs/explainers/core/theme/color_seed_intake.md`
@@ -140,7 +140,7 @@ return DecoratedBox(
 
 ## Changing colors safely
 
-1) Update seed values in `lib/core/theme/system/app_color_seeds.dart:1`
+1) Update seed values in `lib/core/design_system/theme/system/app_color_seeds.dart:1`
 2) Run the contrast gate:
    - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
 3) If the gate fails, do not “pick prettier `on*` colors” in widgets; adjust seeds (or discuss a move to a custom tonal mapping strategy).

@@ -59,7 +59,7 @@ Enforced by:
 
 Pipeline:
 
-1) Seeds in `lib/core/theme/system/app_color_seeds.dart`
+1) Seeds in `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) `AppColorSchemeBuilder` derives:
    - `ColorScheme` (light + dark)
    - `SemanticColors` (success/info/warning roles)

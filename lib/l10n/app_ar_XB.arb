@@ -53,6 +53,18 @@
   "@commonChangeProfilePhoto": {
     "description": "Accessibility label for the action that changes the profile photo/avatar."
   },
+  "commonChooseFromGallery": "⟪RTL⟫ Choose from gallery",
+  "@commonChooseFromGallery": {
+    "description": "Action label for choosing an image from the device photo library/gallery."
+  },
+  "commonTakePhoto": "⟪RTL⟫ Take photo",
+  "@commonTakePhoto": {
+    "description": "Action label for taking a photo with the device camera."
+  },
+  "commonRemovePhoto": "⟪RTL⟫ Remove photo",
+  "@commonRemovePhoto": {
+    "description": "Action label for removing an existing profile photo."
+  },
   "commonItemsCount": "{count, plural, =0{⟪RTL⟫ No items} one{⟪RTL⟫ 1 item} other{⟪RTL⟫ {count} items}}",
   "@commonItemsCount": {
     "description": "Human-friendly label for an item count with proper pluralization.",
@@ -94,6 +106,22 @@
   "errorsValidation": "⟪RTL⟫ Please fix the highlighted errors.",
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "mediaErrorsCameraPermissionDenied": "⟪RTL⟫ Camera permission denied. Enable it in Settings to continue.",
+  "@mediaErrorsCameraPermissionDenied": {
+    "description": "Message shown when the app does not have camera permission while attempting to take a photo."
+  },
+  "mediaErrorsPhotoPermissionDenied": "⟪RTL⟫ Photos permission denied. Enable it in Settings to continue.",
+  "@mediaErrorsPhotoPermissionDenied": {
+    "description": "Message shown when the app does not have photo library permission while attempting to pick an image."
+  },
+  "mediaErrorsUnsupportedImageFormat": "⟪RTL⟫ Unsupported image format. Please choose a JPEG, PNG, or WebP image.",
+  "@mediaErrorsUnsupportedImageFormat": {
+    "description": "Message shown when the selected image cannot be decoded or is not in a supported format."
+  },
+  "mediaErrorsImageTooLarge": "⟪RTL⟫ Image is too large. Please choose a smaller image.",
+  "@mediaErrorsImageTooLarge": {
+    "description": "Message shown when the selected image cannot be resized/compressed under the maximum upload size."
   },
   "validationInvalidEmail": "⟪RTL⟫ Please enter a valid email address",
   "@validationInvalidEmail": {
@@ -470,6 +498,22 @@
   "profileLoggingOut": "⟪RTL⟫ Logging out...",
   "@profileLoggingOut": {
     "description": "Loading overlay message shown while logging out."
+  },
+  "profilePhotoUploading": "⟪RTL⟫ Uploading profile photo...",
+  "@profilePhotoUploading": {
+    "description": "Loading overlay message shown while uploading a profile photo."
+  },
+  "profilePhotoRemoving": "⟪RTL⟫ Removing profile photo...",
+  "@profilePhotoRemoving": {
+    "description": "Loading overlay message shown while removing a profile photo."
+  },
+  "profilePhotoUpdated": "⟪RTL⟫ Profile photo updated",
+  "@profilePhotoUpdated": {
+    "description": "Success message shown after a profile photo upload completes."
+  },
+  "profilePhotoRemoved": "⟪RTL⟫ Profile photo removed",
+  "@profilePhotoRemoved": {
+    "description": "Success message shown after a profile photo is removed."
   },
   "profileLogoutDialogTitle": "⟪RTL⟫ Log out?",
   "@profileLogoutDialogTitle": {

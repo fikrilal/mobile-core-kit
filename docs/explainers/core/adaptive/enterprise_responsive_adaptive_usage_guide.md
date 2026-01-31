@@ -2,7 +2,7 @@
 **Start here (day-to-day guide)**  
 **Last updated:** 2026-01-14
 
-This is the “how to build screens” guide for the in-house responsive + adaptive system under `lib/core/adaptive/`.
+This is the “how to build screens” guide for the in-house responsive + adaptive system under `lib/core/design_system/adaptive/`.
 
 If you are new to this module: read this doc end-to-end once, then use it as a cookbook.
 
@@ -53,7 +53,7 @@ That’s it. Everything below assumes this exists.
 
 ### 1.3 Which adaptive widgets are “mandatory” vs optional?
 
-This system does **not** require you to use every widget in `lib/core/adaptive/widgets/`.
+This system does **not** require you to use every widget in `lib/core/design_system/adaptive/widgets/`.
 
 Think of the module in layers:
 
@@ -98,7 +98,7 @@ Prefer the most specific accessor:
 2) **Don’t use `MediaQuery.size` for layout decisions** in feature code.
 3) Use `AdaptiveRegion` for nested panes instead of more `LayoutBuilder` branches.
 4) Never “scale fonts manually.” Let `TextScaler` do its job; the app’s clamping policy is applied at the root.
-5) If the system doesn’t cover a need, **extend `lib/core/adaptive/`** (token/policy/widget) with tests and docs.
+5) If the system doesn’t cover a need, **extend `lib/core/design_system/adaptive/`** (token/policy/widget) with tests and docs.
 
 ---
 
@@ -149,7 +149,7 @@ class SettingsPage extends StatelessWidget {
 
 Guideline:
 - Choose the closest surface: `settings`, `form`, `reading`, `dashboard`, `media`, `fullBleed`.
-- If none match, add a new surface kind + tokens in `lib/core/adaptive/tokens/`.
+- If none match, add a new surface kind + tokens in `lib/core/design_system/adaptive/tokens/`.
 
 ### 4.2 Use layout tokens instead of hard-coded page padding
 
@@ -275,7 +275,7 @@ Typical pattern:
 - Your page content scrolls.
 - The bottom CTA is padded by `max(viewInsets.bottom, safePadding.bottom)`.
 
-If you find repeated patterns, add a small core widget (e.g., a `KeyboardInsetPadding` wrapper) under `lib/core/adaptive/widgets/` or `lib/core/widgets/`.
+If you find repeated patterns, add a small core widget (e.g., a `KeyboardInsetPadding` wrapper) under `lib/core/design_system/adaptive/widgets/` or `lib/core/design_system/widgets/`.
 
 ---
 
@@ -305,7 +305,7 @@ If you implement animations/transitions in a feature:
 - Check `context.adaptiveMotion.reduceMotion`
 - Prefer shortening durations, reducing movement, or using fades
 
-If a pattern repeats, implement a core helper (e.g., `adaptiveDuration(...)`) inside `lib/core/adaptive/`.
+If a pattern repeats, implement a core helper (e.g., `adaptiveDuration(...)`) inside `lib/core/design_system/adaptive/`.
 
 ---
 
@@ -333,7 +333,7 @@ If you are building a two-pane UI:
 
 This module is only “enterprise-grade” if it stays stable over time.
 
-Minimum expectations for changes to `lib/core/adaptive/`:
+Minimum expectations for changes to `lib/core/design_system/adaptive/`:
 - unit tests for policy/token boundary behavior
 - at least one golden matrix update for visible layout changes
 

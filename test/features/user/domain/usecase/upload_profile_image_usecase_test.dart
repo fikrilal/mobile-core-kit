@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
-import 'package:mobile_core_kit/core/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/complete_profile_image_upload_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/create_profile_image_upload_plan_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/profile_image_upload_plan_entity.dart';

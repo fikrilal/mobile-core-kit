@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/user/model/remote/me_model.dart';
-import 'package:mobile_core_kit/core/utilities/jwt_utils.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/jwt_utils.dart';
+import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
 
 part 'auth_response_model.freezed.dart';
 part 'auth_response_model.g.dart';

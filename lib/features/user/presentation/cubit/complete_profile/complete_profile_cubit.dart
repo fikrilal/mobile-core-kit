@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/theme/system/motion_durations.dart';
-import 'package:mobile_core_kit/core/validation/validation_error.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
+import 'package:mobile_core_kit/core/design_system/theme/system/motion_durations.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/profile_draft_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/clear_profile_draft_usecase.dart';

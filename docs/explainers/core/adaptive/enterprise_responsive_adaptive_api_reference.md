@@ -178,7 +178,7 @@ Use inside split panes / resizable panels. It recomputes local **layout**.
 Governed escape hatch for rare, per-screen overrides.
 
 Notes:
-- Prefer adding tokens/policies/widgets in `lib/core/adaptive/` instead.
+- Prefer adding tokens/policies/widgets in `lib/core/design_system/adaptive/` instead.
 - Intended for exceptional flows (e.g., force `NavigationPolicy.none()` for a subtree).
 
 ### 7.4 AppPageContainer

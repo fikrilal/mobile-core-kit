@@ -72,13 +72,13 @@ Implication for mobile: the client must treat refresh as **at-most-once** and sh
 ### Session & token storage
 
 - Tokens are persisted in secure storage:
-  - `lib/core/storage/secure/token_secure_storage.dart:1`
+  - `lib/core/infra/storage/secure/token_secure_storage.dart:1`
 - A “session” is effectively:
   - `accessToken`, `refreshToken`, `expiresIn`, and optional computed `expiresAt`
   - optionally a cached user profile (sqlite) for fast UI hydration
-  - `lib/core/session/session_repository_impl.dart:1`
+  - `lib/core/runtime/session/session_repository_impl.dart:1`
 - Token refresh is orchestrated by:
-  - `lib/core/session/session_manager.dart:1`
+  - `lib/core/runtime/session/session_manager.dart:1`
 
 Key detail: mobile computes `expiresAt` when it receives tokens and uses a small
 leeway window to refresh early (`~1 minute`).
@@ -89,7 +89,7 @@ Requests typically go through `ApiHelper`, which sets request metadata:
 
 - `extra['requiresAuth'] = true` by default (most endpoints are treated as protected)
 - `extra['host'] = ApiHost.*` controls baseUrl selection
-- `lib/core/network/api/api_helper.dart:1`
+- `lib/core/infra/network/api/api_helper.dart:1`
 
 Interceptors:
 
@@ -98,7 +98,7 @@ Interceptors:
 - `AuthTokenInterceptor` attaches the bearer token and handles refresh/retry logic.
 - `LoggingInterceptor` logs (redacted) depending on build config.
 - `ErrorInterceptor` logs error details.
-- `lib/core/network/api/api_client.dart:1`
+- `lib/core/infra/network/api/api_client.dart:1`
 
 ### Refresh trigger #1: preflight refresh (before sending a request)
 
@@ -135,7 +135,7 @@ uploads) via:
 
 Implementation reference:
 
-- `lib/core/network/interceptors/auth_token_interceptor.dart:1`
+- `lib/core/infra/network/interceptors/auth_token_interceptor.dart:1`
 
 Important: the kit only retries on **401 after refresh** (at most once). If you
 want safe retries for write requests on timeouts/unknown outcomes, you need
@@ -170,7 +170,7 @@ There are three important cases:
 3) **Refresh token is invalid/expired/revoked**
    - Refresh should fail and the client must log out and re-auth.
    - Mobile already has logic to clear session on `unauthenticated` refresh failure:
-     - `lib/core/session/session_manager.dart:1`
+     - `lib/core/runtime/session/session_manager.dart:1`
 
 ---
 

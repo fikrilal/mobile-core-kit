@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-13  
 **Reviewer:** Copilot CLI  
-**Module:** `lib/core/adaptive/`  
+**Module:** `lib/core/design_system/adaptive/`  
 **Reference:** `docs/explainers/core/adaptive/enterprise_responsive_adaptive_proposal.md`
 
 ---
@@ -21,7 +21,7 @@ The main gaps are test coverage (~40% of proposed contract tests) and minor poli
 
 The high/medium priority gaps called out in this review have been addressed:
 
-- ✅ Added `lib/core/adaptive/adaptive.dart` barrel export.
+- ✅ Added `lib/core/design_system/adaptive/adaptive.dart` barrel export.
 - ✅ Added unit tests for tokens (`grid_tokens`, `layout_tokens`, `surface_tokens`).
 - ✅ Added unit tests for `MotionPolicy`, `InputPolicy`, and `FoldableSpec.fromDisplayFeatures`.
 - ✅ Extracted `ModalPolicy` and wired `showAdaptiveModal` / `showAdaptiveSideSheet` to use it (configurable via `AdaptiveScope.modalPolicy`).
@@ -110,9 +110,9 @@ import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/adaptive/adaptive.dart';
 ```
 
-**Recommendation:** Create `lib/core/adaptive/adaptive.dart` that exports all public APIs.
+**Recommendation:** Create `lib/core/design_system/adaptive/adaptive.dart` that exports all public APIs.
 
-**Status:** ✅ Implemented (`lib/core/adaptive/adaptive.dart`)
+**Status:** ✅ Implemented (`lib/core/design_system/adaptive/adaptive.dart`)
 
 ---
 
@@ -132,7 +132,7 @@ return showDialog<T>(...);
 - Testable modal decisions
 - Potential medium-width variations (e.g., dialog vs side sheet)
 
-**Status:** ✅ Implemented (`lib/core/adaptive/policies/modal_policy.dart`; configurable via `AdaptiveScope.modalPolicy`)
+**Status:** ✅ Implemented (`lib/core/design_system/adaptive/policies/modal_policy.dart`; configurable via `AdaptiveScope.modalPolicy`)
 
 ---
 
@@ -149,7 +149,7 @@ platform: PlatformSpec(platform: platform),
 1. Wire `PlatformPolicy` into the scope/builder for consistency
 2. Remove the unused class to reduce confusion
 
-**Status:** ✅ Implemented (wired into `lib/core/adaptive/adaptive_scope.dart` and `lib/core/adaptive/adaptive_spec_builder.dart`)
+**Status:** ✅ Implemented (wired into `lib/core/design_system/adaptive/adaptive_scope.dart` and `lib/core/design_system/adaptive/adaptive_spec_builder.dart`)
 
 ---
 
@@ -229,7 +229,7 @@ The README is good but could be enhanced:
 The current structure matches the proposal's recommended layout:
 
 ```
-lib/core/adaptive/
+lib/core/design_system/adaptive/
 ├── adaptive.dart                  ✅
 ├── README.md                      ✅
 ├── adaptive_aspect.dart           ✅

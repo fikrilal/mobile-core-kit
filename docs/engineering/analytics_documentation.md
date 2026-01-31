@@ -15,15 +15,15 @@ feature code should interact with it.
   - `analyticsEnabledDefault`
   - `analyticsDebugLoggingEnabled`
 - **Service interface**: `IAnalyticsService`
-  (`lib/core/services/analytics/analytics_service.dart`).
+  (`lib/core/runtime/analytics/analytics_service.dart`).
 - **Service implementation**: `AnalyticsServiceImpl`
-  (`lib/core/services/analytics/analytics_service_impl.dart`).
+  (`lib/core/runtime/analytics/analytics_service_impl.dart`).
 - **Event constants**: `AnalyticsEvents`, `AnalyticsParams`
-  (`lib/core/services/analytics/analytics_events.dart`).
+  (`lib/core/runtime/analytics/analytics_events.dart`).
 - **High-level facade**: `AnalyticsTracker`
-  (`lib/core/services/analytics/analytics_tracker.dart`).
+  (`lib/core/runtime/analytics/analytics_tracker.dart`).
 - **Navigation integration**: `AnalyticsRouteObserver`
-  (`lib/core/services/analytics/analytics_route_observer.dart`) wired into
+  (`lib/core/runtime/analytics/analytics_route_observer.dart`) wired into
   `GoRouter` in `lib/navigation/app_router.dart`.
 - **DI**: `GetIt` registrations in `lib/core/di/service_locator.dart`.
 
@@ -42,11 +42,12 @@ The intended flow:
 ```text
 lib/
   core/
-    configs/
-      build_config.dart
     di/
       service_locator.dart
-    services/
+    foundation/
+      config/
+        build_config.dart
+    runtime/
       analytics/
         analytics_service.dart          # IAnalyticsService contract
         analytics_service_impl.dart     # Firebase-backed implementation
@@ -109,9 +110,9 @@ Features usually **do not** depend on `IAnalyticsService` directly; they use
 ## Event & Parameter Constants
 
 All event and parameter keys live in
-`lib/core/services/analytics/analytics_events.dart`:
+`lib/core/runtime/analytics/analytics_events.dart`:
 
-Core-level constants (`lib/core/services/analytics/analytics_events.dart`):
+Core-level constants (`lib/core/runtime/analytics/analytics_events.dart`):
 
 ```dart
 class AnalyticsEvents {
@@ -177,7 +178,7 @@ From a feature (e.g., a BLoC, Cubit, or page), access it via `locator`:
 
 ```dart
 import 'package:mobile_core_kit/core/di/service_locator.dart';
-import 'package:mobile_core_kit/core/services/analytics/analytics_tracker.dart';
+import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 
 final analytics = locator<AnalyticsTracker>();
 

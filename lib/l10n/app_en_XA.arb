@@ -53,6 +53,18 @@
   "@commonChangeProfilePhoto": {
     "description": "Accessibility label for the action that changes the profile photo/avatar."
   },
+  "commonChooseFromGallery": "⟪Choose from gallery⟫",
+  "@commonChooseFromGallery": {
+    "description": "Action label for choosing an image from the device photo library/gallery."
+  },
+  "commonTakePhoto": "⟪Take photo⟫",
+  "@commonTakePhoto": {
+    "description": "Action label for taking a photo with the device camera."
+  },
+  "commonRemovePhoto": "⟪Remove photo⟫",
+  "@commonRemovePhoto": {
+    "description": "Action label for removing an existing profile photo."
+  },
   "commonItemsCount": "{count, plural, =0{⟪Ńǿ īŧḗḿş⟫} one{⟪1 īŧḗḿ⟫} other{⟪{count} īŧḗḿş⟫}}",
   "@commonItemsCount": {
     "description": "Human-friendly label for an item count with proper pluralization.",
@@ -94,6 +106,22 @@
   "errorsValidation": "⟪Ƥŀḗåşḗ ƒīẋ ŧħḗ ħīğħŀīğħŧḗḓ ḗŗŗǿŗş.⟫",
   "@errorsValidation": {
     "description": "Message shown when the request failed validation (e.g., field errors)."
+  },
+  "mediaErrorsCameraPermissionDenied": "⟪Camera permission denied. Enable it in Settings to continue.⟫",
+  "@mediaErrorsCameraPermissionDenied": {
+    "description": "Message shown when the app does not have camera permission while attempting to take a photo."
+  },
+  "mediaErrorsPhotoPermissionDenied": "⟪Photos permission denied. Enable it in Settings to continue.⟫",
+  "@mediaErrorsPhotoPermissionDenied": {
+    "description": "Message shown when the app does not have photo library permission while attempting to pick an image."
+  },
+  "mediaErrorsUnsupportedImageFormat": "⟪Unsupported image format. Please choose a JPEG, PNG, or WebP image.⟫",
+  "@mediaErrorsUnsupportedImageFormat": {
+    "description": "Message shown when the selected image cannot be decoded or is not in a supported format."
+  },
+  "mediaErrorsImageTooLarge": "⟪Image is too large. Please choose a smaller image.⟫",
+  "@mediaErrorsImageTooLarge": {
+    "description": "Message shown when the selected image cannot be resized/compressed under the maximum upload size."
   },
   "validationInvalidEmail": "⟪Ƥŀḗåşḗ ḗñŧḗŗ å ṽåŀīḓ ḗḿåīŀ åḓḓŗḗşş⟫",
   "@validationInvalidEmail": {
@@ -323,6 +351,46 @@
   "@authPasswordResetConfirmFailureBody": {
     "description": "Body copy shown when password reset confirmation fails (invalid/expired/missing token)."
   },
+  "authVerifyEmailTitle": "⟪Verify email⟫",
+  "@authVerifyEmailTitle": {
+    "description": "Title shown on the email verification handler screen."
+  },
+  "authVerifyEmailVerifyingBody": "⟪Verifying your email address…⟫",
+  "@authVerifyEmailVerifyingBody": {
+    "description": "Body copy shown while verifying the email address from a deep link."
+  },
+  "authVerifyEmailSuccessTitle": "⟪Email verified⟫",
+  "@authVerifyEmailSuccessTitle": {
+    "description": "Title shown when email verification succeeds."
+  },
+  "authVerifyEmailSuccessBody": "⟪Thanks — your email is now verified.⟫",
+  "@authVerifyEmailSuccessBody": {
+    "description": "Body copy shown when email verification succeeds."
+  },
+  "authVerifyEmailResentTitle": "⟪Verification email sent⟫",
+  "@authVerifyEmailResentTitle": {
+    "description": "Title shown when verification email resend succeeds."
+  },
+  "authVerifyEmailResentBody": "⟪Check your inbox for a new verification link.⟫",
+  "@authVerifyEmailResentBody": {
+    "description": "Body copy shown when verification email resend succeeds."
+  },
+  "authVerifyEmailFailureTitle": "⟪Verification failed⟫",
+  "@authVerifyEmailFailureTitle": {
+    "description": "Title shown when email verification fails."
+  },
+  "authVerifyEmailFailureBody": "⟪This verification link is invalid, expired, or missing a token. Please request a new one.⟫",
+  "@authVerifyEmailFailureBody": {
+    "description": "Body copy shown when email verification fails (invalid/expired link)."
+  },
+  "authVerifyEmailResendCta": "⟪Resend verification email⟫",
+  "@authVerifyEmailResendCta": {
+    "description": "CTA label for resending the verification email."
+  },
+  "authVerifyEmailSignInCta": "⟪Sign in to resend⟫",
+  "@authVerifyEmailSignInCta": {
+    "description": "CTA label shown when the user must sign in before resending verification email."
+  },
   "authChangePasswordTitle": "⟪Çħåñğḗ ρåşşẇǿŗḓ⟫",
   "@authChangePasswordTitle": {
     "description": "Title shown on the change password screen."
@@ -430,6 +498,22 @@
   "profileLoggingOut": "⟪Ļǿğğīñğ ǿüŧ...⟫",
   "@profileLoggingOut": {
     "description": "Loading overlay message shown while logging out."
+  },
+  "profilePhotoUploading": "⟪Uploading profile photo...⟫",
+  "@profilePhotoUploading": {
+    "description": "Loading overlay message shown while uploading a profile photo."
+  },
+  "profilePhotoRemoving": "⟪Removing profile photo...⟫",
+  "@profilePhotoRemoving": {
+    "description": "Loading overlay message shown while removing a profile photo."
+  },
+  "profilePhotoUpdated": "⟪Profile photo updated⟫",
+  "@profilePhotoUpdated": {
+    "description": "Success message shown after a profile photo upload completes."
+  },
+  "profilePhotoRemoved": "⟪Profile photo removed⟫",
+  "@profilePhotoRemoved": {
+    "description": "Success message shown after a profile photo is removed."
   },
   "profileLogoutDialogTitle": "⟪Ļǿğ ǿüŧ?⟫",
   "@profileLogoutDialogTitle": {

@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 
 class Password {
   final String value;

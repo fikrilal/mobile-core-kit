@@ -208,7 +208,7 @@ Add custom lint rules (similar to the color system guardrails):
 This is a recommended organization; actual file names can differ.
 
 ```
-lib/core/theme/typography/
+lib/core/design_system/theme/typography/
   tokens/
     typefaces.dart
     type_scale.dart

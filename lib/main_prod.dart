@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/app.dart';
-import 'package:mobile_core_kit/core/configs/app_config.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
-import 'package:mobile_core_kit/core/services/appearance/theme_mode_controller.dart';
-import 'package:mobile_core_kit/core/services/early_errors/early_error_buffer.dart';
-import 'package:mobile_core_kit/core/services/localization/locale_controller.dart';
-import 'package:mobile_core_kit/core/services/startup_metrics/startup_metrics.dart';
-import 'package:mobile_core_kit/core/utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/foundation/config/app_config.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.dart';
+import 'package:mobile_core_kit/core/runtime/early_errors/early_error_buffer.dart';
+import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
+import 'package:mobile_core_kit/core/runtime/startup/startup_metrics.dart';
 
 Future<void> main() async {
   await runZonedGuarded(

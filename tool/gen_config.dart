@@ -132,7 +132,23 @@ void main(List<String> argv) {
       );
   }
 
-  File(
-    'lib/core/configs/build_config_values.dart',
-  ).writeAsStringSync(buffer.toString());
+  const outputPath = 'lib/core/foundation/config/build_config_values.dart';
+  File(outputPath).writeAsStringSync(buffer.toString());
+
+  final formatResult = Process.runSync(Platform.resolvedExecutable, [
+    'format',
+    outputPath,
+  ]);
+  if (formatResult.exitCode != 0) {
+    stderr.writeln('Failed to format $outputPath');
+    if (formatResult.stdout is String &&
+        (formatResult.stdout as String).isNotEmpty) {
+      stdout.write(formatResult.stdout);
+    }
+    if (formatResult.stderr is String &&
+        (formatResult.stderr as String).isNotEmpty) {
+      stderr.write(formatResult.stderr);
+    }
+    exitCode = 1;
+  }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:mobile_core_kit/core/theme/theme.dart';
-import 'package:mobile_core_kit/core/widgets/snackbar/snackbar.dart';
+import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
 
 void main() {
   testWidgets('AppSnackBar shows a success message', (tester) async {

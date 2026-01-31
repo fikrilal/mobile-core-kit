@@ -61,7 +61,7 @@ Frontend behavior:
 
 - Mapping from `ApiFailure` → domain failures belongs in the **data layer boundary** (repo/mapper).
 - Keep codes centralized:
-  - Cross-cutting codes in `lib/core/network/exceptions/api_error_codes.dart`
+  - Cross-cutting codes in `lib/core/infra/network/exceptions/api_error_codes.dart`
   - Feature-specific codes in `lib/features/<feature>/data/error/*_error_codes.dart`
 
 Example (auth):

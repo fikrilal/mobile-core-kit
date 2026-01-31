@@ -1,25 +1,26 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/core/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/session/cached_user_store.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_session_entity.dart';
-import 'package:mobile_core_kit/core/session/entity/auth_tokens_entity.dart';
-import 'package:mobile_core_kit/core/session/session_manager.dart';
-import 'package:mobile_core_kit/core/session/session_push_token_revoker.dart';
-import 'package:mobile_core_kit/core/session/session_repository_impl.dart';
-import 'package:mobile_core_kit/core/session/token_refresher.dart';
-import 'package:mobile_core_kit/core/storage/secure/token_secure_storage.dart';
-import 'package:mobile_core_kit/core/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
+import 'package:mobile_core_kit/core/domain/session/session_driver.dart';
+import 'package:mobile_core_kit/core/domain/session/session_push_token_revoker.dart';
+import 'package:mobile_core_kit/core/domain/session/token_refresher.dart';
+import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
+import 'package:mobile_core_kit/core/infra/storage/secure/token_secure_storage.dart';
+import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
+import 'package:mobile_core_kit/core/runtime/session/session_repository_impl.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLogoutRemoteUseCase extends Mock implements LogoutRemoteUseCase {}
 
-class _MockSessionManager extends Mock implements SessionManager {}
+class _MockSessionDriver extends Mock implements SessionDriver {}
 
 class _MockPushTokenRevoker extends Mock implements SessionPushTokenRevoker {}
 
@@ -65,7 +66,7 @@ void main() {
         final pushTokenRevoker = _MockPushTokenRevoker();
         when(() => pushTokenRevoker.revoke()).thenAnswer((_) async {});
 
-        final sessionManager = _MockSessionManager();
+        final sessionManager = _MockSessionDriver();
         when(() => sessionManager.session).thenReturn(
           const AuthSessionEntity(
             tokens: AuthTokensEntity(
@@ -84,7 +85,7 @@ void main() {
         final usecase = LogoutFlowUseCase(
           logoutRemote: logoutRemote,
           pushTokenRevoker: pushTokenRevoker,
-          sessionManager: sessionManager,
+          session: sessionManager,
         );
 
         await usecase(reason: 'manual_logout');
@@ -110,7 +111,7 @@ void main() {
         final pushTokenRevoker = _MockPushTokenRevoker();
         when(() => pushTokenRevoker.revoke()).thenAnswer((_) async {});
 
-        final sessionManager = _MockSessionManager();
+        final sessionManager = _MockSessionDriver();
         when(() => sessionManager.session).thenReturn(
           const AuthSessionEntity(
             tokens: AuthTokensEntity(
@@ -128,7 +129,7 @@ void main() {
         final usecase = LogoutFlowUseCase(
           logoutRemote: logoutRemote,
           pushTokenRevoker: pushTokenRevoker,
-          sessionManager: sessionManager,
+          session: sessionManager,
         );
 
         await usecase(reason: 'manual_logout');
@@ -146,7 +147,7 @@ void main() {
         () => pushTokenRevoker.revoke(),
       ).thenThrow(Exception('revoke failed'));
 
-      final sessionManager = _MockSessionManager();
+      final sessionManager = _MockSessionDriver();
       when(() => sessionManager.session).thenReturn(
         const AuthSessionEntity(
           tokens: AuthTokensEntity(
@@ -164,7 +165,7 @@ void main() {
       final usecase = LogoutFlowUseCase(
         logoutRemote: logoutRemote,
         pushTokenRevoker: pushTokenRevoker,
-        sessionManager: sessionManager,
+        session: sessionManager,
       );
 
       await usecase(reason: 'manual_logout');
@@ -181,7 +182,7 @@ void main() {
     test('skips remote logout when there is no session', () async {
       final logoutRemote = _MockLogoutRemoteUseCase();
       final pushTokenRevoker = _MockPushTokenRevoker();
-      final sessionManager = _MockSessionManager();
+      final sessionManager = _MockSessionDriver();
 
       when(() => sessionManager.session).thenReturn(null);
       when(
@@ -191,7 +192,7 @@ void main() {
       final usecase = LogoutFlowUseCase(
         logoutRemote: logoutRemote,
         pushTokenRevoker: pushTokenRevoker,
-        sessionManager: sessionManager,
+        session: sessionManager,
       );
 
       await usecase(reason: 'manual_logout');
@@ -253,7 +254,7 @@ void main() {
       final usecase = LogoutFlowUseCase(
         logoutRemote: logoutRemote,
         pushTokenRevoker: pushTokenRevoker,
-        sessionManager: manager,
+        session: manager,
       );
 
       await usecase(reason: 'manual_logout');

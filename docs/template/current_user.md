@@ -12,8 +12,8 @@ Goals:
 
 Use `UserContextService`:
 
-- Code: `lib/core/services/user_context/user_context_service.dart`
-- State: `lib/core/services/user_context/current_user_state.dart`
+- Code: `lib/core/runtime/user_context/user_context_service.dart`
+- State: `lib/core/runtime/user_context/current_user_state.dart`
 
 It observes `SessionManager.sessionNotifier` and exposes:
 
@@ -29,10 +29,10 @@ It observes `SessionManager.sessionNotifier` and exposes:
 ## How it works (High Level)
 
 1) **Session lifecycle** is owned by `SessionManager` (tokens + session state):
-   - `lib/core/session/session_manager.dart`
+   - `lib/core/runtime/session/session_manager.dart`
 2) **User feature** owns “me” persistence + remote fetching, but core calls it via interfaces:
-   - `CurrentUserFetcher` (`lib/core/user/current_user_fetcher.dart`)
-   - `CachedUserStore` (`lib/core/session/cached_user_store.dart`)
+   - `CurrentUserFetcher` (`lib/core/domain/user/current_user_fetcher.dart`)
+   - `CachedUserStore` (`lib/core/domain/session/cached_user_store.dart`)
 3) `UserContextService` simply *projects* session state into a stable “current user” view model.
 
 ### Status model
@@ -90,7 +90,7 @@ Guidelines:
 
 - Start with feature-owned state (use cases + bloc/cubit) if only one screen needs it.
 - If 2+ places need the same user-scoped data, consider a shared slice:
-  - Add a template-level slice under `lib/core/services/user_context/`
+  - Add a template-level slice under `lib/core/runtime/user_context/`
   - Keep core independent of features by depending on **core interfaces**.
   - Invalidate on `SessionCleared` / `SessionExpired`.
 

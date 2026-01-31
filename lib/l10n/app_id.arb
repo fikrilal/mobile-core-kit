@@ -351,6 +351,46 @@
   "@authPasswordResetConfirmFailureBody": {
     "description": "Body copy shown when password reset confirmation fails (invalid/expired/missing token)."
   },
+  "authVerifyEmailTitle": "Verifikasi email",
+  "@authVerifyEmailTitle": {
+    "description": "Title shown on the email verification handler screen."
+  },
+  "authVerifyEmailVerifyingBody": "Memverifikasi alamat email Anda…",
+  "@authVerifyEmailVerifyingBody": {
+    "description": "Body copy shown while verifying the email address from a deep link."
+  },
+  "authVerifyEmailSuccessTitle": "Email terverifikasi",
+  "@authVerifyEmailSuccessTitle": {
+    "description": "Title shown when email verification succeeds."
+  },
+  "authVerifyEmailSuccessBody": "Terima kasih — email Anda kini terverifikasi.",
+  "@authVerifyEmailSuccessBody": {
+    "description": "Body copy shown when email verification succeeds."
+  },
+  "authVerifyEmailResentTitle": "Email verifikasi terkirim",
+  "@authVerifyEmailResentTitle": {
+    "description": "Title shown when verification email resend succeeds."
+  },
+  "authVerifyEmailResentBody": "Periksa kotak masuk Anda untuk tautan verifikasi baru.",
+  "@authVerifyEmailResentBody": {
+    "description": "Body copy shown when verification email resend succeeds."
+  },
+  "authVerifyEmailFailureTitle": "Verifikasi gagal",
+  "@authVerifyEmailFailureTitle": {
+    "description": "Title shown when email verification fails."
+  },
+  "authVerifyEmailFailureBody": "Tautan verifikasi ini tidak valid, kedaluwarsa, atau tidak memiliki token. Silakan minta yang baru.",
+  "@authVerifyEmailFailureBody": {
+    "description": "Body copy shown when email verification fails (invalid/expired link)."
+  },
+  "authVerifyEmailResendCta": "Kirim ulang email verifikasi",
+  "@authVerifyEmailResendCta": {
+    "description": "CTA label for resending the verification email."
+  },
+  "authVerifyEmailSignInCta": "Masuk untuk mengirim ulang",
+  "@authVerifyEmailSignInCta": {
+    "description": "CTA label shown when the user must sign in before resending verification email."
+  },
   "authChangePasswordTitle": "Ubah kata sandi",
   "@authChangePasswordTitle": {
     "description": "Title shown on the change password screen."

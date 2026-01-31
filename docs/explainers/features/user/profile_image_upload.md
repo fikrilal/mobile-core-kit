@@ -77,7 +77,7 @@ Therefore presigned uploads are executed with a **dedicated Dio instance with no
 Core infra (absolute URL upload execution):
 
 ```
-lib/core/network/upload/
+lib/core/infra/network/upload/
 ├─ presigned_upload_request.dart        # validates absolute URL + captures method/headers
 ├─ presigned_upload_client.dart         # interface + stable failure type
 └─ dio_presigned_upload_client.dart     # dedicated Dio (no interceptors)
@@ -127,16 +127,18 @@ lib/features/user/
 Media picking (gallery/camera + downscale/compress-to-fit):
 
 ```
-lib/core/services/media/
+lib/core/platform/media/
 ├─ image_picker_service.dart
-├─ image_optimizer.dart
-└─ media_pick_exception.dart
+├─ image_picker_service_impl.dart
+├─ image_bytes_optimizer.dart
+├─ media_pick_exception.dart
+└─ picked_image.dart
 ```
 
 Tests:
 
 ```
-test/core/network/upload/dio_presigned_upload_client_test.dart
+test/core/infra/network/upload/dio_presigned_upload_client_test.dart
 test/features/user/
 ├─ data/datasource/remote/profile_image_remote_datasource_test.dart
 ├─ data/error/profile_image_failure_mapper_test.dart
@@ -262,7 +264,7 @@ For now, profile image failures map into `AuthFailure` for consistency with exis
 
 UI uses the existing localizer:
 
-- `features/auth/presentation/localization/auth_failure_localizer.dart`
+- `core/design_system/localization/auth_failure_localizer.dart`
 
 ---
 

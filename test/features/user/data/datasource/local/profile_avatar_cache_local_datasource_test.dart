@@ -106,14 +106,8 @@ void main() {
       );
 
       expect(cached, isNull);
-      expect(
-        prefs.getString('user_profile_avatar_file_id:u1'),
-        isNull,
-      );
-      expect(
-        prefs.getInt('user_profile_avatar_cached_at:u1'),
-        isNull,
-      );
+      expect(prefs.getString('user_profile_avatar_file_id:u1'), isNull);
+      expect(prefs.getInt('user_profile_avatar_cached_at:u1'), isNull);
     });
 
     test('fileId mismatch invalidates cache and returns null', () async {
@@ -139,14 +133,8 @@ void main() {
 
       expect(cached, isNull);
       expect(await File(saved.filePath).exists(), isFalse);
-      expect(
-        prefs.getString('user_profile_avatar_file_id:u1'),
-        isNull,
-      );
-      expect(
-        prefs.getInt('user_profile_avatar_cached_at:u1'),
-        isNull,
-      );
+      expect(prefs.getString('user_profile_avatar_file_id:u1'), isNull);
+      expect(prefs.getInt('user_profile_avatar_cached_at:u1'), isNull);
     });
 
     test('clear removes file and prefs', () async {
@@ -168,15 +156,8 @@ void main() {
       await datasource.clear(userId: 'u1');
 
       expect(await File(saved.filePath).exists(), isFalse);
-      expect(
-        prefs.getString('user_profile_avatar_file_id:u1'),
-        isNull,
-      );
-      expect(
-        prefs.getInt('user_profile_avatar_cached_at:u1'),
-        isNull,
-      );
+      expect(prefs.getString('user_profile_avatar_file_id:u1'), isNull);
+      expect(prefs.getInt('user_profile_avatar_cached_at:u1'), isNull);
     });
   });
 }
-

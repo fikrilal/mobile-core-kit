@@ -12,7 +12,7 @@ rules:
   # Strict rule: core should not depend on features (enforced by default).
   #
   # TODO(core-boundary): Refactor so `core/di/**` only imports `features/*/di/**`
-  # and `core/session/**` no longer imports `features/user/**` (move shared user/session
+  # and `core/runtime/session/**` no longer imports `features/user/**` (move shared user/session
   # types or introduce core-owned abstractions).
   - id: core_no_features
     reason: Core code must not import feature code (except explicitly allowlisted cases).
@@ -46,11 +46,6 @@ rules:
       - from: lib/features/user/**
         allow:
           - lib/features/user/**
-          # TEMP: user feature reuses auth failure + VO contract.
-          # TODO(guardrails): move shared auth/user failures + value failures to `lib/core/**`.
-          - lib/features/auth/domain/failure/**
-          - lib/features/auth/domain/value/value_failure.dart
-          - lib/features/auth/presentation/localization/auth_failure_localizer.dart
 
   # Clean Architecture boundaries inside features.
   - id: feature_domain_no_data_or_presentation
@@ -65,16 +60,83 @@ rules:
     reason: Domain must not depend on infrastructure/UI framework concerns.
     from: lib/features/*/domain/**
     deny:
-      - lib/core/network/**
-      - lib/core/services/**
-      - lib/core/storage/**
-      - lib/core/database/**
-      - lib/core/theme/**
-      - lib/core/widgets/**
-      - lib/core/adaptive/**
+      - lib/core/infra/**
+      - lib/core/platform/**
+      - lib/core/runtime/**
+      - lib/core/design_system/**
       - lib/core/di/**
       - lib/core/dev_tools/**
       - lib/l10n/**
+
+  # Core layering boundaries (target state, enforced once folders exist).
+  - id: core_foundation_pure
+    reason: Foundation must be pure (no infra/platform/runtime/design system).
+    from: lib/core/foundation/**
+    deny:
+      - lib/core/infra/**
+      - lib/core/platform/**
+      - lib/core/runtime/**
+      - lib/core/design_system/**
+      - lib/core/di/**
+      - lib/features/**
+      - lib/navigation/**
+
+  - id: core_domain_pure
+    reason: Core domain must be pure (no infra/platform/runtime/design system).
+    from: lib/core/domain/**
+    deny:
+      - lib/core/infra/**
+      - lib/core/platform/**
+      - lib/core/runtime/**
+      - lib/core/design_system/**
+      - lib/core/di/**
+      - lib/core/dev_tools/**
+      - lib/l10n/**
+      - lib/features/**
+      - lib/navigation/**
+
+  - id: core_infra_no_design_system
+    reason: Infra must not depend on UI or feature code.
+    from: lib/core/infra/**
+    deny:
+      - lib/core/design_system/**
+      - lib/core/dev_tools/**
+      - lib/features/**
+      - lib/navigation/**
+
+  - id: core_platform_no_design_system
+    reason: Platform adapters must not depend on UI or feature code.
+    from: lib/core/platform/**
+    deny:
+      - lib/core/design_system/**
+      - lib/core/dev_tools/**
+      - lib/features/**
+      - lib/navigation/**
+
+  - id: core_runtime_no_design_system
+    reason: Runtime orchestration must not depend on UI or feature code.
+    from: lib/core/runtime/**
+    deny:
+      - lib/core/design_system/**
+      - lib/core/dev_tools/**
+      - lib/features/**
+      - lib/navigation/**
+    exceptions:
+      - from: lib/core/runtime/navigation/**
+        allow:
+          - lib/navigation/**
+
+  - id: core_design_system_ui_only
+    reason: Design system must not depend on infra/platform/runtime or feature code.
+    from: lib/core/design_system/**
+    deny:
+      - lib/core/infra/**
+      - lib/core/platform/**
+      - lib/core/runtime/**
+      - lib/core/di/**
+      - lib/core/dev_tools/**
+      - lib/features/**
+      - lib/navigation/**
 
   - id: feature_presentation_no_data
     reason: Presentation must not depend on data directly; go through usecases/repos.

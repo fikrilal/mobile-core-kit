@@ -127,7 +127,7 @@ Run locally:
 
 ## 7) How to change colors safely
 
-1) Update seeds in `lib/core/theme/system/app_color_seeds.dart`
+1) Update seeds in `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) Run:
    - `tool/agent/flutterw --no-stdin analyze`
    - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`

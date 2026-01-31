@@ -11,7 +11,7 @@ This document explains **deep linking behavior and extension points** in this te
 ## TL;DR (What You Edit When Adding Deep Links)
 
 1) **Allowlist the destination**
-   - Update `lib/core/services/deep_link/deep_link_parser.dart`
+   - Update `lib/core/runtime/navigation/deep_link_parser.dart`
 
 2) **Claim the link at the OS level**
    - Android: `android/app/src/main/AndroidManifest.xml`
@@ -22,12 +22,12 @@ This document explains **deep linking behavior and extension points** in this te
    - iOS: `https://links.fikril.dev/.well-known/apple-app-site-association`
 
 4) **Add/adjust tests**
-   - Parser: `test/core/services/deep_link/deep_link_parser_test.dart`
+   - Parser: `test/core/runtime/navigation/deep_link_parser_test.dart`
    - Redirect: `test/navigation/app_redirect_test.dart`
 
 5) **(Optional) Add/adjust telemetry**
-   - Telemetry: `lib/core/services/deep_link/deep_link_telemetry.dart`
-   - Event names/params: `lib/core/services/analytics/analytics_events.dart`
+   - Telemetry: `lib/core/runtime/navigation/deep_link_telemetry.dart`
+   - Event names/params: `lib/core/runtime/analytics/analytics_events.dart`
 
 ---
 
@@ -241,17 +241,18 @@ Block interaction immediately while startup readiness is unknown. If you show a 
 ## Where the Code Lives (Template Extension Points)
 
 **Core deep link services**
-- Parser allowlist: `lib/core/services/deep_link/deep_link_parser.dart`
-- Pending intent persistence (TTL): `lib/core/services/deep_link/pending_deep_link_store.dart`
-- Pending intent state + “resume/clear” hooks: `lib/core/services/deep_link/pending_deep_link_controller.dart`
-- Platform listener (app_links): `lib/core/services/deep_link/deep_link_listener.dart`
+- Parser allowlist: `lib/core/runtime/navigation/deep_link_parser.dart`
+- Pending intent persistence (TTL): `lib/core/infra/storage/prefs/navigation/pending_deep_link_store.dart`
+- Pending intent state + “resume/clear” hooks: `lib/core/runtime/navigation/pending_deep_link_controller.dart`
+- Platform source (app_links): `lib/core/platform/app_links/app_links_deep_link_source.dart`
+- Runtime listener: `lib/core/runtime/navigation/deep_link_listener.dart`
 
 **Routing**
 - Central gate: `lib/navigation/app_redirect.dart`
 
 **UX cancel behavior**
 - Cancel on back/exit clears pending intent:
-  - Guard widget: `lib/core/widgets/navigation/pending_deep_link_cancel_on_pop.dart`
+  - Guard widget: `lib/navigation/widgets/pending_deep_link_cancel_on_pop.dart`
   - Applied to routes: `lib/navigation/auth/auth_routes_list.dart`, `lib/navigation/onboarding/onboarding_routes_list.dart`
 
 ---
@@ -265,8 +266,8 @@ Example: you want to support `https://links.fikril.dev/settings/security` → `/
    - Register the route in `createRouter()` (or the feature’s route list included there).
 
 2) **Allowlist it (Dart)**
-   - Add the internal path to `DeepLinkParser.allowedPaths` in `lib/core/services/deep_link/deep_link_parser.dart`.
-   - Add/extend unit tests in `test/core/services/deep_link/deep_link_parser_test.dart`.
+   - Add the internal path to `DeepLinkParser.allowedPaths` in `lib/core/runtime/navigation/deep_link_parser.dart`.
+   - Add/extend unit tests in `test/core/runtime/navigation/deep_link_parser_test.dart`.
 
 3) **Claim it (Android)**
    - Update the App Links `<intent-filter>` in `android/app/src/main/AndroidManifest.xml`:
@@ -311,11 +312,11 @@ Telemetry must remain safe by default:
 - Do **not** log query parameter values (only counts/keys).
 - Prefer only `scheme`, `host`, normalized `path`, and a small `reason` string.
 
-Implementation: `lib/core/services/deep_link/deep_link_telemetry.dart`
+Implementation: `lib/core/runtime/navigation/deep_link_telemetry.dart`
 
 ### Analytics events
 
-Event names and parameter keys live in `lib/core/services/analytics/analytics_events.dart`.
+Event names and parameter keys live in `lib/core/runtime/analytics/analytics_events.dart`.
 
 - `deep_link_received` (external only): app received an HTTPS link and it passed allowlist validation
 - `deep_link_rejected` (external only): app received an HTTPS link but rejected it (e.g., not allowlisted)

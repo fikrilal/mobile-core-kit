@@ -1,12 +1,12 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/core/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/validation/validation_error_codes.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/failure/auth_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/value_failure.dart';
 
 class ChangePasswordUseCase {
   final AuthRepository _repository;
