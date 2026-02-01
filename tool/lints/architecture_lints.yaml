@@ -11,9 +11,9 @@ package_name: mobile_core_kit
 rules:
   # Strict rule: core should not depend on features (enforced by default).
   #
-  # TODO(core-boundary): Refactor so `core/di/**` only imports `features/*/di/**`
-  # and `core/runtime/session/**` no longer imports `features/user/**` (move shared user/session
-  # types or introduce core-owned abstractions).
+  # TODO(core-boundary): Keep core composition strict:
+  # - Only `core/di/**` may import `features/*/di/**` (composition).
+  # - Everything else under `lib/core/**` must stay feature-agnostic.
   - id: core_no_features
     reason: Core code must not import feature code (except explicitly allowlisted cases).
     from: lib/core/**

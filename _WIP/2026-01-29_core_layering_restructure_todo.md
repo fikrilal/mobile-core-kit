@@ -2,7 +2,7 @@
 
 **Project:** `mobile-core-kit`  
 **Date:** 2026-01-29  
-**Status:** Planned (WIP)  
+**Status:** Completed  
 **Related proposal:** `_WIP/2026-01-29_core_architecture_proposal.md`  
 
 This is the implementation checklist for reorganizing `lib/core/**` before the codebase grows.
@@ -27,10 +27,8 @@ lint-enforced.
 ## Phase 0 — Baseline & safety rails (no moves yet)
 
 - [x] Confirm the target folder tree in `_WIP/2026-01-29_core_architecture_proposal.md`.
-- [ ] Decide PR strategy:
-  - [ ] Option A: one PR per phase (recommended)
-  - [ ] Option B: one PR for all moves (faster, harder review)
-- [ ] Run verification baseline (record result here):
+- [x] Decide PR strategy: Option B (single PR; phases executed end-to-end).
+- [x] Run verification baseline (record result here):
   - [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
 
 ### Phase 0 output — verification baseline (dev)
@@ -78,7 +76,7 @@ Checkpoint:
   - `lib/core/platform/**`
   - `lib/core/runtime/**`
   - `lib/core/design_system/**`
-- [ ] Add placeholder `README.md` files only if the repo convention wants them (optional).
+- [x] Add placeholder `README.md` files only if the repo convention wants them (optional) — skipped (not needed).
 
 Checkpoint:
 - [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
