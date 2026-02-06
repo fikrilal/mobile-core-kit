@@ -6,7 +6,7 @@ void main() {
     test(
       'parses allowlisted https://links.fikril.dev links to internal locations',
       () {
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         expect(
           parser.parseExternalUri(Uri.parse('https://links.fikril.dev/home')),
@@ -34,7 +34,7 @@ void main() {
     );
 
     test('rejects non-allowlisted hosts and paths', () {
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       expect(
         parser.parseExternalUri(Uri.parse('https://evil.com/home')),

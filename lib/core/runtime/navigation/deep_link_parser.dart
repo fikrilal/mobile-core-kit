@@ -10,14 +10,14 @@ import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 /// - Normalize paths to avoid duplicates (`/home/` -> `/home`).
 class DeepLinkParser {
   DeepLinkParser({
-    Set<String> allowedHosts = const {'links.fikril.dev'},
+    required Set<String> allowedHosts,
     Map<String, String> externalPathToLocation = const {
       AppRoutes.home: AppRoutes.home,
       AppRoutes.profile: AppRoutes.profile,
       '/verify-email': AuthRoutes.verifyEmail,
       '/reset-password': AuthRoutes.passwordResetConfirm,
     },
-  }) : _allowedHosts = allowedHosts,
+  }) : _allowedHosts = _sanitizeAllowedHosts(allowedHosts),
        _externalPathToLocation = externalPathToLocation,
        _allowedPaths = externalPathToLocation.values.toSet();
 
@@ -65,5 +65,12 @@ class DeepLinkParser {
     if (path == AppRoutes.root) return AppRoutes.root;
     if (path.endsWith('/')) return path.substring(0, path.length - 1);
     return path;
+  }
+
+  static Set<String> _sanitizeAllowedHosts(Set<String> allowedHosts) {
+    return allowedHosts
+        .map((host) => host.trim().toLowerCase())
+        .where((host) => host.isNotEmpty)
+        .toSet();
   }
 }

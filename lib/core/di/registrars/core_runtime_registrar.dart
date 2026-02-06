@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/infra/storage/prefs/navigation/pending_deep_link_store.dart';
 import 'package:mobile_core_kit/core/platform/app_links/deep_link_source.dart';
 import 'package:mobile_core_kit/core/runtime/analytics/analytics_service.dart';
@@ -24,7 +25,9 @@ void registerCoreRuntime(GetIt locator) {
   }
 
   if (!locator.isRegistered<DeepLinkParser>()) {
-    locator.registerLazySingleton<DeepLinkParser>(() => DeepLinkParser());
+    locator.registerLazySingleton<DeepLinkParser>(
+      () => DeepLinkParser(allowedHosts: BuildConfig.deepLinkAllowedHosts),
+    );
   }
 
   if (!locator.isRegistered<IAnalyticsService>()) {

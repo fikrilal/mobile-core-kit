@@ -77,7 +77,7 @@ void main() {
 
     final deepLinks = PendingDeepLinkController(
       store: PendingDeepLinkStore(),
-      parser: DeepLinkParser(),
+      parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
     );
 
     // Ensure startup is ready before first frame so the gate doesn't block
@@ -91,7 +91,7 @@ void main() {
       initialLocation: AppRoutes.root,
       refreshListenable: Listenable.merge([startup, deepLinks]),
       redirect: (context, state) =>
-          appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser()),
+          appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser(allowedHosts: const {'links.fikril.dev'})),
       routes: [
         GoRoute(
           path: AppRoutes.root,

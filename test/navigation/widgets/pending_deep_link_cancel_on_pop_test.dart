@@ -16,7 +16,7 @@ void main() {
 
       final deepLinks = PendingDeepLinkController(
         store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-        parser: DeepLinkParser(),
+        parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
         now: () => DateTime(2026, 1, 1),
       );
 
@@ -54,7 +54,7 @@ void main() {
 
       final deepLinks = PendingDeepLinkController(
         store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-        parser: DeepLinkParser(),
+        parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
         now: () => DateTime(2026, 1, 1),
       );
 
@@ -106,7 +106,7 @@ void main() {
 
       final deepLinks = PendingDeepLinkController(
         store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
-        parser: DeepLinkParser(),
+        parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
         now: () => DateTime(2026, 1, 1),
       );
 
