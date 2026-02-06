@@ -14,18 +14,15 @@ lib/
 ├─ main_staging.dart               # entrypoint (ENV=staging) [optional]
 ├─ main_prod.dart                  # entrypoint (ENV=prod) [optional]
 ├─ core/                           # cross-cutting infrastructure (template-level)
-│  ├─ adaptive/                    # responsive tokens + adaptive widgets
-│  ├─ configs/                     # AppConfig/BuildConfig (env-driven)
-│  ├─ database/                    # sqflite bootstrap + schema registration
-│  ├─ di/                          # GetIt composition (imports feature modules)
-│  ├─ events/                      # AppEventBus (cross-feature lifecycle)
-│  ├─ network/                     # ApiClient/ApiHelper, endpoints, interceptors, errors
-│  ├─ services/                    # app-wide services (analytics, startup, etc.)
-│  ├─ session/                     # session + token refresh orchestration
-│  ├─ theme/                       # tokens, typography, responsive spacing
-│  ├─ user/                        # core user entities + current user abstractions
-│  ├─ validation/                  # ValidationError + codes/localizer
-│  └─ widgets/                     # shared UI components
+│  ├─ design_system/               # adaptive specs, theming, and shared UI widgets
+│  ├─ dev_tools/                   # internal debug tooling/showcases
+│  ├─ di/                          # GetIt composition + registrars/composers
+│  ├─ domain/                      # cross-feature domain contracts (auth/session/user)
+│  ├─ foundation/                  # config, utilities, validation primitives
+│  ├─ infra/                       # network/database/storage implementations
+│  ├─ platform/                    # device integrations (links, push, media, etc.)
+│  ├─ presentation/                # app-level presentation/localization helpers
+│  └─ runtime/                     # app orchestration (startup, session, analytics, navigation)
 ├─ features/                       # vertical slices
 │  └─ <feature>/
 │     ├─ data/                     # datasources + DTOs + repository impl
@@ -109,6 +106,7 @@ Minimum checks (pick what’s relevant to what you changed):
 - Custom lints: `tool/agent/dartw --no-stdin run custom_lint`
 - Tests: `tool/agent/flutterw --no-stdin test`
 - Codegen (if touching Freezed/JSON/build config): `tool/agent/dartw --no-stdin run build_runner build --delete-conflicting-outputs`
+- AGENTS project-map drift: `tool/agent/dartw --no-stdin run tool/verify_project_map_drift.dart`
 
 Full pipeline (preferred for non-trivial changes):
 
