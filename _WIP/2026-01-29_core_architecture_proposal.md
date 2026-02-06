@@ -227,7 +227,9 @@ Design system (UI-only):
 - core/design_system/theme/**
 - core/design_system/adaptive/**
 - core/design_system/widgets/**
-- core/design_system/localization/**
+
+Presentation (UI-only shared helpers):
+- core/presentation/localization/**
 ```
 
 ### Dataflow diagram (high level)
@@ -416,7 +418,7 @@ This is illustrative; details will change as we implement.
 | `core/theme/**` | `core/design_system/theme/**` |
 | `core/adaptive/**` | `core/design_system/adaptive/**` |
 | `core/widgets/**` | `core/design_system/widgets/**` |
-| `core/localization/**` | `core/design_system/localization/**` |
+| `core/localization/**` | `core/presentation/localization/**` |
 
 ---
 
@@ -427,7 +429,8 @@ With these layers:
 - If `auth` and `user` share a type/localizer/VO failure, it must be promoted into:
   - `core/foundation/**` (generic) or
   - `core/domain/**` (cross-cutting domain)
-  - `core/design_system/**` (UI-only)
+  - `core/design_system/**` (UI-only components/tokens)
+  - `core/presentation/**` (UI-only helpers like localization/copy)
 
 This removes the need for:
 

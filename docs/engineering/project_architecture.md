@@ -31,6 +31,7 @@ lib/
 ├─ main_prod.dart                 # entrypoint (ENV=prod) [optional]
 ├─ core/                          # cross‑cutting infrastructure
 │  ├─ design_system/              # UI tokens + adaptive widgets + shared components (UI-only)
+│  ├─ presentation/               # shared UI helpers (localization, formatters, error copy)
 │  ├─ foundation/                 # pure foundation utilities + compile-time config surfaces
 │  ├─ domain/                     # pure cross-cutting domain contracts (session/user)
 │  ├─ infra/                      # app-owned infrastructure (network/storage/database)

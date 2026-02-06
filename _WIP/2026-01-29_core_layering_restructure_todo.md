@@ -87,7 +87,7 @@ Goal: move the least-dependent code first to reduce churn.
 
 - [x] Move `lib/core/validation/**` → `lib/core/foundation/validation/**` (types/codes only)
 - [x] Move `lib/core/utilities/**` → `lib/core/foundation/utilities/**`
-- [x] Move `validation_error_localizer.dart` → `lib/core/design_system/localization/**` (uses `AppLocalizations`)
+- [x] Move `validation_error_localizer.dart` → `lib/core/presentation/localization/**` (uses `AppLocalizations`)
 - [x] Update imports across repo (and mirrored core tests).
 
 Checkpoint:
@@ -98,12 +98,12 @@ Checkpoint:
 - [x] Move `lib/core/theme/**` → `lib/core/design_system/theme/**`
 - [x] Move `lib/core/adaptive/**` → `lib/core/design_system/adaptive/**`
 - [x] Move `lib/core/widgets/**` → `lib/core/design_system/widgets/**`
-- [x] Move `lib/core/localization/l10n.dart` → `lib/core/design_system/localization/l10n.dart`
+- [x] Move `lib/core/localization/l10n.dart` → `lib/core/presentation/localization/l10n.dart`
 - [x] Move mirrored tests:
   - `test/core/adaptive/**` → `test/core/design_system/adaptive/**`
   - `test/core/theme/**` → `test/core/design_system/theme/**`
   - `test/core/widgets/**` → `test/core/design_system/widgets/**`
-  - `test/core/localization/**` → `test/core/design_system/localization/**`
+  - `test/core/localization/**` → `test/core/presentation/localization/**`
 - [x] Update imports in:
   - `lib/app.dart`
   - `lib/navigation/**`

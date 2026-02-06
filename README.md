@@ -90,6 +90,7 @@ cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\d
 
 - `lib/core/`
   - `design_system/` – tokens + adaptive widgets + shared UI components (UI-only).
+  - `presentation/` – shared UI helpers (localization, formatters, error copy).
   - `foundation/` – pure utilities + compile-time config surfaces.
   - `domain/` – cross-cutting pure contracts (session/user).
   - `infra/` – networking/storage/database wrappers.

@@ -63,7 +63,7 @@ See also: `docs/engineering/project_architecture.md`.
 - Files:
   - `lib/core/foundation/validation/value_failure.dart:1` → `ValueFailureX.code`
   - `lib/core/domain/auth/auth_failure.dart:1` → `AuthFailure` (typed variants)
-  - `lib/core/design_system/localization/validation_error_localizer.dart:1` → `messageForValidationError(...)`
+  - `lib/core/presentation/localization/validation_error_localizer.dart:1` → `messageForValidationError(...)`
 
 ## 5) Real‑Time + Submit‑Time Flow
 

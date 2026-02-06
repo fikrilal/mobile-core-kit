@@ -7,8 +7,6 @@ import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_context.dar
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
-import 'package:mobile_core_kit/core/design_system/localization/auth_failure_localizer.dart';
-import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
@@ -22,6 +20,8 @@ import 'package:mobile_core_kit/core/foundation/config/build_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/platform/media/image_picker_service.dart';
 import 'package:mobile_core_kit/core/platform/media/media_pick_exception.dart';
+import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.dart';
 import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';

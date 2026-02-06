@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 
 /// A blocking, modal-style loading overlay.
 ///

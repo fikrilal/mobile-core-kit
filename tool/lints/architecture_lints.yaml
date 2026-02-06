@@ -64,6 +64,7 @@ rules:
       - lib/core/platform/**
       - lib/core/runtime/**
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/di/**
       - lib/core/dev_tools/**
       - lib/l10n/**
@@ -77,6 +78,7 @@ rules:
       - lib/core/platform/**
       - lib/core/runtime/**
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/di/**
       - lib/features/**
       - lib/navigation/**
@@ -89,6 +91,7 @@ rules:
       - lib/core/platform/**
       - lib/core/runtime/**
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/di/**
       - lib/core/dev_tools/**
       - lib/l10n/**
@@ -100,6 +103,7 @@ rules:
     from: lib/core/infra/**
     deny:
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/dev_tools/**
       - lib/features/**
       - lib/navigation/**
@@ -109,6 +113,7 @@ rules:
     from: lib/core/platform/**
     deny:
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/dev_tools/**
       - lib/features/**
       - lib/navigation/**
@@ -118,6 +123,7 @@ rules:
     from: lib/core/runtime/**
     deny:
       - lib/core/design_system/**
+      - lib/core/presentation/**
       - lib/core/dev_tools/**
       - lib/features/**
       - lib/navigation/**
@@ -129,6 +135,18 @@ rules:
   - id: core_design_system_ui_only
     reason: Design system must not depend on infra/platform/runtime or feature code.
     from: lib/core/design_system/**
+    deny:
+      - lib/core/infra/**
+      - lib/core/platform/**
+      - lib/core/runtime/**
+      - lib/core/di/**
+      - lib/core/dev_tools/**
+      - lib/features/**
+      - lib/navigation/**
+
+  - id: core_presentation_ui_only
+    reason: Presentation helpers must not depend on infra/platform/runtime or feature code.
+    from: lib/core/presentation/**
     deny:
       - lib/core/infra/**
       - lib/core/platform/**
