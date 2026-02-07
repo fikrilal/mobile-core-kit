@@ -205,31 +205,40 @@ class _ProjectRootFinder {
 final List<RestrictedImportRule> _defaultRules = [
   RestrictedImportRule(
     uriPrefix: 'package:dio/dio.dart',
-    allow: [Glob('lib/core/network/**')],
-    message: 'Use `lib/core/network/**` wrappers (ApiClient/ApiHelper).',
+    allow: [Glob('lib/core/infra/network/**')],
+    message: 'Use `lib/core/infra/network/**` wrappers (ApiClient/ApiHelper).',
   ),
   RestrictedImportRule(
     uriPrefix: 'package:firebase_analytics/firebase_analytics.dart',
-    allow: [Glob('lib/core/services/analytics/**')],
-    message: 'Use analytics wrappers under `lib/core/services/analytics/**`.',
+    allow: [Glob('lib/core/runtime/analytics/**')],
+    message: 'Use analytics wrappers under `lib/core/runtime/analytics/**`.',
   ),
   RestrictedImportRule(
     uriPrefix: 'package:firebase_crashlytics/firebase_crashlytics.dart',
     allow: [
-      Glob('lib/core/services/early_errors/**'),
-      Glob('lib/core/utilities/log_utils.dart'),
+      Glob('lib/core/platform/crash_reporting/**'),
+      Glob('lib/core/runtime/early_errors/**'),
+      Glob('lib/core/foundation/utilities/log_utils.dart'),
       Glob('lib/core/di/**'),
     ],
     message:
-        'Use crash reporting wrappers under `lib/core/services/early_errors/**`.',
+        'Use crash reporting wrappers under `lib/core/platform/crash_reporting/**`.',
+  ),
+  RestrictedImportRule(
+    uriPrefix: 'package:firebase_messaging/firebase_messaging.dart',
+    allow: [Glob('lib/core/platform/push/**'), Glob('lib/main*.dart')],
+    message: 'Use push wrappers under `lib/core/platform/push/**`.',
   ),
   RestrictedImportRule(
     uriPrefix: 'package:shared_preferences/shared_preferences.dart',
     allow: [
-      Glob('lib/core/services/**'),
+      Glob('lib/core/infra/storage/prefs/**'),
       // TEMP: profile draft is feature-owned local persistence.
       Glob(
         'lib/features/user/data/datasource/local/profile_draft_local_datasource.dart',
+      ),
+      Glob(
+        'lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart',
       ),
     ],
     message:
@@ -237,12 +246,14 @@ final List<RestrictedImportRule> _defaultRules = [
   ),
   RestrictedImportRule(
     uriPrefix: 'package:flutter_secure_storage/flutter_secure_storage.dart',
-    allow: [Glob('lib/core/storage/secure/**')],
-    message: 'Use secure storage wrappers under `lib/core/storage/secure/**`.',
+    allow: [Glob('lib/core/infra/storage/secure/**')],
+    message:
+        'Use secure storage wrappers under `lib/core/infra/storage/secure/**`.',
   ),
   RestrictedImportRule(
     uriPrefix: 'dart:developer',
-    allow: [Glob('lib/core/utilities/log_utils.dart')],
-    message: 'Use `Log.*` helpers from `lib/core/utilities/log_utils.dart`.',
+    allow: [Glob('lib/core/foundation/utilities/log_utils.dart')],
+    message:
+        'Use `Log.*` helpers from `lib/core/foundation/utilities/log_utils.dart`.',
   ),
 ];

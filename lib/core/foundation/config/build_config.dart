@@ -54,6 +54,17 @@ class BuildConfig {
     BuildEnv.prod => _prodGoogleOidcServerClientId,
   };
 
+  /// Allowed external HTTPS hosts for universal/app link parsing.
+  static Set<String> get deepLinkAllowedHosts =>
+      switch (env) {
+            BuildEnv.dev => _devDeepLinkAllowedHosts,
+            BuildEnv.stage => _stagingDeepLinkAllowedHosts,
+            BuildEnv.prod => _prodDeepLinkAllowedHosts,
+          }
+          .map((host) => host.trim().toLowerCase())
+          .where((host) => host.isNotEmpty)
+          .toSet();
+
   // ---------------- Network Logging Config ----------------
 
   /// Network log mode: off, summary, smallBodies, full

@@ -3,13 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_scope.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/policies/navigation_policy.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/policies/text_scale_policy.dart';
-import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.dart';
-import 'package:mobile_core_kit/core/runtime/events/app_event_bus.dart';
-import 'package:mobile_core_kit/core/runtime/events/widgets/app_event_listener.dart';
 import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/runtime/navigation/navigation_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
@@ -24,67 +22,62 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigation = locator<NavigationService>();
-    final eventBus = locator<AppEventBus>();
     final startup = locator<AppStartupController>();
     final themeModeController = locator<ThemeModeController>()..load();
     final localeController = locator<LocaleController>()..load();
 
-    return AppEventListener(
-      eventBus: eventBus,
-      child: ValueListenableBuilder<ThemeMode>(
-        valueListenable: themeModeController,
-        builder: (context, themeMode, _) {
-          return ValueListenableBuilder<Locale?>(
-            valueListenable: localeController,
-            builder: (context, localeOverride, _) {
-              final supportedLocales = localeController.supportedLocales;
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeModeController,
+      builder: (context, themeMode, _) {
+        return ValueListenableBuilder<Locale?>(
+          valueListenable: localeController,
+          builder: (context, localeOverride, _) {
+            final supportedLocales = localeController.supportedLocales;
 
-              return MaterialApp.router(
-                onGenerateTitle: (context) =>
-                    AppLocalizations.of(context).appTitle,
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.light(),
-                darkTheme: AppTheme.dark(),
-                themeMode: themeMode,
-                locale: localeOverride,
-                localeListResolutionCallback: (deviceLocales, supported) =>
-                    _resolveLocale(deviceLocales, supported),
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: supportedLocales,
-                routerConfig: _router,
-                scaffoldMessengerKey: navigation.scaffoldMessengerKey,
-                builder: (context, child) {
-                  final app = AdaptiveScope(
-                    navigationPolicy: const NavigationPolicy.standard(),
-                    textScalePolicy: const TextScalePolicy.clamp(
-                      minScaleFactor: 1.0,
-                      maxScaleFactor: 2.0,
-                    ),
-                    child: AppStartupGate(
-                      listenable: startup,
-                      isReady: () =>
-                          startup.isReady &&
-                          !startup.shouldBlockRoutingForUserHydration,
-                      overlayBuilder: (context) =>
-                          AppStartupOverlay(title: context.l10n.appTitle),
-                      child: child ?? const SizedBox.shrink(),
-                    ),
-                  );
+            return MaterialApp.router(
+              onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light(),
+              darkTheme: AppTheme.dark(),
+              themeMode: themeMode,
+              locale: localeOverride,
+              localeListResolutionCallback: (deviceLocales, supported) =>
+                  _resolveLocale(deviceLocales, supported),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: supportedLocales,
+              routerConfig: _router,
+              scaffoldMessengerKey: navigation.scaffoldMessengerKey,
+              builder: (context, child) {
+                final app = AdaptiveScope(
+                  navigationPolicy: const NavigationPolicy.standard(),
+                  textScalePolicy: const TextScalePolicy.clamp(
+                    minScaleFactor: 1.0,
+                    maxScaleFactor: 2.0,
+                  ),
+                  child: AppStartupGate(
+                    listenable: startup,
+                    isReady: () =>
+                        startup.isReady &&
+                        !startup.shouldBlockRoutingForUserHydration,
+                    overlayBuilder: (context) =>
+                        AppStartupOverlay(title: context.l10n.appTitle),
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                );
 
-                  if (!MediaQuery.highContrastOf(context)) return app;
+                if (!MediaQuery.highContrastOf(context)) return app;
 
-                  final brightness = Theme.of(context).brightness;
-                  final theme = brightness == Brightness.dark
-                      ? AppTheme.darkHighContrast()
-                      : AppTheme.lightHighContrast();
+                final brightness = Theme.of(context).brightness;
+                final theme = brightness == Brightness.dark
+                    ? AppTheme.darkHighContrast()
+                    : AppTheme.lightHighContrast();
 
-                  return Theme(data: theme, child: app);
-                },
-              );
-            },
-          );
-        },
-      ),
+                return Theme(data: theme, child: app);
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

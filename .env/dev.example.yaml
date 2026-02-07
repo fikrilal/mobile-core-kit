@@ -23,3 +23,7 @@ netLogBodyLimitBytes: 8192
 netLogLargeThresholdBytes: 65536
 netLogSlowMs: 800
 netLogRedact: true
+
+# Deep links (allowlisted external HTTPS hosts)
+deepLinkAllowedHosts:
+  - links.fikril.dev

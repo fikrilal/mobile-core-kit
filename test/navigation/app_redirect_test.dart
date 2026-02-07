@@ -161,7 +161,7 @@ Future<AppStartupController> _startup({
 PendingDeepLinkController _deepLinks() {
   SharedPreferences.setMockInitialValues({});
 
-  final parser = DeepLinkParser();
+  final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
   final store = PendingDeepLinkStore(
     prefs: SharedPreferences.getInstance(),
     ttl: const Duration(hours: 1),
@@ -181,7 +181,7 @@ void main() {
   group('appRedirectUri (deep link policy)', () {
     test('captures protected location during startup and redirects to /', () {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startupNotReady = _startupNotReady();
 
@@ -198,7 +198,7 @@ void main() {
 
     test('holds pending intent through onboarding and auth, then resumes', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       // Ready, onboarding required -> redirect to onboarding and keep pending.
       final startupOnboarding = await _startup(
@@ -250,7 +250,7 @@ void main() {
       'canonicalizes allowlisted https://links.fikril.dev links to internal /path',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startupAuthed = await _startup(
           shouldShowOnboarding: false,
@@ -270,7 +270,7 @@ void main() {
 
     test('rejects non-allowlisted https hosts (fail safe to /)', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startupAuthed = await _startup(
         shouldShowOnboarding: false,
@@ -290,7 +290,7 @@ void main() {
 
     test('verify-email deep link bypasses onboarding gate', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startupOnboarding = await _startup(
         shouldShowOnboarding: true,
@@ -312,7 +312,7 @@ void main() {
 
     test('reset-password deep link bypasses onboarding gate', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startupOnboarding = await _startup(
         shouldShowOnboarding: true,
@@ -334,7 +334,7 @@ void main() {
 
     test('authenticated user is allowed to open verify-email route', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startupAuthed = await _startup(
         shouldShowOnboarding: false,
@@ -355,7 +355,7 @@ void main() {
       'authenticated user is allowed to open reset-password confirm route',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startupAuthed = await _startup(
           shouldShowOnboarding: false,
@@ -379,7 +379,7 @@ void main() {
       'redirects to complete profile and preserves pending deep link',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startup = await _startupHarness(
           shouldShowOnboarding: false,
@@ -447,7 +447,7 @@ void main() {
       'redirects directly from auth to complete profile (no home blip)',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startup = await _startupHarness(
           shouldShowOnboarding: false,
@@ -482,7 +482,7 @@ void main() {
 
     test('verify-email route bypasses profile completion gate', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startup = await _startupHarness(
         shouldShowOnboarding: false,
@@ -518,7 +518,7 @@ void main() {
       'reset-password confirm route bypasses profile completion gate',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startup = await _startupHarness(
           shouldShowOnboarding: false,
@@ -557,7 +557,7 @@ void main() {
       'stays on / while authenticated but user hydration is pending',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startup = await _startupHarness(
           shouldShowOnboarding: false,
@@ -588,7 +588,7 @@ void main() {
       'captures intent and routes to / while hydration is pending',
       () async {
         final deepLinks = _deepLinks();
-        final parser = DeepLinkParser();
+        final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
         final startup = await _startupHarness(
           shouldShowOnboarding: false,
@@ -618,7 +618,7 @@ void main() {
 
     test('verify-email deep link bypasses hydration gate', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startup = await _startupHarness(
         shouldShowOnboarding: false,
@@ -647,7 +647,7 @@ void main() {
 
     test('reset-password deep link bypasses hydration gate', () async {
       final deepLinks = _deepLinks();
-      final parser = DeepLinkParser();
+      final parser = DeepLinkParser(allowedHosts: const {'links.fikril.dev'});
 
       final startup = await _startupHarness(
         shouldShowOnboarding: false,

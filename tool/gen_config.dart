@@ -66,6 +66,41 @@ void main(List<String> argv) {
     return "'${escapeSingleQuotes('$value')}'";
   }
 
+  String stringListLiteral(String name, Map<String, dynamic> map, String key) {
+    final value = map[key];
+    final items = <String>[];
+
+    if (value is YamlList) {
+      for (final item in value) {
+        final normalized = '$item'.trim();
+        if (normalized.isNotEmpty) {
+          items.add(normalized);
+        }
+      }
+    } else if (value is List) {
+      for (final item in value) {
+        final normalized = '$item'.trim();
+        if (normalized.isNotEmpty) {
+          items.add(normalized);
+        }
+      }
+    } else if (value is String) {
+      final normalized = value.trim();
+      if (normalized.isNotEmpty) {
+        items.add(normalized);
+      }
+    }
+
+    if (items.isEmpty) {
+      return 'const List<String> _$name = [];';
+    }
+
+    final entries = items
+        .map((item) => "  '${escapeSingleQuotes(item)}',")
+        .join('\n');
+    return 'const List<String> _$name = [\n$entries\n];';
+  }
+
   int intLiteral(Map<String, dynamic> map, String key, int defaultValue) {
     final value = map[key];
     if (value is int) return value;
@@ -113,6 +148,13 @@ void main(List<String> argv) {
       // Google OIDC (Sign-In) config
       ..writeln(
         'const String _${env}GoogleOidcServerClientId = ${stringLiteral(map, 'googleOidcServerClientId')};',
+      )
+      ..writeln(
+        stringListLiteral(
+          '${env}DeepLinkAllowedHosts',
+          map,
+          'deepLinkAllowedHosts',
+        ),
       )
       // Network logging config
       ..writeln(

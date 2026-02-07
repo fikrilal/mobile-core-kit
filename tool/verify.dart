@@ -83,6 +83,13 @@ Future<int> _run(List<String> argv) async {
   ]);
   if (exitCode != 0) return exitCode;
 
+  exitCode = await step('Verify AGENTS project map drift', [
+    'dart',
+    'run',
+    'tool/verify_project_map_drift.dart',
+  ]);
+  if (exitCode != 0) return exitCode;
+
   exitCode = await step('Flutter analyze', ['flutter', 'analyze']);
   if (exitCode != 0) return exitCode;
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/adaptive_modal.dart';
-import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/extensions/theme_extensions_utils.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 
 enum AppConfirmationDialogVariant { standard, featured }
 

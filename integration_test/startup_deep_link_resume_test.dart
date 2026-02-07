@@ -90,14 +90,14 @@ void main() {
       await deepLinkStore.clear();
       final deepLinks = PendingDeepLinkController(
         store: deepLinkStore,
-        parser: DeepLinkParser(),
+        parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
       );
 
       final router = GoRouter(
         initialLocation: AppRoutes.root,
         refreshListenable: Listenable.merge([startup, deepLinks]),
         redirect: (context, state) =>
-            appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser()),
+            appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser(allowedHosts: const {'links.fikril.dev'})),
         routes: [
           GoRoute(
             path: AppRoutes.root,

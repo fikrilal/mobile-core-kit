@@ -29,10 +29,3 @@ class SessionCleared extends AppEvent {
 
   const SessionCleared({this.reason});
 }
-
-/// Fired when user reading goals (or daily reading intention) change.
-///
-/// Consumers like weekly recap should refresh their data when this is published.
-class ReadingGoalsChanged extends AppEvent {
-  const ReadingGoalsChanged();
-}

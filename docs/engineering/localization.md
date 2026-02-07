@@ -91,7 +91,7 @@ This maps common `ApiFailure.code` / HTTP status codes to localized, user‑frie
 ## Tests
 
 Contract-level coverage:
-- `test/core/localization/app_localizations_smoke_test.dart`
-- `test/core/localization/pluralization_test.dart`
+- `test/core/presentation/localization/app_localizations_smoke_test.dart`
+- `test/core/presentation/localization/pluralization_test.dart`
 - `test/core/runtime/localization/locale_controller_test.dart`
 - `test/core/infra/network/exceptions/api_failure_localizer_test.dart`

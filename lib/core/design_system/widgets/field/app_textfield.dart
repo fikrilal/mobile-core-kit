@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:mobile_core_kit/core/design_system/localization/l10n.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/common/app_haptic_feedback.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field_styles.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field_variants.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 
 class AppTextField extends StatefulWidget {
   // Core

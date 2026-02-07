@@ -17,8 +17,36 @@ void main() {
 
       expect(
         config.firstViolation(
-          sourcePath: 'lib/core/network/api/api_client.dart',
+          sourcePath: 'lib/core/infra/network/api/api_client.dart',
           importUri: 'package:dio/dio.dart',
+        ),
+        isNull,
+      );
+    });
+
+    test('defaults restrict firebase messaging to push wrappers and main', () {
+      final config = RestrictedImportsConfig.fromOptions(null);
+
+      expect(
+        config.firstViolation(
+          sourcePath: 'lib/features/auth/data/repository/foo.dart',
+          importUri: 'package:firebase_messaging/firebase_messaging.dart',
+        ),
+        isNotNull,
+      );
+
+      expect(
+        config.firstViolation(
+          sourcePath: 'lib/core/platform/push/fcm_token_provider_impl.dart',
+          importUri: 'package:firebase_messaging/firebase_messaging.dart',
+        ),
+        isNull,
+      );
+
+      expect(
+        config.firstViolation(
+          sourcePath: 'lib/main_dev.dart',
+          importUri: 'package:firebase_messaging/firebase_messaging.dart',
         ),
         isNull,
       );
@@ -31,7 +59,7 @@ void main() {
         rules: [
           RestrictedImportRule(
             uriPrefix: 'package:shared_preferences/shared_preferences.dart',
-            allow: [Glob('lib/core/services/**')],
+            allow: [Glob('lib/core/infra/storage/prefs/**')],
           ),
         ],
       );
@@ -52,14 +80,14 @@ void main() {
         rules: [
           RestrictedImportRule(
             uriPrefix: 'dart:developer',
-            allow: [Glob('lib/core/utilities/log_utils.dart')],
+            allow: [Glob('lib/core/foundation/utilities/log_utils.dart')],
           ),
         ],
       );
 
       expect(
         config.firstViolation(
-          sourcePath: 'lib/core/utilities/log_utils.dart',
+          sourcePath: 'lib/core/foundation/utilities/log_utils.dart',
           importUri: 'dart:developer',
         ),
         isNull,
@@ -73,19 +101,19 @@ void main() {
         rules: [
           RestrictedImportRule(
             uriPrefix: 'package:dio/dio.dart',
-            allow: [Glob('lib/core/network/**')],
+            allow: [Glob('lib/core/infra/network/**')],
           ),
         ],
       );
 
       // Excluded: no violations reported even though rule would match.
       expect(
-        config.isIncluded('lib/core/network/api/api_client.dart'),
+        config.isIncluded('lib/core/infra/network/api/api_client.dart'),
         isFalse,
       );
       expect(
         config.firstViolation(
-          sourcePath: 'lib/core/network/api/api_client.dart',
+          sourcePath: 'lib/core/infra/network/api/api_client.dart',
           importUri: 'package:dio/dio.dart',
         ),
         isNull,
