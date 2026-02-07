@@ -1,0 +1,113 @@
+name: Governance Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  coverage-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      COVERAGE_MIN: "55.0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read Flutter version (.fvmrc)
+        id: fvm
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          with open('.fvmrc', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+          version = data.get('flutter')
+          if not version:
+            raise SystemExit('Missing "flutter" key in .fvmrc')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+            out.write(f"flutter_version={version}\n")
+          PY
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Test with coverage
+        run: flutter test --coverage
+
+      - name: Enforce line coverage floor
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          lcov = Path('coverage/lcov.info')
+          if not lcov.exists():
+            raise SystemExit('coverage/lcov.info not found')
+
+          found = 0
+          hit = 0
+          for line in lcov.read_text(encoding='utf-8').splitlines():
+            if not line.startswith('DA:'):
+              continue
+            found += 1
+            _, payload = line.split(':', 1)
+            _, hits = payload.split(',', 1)
+            if int(hits) > 0:
+              hit += 1
+
+          if found == 0:
+            raise SystemExit('No executable lines found in lcov report')
+
+          coverage = (hit / found) * 100.0
+          threshold = float(os.environ.get('COVERAGE_MIN', '0'))
+          print(f'Line coverage: {coverage:.2f}% (threshold: {threshold:.2f}%)')
+          if coverage < threshold:
+            raise SystemExit(
+              f'Coverage gate failed: {coverage:.2f}% < {threshold:.2f}%'
+            )
+          PY
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info

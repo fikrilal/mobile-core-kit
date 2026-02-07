@@ -62,7 +62,7 @@ class ErrorInterceptor extends Interceptor {
 
     Log.error('Unauthorized: $message');
 
-    // Note: Auth token refresh is handled in AuthInterceptor
+    // Note: Auth token refresh is handled in AuthTokenInterceptor.
   }
 
   void _handleForbiddenError(DioException err, dynamic errorData) {
