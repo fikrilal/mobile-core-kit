@@ -89,6 +89,10 @@ Configure repository secrets under **Settings ▸ Secrets and variables ▸ Acti
   into the secret (multi‑line supported). If you prefer to keep the file in Git, leave this secret
   empty and commit the JSON instead.
 
+- `IOS_GOOGLE_SERVICE_INFO_PLIST`  
+  Full contents of `ios/Runner/GoogleService-Info.plist`. In strict lanes, CI requires either this
+  secret or a committed plist file. The workflow also runs `plutil -lint` on the resolved plist.
+
 **Env YAML overrides**
 
 The template reads environment config from `.env/*.yaml`. To keep secrets out of Git you can
@@ -113,6 +117,20 @@ In all lanes, resolved `.env/*.yaml` files must exist and be non-empty after res
 | `workflow_dispatch` | Not allowed | Job fails (`strict env mode`) |
 
 This policy removes silent fallback risk in release-capable lanes.
+
+iOS Firebase plist policy is also lane-aware:
+
+| Lane | Missing iOS plist (no secret and no committed file) | Outcome |
+|---|---|---|
+| `pull_request` | Allowed | Warning + continue |
+| `push` to `main` | Not allowed | Job fails (`strict iOS Firebase mode`) |
+| `workflow_dispatch` | Not allowed | Job fails (`strict iOS Firebase mode`) |
+
+When a plist file is present, workflow validates syntax with:
+
+```bash
+plutil -lint ios/Runner/GoogleService-Info.plist
+```
 
 ## 2.2 Environment Schema Validation
 
