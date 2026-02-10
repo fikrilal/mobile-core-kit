@@ -30,14 +30,17 @@ The goal is to have a repeatable, environment‑aware build that:
 High‑level steps in `android.yml`:
 
 1. Checkout repository.
-2. Restore `.env/dev|staging|prod.yaml` from secrets (optional).
+2. Restore `.env/dev|staging|prod.yaml` from secrets with lane-aware behavior:
+   - `pull_request`: missing secret falls back to committed file (warning).
+   - non-PR lanes (`push` to `main`, `workflow_dispatch`): missing secret fails the job.
 3. Restore `android/app/google-services.json` from secret (or fail if missing).
-4. Setup Flutter + Java (Temurin 21) and cache pub/Gradle.
-5. Run `flutter pub get`.
-6. Generate `build_config_values.dart` for `prod` via `dart run tool/gen_config.dart --env prod`.
-7. Run `flutter test`.
-8. Optionally materialize the upload keystore and Play service-account credentials.
-9. Build the prod app bundle:
+4. Run environment schema validation (`tool/verify_env_schema.dart`) as part of canonical verify.
+5. Setup Flutter + Java (Temurin 21) and cache pub/Gradle.
+6. Run `flutter pub get`.
+7. Generate `build_config_values.dart` for `prod` via `dart run tool/gen_config.dart --env prod`.
+8. Run `flutter test`.
+9. Optionally materialize the upload keystore and Play service-account credentials.
+10. Build the prod app bundle:
    ```bash
    flutter build appbundle \
      --release \
@@ -45,8 +48,8 @@ High‑level steps in `android.yml`:
      -t lib/main_prod.dart \
      --dart-define=ENV=prod
    ```
-10. Upload the `app-prod-release.aab` as a GitHub Actions artifact.
-11. (Optional, commented out) Publish to the Play internal track using Gradle Play Publisher (GPP).
+11. Upload the `app-prod-release.aab` as a GitHub Actions artifact.
+12. (Optional, commented out) Publish to the Play internal track using Gradle Play Publisher (GPP).
 
 > Template author note: In my Orymu project I pushed builds to Google Play as **draft** and always
 > did the final review/rollout manually from the Play Console. The publish step in this template is
@@ -86,6 +89,10 @@ Configure repository secrets under **Settings ▸ Secrets and variables ▸ Acti
   into the secret (multi‑line supported). If you prefer to keep the file in Git, leave this secret
   empty and commit the JSON instead.
 
+- `IOS_GOOGLE_SERVICE_INFO_PLIST`  
+  Full contents of `ios/Runner/GoogleService-Info.plist`. In strict lanes, CI requires either this
+  secret or a committed plist file. The workflow also runs `plutil -lint` on the resolved plist.
+
 **Env YAML overrides**
 
 The template reads environment config from `.env/*.yaml`. To keep secrets out of Git you can
@@ -94,8 +101,68 @@ override those files at runtime:
 - `ENV_DEV_YAML` → writes `.env/dev.yaml`
 - `ENV_STAGING_YAML` → writes `.env/staging.yaml`
 - `ENV_PROD_YAML` → writes `.env/prod.yaml`
+Behavior is lane-aware:
 
-If a secret is omitted, the workflow leaves the committed file untouched.
+- `pull_request`: missing secret falls back to committed `.env/*.yaml` with a warning.
+- non-PR lanes (`push` to `main`, `workflow_dispatch`): missing secret fails in strict mode.
+
+In all lanes, resolved `.env/*.yaml` files must exist and be non-empty after restore.
+
+## 2.1 Env Config Integrity Policy
+
+| Lane | Missing `ENV_*_YAML` secret | Outcome |
+|---|---|---|
+| `pull_request` | Allowed | Warning + fallback to committed `.env/*.yaml` |
+| `push` to `main` | Not allowed | Job fails (`strict env mode`) |
+| `workflow_dispatch` | Not allowed | Job fails (`strict env mode`) |
+
+This policy removes silent fallback risk in release-capable lanes.
+
+iOS Firebase plist policy is also lane-aware:
+
+| Lane | Missing iOS plist (no secret and no committed file) | Outcome |
+|---|---|---|
+| `pull_request` | Allowed | Warning + continue |
+| `push` to `main` | Not allowed | Job fails (`strict iOS Firebase mode`) |
+| `workflow_dispatch` | Not allowed | Job fails (`strict iOS Firebase mode`) |
+
+When a plist file is present, workflow validates syntax with:
+
+```bash
+plutil -lint ios/Runner/GoogleService-Info.plist
+```
+
+## 2.2 Environment Schema Validation
+
+Canonical verification now runs:
+
+```bash
+dart run tool/verify_env_schema.dart --all
+```
+
+When running production verification (`tool/verify.dart --env prod`), strict production invariants are enforced:
+
+```bash
+dart run tool/verify_env_schema.dart --all --strict
+```
+
+Validator location: `tool/verify_env_schema.dart`.
+
+Required keys validated for each environment:
+
+- URLs: `core`, `auth`, `profile` (absolute `http/https` URLs)
+- Booleans: `enableLogging`, `reminderExperiment`, `analyticsEnabledDefault`, `analyticsDebugLoggingEnabled`, `netLogRedact`
+- Integers: `netLogBodyLimitBytes`, `netLogLargeThresholdBytes`, `netLogSlowMs` (must be `> 0`)
+- Enum-like string: `netLogMode` (`off | summary | smallBodies | full`)
+- String: `googleOidcServerClientId`
+- Host list: `deepLinkAllowedHosts` (non-empty, hostnames only)
+
+Strict production invariants (`--strict`, prod):
+
+- `enableLogging: false`
+- `analyticsDebugLoggingEnabled: false`
+- `netLogRedact: true`
+- `netLogMode: off`
 
 **Play Console (optional, for publishing)**
 
@@ -175,3 +242,21 @@ manually via the Play Console. After that:
 This pipeline is deliberately conservative: it guarantees a reproducible prod build and an artifact
 on every run, but leaves the final “push to users” step in your hands. Enable the publish step only
 when you’re confident in the process and comfortable with CI owning uploads. 
+
+## 6. Troubleshooting Env Validation Failures
+
+- **Missing secret in strict mode**
+  - Symptom: `Secret for .env/<env>.yaml not provided and strict env mode is enabled.`
+  - Fix: add/update the corresponding `ENV_<ENV>_YAML` secret.
+
+- **Resolved env file empty**
+  - Symptom: `.env/<env>.yaml is missing or empty after restore.`
+  - Fix: ensure the secret payload is valid YAML and non-empty.
+
+- **Schema error**
+  - Symptom: `Environment schema validation failed` with key/type details.
+  - Fix: update `.env/*.yaml` or secret payload to satisfy required keys/types.
+
+- **Strict prod invariant violation**
+  - Symptom: strict-mode failure for logging/analytics/network logging settings.
+  - Fix: align `.env/prod.yaml` values with production policy.

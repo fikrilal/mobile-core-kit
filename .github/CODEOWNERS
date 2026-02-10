@@ -1,0 +1,20 @@
+# Default owner (replace with team aliases as the organization grows).
+* @fikrilal
+
+# CI/CD and governance.
+/.github/workflows/* @fikrilal
+/.github/CODEOWNERS @fikrilal
+
+# Core platform architecture.
+/lib/core/** @fikrilal
+/lib/navigation/** @fikrilal
+/lib/main_*.dart @fikrilal
+/lib/app.dart @fikrilal
+
+# Feature slices.
+/lib/features/** @fikrilal
+
+# Lint package and engineering scripts.
+/packages/mobile_core_kit_lints/** @fikrilal
+/tool/** @fikrilal
+/docs/engineering/** @fikrilal

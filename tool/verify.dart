@@ -39,6 +39,15 @@ Future<int> _run(List<String> argv) async {
   exitCode = await step('Flutter pub get', ['flutter', 'pub', 'get']);
   if (exitCode != 0) return exitCode;
 
+  exitCode = await step('Verify env schema', [
+    'dart',
+    'run',
+    'tool/verify_env_schema.dart',
+    '--all',
+    if (env == 'prod') '--strict',
+  ]);
+  if (exitCode != 0) return exitCode;
+
   if (checkCodegen) {
     exitCode = await step('Verify codegen outputs', [
       'dart',

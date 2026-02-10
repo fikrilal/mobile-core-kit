@@ -32,13 +32,25 @@ jobs:
           restore_env() {
             local content="$1"
             local destination="$2"
+            local strict_mode="${STRICT_ENV_CONFIG:-false}"
+            local source_label="repo"
             if [[ -z "$content" ]]; then
-              echo "Secret for $destination not provided; keeping repo copy."
-              return
+              if [[ "$strict_mode" == "true" ]]; then
+                echo "::error::Secret for $destination not provided and strict env mode is enabled."
+                exit 1
+              fi
+              echo "::warning::Secret for $destination not provided; keeping repo copy."
+            else
+              mkdir -p "$(dirname "$destination")"
+              printf '%s\n' "$content" > "$destination"
+              source_label="secret"
+              echo "Wrote $destination from secret."
             fi
-            mkdir -p "$(dirname "$destination")"
-            printf '%s\n' "$content" > "$destination"
-            echo "Wrote $destination from secret."
+            if [[ ! -s "$destination" ]]; then
+              echo "::error::$destination is missing or empty after restore."
+              exit 1
+            fi
+            echo "Resolved $destination from $source_label."
           }
 
           restore_env "$ENV_DEV_YAML" .env/dev.yaml
@@ -48,6 +60,7 @@ jobs:
           ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
           ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
           ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+          STRICT_ENV_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
       - name: Restore google-services.json
         run: |
@@ -165,13 +178,25 @@ jobs:
           restore_env() {
             local content="$1"
             local destination="$2"
+            local strict_mode="${STRICT_ENV_CONFIG:-false}"
+            local source_label="repo"
             if [[ -z "$content" ]]; then
-              echo "Secret for $destination not provided; keeping repo copy."
-              return
+              if [[ "$strict_mode" == "true" ]]; then
+                echo "::error::Secret for $destination not provided and strict env mode is enabled."
+                exit 1
+              fi
+              echo "::warning::Secret for $destination not provided; keeping repo copy."
+            else
+              mkdir -p "$(dirname "$destination")"
+              printf '%s\n' "$content" > "$destination"
+              source_label="secret"
+              echo "Wrote $destination from secret."
             fi
-            mkdir -p "$(dirname "$destination")"
-            printf '%s\n' "$content" > "$destination"
-            echo "Wrote $destination from secret."
+            if [[ ! -s "$destination" ]]; then
+              echo "::error::$destination is missing or empty after restore."
+              exit 1
+            fi
+            echo "Resolved $destination from $source_label."
           }
 
           restore_env "$ENV_DEV_YAML" .env/dev.yaml
@@ -181,19 +206,36 @@ jobs:
           ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
           ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
           ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+          STRICT_ENV_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
-      - name: Restore GoogleService-Info.plist (optional)
+      - name: Restore GoogleService-Info.plist
         run: |
+          strict_mode="${STRICT_IOS_FIREBASE_CONFIG:-false}"
+          plist_path="ios/Runner/GoogleService-Info.plist"
+          source_label="missing"
+
           if [[ -n "$GOOGLE_SERVICE_INFO_PLIST" ]]; then
-            printf '%s\n' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist
-            echo "Wrote ios/Runner/GoogleService-Info.plist from secret."
-          elif [[ -f ios/Runner/GoogleService-Info.plist ]]; then
-            echo "Using committed ios/Runner/GoogleService-Info.plist"
+            printf '%s\n' "$GOOGLE_SERVICE_INFO_PLIST" > "$plist_path"
+            source_label="secret"
+            echo "Wrote $plist_path from secret."
+          elif [[ -f "$plist_path" ]]; then
+            source_label="repo"
+            echo "Using committed $plist_path"
+          elif [[ "$strict_mode" == "true" ]]; then
+            echo "::error::GoogleService-Info.plist missing and strict iOS Firebase mode is enabled."
+            exit 1
           else
-            echo "GoogleService-Info.plist not provided; continuing (Firebase features may be disabled)."
+            echo "::warning::GoogleService-Info.plist not provided; continuing in PR lane."
+          fi
+
+          echo "Resolved $plist_path from $source_label."
+
+          if [[ -f "$plist_path" ]]; then
+            plutil -lint "$plist_path"
           fi
         env:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+          STRICT_IOS_FIREBASE_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
       - name: Read Flutter version (.fvmrc)
         id: fvm

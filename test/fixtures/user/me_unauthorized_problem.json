@@ -1,0 +1,8 @@
+{
+  "type": "about:blank",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Authentication is required to access this resource.",
+  "code": "UNAUTHORIZED",
+  "traceId": "trace-unauthorized-1"
+}

@@ -1,0 +1,15 @@
+{
+  "type": "about:blank",
+  "title": "Validation failed",
+  "status": 422,
+  "detail": "Request body has validation errors.",
+  "code": "VALIDATION_FAILED",
+  "traceId": "trace-validation-1",
+  "errors": [
+    {
+      "field": "profile.givenName",
+      "message": "Given name must be at least 1 character.",
+      "code": "minLength"
+    }
+  ]
+}
