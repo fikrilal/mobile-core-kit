@@ -1,0 +1,86 @@
+name: Flutter Bootstrap
+description: Setup Flutter and prepare generated build config for CI jobs.
+
+inputs:
+  env:
+    description: Environment to validate/generate config for (dev|staging|prod)
+    required: false
+    default: dev
+  cache:
+    description: Enable Flutter SDK caching
+    required: false
+    default: "true"
+  install-dependencies:
+    description: Run flutter pub get
+    required: false
+    default: "true"
+  validate-env-schema:
+    description: Run tool/verify_env_schema.dart
+    required: false
+    default: "true"
+  strict-env-schema:
+    description: Pass --strict to tool/verify_env_schema.dart
+    required: false
+    default: "false"
+
+outputs:
+  flutter-version:
+    description: Flutter version read from .fvmrc
+    value: ${{ steps.fvm.outputs.flutter_version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Read Flutter version (.fvmrc)
+      id: fvm
+      shell: bash
+      run: |
+        python3 - <<'PY'
+        import os
+        import json
+        with open('.fvmrc', 'r', encoding='utf-8') as f:
+          data = json.load(f)
+        version = data.get('flutter')
+        if not version:
+          raise SystemExit('Missing "flutter" key in .fvmrc')
+        with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+          out.write(f"flutter_version={version}\n")
+        PY
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ steps.fvm.outputs.flutter_version }}
+        cache: ${{ inputs.cache }}
+
+    - name: Install dependencies
+      if: ${{ inputs.install-dependencies == 'true' }}
+      shell: bash
+      run: flutter pub get
+
+    - name: Validate env schema
+      if: ${{ inputs.validate-env-schema == 'true' }}
+      shell: bash
+      run: |
+        args=(tool/verify_env_schema.dart --env "${{ inputs.env }}")
+        if [[ "${{ inputs.strict-env-schema }}" == "true" ]]; then
+          args+=(--strict)
+        fi
+        dart run "${args[@]}"
+
+    - name: Generate build config
+      shell: bash
+      run: dart run tool/gen_config.dart --env "${{ inputs.env }}"
+
+    - name: Assert generated build config
+      shell: bash
+      run: |
+        config_path="lib/core/foundation/config/build_config_values.dart"
+        if [[ ! -s "$config_path" ]]; then
+          echo "::error::$config_path is missing or empty after generation."
+          exit 1
+        fi
+        if ! grep -q "part of 'build_config.dart';" "$config_path"; then
+          echo "::error::$config_path is malformed (missing part-of declaration)."
+          exit 1
+        fi
