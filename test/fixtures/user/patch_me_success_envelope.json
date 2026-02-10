@@ -1,0 +1,16 @@
+{
+  "data": {
+    "id": "3d2c7b2a-2dd6-46a5-8f8e-3b5de8a5b0f0",
+    "email": "user@example.com",
+    "emailVerified": true,
+    "roles": ["USER"],
+    "authMethods": ["PASSWORD"],
+    "profile": {
+      "profileImageFileId": "file_123",
+      "displayName": "Dante A.",
+      "givenName": "Dante",
+      "familyName": "A."
+    },
+    "accountDeletion": null
+  }
+}
