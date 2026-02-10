@@ -47,6 +47,7 @@ lib/
 │     │  │  │  └─ <feature>_remote_datasource.dart
 │     │  │  └─ local/
 │     │  │     └─ <feature>_local_datasource.dart
+│     │  ├─ services/             # feature-owned runtime listeners/adapters (optional)
 │     │  ├─ error/                # API failure mapping + backend error codes
 │     │  │  ├─ <feature>_failure_mapper.dart
 │     │  │  └─ <feature>_error_codes.dart
@@ -232,15 +233,19 @@ Folder rules and conventions:
 
 Modularized DI keeps boundaries explicit and wiring minimal.
 
-- Global setup: `lib/core/di/service_locator.dart` composes modules in order (auth → core → features) and awaits async singletons.
-- Core module: `lib/core/di/core_module.dart` registers infrastructure (ApiClient/Helper, DB, secure storage, session, services, event bus, navigation/deep link).
+- Global setup: `lib/core/di/service_locator.dart` composes registrar steps in this order:
+  core foundation → core platform → core infra → core runtime → feature modules → app orchestrators.
+- Core DI is split across registrars under `lib/core/di/registrars/` (no single `core_module.dart`).
 - Feature modules: `lib/features/<feature>/di/*_module.dart` register datasources, repositories, use cases, and Bloc/Cubit factories.
+- Startup boot flow:
+  - `registerLocator()` runs before `runApp()`.
+  - `bootstrapLocator()` runs post-first-frame (`lib/core/di/app_bootstrap.dart`) for heavier initialization stages.
 - Route‑time providers: create Bloc/Cubit instances inside route builders via `BlocProvider`/`MultiBlocProvider` and dispatch initial intents there.
 - Service locator usage is restricted to composition roots (DI + navigation + app entrypoints). Presentation code should receive dependencies via providers/constructors.
 
 Registration guidelines:
 - Prefer `registerLazySingleton` for repositories/services and `registerFactory` for Bloc/Cubit.
-- Mark async singletons with `registerSingletonAsync` and await `locator.allReady()` before runApp.
+- Put async/heavy initialization into bootstrap stages (`lib/core/di/bootstrap/locator_bootstrap_pipeline.dart`) instead of `registerSingletonAsync + allReady`.
 - Keep DI wiring per feature to avoid a large central registrar.
 
 ---

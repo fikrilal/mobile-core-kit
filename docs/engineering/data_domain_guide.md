@@ -9,7 +9,8 @@ ambiguity between model mapping and query serialization.
 - Keep responsibilities clear between Domain, Data, and Presentation layers.
 - Standardize pagination and error handling with core helpers.
 - Make repositories thin (orchestration only) and keep HTTP/DB details in datasources.
-- Put model→domain mapping next to the model; keep mappers for query serialization only.
+- Prefer model→domain mapping next to the model for pure structural conversions.
+- Allow small repository-local mapping helpers when conversion logic is endpoint/repository specific.
 
 ## Layer Responsibilities
 
@@ -22,7 +23,7 @@ ambiguity between model mapping and query serialization.
 
 - Data
     - Models (remote/local): Freezed + JSON. Own model→domain mapping via extensions or helpers in
-      the same file.
+      the same file when practical.
     - Datasources (remote/local): own HTTP/DB specifics (paths, headers, serialization) and call
       core `ApiHelper` / DB adapters.
       - GET endpoints: accept a Param VO and serialize via a mapper (`*_mapper.dart`) into query
@@ -32,7 +33,7 @@ ambiguity between model mapping and query serialization.
     - Mappers: for Param VO → query parameter maps only (keep simple and pure).
     - Failure mappers: map `ApiFailure`/backend codes into feature failures (keep repo readable).
     - Repositories: orchestrate datasource calls, convert `ApiResponse<T>` to `Either`, map
-      failures, and invoke model‑owned mapping to return domain types.
+      failures, and map models to domain using model-owned mappers or small repository-local helpers.
 
 - Presentation
     - BLoC/Cubit: consume usecases and manage UI state (covered in UI state docs).
@@ -51,6 +52,7 @@ ambiguity between model mapping and query serialization.
     - `lib/features/<feature>/data/model/local/*_model.dart`
     - `lib/features/<feature>/data/datasource/remote/*_remote_datasource.dart`
     - `lib/features/<feature>/data/datasource/local/*_local_datasource.dart`
+    - `lib/features/<feature>/data/services/*_service.dart` (optional; feature-owned runtime listeners/adapters)
     - `lib/features/<feature>/data/repository/*_repository_impl.dart`
     - `lib/features/<feature>/data/mapper/*_mapper.dart` (VO→query params only)
     - `lib/features/<feature>/data/error/*_failure_mapper.dart`
@@ -191,7 +193,7 @@ ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentM
 - Accept VO. Don’t build raw query maps here.
 - Call VO‑driven datasource. Datasource assembles path and params.
 - Convert `ApiResponse<T>` → `Either<ApiFailure, T>` using core helper.
-- Map left to feature failure, right to model‑owned mapping that returns domain.
+- Map left to feature failure, right to domain via model-owned mapping or repository-local helper.
 - Return `Either<FeatureFailure, Domain>`.
 
 ## Pagination Rules
