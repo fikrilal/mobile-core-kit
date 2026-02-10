@@ -46,36 +46,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read Flutter version (.fvmrc)
-        id: fvm
-        run: |
-          python - <<'PY'
-          import os
-          import json
-          with open('.fvmrc', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-          version = data.get('flutter')
-          if not version:
-            raise SystemExit('Missing "flutter" key in .fvmrc')
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
-            out.write(f"flutter_version={version}\n")
-          PY
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Bootstrap Flutter + generated config
+        uses: ./.github/actions/flutter-bootstrap
         with:
-          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
-          cache: true
+          env: dev
+          validate-env-schema: "true"
+          strict-env-schema: "false"
+          install-dependencies: "true"
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Test with coverage
-        run: flutter test --coverage
+      - name: Test with coverage (exclude goldens)
+        run: |
+          mapfile -t non_golden_tests < <(
+            find test -type f -name '*_test.dart' ! -path '*/goldens/*' | sort
+          )
+          if [[ "${#non_golden_tests[@]}" -eq 0 ]]; then
+            echo "::error::No non-golden test files discovered."
+            exit 1
+          fi
+          flutter test --coverage "${non_golden_tests[@]}"
 
       - name: Enforce line coverage floor
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import os
           from pathlib import Path
 
@@ -111,3 +103,29 @@ jobs:
         with:
           name: coverage-lcov
           path: coverage/lcov.info
+
+  golden-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bootstrap Flutter + generated config
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          env: dev
+          validate-env-schema: "true"
+          strict-env-schema: "false"
+          install-dependencies: "true"
+
+      - name: Run golden tests
+        run: flutter test test/core/design_system/adaptive/goldens --reporter expanded
+
+      - name: Upload golden failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: |
+            test/**/failures/**

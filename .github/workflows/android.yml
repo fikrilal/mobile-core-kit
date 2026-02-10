@@ -76,27 +76,6 @@ jobs:
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
 
-      - name: Read Flutter version (.fvmrc)
-        id: fvm
-        run: |
-          python - <<'PY'
-          import os
-          import json
-          with open('.fvmrc', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-          version = data.get('flutter')
-          if not version:
-            raise SystemExit('Missing "flutter" key in .fvmrc')
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
-            out.write(f"flutter_version={version}\n")
-          PY
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
-          cache: true
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -113,6 +92,14 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
+
+      - name: Bootstrap Flutter + generated config
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          env: prod
+          validate-env-schema: "true"
+          strict-env-schema: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+          install-dependencies: "true"
 
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints
@@ -237,26 +224,13 @@ jobs:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
           STRICT_IOS_FIREBASE_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
-      - name: Read Flutter version (.fvmrc)
-        id: fvm
-        run: |
-          python - <<'PY'
-          import os
-          import json
-          with open('.fvmrc', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-          version = data.get('flutter')
-          if not version:
-            raise SystemExit('Missing "flutter" key in .fvmrc')
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
-            out.write(f"flutter_version={version}\n")
-          PY
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Bootstrap Flutter + generated config
+        uses: ./.github/actions/flutter-bootstrap
         with:
-          flutter-version: ${{ steps.fvm.outputs.flutter_version }}
-          cache: true
+          env: prod
+          validate-env-schema: "true"
+          strict-env-schema: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+          install-dependencies: "true"
 
       - name: Lint plugin tests
         working-directory: packages/mobile_core_kit_lints
