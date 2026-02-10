@@ -32,13 +32,25 @@ jobs:
           restore_env() {
             local content="$1"
             local destination="$2"
+            local strict_mode="${STRICT_ENV_CONFIG:-false}"
+            local source_label="repo"
             if [[ -z "$content" ]]; then
-              echo "Secret for $destination not provided; keeping repo copy."
-              return
+              if [[ "$strict_mode" == "true" ]]; then
+                echo "::error::Secret for $destination not provided and strict env mode is enabled."
+                exit 1
+              fi
+              echo "::warning::Secret for $destination not provided; keeping repo copy."
+            else
+              mkdir -p "$(dirname "$destination")"
+              printf '%s\n' "$content" > "$destination"
+              source_label="secret"
+              echo "Wrote $destination from secret."
             fi
-            mkdir -p "$(dirname "$destination")"
-            printf '%s\n' "$content" > "$destination"
-            echo "Wrote $destination from secret."
+            if [[ ! -s "$destination" ]]; then
+              echo "::error::$destination is missing or empty after restore."
+              exit 1
+            fi
+            echo "Resolved $destination from $source_label."
           }
 
           restore_env "$ENV_DEV_YAML" .env/dev.yaml
@@ -48,6 +60,7 @@ jobs:
           ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
           ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
           ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+          STRICT_ENV_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
       - name: Restore google-services.json
         run: |
@@ -165,13 +178,25 @@ jobs:
           restore_env() {
             local content="$1"
             local destination="$2"
+            local strict_mode="${STRICT_ENV_CONFIG:-false}"
+            local source_label="repo"
             if [[ -z "$content" ]]; then
-              echo "Secret for $destination not provided; keeping repo copy."
-              return
+              if [[ "$strict_mode" == "true" ]]; then
+                echo "::error::Secret for $destination not provided and strict env mode is enabled."
+                exit 1
+              fi
+              echo "::warning::Secret for $destination not provided; keeping repo copy."
+            else
+              mkdir -p "$(dirname "$destination")"
+              printf '%s\n' "$content" > "$destination"
+              source_label="secret"
+              echo "Wrote $destination from secret."
             fi
-            mkdir -p "$(dirname "$destination")"
-            printf '%s\n' "$content" > "$destination"
-            echo "Wrote $destination from secret."
+            if [[ ! -s "$destination" ]]; then
+              echo "::error::$destination is missing or empty after restore."
+              exit 1
+            fi
+            echo "Resolved $destination from $source_label."
           }
 
           restore_env "$ENV_DEV_YAML" .env/dev.yaml
@@ -181,6 +206,7 @@ jobs:
           ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
           ENV_STAGING_YAML: ${{ secrets.ENV_STAGING_YAML }}
           ENV_PROD_YAML: ${{ secrets.ENV_PROD_YAML }}
+          STRICT_ENV_CONFIG: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
 
       - name: Restore GoogleService-Info.plist (optional)
         run: |
