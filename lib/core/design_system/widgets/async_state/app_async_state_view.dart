@@ -3,6 +3,7 @@ import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_message.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 
 enum AppAsyncStatus { initial, loading, success, empty, failure }
@@ -65,7 +66,7 @@ class AppAsyncStateView<TFailure> extends StatelessWidget {
 
   Widget _buildEmpty(BuildContext context) {
     final builder = emptyBuilder;
-    return builder == null ? const SizedBox.shrink() : builder(context);
+    return builder == null ? const AppEmptyState() : builder(context);
   }
 
   Widget _buildFailure(BuildContext context) {
