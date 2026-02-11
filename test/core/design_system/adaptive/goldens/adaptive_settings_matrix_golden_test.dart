@@ -20,9 +20,11 @@ void main() {
 
       await tester.pumpWidget(
         MediaQuery(
-          data: MediaQueryData.fromView(
-            tester.view,
-          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          data: MediaQueryData(
+            size: size,
+            devicePixelRatio: 1.0,
+            textScaler: TextScaler.linear(textScale),
+          ),
           child: const Directionality(
             textDirection: TextDirection.ltr,
             child: DefaultTextStyle(
