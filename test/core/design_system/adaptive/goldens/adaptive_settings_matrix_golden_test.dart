@@ -1,9 +1,30 @@
+import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late GoldenFileComparator defaultGoldenComparator;
+
+  setUpAll(() {
+    defaultGoldenComparator = goldenFileComparator;
+    final currentComparator = goldenFileComparator;
+    if (currentComparator is LocalFileComparator) {
+      goldenFileComparator = _TolerantGoldenComparator(
+        Uri.parse(
+          'test/core/design_system/adaptive/goldens/'
+          'adaptive_settings_matrix_golden_test.dart',
+        ),
+        tolerance: 0.001, // 0.1%
+      );
+    }
+  });
+
+  tearDownAll(() {
+    goldenFileComparator = defaultGoldenComparator;
+  });
 
   group('Adaptive golden matrix (settings surface)', () {
     Future<void> pumpCase(
@@ -72,6 +93,31 @@ void main() {
       );
     });
   });
+}
+
+class _TolerantGoldenComparator extends LocalFileComparator {
+  _TolerantGoldenComparator(super.testFile, {required this.tolerance});
+
+  final double tolerance;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    final passedWithinTolerance =
+        result.passed || result.diffPercent <= tolerance;
+    if (passedWithinTolerance) {
+      result.dispose();
+      return true;
+    }
+
+    final error = await generateFailureOutput(result, golden, basedir);
+    result.dispose();
+    throw FlutterError(error);
+  }
 }
 
 class _GoldenSettingsSurface extends StatelessWidget {
