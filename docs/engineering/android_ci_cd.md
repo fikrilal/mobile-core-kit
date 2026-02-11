@@ -118,6 +118,19 @@ In all lanes, resolved `.env/*.yaml` files must exist and be non-empty after res
 
 This policy removes silent fallback risk in release-capable lanes.
 
+## 2.1.1 Governance Workflow (`governance.yml`) Behavior
+
+The Governance workflow (`.github/workflows/governance.yml`) runs `coverage-gate` and
+`golden-tests` with `env: dev`. Before bootstrap, each job resolves `.env/dev.yaml` with this
+order:
+
+1. Use `ENV_DEV_YAML` secret when present.
+2. Else copy `.env/dev.example.yaml`.
+3. Fail if neither source exists or the resolved file is empty.
+
+This fallback keeps PR checks usable in forks and fresh repos, but for enterprise parity you should
+still set `ENV_DEV_YAML` so Governance validates the same dev config used by trusted lanes.
+
 iOS Firebase plist policy is also lane-aware:
 
 | Lane | Missing iOS plist (no secret and no committed file) | Outcome |
@@ -163,6 +176,66 @@ Strict production invariants (`--strict`, prod):
 - `analyticsDebugLoggingEnabled: false`
 - `netLogRedact: true`
 - `netLogMode: off`
+
+## 2.3 `ENV_DEV_YAML`: Expected Value and How To Populate It
+
+`ENV_DEV_YAML` must contain the **raw multi-line YAML payload** for `.env/dev.yaml` (not base64).
+
+Minimum required keys are validated by `tool/verify_env_schema.dart`:
+
+- URLs: `core`, `auth`, `profile` (absolute `http/https`)
+- Booleans: `enableLogging`, `reminderExperiment`, `analyticsEnabledDefault`, `analyticsDebugLoggingEnabled`, `netLogRedact`
+- Integers (`> 0`): `netLogBodyLimitBytes`, `netLogLargeThresholdBytes`, `netLogSlowMs`
+- Enum: `netLogMode` (`off | summary | smallBodies | full`)
+- String: `googleOidcServerClientId`
+- List: `deepLinkAllowedHosts` (hostnames only)
+
+Starter payload (safe baseline):
+
+```yaml
+core: https://api-dev.example.com/v1
+auth: https://api-dev.example.com/v1
+profile: https://api-dev.example.com/v1
+enableLogging: true
+reminderExperiment: false
+analyticsEnabledDefault: true
+analyticsDebugLoggingEnabled: true
+googleOidcServerClientId: <your-google-web-client-id>.apps.googleusercontent.com
+netLogMode: full
+netLogBodyLimitBytes: 8192
+netLogLargeThresholdBytes: 65536
+netLogSlowMs: 800
+netLogRedact: true
+deepLinkAllowedHosts:
+  - links.example.com
+```
+
+Recommended sourcing flow:
+
+1. Start from local example:
+   ```bash
+   cp .env/dev.example.yaml .env/dev.yaml
+   ```
+2. Replace placeholders/endpoints with your dev stack values.
+3. Validate locally:
+   ```bash
+   tool/agent/dartw --no-stdin run tool/verify_env_schema.dart --env dev
+   ```
+4. Save to GitHub secret:
+   - UI: **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `ENV_DEV_YAML`
+   - Value: paste full contents of `.env/dev.yaml`
+   - Or CLI:
+     ```bash
+     gh secret set ENV_DEV_YAML < .env/dev.yaml
+     ```
+
+Where values come from:
+
+- `core/auth/profile`: your dev backend base URLs (`/v1` endpoints).
+- `googleOidcServerClientId`: Google Cloud Console OAuth 2.0 **Web client ID** used for server-side
+  ID token audience checks.
+- `deepLinkAllowedHosts`: externally owned HTTPS hosts your app is allowed to open.
 
 **Play Console (optional, for publishing)**
 

@@ -46,6 +46,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare dev env config
+        run: |
+          mkdir -p .env
+          if [[ -n "${ENV_DEV_YAML:-}" ]]; then
+            printf '%s\n' "$ENV_DEV_YAML" > .env/dev.yaml
+            echo "Resolved .env/dev.yaml from secret."
+          elif [[ -f .env/dev.example.yaml ]]; then
+            cp .env/dev.example.yaml .env/dev.yaml
+            echo "Resolved .env/dev.yaml from .env/dev.example.yaml."
+          else
+            echo "::error::.env/dev.yaml is missing and .env/dev.example.yaml was not found."
+            exit 1
+          fi
+          if [[ ! -s .env/dev.yaml ]]; then
+            echo "::error::.env/dev.yaml is empty after preparation."
+            exit 1
+          fi
+        env:
+          ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
+
       - name: Bootstrap Flutter + generated config
         uses: ./.github/actions/flutter-bootstrap
         with:
@@ -110,6 +130,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Prepare dev env config
+        run: |
+          mkdir -p .env
+          if [[ -n "${ENV_DEV_YAML:-}" ]]; then
+            printf '%s\n' "$ENV_DEV_YAML" > .env/dev.yaml
+            echo "Resolved .env/dev.yaml from secret."
+          elif [[ -f .env/dev.example.yaml ]]; then
+            cp .env/dev.example.yaml .env/dev.yaml
+            echo "Resolved .env/dev.yaml from .env/dev.example.yaml."
+          else
+            echo "::error::.env/dev.yaml is missing and .env/dev.example.yaml was not found."
+            exit 1
+          fi
+          if [[ ! -s .env/dev.yaml ]]; then
+            echo "::error::.env/dev.yaml is empty after preparation."
+            exit 1
+          fi
+        env:
+          ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
 
       - name: Bootstrap Flutter + generated config
         uses: ./.github/actions/flutter-bootstrap
