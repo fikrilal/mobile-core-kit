@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_token
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/async_state/async_state.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
@@ -60,30 +61,36 @@ class _VerifyEmailBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
           child: BlocBuilder<EmailVerificationCubit, EmailVerificationState>(
             builder: (context, state) {
-              final hasTokenInputError =
-                  state.status == EmailVerificationStatus.initial &&
-                  state.tokenError != null;
-
-              if (state.status == EmailVerificationStatus.submitting) {
-                return _buildSubmitting(context, state);
-              }
-
-              if (state.status == EmailVerificationStatus.success) {
-                return _buildSuccess(context, state);
-              }
-
-              if (state.status == EmailVerificationStatus.failure ||
-                  hasTokenInputError) {
-                return _buildFailure(context, state);
-              }
-
-              // Idle state: usually transient (before verification kicks off).
-              return _buildSubmitting(context, state);
+              return AppAsyncStateView<EmailVerificationState>(
+                status: _mapStatusToViewState(state),
+                failure: state,
+                successBuilder: (_) => _buildSuccess(context, state),
+                loadingBuilder: (_) => _buildSubmitting(context, state),
+                failureBuilder: (context, failedState) =>
+                    _buildFailure(context, failedState ?? state),
+              );
             },
           ),
         ),
       ),
     );
+  }
+
+  AppAsyncStatus _mapStatusToViewState(EmailVerificationState state) {
+    final hasTokenInputError =
+        state.status == EmailVerificationStatus.initial &&
+        state.tokenError != null;
+
+    if (hasTokenInputError) {
+      return AppAsyncStatus.failure;
+    }
+
+    return switch (state.status) {
+      EmailVerificationStatus.initial => AppAsyncStatus.initial,
+      EmailVerificationStatus.submitting => AppAsyncStatus.loading,
+      EmailVerificationStatus.success => AppAsyncStatus.success,
+      EmailVerificationStatus.failure => AppAsyncStatus.failure,
+    };
   }
 
   Widget _buildSubmitting(BuildContext context, EmailVerificationState state) {

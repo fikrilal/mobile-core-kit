@@ -14,6 +14,7 @@ This document defines the presentation‑layer architecture using Flutter BLoC/C
 
 - State shape: single Equatable class with `status` enum + UI‑shaped fields; derived getters (`isLoading`, `hasNextPage`, etc.). Example: `lib/features/discover/presentation/bloc/trending/trending_books_state.dart:1`.
 - Builders: one `BlocBuilder` switches on `state.status` and returns dedicated methods (`_buildLoading/_buildSuccess/_buildError/_buildLoadingMore`). Example: `lib/features/discover/presentation/pages/discover_page.dart:393`.
+- Async renderer: prefer `AppAsyncStateView` (`lib/core/design_system/widgets/async_state/app_async_state_view.dart`) for standard body-level async states (`initial/loading/success/empty/failure`) to reduce duplicated branching.
 - Skeletons: colocate under `presentation/widgets/skeleton/` per feature; keep loading placeholders lightweight and consistent.
 - Forms: keep validation real‑time in state, but make error display **touched‑aware** (only show errors for fields the user interacted with). This prevents cross‑field validation from showing “required/empty” on untouched fields.
 - DI: register datasources → repositories → usecases → blocs in `features/**/di/*_module.dart`; consume via `locator`.
@@ -236,6 +237,40 @@ BlocListener<FormBloc, FormState>(
   child: ...,
 )
 ```
+
+## 7.1) `AppAsyncStateView` Usage Pattern
+
+Use `AppAsyncStateView` for render-only status shells. Keep side effects in `BlocListener`.
+
+```dart
+BlocListener<SliceCubit, SliceState>(
+  listenWhen: (prev, curr) => prev.status != curr.status,
+  listener: (context, state) {
+    if (state.status == SliceStatus.failure && state.failure != null) {
+      AppSnackBar.showError(context, message: state.failure!.message);
+    }
+  },
+  child: BlocBuilder<SliceCubit, SliceState>(
+    builder: (context, state) {
+      return AppAsyncStateView<SliceState>(
+        status: _mapStatus(state),
+        failure: state,
+        loadingBuilder: (_) => const SliceSkeleton(),
+        emptyBuilder: (_) => const SliceEmptyView(),
+        successBuilder: (_) => SliceContent(data: state.items),
+        failureBuilder: (_, failedState) => SliceErrorView(
+          onRetry: () => context.read<SliceCubit>().refresh(),
+          failure: failedState?.failure,
+        ),
+      );
+    },
+  ),
+);
+```
+
+Notes:
+- `AppAsyncStateView` is render-only; do not trigger navigation/snackbars inside builders.
+- For submit-heavy forms, keep button-level loading/error handling in the form itself; use `AppAsyncStateView` when the whole body state changes.
 
 2) Effects stream (command channel; use sparingly)
 - Expose `Stream<Effect>` from Cubit/Bloc; subscribe once in `initState` from a single coordinating widget and consume. Prefer single‑subscription streams to avoid multiple listeners. Always close in `close()`.
