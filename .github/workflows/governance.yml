@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   coverage-gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       COVERAGE_MIN: "55.0"
@@ -125,8 +125,11 @@ jobs:
           path: coverage/lcov.info
 
   golden-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
