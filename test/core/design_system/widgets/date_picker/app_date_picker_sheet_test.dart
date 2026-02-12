@@ -131,6 +131,32 @@ void main() {
       expect(await resultFuture, isNull);
     });
 
+    testWidgets('minRangeDays disables too-close end dates', (tester) async {
+      final context = await _pumpHost(tester, const Size(500, 900));
+
+      final resultFuture = showAppDateRangePickerSheet(
+        context: context,
+        firstDate: DateTime(2026, 4, 1),
+        lastDate: DateTime(2026, 4, 30),
+        minRangeDays: 3,
+      );
+
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('app_date_picker_day_2026-04-07')),
+      );
+      await tester.pump();
+
+      final invalidDayButton = tester.widget<TextButton>(
+        find.byKey(const ValueKey('app_date_picker_day_2026-04-08')),
+      );
+      expect(invalidDayButton.onPressed, isNull);
+
+      await tester.tap(find.byKey(appDatePickerCancelKey));
+      await tester.pumpAndSettle();
+      expect(await resultFuture, isNull);
+    });
+
     testWidgets('month navigation respects first/last month bounds', (
       tester,
     ) async {

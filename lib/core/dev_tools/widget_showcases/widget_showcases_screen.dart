@@ -26,6 +26,12 @@ class WidgetShowcasesScreen extends StatelessWidget {
       route: DevToolsRoutes.fieldShowcase,
     ),
     _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.calendarDots,
+      title: 'Date Picker',
+      subtitle: 'Single and range date pickers',
+      route: DevToolsRoutes.datePickerShowcase,
+    ),
+    _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.textT,
       title: 'Typography',
       subtitle: 'AppText, Headings & Paragraphs',

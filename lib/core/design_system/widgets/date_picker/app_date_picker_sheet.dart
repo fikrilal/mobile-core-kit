@@ -52,6 +52,7 @@ Future<DateTimeRange?> showAppDateRangePickerSheet({
   required DateTime firstDate,
   required DateTime lastDate,
   DateTimeRange? initialRange,
+  int? minRangeDays,
   int? maxRangeDays,
   AppSelectableDayPredicate? selectableDayPredicate,
   String? title,
@@ -70,6 +71,7 @@ Future<DateTimeRange?> showAppDateRangePickerSheet({
       firstDate: firstDate,
       lastDate: lastDate,
       initialRange: initialRange,
+      minRangeDays: minRangeDays,
       maxRangeDays: maxRangeDays,
       selectableDayPredicate: selectableDayPredicate,
       title: title,
@@ -94,6 +96,7 @@ class AppDatePickerSheet extends StatefulWidget {
     this.resetLabel,
   }) : mode = AppDateSelectionMode.single,
        initialRange = null,
+       minRangeDays = null,
        maxRangeDays = null,
        constraintMessage = null;
 
@@ -102,6 +105,7 @@ class AppDatePickerSheet extends StatefulWidget {
     required this.firstDate,
     required this.lastDate,
     this.initialRange,
+    this.minRangeDays,
     this.maxRangeDays,
     this.selectableDayPredicate,
     this.title,
@@ -117,6 +121,7 @@ class AppDatePickerSheet extends StatefulWidget {
   final DateTime lastDate;
   final DateTime? initialDate;
   final DateTimeRange? initialRange;
+  final int? minRangeDays;
   final int? maxRangeDays;
   final AppSelectableDayPredicate? selectableDayPredicate;
   final String? title;
@@ -151,8 +156,18 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
       'firstDate must be before or equal to lastDate',
     );
     assert(
+      widget.minRangeDays == null || widget.minRangeDays! > 0,
+      'minRangeDays must be greater than zero',
+    );
+    assert(
       widget.maxRangeDays == null || widget.maxRangeDays! > 0,
       'maxRangeDays must be greater than zero',
+    );
+    assert(
+      widget.minRangeDays == null ||
+          widget.maxRangeDays == null ||
+          widget.minRangeDays! <= widget.maxRangeDays!,
+      'minRangeDays must be less than or equal to maxRangeDays',
     );
 
     _seedInitialSelection();
@@ -283,7 +298,7 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
         if (!_isDateSelectable(start) || !_isDateSelectable(end)) {
           return;
         }
-        if (_exceedsMaxRange(start, end)) {
+        if (_isInvalidRangeSize(start, end)) {
           return;
         }
 
@@ -347,7 +362,7 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
           final start = _rangeStart!;
           final nextStart = day.isBefore(start) ? day : start;
           final nextEnd = day.isBefore(start) ? start : day;
-          if (_exceedsMaxRange(nextStart, nextEnd)) {
+          if (_isInvalidRangeSize(nextStart, nextEnd)) {
             return;
           }
 
@@ -368,12 +383,15 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
     }
 
     final maxRangeDays = widget.maxRangeDays;
+    final minRangeDays = widget.minRangeDays;
     if (widget.mode == AppDateSelectionMode.range &&
-        maxRangeDays != null &&
         _rangeStart != null &&
         _rangeEnd == null) {
       final span = _inclusiveDaySpan(_rangeStart!, day);
-      if (span > maxRangeDays) {
+      if (maxRangeDays != null && span > maxRangeDays) {
+        return false;
+      }
+      if (minRangeDays != null && span < minRangeDays) {
         return false;
       }
     }
@@ -381,10 +399,18 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
     return true;
   }
 
-  bool _exceedsMaxRange(DateTime start, DateTime end) {
+  bool _isInvalidRangeSize(DateTime start, DateTime end) {
+    final minRangeDays = widget.minRangeDays;
     final maxRangeDays = widget.maxRangeDays;
-    if (maxRangeDays == null) return false;
-    return _inclusiveDaySpan(start, end) > maxRangeDays;
+    final span = _inclusiveDaySpan(start, end);
+
+    if (minRangeDays != null && span < minRangeDays) {
+      return true;
+    }
+    if (maxRangeDays != null && span > maxRangeDays) {
+      return true;
+    }
+    return false;
   }
 
   int _inclusiveDaySpan(DateTime a, DateTime b) {
@@ -401,7 +427,10 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
   bool get _hasValidSelection {
     return switch (widget.mode) {
       AppDateSelectionMode.single => _selectedDate != null,
-      AppDateSelectionMode.range => _rangeStart != null && _rangeEnd != null,
+      AppDateSelectionMode.range =>
+        _rangeStart != null &&
+            _rangeEnd != null &&
+            !_isInvalidRangeSize(_rangeStart!, _rangeEnd!),
     };
   }
 

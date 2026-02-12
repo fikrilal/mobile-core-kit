@@ -16,6 +16,7 @@ This document defines the presentation‑layer architecture using Flutter BLoC/C
 - Builders: one `BlocBuilder` switches on `state.status` and returns dedicated methods (`_buildLoading/_buildSuccess/_buildError/_buildLoadingMore`). Example: `lib/features/discover/presentation/pages/discover_page.dart:393`.
 - Async renderer: prefer `AppAsyncStateView` (`lib/core/design_system/widgets/async_state/app_async_state_view.dart`) for standard body-level async states (`initial/loading/success/empty/failure`) to reduce duplicated branching.
 - Paginated collections: prefer `AppPaginatedCollectionView<T>` (`lib/core/design_system/widgets/collection/app_paginated_collection_view.dart`) for list/grid pages that need pull-to-refresh + infinite load-more + empty/failure consistency.
+- Date input: prefer `AppDateField` + `AppDatePickerSheet` (`lib/core/design_system/widgets/date_picker/`) instead of per-feature picker implementations.
 - Skeletons: colocate under `presentation/widgets/skeleton/` per feature; keep loading placeholders lightweight and consistent.
 - Forms: keep validation real‑time in state, but make error display **touched‑aware** (only show errors for fields the user interacted with). This prevents cross‑field validation from showing “required/empty” on untouched fields.
 - DI: register datasources → repositories → usecases → blocs in `features/**/di/*_module.dart`; consume via `locator`.
