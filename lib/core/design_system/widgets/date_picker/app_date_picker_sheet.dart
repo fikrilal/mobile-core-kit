@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_context.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_policies.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/policies/modal_policy.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/adaptive_modal.dart';
 import 'package:mobile_core_kit/core/design_system/theme/system/state_opacities.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/radii.dart';
@@ -13,6 +16,7 @@ typedef AppSelectableDayPredicate = bool Function(DateTime day);
 
 const appDatePickerPrevMonthKey = Key('app_date_picker_prev_month');
 const appDatePickerNextMonthKey = Key('app_date_picker_next_month');
+const appDatePickerCloseKey = Key('app_date_picker_close');
 const appDatePickerCancelKey = Key('app_date_picker_cancel');
 const appDatePickerResetKey = Key('app_date_picker_reset');
 const appDatePickerConfirmKey = Key('app_date_picker_confirm');
@@ -27,9 +31,15 @@ Future<DateTime?> showAppSingleDatePickerSheet({
   String? confirmLabel,
   String? cancelLabel,
   String? resetLabel,
+  bool? showCloseButton,
   bool barrierDismissible = true,
   bool useRootNavigator = true,
 }) {
+  final effectiveShowCloseButton = _resolveDefaultShowCloseButton(
+    context: context,
+    showCloseButton: showCloseButton,
+  );
+
   return showAdaptiveModal<DateTime>(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -43,6 +53,7 @@ Future<DateTime?> showAppSingleDatePickerSheet({
       confirmLabel: confirmLabel,
       cancelLabel: cancelLabel,
       resetLabel: resetLabel,
+      showCloseButton: effectiveShowCloseButton,
     ),
   );
 }
@@ -60,9 +71,15 @@ Future<DateTimeRange?> showAppDateRangePickerSheet({
   String? cancelLabel,
   String? resetLabel,
   String? constraintMessage,
+  bool? showCloseButton,
   bool barrierDismissible = true,
   bool useRootNavigator = true,
 }) {
+  final effectiveShowCloseButton = _resolveDefaultShowCloseButton(
+    context: context,
+    showCloseButton: showCloseButton,
+  );
+
   return showAdaptiveModal<DateTimeRange>(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -79,8 +96,23 @@ Future<DateTimeRange?> showAppDateRangePickerSheet({
       cancelLabel: cancelLabel,
       resetLabel: resetLabel,
       constraintMessage: constraintMessage,
+      showCloseButton: effectiveShowCloseButton,
     ),
   );
+}
+
+bool _resolveDefaultShowCloseButton({
+  required BuildContext context,
+  required bool? showCloseButton,
+}) {
+  if (showCloseButton != null) {
+    return showCloseButton;
+  }
+
+  final layout = context.adaptiveLayout;
+  final modalPolicy = AdaptivePolicies.of(context).modalPolicy;
+  final presentation = modalPolicy.modalPresentation(layout: layout);
+  return presentation == AdaptiveModalPresentation.dialog;
 }
 
 class AppDatePickerSheet extends StatefulWidget {
@@ -94,6 +126,7 @@ class AppDatePickerSheet extends StatefulWidget {
     this.confirmLabel,
     this.cancelLabel,
     this.resetLabel,
+    this.showCloseButton,
   }) : mode = AppDateSelectionMode.single,
        initialRange = null,
        minRangeDays = null,
@@ -113,6 +146,7 @@ class AppDatePickerSheet extends StatefulWidget {
     this.cancelLabel,
     this.resetLabel,
     this.constraintMessage,
+    this.showCloseButton,
   }) : mode = AppDateSelectionMode.range,
        initialDate = null;
 
@@ -129,6 +163,7 @@ class AppDatePickerSheet extends StatefulWidget {
   final String? cancelLabel;
   final String? resetLabel;
   final String? constraintMessage;
+  final bool? showCloseButton;
 
   @override
   State<AppDatePickerSheet> createState() => _AppDatePickerSheetState();
@@ -199,6 +234,7 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
           children: [
             _Header(
               title: titleText,
+              showCloseButton: widget.showCloseButton ?? true,
               canGoPreviousMonth: _canGoPreviousMonth,
               canGoNextMonth: _canGoNextMonth,
               onClose: () => Navigator.of(context).pop(),
@@ -464,6 +500,7 @@ class _AppDatePickerSheetState extends State<AppDatePickerSheet> {
 class _Header extends StatelessWidget {
   const _Header({
     required this.title,
+    required this.showCloseButton,
     required this.canGoPreviousMonth,
     required this.canGoNextMonth,
     required this.onClose,
@@ -472,6 +509,7 @@ class _Header extends StatelessWidget {
   });
 
   final String title;
+  final bool showCloseButton;
   final bool canGoPreviousMonth;
   final bool canGoNextMonth;
   final VoidCallback onClose;
@@ -480,9 +518,37 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!showCloseButton) {
+      return Row(
+        children: [
+          IconButton(
+            key: appDatePickerPrevMonthKey,
+            onPressed: canGoPreviousMonth ? onPreviousMonth : null,
+            icon: const Icon(Icons.chevron_left),
+          ),
+          Expanded(
+            child: AppText.titleMedium(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+            ),
+          ),
+          IconButton(
+            key: appDatePickerNextMonthKey,
+            onPressed: canGoNextMonth ? onNextMonth : null,
+            icon: const Icon(Icons.chevron_right),
+          ),
+        ],
+      );
+    }
+
     return Row(
       children: [
-        IconButton(onPressed: onClose, icon: const Icon(Icons.close)),
+        IconButton(
+          key: appDatePickerCloseKey,
+          onPressed: onClose,
+          icon: const Icon(Icons.close),
+        ),
         Expanded(
           child: AppText.titleMedium(
             title,

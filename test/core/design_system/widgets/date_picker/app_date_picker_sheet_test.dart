@@ -231,5 +231,91 @@ void main() {
       );
       expect(dayButton.onPressed, isNull);
     });
+
+    testWidgets('compact modal hides close button by default', (tester) async {
+      final context = await _pumpHost(tester, const Size(500, 900));
+
+      final resultFuture = showAppSingleDatePickerSheet(
+        context: context,
+        firstDate: DateTime(2026, 4, 1),
+        lastDate: DateTime(2026, 4, 30),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byKey(appDatePickerCloseKey), findsNothing);
+      expect(find.text('April 2026'), findsOneWidget);
+
+      final prevCenter = tester.getCenter(
+        find.byKey(appDatePickerPrevMonthKey),
+      );
+      final titleCenter = tester.getCenter(find.text('April 2026'));
+      final nextCenter = tester.getCenter(
+        find.byKey(appDatePickerNextMonthKey),
+      );
+
+      expect(prevCenter.dx, lessThan(titleCenter.dx));
+      expect(nextCenter.dx, greaterThan(titleCenter.dx));
+
+      await tester.tap(find.byKey(appDatePickerCancelKey));
+      await tester.pumpAndSettle();
+      expect(await resultFuture, isNull);
+    });
+
+    testWidgets('dialog modal shows close button by default', (tester) async {
+      final context = await _pumpHost(tester, const Size(900, 900));
+
+      final resultFuture = showAppSingleDatePickerSheet(
+        context: context,
+        firstDate: DateTime(2026, 4, 1),
+        lastDate: DateTime(2026, 4, 30),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byKey(appDatePickerCloseKey), findsOneWidget);
+
+      await tester.tap(find.byKey(appDatePickerCloseKey));
+      await tester.pumpAndSettle();
+      expect(await resultFuture, isNull);
+    });
+
+    testWidgets('showCloseButton true overrides compact default', (
+      tester,
+    ) async {
+      final context = await _pumpHost(tester, const Size(500, 900));
+
+      final resultFuture = showAppSingleDatePickerSheet(
+        context: context,
+        firstDate: DateTime(2026, 4, 1),
+        lastDate: DateTime(2026, 4, 30),
+        showCloseButton: true,
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byKey(appDatePickerCloseKey), findsOneWidget);
+
+      await tester.tap(find.byKey(appDatePickerCloseKey));
+      await tester.pumpAndSettle();
+      expect(await resultFuture, isNull);
+    });
+
+    testWidgets('showCloseButton false overrides dialog default', (
+      tester,
+    ) async {
+      final context = await _pumpHost(tester, const Size(900, 900));
+
+      final resultFuture = showAppSingleDatePickerSheet(
+        context: context,
+        firstDate: DateTime(2026, 4, 1),
+        lastDate: DateTime(2026, 4, 30),
+        showCloseButton: false,
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byKey(appDatePickerCloseKey), findsNothing);
+
+      await tester.tap(find.byKey(appDatePickerCancelKey));
+      await tester.pumpAndSettle();
+      expect(await resultFuture, isNull);
+    });
   });
 }

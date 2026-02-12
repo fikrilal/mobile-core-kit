@@ -10,6 +10,7 @@ export 'app_date_picker_sheet.dart'
         AppDateSelectionMode,
         AppSelectableDayPredicate,
         appDatePickerCancelKey,
+        appDatePickerCloseKey,
         appDatePickerConfirmKey,
         appDatePickerNextMonthKey,
         appDatePickerPrevMonthKey,
