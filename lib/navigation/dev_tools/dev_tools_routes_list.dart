@@ -3,6 +3,8 @@ import 'package:mobile_core_kit/core/design_system/theme/typography/showcase/typ
 import 'package:mobile_core_kit/core/design_system/widgets/button/button_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/date_picker/date_picker_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field_showcase_screen.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/filter_chips/filter_chips_showcase_screen.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/search_showcase_screen.dart';
 import 'package:mobile_core_kit/core/dev_tools/theme/theme_roles_showcase_screen.dart';
 import 'package:mobile_core_kit/core/dev_tools/widget_showcases/widget_showcases_screen.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
@@ -27,6 +29,14 @@ final List<GoRoute> devToolsRoutes = [
   GoRoute(
     path: DevToolsRoutes.datePickerShowcase,
     builder: (context, state) => const DatePickerShowcaseScreen(),
+  ),
+  GoRoute(
+    path: DevToolsRoutes.filterChipsShowcase,
+    builder: (context, state) => const FilterChipsShowcaseScreen(),
+  ),
+  GoRoute(
+    path: DevToolsRoutes.searchShowcase,
+    builder: (context, state) => const SearchShowcaseScreen(),
   ),
   GoRoute(
     path: DevToolsRoutes.typographyShowcase,

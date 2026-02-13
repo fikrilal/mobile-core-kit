@@ -14,6 +14,18 @@ class WidgetShowcasesScreen extends StatelessWidget {
 
   static const _showcaseItems = <_WidgetShowcaseItem>[
     _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Search Experience',
+      subtitle: 'Debounce, suggestions, clear action, and history',
+      route: DevToolsRoutes.searchShowcase,
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Filter Chips',
+      subtitle: 'Single/multi selection chips with clear action',
+      route: DevToolsRoutes.filterChipsShowcase,
+    ),
+    _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cursorClick,
       title: 'Buttons',
       subtitle: 'AppButton variants, sizes & states',
@@ -37,6 +49,71 @@ class WidgetShowcasesScreen extends StatelessWidget {
       subtitle: 'AppText, Headings & Paragraphs',
       route: DevToolsRoutes.typographyShowcase,
     ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Async State',
+      subtitle: 'AppAsyncStateView',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.userCircle,
+      title: 'Avatar',
+      subtitle: 'AppAvatar',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Badge',
+      subtitle: 'AppIconBadge',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Checkbox',
+      subtitle: 'AppCheckbox and AppCheckboxTile',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Collection',
+      subtitle: 'AppPaginatedCollectionView',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Dialog',
+      subtitle: 'AppConfirmationDialog',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'List',
+      subtitle: 'AppListTile',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Loading',
+      subtitle: 'AppDotWave, AppLoadingOverlay, AppStartupGate',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Navigation',
+      subtitle: 'AppBottomNavBar',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Shimmer',
+      subtitle: 'AppShimmer components',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Snackbar',
+      subtitle: 'AppSnackbar and TopSnackbarOverlay',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'State Message',
+      subtitle: 'AppStateMessagePanel and AppEmptyState',
+    ),
+    _WidgetShowcaseItem(
+      icon: PhosphorIconsRegular.cube,
+      title: 'Tappable',
+      subtitle: 'AppTappable',
+    ),
   ];
 
   @override
@@ -58,7 +135,9 @@ class WidgetShowcasesScreen extends StatelessWidget {
               leading: AppIconBadge(icon: PhosphorIcon(item.icon, size: 24)),
               title: item.title,
               subtitle: item.subtitle,
-              onTap: () => context.push(item.route),
+              onTap: item.route == null
+                  ? null
+                  : () => context.push(item.route!),
             );
           },
         ),
@@ -72,11 +151,11 @@ class _WidgetShowcaseItem {
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.route,
+    this.route,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
-  final String route;
+  final String? route;
 }
