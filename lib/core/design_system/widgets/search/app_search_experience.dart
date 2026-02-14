@@ -1,66 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_core_kit/core/design_system/theme/system/motion_durations.dart';
-import 'package:mobile_core_kit/core/design_system/theme/tokens/radii.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
-import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_history_store.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_input_shell.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_keys.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_models.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_panel.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/search/app_search_style.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 
-typedef AppSearchSuggestionsLoader<T> =
-    FutureOr<List<AppSearchSuggestion<T>>> Function(String query);
-typedef AppSearchSuggestionSelected<T> =
-    void Function(AppSearchSuggestion<T> suggestion);
-
-const appSearchExperienceBarKey = Key('app_search_experience_bar');
-const appSearchExperienceClearButtonKey = Key('app_search_experience_clear');
-
-Key appSearchExperienceHistoryItemKey(String value) {
-  return Key('app_search_experience_history_$value');
-}
-
-Key appSearchExperienceSuggestionItemKey(String label) {
-  return Key('app_search_experience_suggestion_$label');
-}
-
-class AppSearchSuggestion<T> {
-  const AppSearchSuggestion({
-    required this.label,
-    this.value,
-    this.subtitle,
-    this.leading,
-    this.trailing,
-  });
-
-  final String label;
-  final T? value;
-  final String? subtitle;
-  final Widget? leading;
-  final Widget? trailing;
-}
-
-abstract interface class AppSearchHistoryStore {
-  Future<List<String>> loadHistory();
-
-  Future<void> saveHistory(List<String> values);
-}
-
-class InMemoryAppSearchHistoryStore implements AppSearchHistoryStore {
-  InMemoryAppSearchHistoryStore([List<String>? initialValues])
-    : _values = List<String>.from(initialValues ?? const <String>[]);
-
-  List<String> _values;
-
-  @override
-  Future<List<String>> loadHistory() async {
-    return List<String>.from(_values);
-  }
-
-  @override
-  Future<void> saveHistory(List<String> values) async {
-    _values = List<String>.from(values);
-  }
-}
+const _defaultHistorySectionLabel = 'Recent';
+const _defaultSuggestionSectionLabel = 'Suggestions';
+const _defaultClearHistoryLabel = 'Clear';
 
 class AppSearchExperience<T> extends StatefulWidget {
   const AppSearchExperience({
@@ -83,14 +37,18 @@ class AppSearchExperience<T> extends StatefulWidget {
     this.onQuerySubmitted,
     this.onSuggestionSelected,
     this.onCleared,
+    this.onHistoryCleared,
+    this.enableKeyboardNavigation = true,
+    this.showClearHistoryAction = true,
+    this.historySectionLabel,
+    this.suggestionsSectionLabel,
+    this.clearHistoryLabel,
+    this.panelScrollPhysics,
+    this.style = const AppSearchStyle(),
   }) : assert(historyLimit > 0, 'historyLimit must be greater than zero.'),
        assert(
          minQueryLength >= 0,
          'minQueryLength must be greater than or equal to zero.',
-       ),
-       assert(
-         debounceDuration >= Duration.zero,
-         'debounceDuration must be non-negative.',
        );
 
   final TextEditingController? controller;
@@ -111,6 +69,14 @@ class AppSearchExperience<T> extends StatefulWidget {
   final ValueChanged<String>? onQuerySubmitted;
   final AppSearchSuggestionSelected<T>? onSuggestionSelected;
   final VoidCallback? onCleared;
+  final VoidCallback? onHistoryCleared;
+  final bool enableKeyboardNavigation;
+  final bool showClearHistoryAction;
+  final String? historySectionLabel;
+  final String? suggestionsSectionLabel;
+  final String? clearHistoryLabel;
+  final ScrollPhysics? panelScrollPhysics;
+  final AppSearchStyle style;
 
   @override
   State<AppSearchExperience<T>> createState() => _AppSearchExperienceState<T>();
@@ -119,11 +85,14 @@ class AppSearchExperience<T> extends StatefulWidget {
 class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  late final ScrollController _panelScrollController;
+
   Timer? _debounceTimer;
   int _requestId = 0;
   bool _suppressNextTextChange = false;
   bool _isLoadingSuggestions = false;
 
+  int _highlightedIndex = -1;
   List<AppSearchSuggestion<T>> _suggestions = <AppSearchSuggestion<T>>[];
   List<String> _history = const <String>[];
 
@@ -133,6 +102,7 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
     _controller =
         widget.controller ?? TextEditingController(text: widget.initialQuery);
     _focusNode = widget.focusNode ?? FocusNode();
+    _panelScrollController = ScrollController();
     _controller.addListener(_onTextChanged);
     _focusNode.addListener(_onFocusChanged);
     unawaited(_loadHistory());
@@ -182,6 +152,7 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
+    _panelScrollController.dispose();
     super.dispose();
   }
 
@@ -189,65 +160,184 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
   Widget build(BuildContext context) {
     final query = _normalizedQuery;
     final showPanel = _focusNode.hasFocus && _hasPanelContent;
+    final palette = resolveAppSearchPalette(
+      context,
+      enabled: widget.enabled,
+      focused: _focusNode.hasFocus,
+    );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SearchBar(
-          key: appSearchExperienceBarKey,
-          controller: _controller,
-          focusNode: _focusNode,
-          enabled: widget.enabled,
-          hintText: widget.placeholder ?? context.l10n.fieldSearchHint,
-          onChanged: (_) {},
-          onSubmitted: _onSubmitted,
-          leading: const Icon(Icons.search),
-          trailing: _buildTrailing(query),
-          textInputAction: TextInputAction.search,
-          autoFocus: widget.autofocus,
+    return TapRegion(
+      onTapOutside: (_) {
+        if (_focusNode.hasFocus) {
+          _focusNode.unfocus();
+        }
+      },
+      child: Focus(
+        onKeyEvent: _handleKeyEvent,
+        child: Column(
+          key: appSearchExperienceContainerKey,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppSearchInputShell(
+              textFieldKey: appSearchExperienceBarKey,
+              controller: _controller,
+              focusNode: _focusNode,
+              style: widget.style,
+              palette: palette,
+              placeholder: widget.placeholder ?? context.l10n.fieldSearchHint,
+              enabled: widget.enabled,
+              autofocus: widget.autofocus,
+              showLoading: widget.isLoading || _isLoadingSuggestions,
+              showClearButton: query.isNotEmpty,
+              onSubmitted: _onSubmitted,
+              onClearPressed: _onClearPressed,
+            ),
+            if (showPanel) ...[
+              const SizedBox(height: AppSpacing.space8),
+              AppSearchPanel<T>(
+                style: widget.style,
+                palette: palette,
+                query: query,
+                history: _historyWhenVisible,
+                suggestions: _suggestionsWhenVisible,
+                loadingText: context.l10n.commonLoading,
+                historySectionLabel: _historyLabel,
+                suggestionsSectionLabel: _suggestionsLabel,
+                clearHistoryLabel: _clearHistoryLabel,
+                isLoading: _isLoadingSuggestions && _canLoadSuggestions(query),
+                showClearHistoryAction: widget.showClearHistoryAction,
+                highlightedIndex: _highlightedIndex,
+                noResultsText: _noResultsTextWhenVisible,
+                scrollController: _panelScrollController,
+                scrollPhysics: widget.panelScrollPhysics,
+                onHistorySelected: _onHistorySelected,
+                onSuggestionSelected: _onSuggestionSelected,
+                onClearHistory:
+                    widget.showClearHistoryAction &&
+                        _historyWhenVisible.isNotEmpty
+                    ? _clearHistory
+                    : null,
+              ),
+            ],
+          ],
         ),
-        if (showPanel) ...[
-          const SizedBox(height: AppSpacing.space8),
-          _SearchPanel(
-            loadingText: context.l10n.commonLoading,
-            isLoading: _isLoadingSuggestions && _canLoadSuggestions(query),
-            history: _historyWhenVisible,
-            suggestions: _suggestionsWhenVisible,
-            noResultsText: _noResultsTextWhenVisible,
-            onHistorySelected: _onHistorySelected,
-            onSuggestionSelected: _onSuggestionSelected,
-          ),
-        ],
-      ],
+      ),
     );
   }
 
-  List<Widget> _buildTrailing(String query) {
-    final trailing = <Widget>[];
-    if (widget.isLoading || _isLoadingSuggestions) {
-      trailing.add(
-        const SizedBox.square(
-          dimension: AppSpacing.space16,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      );
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (!widget.enableKeyboardNavigation || !_focusNode.hasFocus) {
+      return KeyEventResult.ignored;
     }
-    if (query.isNotEmpty) {
-      trailing.add(
-        IconButton(
-          key: appSearchExperienceClearButtonKey,
-          tooltip: MaterialLocalizations.of(context).clearButtonTooltip,
-          onPressed: widget.enabled ? _onClearPressed : null,
-          icon: const Icon(Icons.close),
-        ),
-      );
+    if (event is! KeyDownEvent) {
+      return KeyEventResult.ignored;
     }
-    return trailing;
+
+    if (!_hasInteractivePanelEntries) {
+      if (event.logicalKey == LogicalKeyboardKey.escape) {
+        _focusNode.unfocus();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      _moveHighlight(1);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      _moveHighlight(-1);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.escape) {
+      _focusNode.unfocus();
+      return KeyEventResult.handled;
+    }
+
+    final isEnter =
+        event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (isEnter && _highlightedIndex >= 0) {
+      _submitHighlightedEntry();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
+
+  void _moveHighlight(int delta) {
+    final total = _interactiveEntryCount;
+    if (total <= 0) return;
+
+    final current = _highlightedIndex;
+    final next = current < 0
+        ? (delta > 0 ? 0 : total - 1)
+        : (current + delta + total) % total;
+
+    if (!mounted) return;
+    setState(() {
+      _highlightedIndex = next;
+    });
+    _ensureHighlightVisible(next);
+  }
+
+  void _ensureHighlightVisible(int index) {
+    if (!_panelScrollController.hasClients) return;
+    final position = _panelScrollController.position;
+    if (!position.hasViewportDimension) return;
+
+    final rowExtent = widget.style.itemVerticalPadding * 2 + AppSpacing.space20;
+    final rowStart = index * rowExtent;
+    final rowEnd = rowStart + rowExtent;
+    final viewportStart = position.pixels;
+    final viewportEnd = viewportStart + position.viewportDimension;
+
+    var target = viewportStart;
+    if (rowEnd > viewportEnd) {
+      target = rowEnd - position.viewportDimension + AppSpacing.space12;
+    } else if (rowStart < viewportStart) {
+      target = rowStart - AppSpacing.space12;
+    }
+
+    final clamped = target.clamp(0.0, position.maxScrollExtent);
+    if ((clamped - viewportStart).abs() < AppSpacing.space1) {
+      return;
+    }
+
+    _panelScrollController.animateTo(
+      clamped,
+      duration: MotionDurations.short,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _submitHighlightedEntry() {
+    if (_highlightedIndex < 0) return;
+
+    final history = _historyWhenVisible;
+    if (_highlightedIndex < history.length) {
+      _onHistorySelected(history[_highlightedIndex]);
+      return;
+    }
+
+    final suggestionIndex = _highlightedIndex - history.length;
+    final suggestions = _suggestionsWhenVisible;
+    if (suggestionIndex < 0 || suggestionIndex >= suggestions.length) {
+      return;
+    }
+
+    _onSuggestionSelected(suggestions[suggestionIndex]);
   }
 
   void _onFocusChanged() {
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      if (!_focusNode.hasFocus) {
+        _highlightedIndex = -1;
+      }
+    });
     if (_focusNode.hasFocus) {
       _scheduleDebouncedQuery(_normalizedQuery);
     }
@@ -257,13 +347,17 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
     if (_suppressNextTextChange) {
       _suppressNextTextChange = false;
       if (mounted) {
-        setState(() {});
+        setState(() {
+          _highlightedIndex = -1;
+        });
       }
       return;
     }
 
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _highlightedIndex = -1;
+      });
     }
     _scheduleDebouncedQuery(_normalizedQuery);
   }
@@ -292,6 +386,7 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
         setState(() {
           _isLoadingSuggestions = false;
           _suggestions = <AppSearchSuggestion<T>>[];
+          _highlightedIndex = -1;
         });
       }
       return;
@@ -314,6 +409,7 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
       setState(() {
         _suggestions = result;
         _isLoadingSuggestions = false;
+        _highlightedIndex = -1;
       });
     } catch (_) {
       if (!mounted || requestId != _requestId) {
@@ -322,6 +418,7 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
       setState(() {
         _isLoadingSuggestions = false;
         _suggestions = <AppSearchSuggestion<T>>[];
+        _highlightedIndex = -1;
       });
     }
   }
@@ -369,6 +466,24 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
     _controller.clear();
     widget.onCleared?.call();
     unawaited(_applyQuery(''));
+  }
+
+  void _clearHistory() {
+    if (_history.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _history = const <String>[];
+      _highlightedIndex = -1;
+    });
+
+    final store = widget.historyStore;
+    if (store != null) {
+      unawaited(store.saveHistory(const <String>[]));
+    }
+
+    widget.onHistoryCleared?.call();
   }
 
   void _onHistorySelected(String query) {
@@ -442,6 +557,12 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
         _noResultsTextWhenVisible != null;
   }
 
+  bool get _hasInteractivePanelEntries => _interactiveEntryCount > 0;
+
+  int get _interactiveEntryCount {
+    return _historyWhenVisible.length + _suggestionsWhenVisible.length;
+  }
+
   List<String> get _historyWhenVisible {
     if (_normalizedQuery.isNotEmpty || !widget.enableHistory) {
       return const <String>[];
@@ -473,91 +594,28 @@ class _AppSearchExperienceState<T> extends State<AppSearchExperience<T>> {
     if (trimmed.isEmpty) return null;
     return trimmed;
   }
-}
 
-class _SearchPanel<T> extends StatelessWidget {
-  const _SearchPanel({
-    required this.loadingText,
-    required this.isLoading,
-    required this.history,
-    required this.suggestions,
-    required this.noResultsText,
-    required this.onHistorySelected,
-    required this.onSuggestionSelected,
-  });
+  String get _historyLabel {
+    final value = widget.historySectionLabel?.trim();
+    if (value == null || value.isEmpty) {
+      return _defaultHistorySectionLabel;
+    }
+    return value;
+  }
 
-  final String loadingText;
-  final bool isLoading;
-  final List<String> history;
-  final List<AppSearchSuggestion<T>> suggestions;
-  final String? noResultsText;
-  final ValueChanged<String> onHistorySelected;
-  final ValueChanged<AppSearchSuggestion<T>> onSuggestionSelected;
+  String get _suggestionsLabel {
+    final value = widget.suggestionsSectionLabel?.trim();
+    if (value == null || value.isEmpty) {
+      return _defaultSuggestionSectionLabel;
+    }
+    return value;
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final noResultsLabel = noResultsText;
-
-    final children = <Widget>[
-      if (isLoading)
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.space12),
-          child: Row(
-            children: [
-              const SizedBox.square(
-                dimension: AppSpacing.space16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              const SizedBox(width: AppSpacing.space8),
-              Expanded(child: AppText.bodyMedium(loadingText)),
-            ],
-          ),
-        ),
-      ...history.map(
-        (item) => ListTile(
-          key: appSearchExperienceHistoryItemKey(item),
-          leading: const Icon(Icons.history),
-          title: AppText.bodyMedium(item),
-          onTap: () => onHistorySelected(item),
-        ),
-      ),
-      ...suggestions.map(
-        (suggestion) => ListTile(
-          key: appSearchExperienceSuggestionItemKey(suggestion.label),
-          leading: suggestion.leading,
-          trailing: suggestion.trailing,
-          title: AppText.bodyMedium(suggestion.label),
-          subtitle: suggestion.subtitle == null
-              ? null
-              : AppText.bodySmall(suggestion.subtitle!),
-          onTap: () => onSuggestionSelected(suggestion),
-        ),
-      ),
-      if (noResultsLabel != null)
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.space12),
-          child: AppText.bodyMedium(
-            noResultsLabel,
-            textAlign: TextAlign.center,
-          ),
-        ),
-    ];
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadii.radius12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 320),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          children: children,
-        ),
-      ),
-    );
+  String get _clearHistoryLabel {
+    final value = widget.clearHistoryLabel?.trim();
+    if (value == null || value.isEmpty) {
+      return _defaultClearHistoryLabel;
+    }
+    return value;
   }
 }

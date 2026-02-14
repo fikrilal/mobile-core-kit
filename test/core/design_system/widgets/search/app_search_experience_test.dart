@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/search/search.dart';
@@ -47,6 +48,23 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 300));
     expect(calls, <String>['ab']);
+  });
+
+  testWidgets('uses custom search shell instead of Material SearchBar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        const AppSearchExperience<String>(
+          placeholder: 'Search',
+          debounceDuration: Duration.zero,
+        ),
+      ),
+    );
+
+    expect(find.byType(SearchBar), findsNothing);
+    expect(find.byKey(appSearchExperienceBarKey), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
   });
 
   testWidgets('clear button resets text and notifies callbacks', (
@@ -187,5 +205,109 @@ void main() {
 
     expect(find.text('new'), findsOneWidget);
     expect(find.text('old'), findsNothing);
+  });
+
+  testWidgets('keyboard navigation can submit highlighted suggestion', (
+    tester,
+  ) async {
+    final submitted = <String>[];
+
+    await tester.pumpWidget(
+      wrap(
+        AppSearchExperience<String>(
+          placeholder: 'Search',
+          debounceDuration: Duration.zero,
+          suggestionsLoader: (query) async {
+            if (query != 'app') {
+              return const <AppSearchSuggestion<String>>[];
+            }
+            return const <AppSearchSuggestion<String>>[
+              AppSearchSuggestion<String>(label: 'apple'),
+              AppSearchSuggestion<String>(label: 'application'),
+            ];
+          },
+          onQuerySubmitted: submitted.add,
+        ),
+      ),
+    );
+
+    await focusSearchBar(tester);
+    await tester.enterText(find.byKey(appSearchExperienceBarKey), 'app');
+    await tester.pump();
+    expect(find.text('apple'), findsOneWidget);
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+
+    expect(submitted, <String>['apple']);
+  });
+
+  testWidgets('clear history action removes stored history entries', (
+    tester,
+  ) async {
+    final store = InMemoryAppSearchHistoryStore(<String>['alpha', 'beta']);
+
+    await tester.pumpWidget(
+      wrap(
+        AppSearchExperience<String>(
+          placeholder: 'Search',
+          debounceDuration: Duration.zero,
+          enableHistory: true,
+          historyStore: store,
+          showClearHistoryAction: true,
+        ),
+      ),
+    );
+
+    await focusSearchBar(tester);
+    await tester.pump();
+    expect(
+      find.byKey(appSearchExperienceHistoryItemKey('alpha')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(appSearchExperienceClearHistoryKey));
+    await tester.pump();
+
+    expect(
+      find.byKey(appSearchExperienceHistoryItemKey('alpha')),
+      findsNothing,
+    );
+    expect(find.byKey(appSearchExperienceHistoryItemKey('beta')), findsNothing);
+
+    final persisted = await store.loadHistory();
+    expect(persisted, isEmpty);
+  });
+
+  testWidgets('tap outside closes active search panel', (tester) async {
+    await tester.pumpWidget(
+      wrap(
+        AppSearchExperience<String>(
+          placeholder: 'Search',
+          debounceDuration: Duration.zero,
+          suggestionsLoader: (query) async {
+            if (query == 'app') {
+              return const <AppSearchSuggestion<String>>[
+                AppSearchSuggestion<String>(label: 'apple'),
+              ];
+            }
+            return const <AppSearchSuggestion<String>>[];
+          },
+        ),
+      ),
+    );
+
+    await focusSearchBar(tester);
+    await tester.enterText(find.byKey(appSearchExperienceBarKey), 'app');
+    await tester.pump();
+
+    expect(find.byKey(appSearchExperiencePanelKey), findsOneWidget);
+
+    await tester.tapAt(const Offset(2, 2));
+    await tester.pump();
+
+    expect(find.byKey(appSearchExperiencePanelKey), findsNothing);
   });
 }

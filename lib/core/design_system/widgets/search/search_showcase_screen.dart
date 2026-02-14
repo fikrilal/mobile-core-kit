@@ -70,6 +70,9 @@ class _SearchShowcaseScreenState extends State<SearchShowcaseScreen> {
                 enableHistory: true,
                 historyStore: _historyStore,
                 noResultsText: 'No matching widgets',
+                historySectionLabel: 'Recent searches',
+                suggestionsSectionLabel: 'Widget suggestions',
+                clearHistoryLabel: 'Clear all',
                 suggestionsLoader: _loadSuggestions,
                 onQueryChanged: (query) {
                   setState(() {
