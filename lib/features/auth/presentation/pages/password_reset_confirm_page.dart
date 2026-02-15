@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_token
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/async_state/async_state.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
@@ -66,30 +67,44 @@ class _PasswordResetConfirmBody extends StatelessWidget {
           child:
               BlocBuilder<PasswordResetConfirmCubit, PasswordResetConfirmState>(
                 builder: (context, state) {
-                  final hasTokenInputError =
-                      state.status == PasswordResetConfirmStatus.initial &&
-                      state.tokenError != null;
-
-                  if (state.status == PasswordResetConfirmStatus.submitting) {
-                    return _buildSubmitting(context);
-                  }
-
-                  if (state.status == PasswordResetConfirmStatus.success) {
-                    return _buildSuccess(context);
-                  }
-
-                  if (state.tokenError != null &&
-                      (state.status == PasswordResetConfirmStatus.failure ||
-                          hasTokenInputError)) {
-                    return _buildTokenFailure(context, state);
-                  }
-
-                  return _buildForm(context, state);
+                  return AppAsyncStateView<PasswordResetConfirmState>(
+                    status: _mapStatusToViewState(state),
+                    failure: state,
+                    treatInitialAsLoading: false,
+                    initialBuilder: (_) => _buildForm(context, state),
+                    loadingBuilder: (_) => _buildSubmitting(context),
+                    successBuilder: (_) => _buildSuccess(context),
+                    emptyBuilder: (_) => _buildForm(context, state),
+                    failureBuilder: (context, failedState) =>
+                        _buildTokenFailure(context, failedState ?? state),
+                  );
                 },
               ),
         ),
       ),
     );
+  }
+
+  AppAsyncStatus _mapStatusToViewState(PasswordResetConfirmState state) {
+    if (_isTokenFailureState(state)) {
+      return AppAsyncStatus.failure;
+    }
+
+    return switch (state.status) {
+      PasswordResetConfirmStatus.initial => AppAsyncStatus.initial,
+      PasswordResetConfirmStatus.submitting => AppAsyncStatus.loading,
+      PasswordResetConfirmStatus.success => AppAsyncStatus.success,
+      PasswordResetConfirmStatus.failure => AppAsyncStatus.empty,
+    };
+  }
+
+  bool _isTokenFailureState(PasswordResetConfirmState state) {
+    final hasTokenInputError =
+        state.status == PasswordResetConfirmStatus.initial &&
+        state.tokenError != null;
+    return state.tokenError != null &&
+        (state.status == PasswordResetConfirmStatus.failure ||
+            hasTokenInputError);
   }
 
   Widget _buildSubmitting(BuildContext context) {

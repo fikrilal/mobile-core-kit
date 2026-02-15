@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_token
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/async_state/async_state.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
@@ -79,11 +80,32 @@ class _PasswordResetRequestBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
           child:
               BlocBuilder<PasswordResetRequestCubit, PasswordResetRequestState>(
-                builder: (context, state) => _buildForm(context, state),
+                builder: (context, state) {
+                  return AppAsyncStateView<PasswordResetRequestState>(
+                    status: _mapStatusToViewState(state),
+                    failure: state,
+                    treatInitialAsLoading: false,
+                    initialBuilder: (_) => _buildForm(context, state),
+                    loadingBuilder: (_) => _buildForm(context, state),
+                    successBuilder: (_) => _buildForm(context, state),
+                    emptyBuilder: (_) => _buildForm(context, state),
+                    failureBuilder: (context, failedState) =>
+                        _buildForm(context, failedState ?? state),
+                  );
+                },
               ),
         ),
       ),
     );
+  }
+
+  AppAsyncStatus _mapStatusToViewState(PasswordResetRequestState state) {
+    return switch (state.status) {
+      PasswordResetRequestStatus.initial => AppAsyncStatus.initial,
+      PasswordResetRequestStatus.submitting => AppAsyncStatus.loading,
+      PasswordResetRequestStatus.success => AppAsyncStatus.success,
+      PasswordResetRequestStatus.failure => AppAsyncStatus.failure,
+    };
   }
 
   Widget _buildForm(BuildContext context, PasswordResetRequestState state) {

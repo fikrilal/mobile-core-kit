@@ -5,8 +5,10 @@ import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_token
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/async_state/async_state.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_message.dart';
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
@@ -60,30 +62,36 @@ class _VerifyEmailBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
           child: BlocBuilder<EmailVerificationCubit, EmailVerificationState>(
             builder: (context, state) {
-              final hasTokenInputError =
-                  state.status == EmailVerificationStatus.initial &&
-                  state.tokenError != null;
-
-              if (state.status == EmailVerificationStatus.submitting) {
-                return _buildSubmitting(context, state);
-              }
-
-              if (state.status == EmailVerificationStatus.success) {
-                return _buildSuccess(context, state);
-              }
-
-              if (state.status == EmailVerificationStatus.failure ||
-                  hasTokenInputError) {
-                return _buildFailure(context, state);
-              }
-
-              // Idle state: usually transient (before verification kicks off).
-              return _buildSubmitting(context, state);
+              return AppAsyncStateView<EmailVerificationState>(
+                status: _mapStatusToViewState(state),
+                failure: state,
+                successBuilder: (_) => _buildSuccess(context, state),
+                loadingBuilder: (_) => _buildSubmitting(context, state),
+                failureBuilder: (context, failedState) =>
+                    _buildFailure(context, failedState ?? state),
+              );
             },
           ),
         ),
       ),
     );
+  }
+
+  AppAsyncStatus _mapStatusToViewState(EmailVerificationState state) {
+    final hasTokenInputError =
+        state.status == EmailVerificationStatus.initial &&
+        state.tokenError != null;
+
+    if (hasTokenInputError) {
+      return AppAsyncStatus.failure;
+    }
+
+    return switch (state.status) {
+      EmailVerificationStatus.initial => AppAsyncStatus.initial,
+      EmailVerificationStatus.submitting => AppAsyncStatus.loading,
+      EmailVerificationStatus.success => AppAsyncStatus.success,
+      EmailVerificationStatus.failure => AppAsyncStatus.failure,
+    };
   }
 
   Widget _buildSubmitting(BuildContext context, EmailVerificationState state) {
@@ -113,14 +121,10 @@ class _VerifyEmailBody extends StatelessWidget {
       ),
     };
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AppText.titleMedium(title, textAlign: TextAlign.center),
-        const SizedBox(height: AppSpacing.space12),
-        AppText.bodyMedium(body, textAlign: TextAlign.center),
-        const SizedBox(height: AppSpacing.space24),
+    return AppStateMessagePanel(
+      title: title,
+      description: body,
+      actions: [
         AppButton.primary(
           text: context.l10n.commonContinue,
           isExpanded: true,
@@ -131,42 +135,42 @@ class _VerifyEmailBody extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildFailureActions(
+    BuildContext context,
+    EmailVerificationState state,
+  ) {
+    if (canResendVerificationEmail) {
+      return [
+        AppButton.primary(
+          text: context.l10n.authVerifyEmailResendCta,
+          isExpanded: true,
+          isLoading: state.isResending,
+          isDisabled: state.isSubmitting,
+          semanticLabel: context.l10n.authVerifyEmailResendCta,
+          onPressed: state.isSubmitting
+              ? null
+              : () => context
+                    .read<EmailVerificationCubit>()
+                    .resendVerificationEmail(),
+        ),
+      ];
+    }
+
+    return [
+      AppButton.primary(
+        text: context.l10n.authVerifyEmailSignInCta,
+        isExpanded: true,
+        semanticLabel: context.l10n.authVerifyEmailSignInCta,
+        onPressed: () => context.go(AuthRoutes.signIn),
+      ),
+    ];
+  }
+
   Widget _buildFailure(BuildContext context, EmailVerificationState state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AppText.titleMedium(
-          context.l10n.authVerifyEmailFailureTitle,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.space12),
-        AppText.bodyMedium(
-          context.l10n.authVerifyEmailFailureBody,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.space24),
-        if (canResendVerificationEmail)
-          AppButton.primary(
-            text: context.l10n.authVerifyEmailResendCta,
-            isExpanded: true,
-            isLoading: state.isResending,
-            isDisabled: state.isSubmitting,
-            semanticLabel: context.l10n.authVerifyEmailResendCta,
-            onPressed: state.isSubmitting
-                ? null
-                : () => context
-                      .read<EmailVerificationCubit>()
-                      .resendVerificationEmail(),
-          )
-        else
-          AppButton.primary(
-            text: context.l10n.authVerifyEmailSignInCta,
-            isExpanded: true,
-            semanticLabel: context.l10n.authVerifyEmailSignInCta,
-            onPressed: () => context.go(AuthRoutes.signIn),
-          ),
-      ],
+    return AppStateMessagePanel(
+      title: context.l10n.authVerifyEmailFailureTitle,
+      description: context.l10n.authVerifyEmailFailureBody,
+      actions: _buildFailureActions(context, state),
     );
   }
 }
