@@ -11,10 +11,15 @@ Goal:
 
 Use this loop for any change authored by an AI coding agent.
 
+For non-trivial changes, create an execution plan first:
+- `docs/exec-plans/README.md`
+- `docs/exec-plans/active/`
+
 ## Loop Contract
 
 1. Task intake
 - Write a clear task statement with acceptance criteria.
+- If work is non-trivial, create a plan file in `docs/exec-plans/active/` from `docs/exec-plans/_template.md`.
 - Set a risk class before implementation starts:
   - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact
   - `medium`: feature behavior change, navigation change, data mapping/API usage changes

@@ -5,6 +5,7 @@ This template is intentionally strict so AI-assisted development stays scalable 
 If you’re using an AI coding agent (or reviewing AI-authored code), follow this workflow to keep PRs “boring”:
 
 PR delivery loop details: `docs/engineering/agent_pr_loop.md`
+Execution plan system: `docs/exec-plans/README.md`
 
 ## 1) Orient first (avoid architecture drift)
 
@@ -17,6 +18,8 @@ PR delivery loop details: `docs/engineering/agent_pr_loop.md`
   - Navigation wiring belongs in `lib/navigation/**`
 
 ## 2) Use the guardrails as your default
+
+For medium/high complexity work, create a plan in `docs/exec-plans/active/` from `docs/exec-plans/_template.md` before implementation.
 
 - Run safe auto-fixes before review:
   - `dart run tool/fix.dart --apply`
