@@ -92,8 +92,8 @@ Notes:
 
 1) Update seeds
 2) Run:
-   - `tool/agent/flutterw --no-stdin analyze`
-   - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+   - `flutter analyze`
+   - `flutter test test/core/theme/color_contrast_test.dart`
 3) QA:
    - light/dark surfaces and text hierarchy
    - status UI readability on both themes

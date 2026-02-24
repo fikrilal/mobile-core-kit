@@ -14,9 +14,9 @@
   - [x] Profile tab creates `ProfileImageCubit` in router (`..loadUrl()` today).
   - [x] Profile UI uses `AppAvatar(imageUrl: ...)`.
 - [x] Ensure verification commands work:
-  - [x] `tool/agent/flutterw --no-stdin analyze`
-  - [x] `tool/agent/dartw --no-stdin run custom_lint`
-  - [x] `tool/agent/flutterw --no-stdin test`
+  - [x] `flutter analyze`
+  - [x] `dart run custom_lint`
+  - [x] `flutter test`
 
 ---
 
@@ -178,9 +178,9 @@
 ## Phase 9 — Verification + docs
 
 - [x] Run:
-  - [x] `tool/agent/flutterw --no-stdin analyze`
-  - [x] `tool/agent/dartw --no-stdin run custom_lint`
-  - [x] `tool/agent/flutterw --no-stdin test`
+  - [x] `flutter analyze`
+  - [x] `dart run custom_lint`
+  - [x] `flutter test`
 - [x] Update explainer:
   - [x] `docs/explainers/features/user/profile_image_upload.md` add a “Caching” section summarizing TTL + fileId invalidation.
 

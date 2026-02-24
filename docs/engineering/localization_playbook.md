@@ -43,9 +43,9 @@ If you need generic network error copy, use the core localizer:
 5. Use it from `context.l10n`.
 
 Commands (WSL-safe):
-- `tool/agent/flutterw --no-stdin gen-l10n`
-- `tool/agent/flutterw --no-stdin analyze`
-- `tool/agent/flutterw --no-stdin test`
+- `flutter gen-l10n`
+- `flutter analyze`
+- `flutter test`
 
 ---
 

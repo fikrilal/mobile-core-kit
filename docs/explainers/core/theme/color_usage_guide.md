@@ -142,7 +142,7 @@ return DecoratedBox(
 
 1) Update seed values in `lib/core/design_system/theme/system/app_color_seeds.dart:1`
 2) Run the contrast gate:
-   - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+   - `flutter test test/core/theme/color_contrast_test.dart`
 3) If the gate fails, do not “pick prettier `on*` colors” in widgets; adjust seeds (or discuss a move to a custom tonal mapping strategy).
 
 ## Guardrails (so the system stays clean)

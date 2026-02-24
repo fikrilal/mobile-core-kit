@@ -132,20 +132,15 @@ Or via the main verify script:
 dart run tool/verify.dart --env dev --check-codegen
 ```
 
-If you are in WSL, prefer the Windows toolchain wrappers:
+If you are in WSL, use the same direct Dart commands:
 
 ```bash
-tool/agent/dartw run custom_lint
-tool/agent/dartw run tool/verify.dart --env dev
-tool/agent/dartw run tool/verify_codegen.dart
+dart run custom_lint
+dart run tool/verify.dart --env dev
+dart run tool/verify_codegen.dart
 ```
 
-In non-interactive runners (Codex CLI PTY sessions / scripts), prefer `winrun` with stdin redirected:
-
-```bash
-tool/agent/winrun --no-stdin -- ./.fvm/flutter_sdk/bin/dart.bat run custom_lint
-tool/agent/winrun --no-stdin -- ./.fvm/flutter_sdk/bin/dart.bat run tool/verify.dart --env dev
-```
+In non-interactive runners (Codex CLI PTY sessions / scripts), use direct commands and ensure your shell environment is set up with `dart` on `PATH`.
 
 ## IDE Setup
 

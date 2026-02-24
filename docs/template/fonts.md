@@ -30,8 +30,8 @@ This template ships with a bundled custom font so teams can clone it and keep ty
    - Update `lib/core/design_system/theme/typography/tokens/typefaces.dart` and set `Typefaces.primary` to your new family name.
 
 4) Run:
-   - `fvm flutter pub get` (WSL: `tool/agent/flutterw pub get`)
-   - `fvm flutter run` (WSL: `tool/agent/flutterw run`)
+   - `fvm flutter pub get` (WSL: `flutter pub get`)
+   - `fvm flutter run` (WSL: `flutter run`)
 
 ## Using Alternate Fonts in UI (AppText)
 

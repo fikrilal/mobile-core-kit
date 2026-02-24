@@ -40,7 +40,7 @@ test/
 └─ prod.yaml
 
 tool/
-├─ agent/                          # Windows toolchain wrappers (WSL-safe)
+├─ agent/                          # local toolchain wrappers
 └─ verify.dart                     # full verify pipeline
 ```
 
@@ -90,31 +90,31 @@ tool/
 
 - PRs: clear description, linked issues, steps to test, and screenshots/GIFs for UI.
 - Keep CI green: analyze, tests, and generated code up to date.
-- Use `tool/agent/gitw --no-stdin` for git commands in WSL.
+- Use `git` for git commands in scripts/automation.
 - Don’t commit or push unless explicitly asked; if committing, use Conventional Commits.
 
 ## Agent Verification (required)
 
-Agents must verify changes before claiming completion (when feasible). Prefer these wrappers:
+Agents must verify changes before claiming completion (when feasible). Prefer these commands:
 
-- Flutter: `tool/agent/flutterw --no-stdin <command...>`
-- Dart: `tool/agent/dartw --no-stdin <command...>`
+- Flutter: `flutter <command...>`
+- Dart: `dart <command...>`
 
 Minimum checks (pick what’s relevant to what you changed):
 
-- Analyze: `tool/agent/flutterw --no-stdin analyze`
-- Custom lints: `tool/agent/dartw --no-stdin run custom_lint`
-- Tests: `tool/agent/flutterw --no-stdin test`
-- Codegen (if touching Freezed/JSON/build config): `tool/agent/dartw --no-stdin run build_runner build --delete-conflicting-outputs`
-- AGENTS project-map drift: `tool/agent/dartw --no-stdin run tool/verify_project_map_drift.dart`
+- Analyze: `flutter analyze`
+- Custom lints: `dart run custom_lint`
+- Tests: `flutter test`
+- Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
+- AGENTS project-map drift: `dart run tool/verify_project_map_drift.dart`
 
 Full pipeline (preferred for non-trivial changes):
 
-- `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+- `dart run tool/verify.dart --env dev`
 
 Auto-fix (format + import/directive ordering):
 
-- `tool/agent/dartw --no-stdin run tool/fix.dart --apply`
+- `dart run tool/fix.dart --apply`
 
 ## Agent Preferences (Code Authoring)
 

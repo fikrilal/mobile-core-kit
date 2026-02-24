@@ -208,7 +208,7 @@ Mobile (this repo):
 
 WSL note:
 
-- Prefer using the wrappers under `tool/agent/` when running Flutter/Dart from WSL:
-  - `tool/agent/dartw --no-stdin run tool/gen_config.dart --env dev`
-  - `tool/agent/flutterw analyze`
-  - `tool/agent/flutterw --no-stdin test`
+- Use direct commands with your shell/toolchain configured on `PATH`:
+  - `dart run tool/gen_config.dart --env dev`
+  - `flutter analyze`
+  - `flutter test`

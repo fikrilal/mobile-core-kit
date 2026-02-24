@@ -14,8 +14,8 @@ This template is designed to be **AI-friendly** and **review-friendly**: the cod
 - Canonical quality gate (local):
   - `dart run tool/verify.dart --env dev`
 - In WSL (use Windows toolchain wrappers):
-  - `tool/agent/dartw --no-stdin run tool/fix.dart --apply`
-  - `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+  - `dart run tool/fix.dart --apply`
+  - `dart run tool/verify.dart --env dev`
 
 ## Where guardrails live
 

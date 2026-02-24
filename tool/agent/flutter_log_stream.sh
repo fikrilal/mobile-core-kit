@@ -48,12 +48,6 @@ is_pid_running() {
 }
 
 resolve_flutter_cmd() {
-  local script_dir="$1"
-  if command -v cmd.exe >/dev/null 2>&1 && [[ -f "$script_dir/flutterw" ]]; then
-    printf '%s\n' "bash" "$script_dir/flutterw" "--no-stdin"
-    return
-  fi
-
   if ! command -v flutter >/dev/null 2>&1; then
     echo "ERROR: flutter command not found in PATH." >&2
     exit 1
@@ -172,7 +166,7 @@ case "$command_name" in
       rm -f "$pid_file"
     fi
 
-    mapfile -t flutter_cmd < <(resolve_flutter_cmd "$script_dir")
+    mapfile -t flutter_cmd < <(resolve_flutter_cmd)
     cmd=( "${flutter_cmd[@]}" )
 
     if [[ "$mode" == "logs" ]]; then
@@ -198,7 +192,7 @@ case "$command_name" in
     } >> "$log_file"
 
     (
-      exec "${cmd[@]}" >> "$log_file" 2>&1
+      exec setsid "${cmd[@]}" >> "$log_file" 2>&1 < /dev/null
     ) &
     stream_pid="$!"
     echo "$stream_pid" > "$pid_file"

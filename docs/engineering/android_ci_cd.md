@@ -219,7 +219,7 @@ Recommended sourcing flow:
 2. Replace placeholders/endpoints with your dev stack values.
 3. Validate locally:
    ```bash
-   tool/agent/dartw --no-stdin run tool/verify_env_schema.dart --env dev
+   dart run tool/verify_env_schema.dart --env dev
    ```
 4. Save to GitHub secret:
    - UI: **Settings → Secrets and variables → Actions → New repository secret**

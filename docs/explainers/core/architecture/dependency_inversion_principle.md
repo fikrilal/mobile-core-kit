@@ -196,7 +196,7 @@ The session manager doesn’t “know” how refresh is implemented; it knows on
 ## 9) Quick check (how to verify you’re following DIP)
 
 - Run:
-    - `tool/agent/dartw --no-stdin run custom_lint`
+    - `dart run custom_lint`
 - If you violated the boundary, you’ll typically see:
     - `architecture_imports` error like `feature_domain_no_infra`
     - `restricted_imports` error if you imported a banned low-level package

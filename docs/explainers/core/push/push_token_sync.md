@@ -276,9 +276,9 @@ See:
 
 Fast checks:
 
-- `tool/agent/flutterw --no-stdin analyze`
-- `tool/agent/dartw --no-stdin run custom_lint`
-- `tool/agent/flutterw --no-stdin test`
+- `flutter analyze`
+- `dart run custom_lint`
+- `flutter test`
 
 Subsystem tests:
 

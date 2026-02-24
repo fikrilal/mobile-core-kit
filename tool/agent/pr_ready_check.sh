@@ -11,9 +11,6 @@ Description:
     1) dart run tool/fix.dart --apply   (unless --no-fix)
     2) dart run tool/verify.dart --env <env> [--skip-tests] [--check-codegen]
 
-  In WSL, this script prefers tool/agent/dartw --no-stdin.
-  Outside WSL, it falls back to local dart.
-
 Examples:
   tool/agent/pr_ready_check.sh
   tool/agent/pr_ready_check.sh --env dev --check-codegen
@@ -76,11 +73,11 @@ if [[ -z "$repo_root" ]]; then
 fi
 cd "$repo_root"
 
-if command -v cmd.exe >/dev/null 2>&1 && [[ -x "$script_dir/dartw" ]]; then
-  run_cmd=( "$script_dir/dartw" --no-stdin run )
-else
-  run_cmd=( dart run )
+if ! command -v dart >/dev/null 2>&1; then
+  echo "ERROR: dart command not found in PATH." >&2
+  exit 1
 fi
+run_cmd=( dart run )
 
 if [[ $run_fix -eq 1 ]]; then
   echo "==> Running safe auto-fix"

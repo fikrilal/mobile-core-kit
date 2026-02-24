@@ -162,8 +162,8 @@ Rule: if a spec mentions a ramp step (e.g. `neutral/200`), it must include inten
 
 1) Update seeds: `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) Run:
-   - `tool/agent/flutterw --no-stdin analyze`
-   - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+   - `flutter analyze`
+   - `flutter test test/core/theme/color_contrast_test.dart`
 3) Manual QA:
    - light/dark: surfaces and text hierarchy
    - status UI: success/info/warning readability on both themes

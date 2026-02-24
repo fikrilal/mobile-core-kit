@@ -121,7 +121,7 @@ Enforced in:
 - `test/core/theme/color_contrast_test.dart`
 
 Run locally:
-- `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+- `flutter test test/core/theme/color_contrast_test.dart`
 
 ---
 
@@ -129,8 +129,8 @@ Run locally:
 
 1) Update seeds in `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) Run:
-   - `tool/agent/flutterw --no-stdin analyze`
-   - `tool/agent/flutterw --no-stdin test test/core/theme/color_contrast_test.dart`
+   - `flutter analyze`
+   - `flutter test test/core/theme/color_contrast_test.dart`
 3) If contrast fails, fix it by adjusting seeds (or add a controlled override in the builder), not by tweaking widget colors.
 
 ---

@@ -130,19 +130,17 @@ if [[ -z "$artifacts_dir" ]]; then
 fi
 mkdir -p "$artifacts_dir/logs"
 
-run_cmd=()
-if command -v cmd.exe >/dev/null 2>&1 && [[ -f "$script_dir/flutterw" ]]; then
-  run_cmd=( bash "$script_dir/flutterw" --no-stdin )
-else
-  run_cmd=( flutter )
+if ! command -v flutter >/dev/null 2>&1; then
+  echo "ERROR: flutter command not found in PATH." >&2
+  exit 1
 fi
+run_cmd=( flutter )
 
-dart_cmd=()
-if command -v cmd.exe >/dev/null 2>&1 && [[ -f "$script_dir/dartw" ]]; then
-  dart_cmd=( bash "$script_dir/dartw" --no-stdin run )
-else
-  dart_cmd=( dart run )
+if ! command -v dart >/dev/null 2>&1; then
+  echo "ERROR: dart command not found in PATH." >&2
+  exit 1
 fi
+dart_cmd=( dart run )
 
 env_file=".env/$flavor.yaml"
 env_example_file=".env/$flavor.example.yaml"
