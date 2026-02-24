@@ -6,6 +6,7 @@ If you’re using an AI coding agent (or reviewing AI-authored code), follow thi
 
 PR delivery loop details: `docs/engineering/agent_pr_loop.md`
 Execution plan system: `docs/exec-plans/README.md`
+Mobile runtime harness: `docs/engineering/mobile_runtime_harness.md`
 
 ## 1) Orient first (avoid architecture drift)
 

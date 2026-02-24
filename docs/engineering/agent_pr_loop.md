@@ -52,13 +52,14 @@ tool/agent/pr_ready_check.sh --env dev --skip-tests
   - no speculative refactors mixed into the change
   - tests are added/updated where behavior changed
   - failure paths are explicit and observable
+  - for medium/high UI or runtime-impacting work, runtime evidence is captured via `docs/engineering/mobile_runtime_harness.md`
 
 5. Open PR with evidence
 - Use `.github/pull_request_template.md`.
 - Include:
   - risk class and impact
   - checks executed and results
-  - runtime evidence when relevant (screenshots/log traces/test outputs)
+  - runtime evidence when relevant (device run, logs, test outputs, screenshots)
   - known follow-ups (if any)
 
 6. Review iteration loop
