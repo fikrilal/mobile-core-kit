@@ -39,6 +39,7 @@ import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
+import 'support/integration_test_app.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -96,8 +97,12 @@ void main() {
       final router = GoRouter(
         initialLocation: AppRoutes.root,
         refreshListenable: Listenable.merge([startup, deepLinks]),
-        redirect: (context, state) =>
-            appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser(allowedHosts: const {'links.fikril.dev'})),
+        redirect: (context, state) => appRedirectUri(
+          state.uri,
+          startup,
+          deepLinks,
+          DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
+        ),
         routes: [
           GoRoute(
             path: AppRoutes.root,
@@ -123,7 +128,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp.router(
+        buildIntegrationTestApp(
           routerConfig: router,
           builder: (context, child) => AppStartupGate(
             listenable: startup,
@@ -166,6 +171,7 @@ void main() {
           user: const UserEntity(
             id: 'u1',
             email: 'user@example.com',
+            roles: ['member'],
             profile: UserProfileEntity(givenName: 'Test', familyName: 'User'),
           ),
         ),

@@ -37,6 +37,7 @@ String? appRedirectUri(
   if (isExternalHttps && mappedExternal == null) return AppRoutes.root;
 
   final location = mappedExternal ?? _locationFromUri(uri);
+  deepLinks.acknowledgeRedirectLocation(location);
   final shouldCanonicalizeExternalHttps =
       isExternalHttps && mappedExternal != null && uri.toString() != location;
   final pendingSource = isExternalHttps ? 'https' : 'router';

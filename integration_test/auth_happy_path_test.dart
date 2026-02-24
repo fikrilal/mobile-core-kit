@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
+import 'support/integration_test_app.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
@@ -90,8 +91,12 @@ void main() {
     final router = GoRouter(
       initialLocation: AppRoutes.root,
       refreshListenable: Listenable.merge([startup, deepLinks]),
-      redirect: (context, state) =>
-          appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser(allowedHosts: const {'links.fikril.dev'})),
+      redirect: (context, state) => appRedirectUri(
+        state.uri,
+        startup,
+        deepLinks,
+        DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
+      ),
       routes: [
         GoRoute(
           path: AppRoutes.root,
@@ -117,7 +122,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(
+      buildIntegrationTestApp(
         routerConfig: router,
         builder: (context, child) => AppStartupGate(
           listenable: startup,
@@ -292,6 +297,7 @@ class _FakeAuthRepository implements AuthRepository {
         user: const UserEntity(
           id: 'u1',
           email: 'user@example.com',
+          roles: ['member'],
           profile: UserProfileEntity(givenName: 'Test', familyName: 'User'),
         ),
       ),

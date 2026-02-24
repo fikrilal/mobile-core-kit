@@ -40,6 +40,32 @@ void main() {
     });
 
     test(
+      'consumePendingLocationForRedirect is stable across multi-pass redirect and clears after acknowledge',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+
+        final controller = PendingDeepLinkController(
+          store: PendingDeepLinkStore(prefs: SharedPreferences.getInstance()),
+          parser: DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
+          now: () => DateTime(2026, 1, 1),
+        );
+
+        await controller.setPendingLocation('/profile', source: 'test');
+
+        final first = controller.consumePendingLocationForRedirect();
+        final second = controller.consumePendingLocationForRedirect();
+
+        expect(first, '/profile');
+        expect(second, '/profile');
+        expect(controller.pendingLocation, isNull);
+
+        controller.acknowledgeRedirectLocation('/profile');
+        final afterAcknowledge = controller.consumePendingLocationForRedirect();
+        expect(afterAcknowledge, isNull);
+      },
+    );
+
+    test(
       'setPendingFromExternalUri parses and stores allowlisted https intent',
       () async {
         SharedPreferences.setMockInitialValues({});
