@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-import 'support/integration_test_app.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
@@ -46,6 +45,7 @@ import 'package:mobile_core_kit/features/user/domain/repository/user_repository.
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
+import 'support/integration_test_app.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

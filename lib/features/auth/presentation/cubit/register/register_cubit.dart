@@ -133,6 +133,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         );
       },
       emailNotVerified: (_) => _emitFailure(failure),
+      oidcLinkRequired: (_) => _emitFailure(failure),
       validation: (v) {
         ValidationError? emailError;
         ValidationError? passwordError;

@@ -35,7 +35,8 @@ class MyApp extends StatelessWidget {
             final supportedLocales = localeController.supportedLocales;
 
             return MaterialApp.router(
-              onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context).appTitle,
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light(),
               darkTheme: AppTheme.dark(),
