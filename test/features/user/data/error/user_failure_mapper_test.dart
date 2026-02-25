@@ -35,6 +35,19 @@ void main() {
       expect(mapUserFailure(failure), const AuthFailure.unauthenticated());
     });
 
+    test('maps NOT_FOUND code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'Not found',
+        statusCode: 404,
+        code: ApiErrorCodes.notFound,
+      );
+
+      expect(
+        mapUserFailure(failure),
+        const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
+      );
+    });
+
     test('maps RATE_LIMITED code to tooManyRequests', () {
       final failure = ApiFailure(
         message: 'Too many requests',
@@ -91,6 +104,10 @@ void main() {
       expect(
         mapUserFailure(ApiFailure(message: 'no', statusCode: 409)),
         const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
+      );
+      expect(
+        mapUserFailure(ApiFailure(message: 'no', statusCode: 404)),
+        const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
       );
       expect(
         mapUserFailure(ApiFailure(message: 'no', statusCode: 429)),

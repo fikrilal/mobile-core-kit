@@ -15,6 +15,8 @@ AuthFailure mapUserFailure(ApiFailure f) {
         return AuthFailure.validation(f.validationErrors ?? const []);
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.unauthenticated();
+      case ApiErrorCodes.notFound:
+        return AuthFailure.unexpected(message: code);
       case ApiErrorCodes.conflict:
       case ApiErrorCodes.idempotencyInProgress:
         return AuthFailure.unexpected(message: code);
@@ -28,6 +30,8 @@ AuthFailure mapUserFailure(ApiFailure f) {
   switch (f.statusCode) {
     case 401:
       return const AuthFailure.unauthenticated();
+    case 404:
+      return const AuthFailure.unexpected(message: ApiErrorCodes.notFound);
     case 409:
       return const AuthFailure.unexpected(message: ApiErrorCodes.conflict);
     case 429:
