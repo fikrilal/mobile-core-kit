@@ -31,6 +31,10 @@ void main() {
         l10n.authErrorsEmailNotVerified,
       );
       expect(
+        messageForAuthFailure(const AuthFailure.oidcLinkRequired(), l10n),
+        l10n.authErrorsOidcLinkRequired,
+      );
+      expect(
         messageForAuthFailure(const AuthFailure.tooManyRequests(), l10n),
         l10n.errorsTooManyRequests,
       );

@@ -295,5 +295,69 @@ void main() {
         const AuthFailure.invalidCredentials(),
       );
     });
+
+    test('maps AUTH_OIDC_LINK_REQUIRED to oidcLinkRequired', () {
+      final failure = ApiFailure(
+        message: 'Link required',
+        statusCode: 409,
+        code: AuthErrorCodes.oidcLinkRequired,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps CONFLICT code to oidcLinkRequired', () {
+      final failure = ApiFailure(
+        message: 'Conflict',
+        statusCode: 409,
+        code: ApiErrorCodes.conflict,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps 409 fallback to oidcLinkRequired', () {
+      final failure = ApiFailure(message: 'Conflict', statusCode: 409);
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps AUTH_USER_SUSPENDED to userSuspended', () {
+      final failure = ApiFailure(
+        message: 'Suspended',
+        statusCode: 403,
+        code: AuthErrorCodes.userSuspended,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
+      );
+    });
+
+    test('maps FORBIDDEN code to userSuspended for OIDC exchange', () {
+      final failure = ApiFailure(
+        message: 'Forbidden',
+        statusCode: 403,
+        code: ApiErrorCodes.forbidden,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
+      );
+    });
+
+    test('maps 403 fallback to userSuspended for OIDC exchange', () {
+      final failure = ApiFailure(message: 'Forbidden', statusCode: 403);
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
+      );
+    });
   });
 }

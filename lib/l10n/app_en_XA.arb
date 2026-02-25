@@ -191,6 +191,10 @@
   "@authErrorsPasswordNotSet": {
     "description": "Message shown when the user tries to change password but the account has no password set (e.g. OIDC-only)."
   },
+  "authErrorsOidcLinkRequired": "⟪Ŧħīş ḗḿåīŀ īş åŀŗḗåḓẏ ŗḗğīşŧḗŗḗḓ. Şīğñ īñ ẇīŧħ ẏǿüŗ ρåşşẇǿŗḓ ƒīŗşŧ, ŧħḗñ ŀīñķ Ğǿǿğŀḗ īñ şḗŧŧīñğş.⟫",
+  "@authErrorsOidcLinkRequired": {
+    "description": "Message shown when Google OIDC exchange requires linking an existing password account."
+  },
   "authErrorsLogoutFailed": "⟪Ƒåīŀḗḓ ŧǿ ŀǿğ ǿüŧ. Ƥŀḗåşḗ ŧŗẏ åğåīñ.⟫",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."

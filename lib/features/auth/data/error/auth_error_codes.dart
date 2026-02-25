@@ -41,6 +41,12 @@ class AuthErrorCodes {
   /// OIDC token invalid/expired.
   static const String oidcTokenInvalid = 'AUTH_OIDC_TOKEN_INVALID';
 
+  /// OIDC exchange found an existing password account; client must link first.
+  static const String oidcLinkRequired = 'AUTH_OIDC_LINK_REQUIRED';
+
+  /// OIDC provider is not configured on backend.
+  static const String oidcNotConfigured = 'AUTH_OIDC_NOT_CONFIGURED';
+
   /// Email verification token is invalid (malformed/unknown/redeemed).
   static const String emailVerificationTokenInvalid =
       'AUTH_EMAIL_VERIFICATION_TOKEN_INVALID';

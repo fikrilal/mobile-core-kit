@@ -151,9 +151,9 @@ Auto-fix (format + import/directive ordering):
 ## Documentation & Best Practices
 
 - Start here: `docs/README.md` (docs index + navigation).
-- Backend contract source of truth (for any API/network/auth/users work): `/mnt/c/Development/_CORE/backend-core-kit`
-  - OpenAPI: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
-  - Standards: `/mnt/c/Development/_CORE/backend-core-kit/docs/standards/`
+- Backend contract source of truth (for any API/network/auth/users work): `/home/fikrilal/devs/core/backend-core-kit`
+  - OpenAPI: `/home/fikrilal/devs/core/backend-core-kit/docs/openapi/openapi.yaml`
+  - Standards: `/home/fikrilal/devs/core/backend-core-kit/docs/standards/`
 - For dependency/package changes:
   - Read upstream docs/changelogs; if web access is needed, ask before guessing.
   - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
