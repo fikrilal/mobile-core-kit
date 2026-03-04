@@ -33,6 +33,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_reque
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/cancel_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
@@ -334,6 +335,13 @@ class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, Unit>> requestAccountDeletion(
     RequestAccountDeletionRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> cancelAccountDeletion(
+    CancelAccountDeletionRequestEntity request,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

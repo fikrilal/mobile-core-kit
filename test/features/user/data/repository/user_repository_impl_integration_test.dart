@@ -7,6 +7,7 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/cancel_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 
@@ -196,6 +197,51 @@ void main() {
 
         result.match((failure) {
           expect(failure, const AuthFailure.unexpected(message: 'CONFLICT'));
+        }, (_) => fail('Expected Left'));
+      },
+    );
+
+    test('cancelAccountDeletion maps 204 response to success', () async {
+      final repository = _buildRepository((options) async {
+        expect(options.method, 'POST');
+        expect(options.path, UserEndpoint.meAccountDeletionCancel);
+        expect(options.data, isNull);
+        return _emptyResponse(204, requestId: 'rid-cancel-account-deletion');
+      });
+
+      final result = await repository.cancelAccountDeletion(
+        const CancelAccountDeletionRequestEntity(),
+      );
+
+      expect(result.isRight(), isTrue);
+    });
+
+    test(
+      'cancelAccountDeletion maps idempotency in-progress response to AuthFailure.unexpected',
+      () async {
+        final fixture = <String, dynamic>{
+          'code': 'IDEMPOTENCY_IN_PROGRESS',
+          'message': 'Request is still being processed.',
+        };
+        final repository = _buildRepository((options) async {
+          expect(options.method, 'POST');
+          expect(options.path, UserEndpoint.meAccountDeletionCancel);
+          return _jsonResponse(
+            fixture,
+            409,
+            requestId: 'rid-cancel-account-deletion-in-progress',
+          );
+        });
+
+        final result = await repository.cancelAccountDeletion(
+          const CancelAccountDeletionRequestEntity(),
+        );
+
+        result.match((failure) {
+          expect(
+            failure,
+            const AuthFailure.unexpected(message: 'IDEMPOTENCY_IN_PROGRESS'),
+          );
         }, (_) => fail('Expected Left'));
       },
     );

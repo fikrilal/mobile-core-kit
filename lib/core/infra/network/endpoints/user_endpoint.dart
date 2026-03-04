@@ -3,6 +3,7 @@ class UserEndpoint {
 
   static const String me = '/me';
   static const String meAccountDeletionRequest = '/me/account-deletion/request';
+  static const String meAccountDeletionCancel = '/me/account-deletion/cancel';
   static const String mePushToken = '/me/push-token';
   static const String meProfileImageUpload = '/me/profile-image/upload';
   static const String meProfileImageComplete = '/me/profile-image/complete';
