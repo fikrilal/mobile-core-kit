@@ -16,7 +16,7 @@ import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 /// - Observe session lifecycle (signed-in / signed-out)
 /// - Observe token rotation from FCM SDK
 /// - Dedupe repeated calls via [PushTokenSyncStore]
-/// - Apply cooldown when backend returns `PUSH_NOT_CONFIGURED`
+/// - Apply cooldown when backend returns `AUTH_PUSH_NOT_CONFIGURED`
 ///
 /// Non-goals:
 /// - Notification permission UX (product-driven)
@@ -126,7 +126,7 @@ class PushTokenSyncService {
       if (diff < _retryCooldown) return;
     }
 
-    // Respect cooldown for `PUSH_NOT_CONFIGURED`.
+    // Respect cooldown for `AUTH_PUSH_NOT_CONFIGURED`.
     final notConfiguredUntil = await _store.readPushNotConfiguredUntil();
     if (notConfiguredUntil != null) {
       if (now.isBefore(notConfiguredUntil)) return;

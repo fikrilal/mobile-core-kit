@@ -34,7 +34,7 @@ Endpoints (authenticated; scoped to the **current session**):
   - errors include:
     - `VALIDATION_FAILED`
     - `UNAUTHORIZED`
-    - `PUSH_NOT_CONFIGURED` (**501**, when push provider isn’t enabled server-side)
+    - `AUTH_PUSH_NOT_CONFIGURED` (**501**, when push provider isn’t enabled server-side)
     - `INTERNAL`
 - `DELETE /v1/me/push-token` → `204`
   - errors include:
@@ -54,7 +54,7 @@ Persisted (SharedPreferences; UX-only state):
 
 - last-sent **session hash** (hash of refresh token)
 - last-sent **token hash** (hash of FCM token)
-- optional cooldown timestamp for `PUSH_NOT_CONFIGURED`
+- optional cooldown timestamp for `AUTH_PUSH_NOT_CONFIGURED`
 
 Not persisted:
 
@@ -153,7 +153,7 @@ On `init()`, the sync service:
 When a session exists (refresh token available):
 
 1. check platform support (`ANDROID/iOS` only; web/desktop are no-op by default)
-2. enforce `PUSH_NOT_CONFIGURED` cooldown (if set)
+2. enforce `AUTH_PUSH_NOT_CONFIGURED` cooldown (if set)
 3. get the token (best-effort; may be null)
 4. dedupe (skip if same session+token already sent)
 5. call `PUT /v1/me/push-token`
@@ -172,7 +172,7 @@ The sync is deliberately conservative:
 - `UNAUTHORIZED` (`401` or `code=UNAUTHORIZED`)
   - set an in-memory “unauthorized for this session key” flag
   - stop attempting until the session changes
-- `PUSH_NOT_CONFIGURED` (`501` or `code=PUSH_NOT_CONFIGURED`)
+- `AUTH_PUSH_NOT_CONFIGURED` (`501` or `code=AUTH_PUSH_NOT_CONFIGURED`)
   - store a cooldown timestamp (default: 24 hours)
   - stop attempting until cooldown expires
 - other errors

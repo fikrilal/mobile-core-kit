@@ -4,7 +4,7 @@ This template’s Google login flow is:
 
 1. Google Sign-In (device) → FirebaseAuth
 2. Obtain a **Firebase ID token**
-3. Exchange it with the backend: `POST /v1/auth/google` `{ "idToken": "..." }`
+3. Exchange it with the backend: `POST /v1/auth/oidc/exchange` `{ "provider": "GOOGLE", "idToken": "..." }`
 
 The backend is the source of truth for sessions/tokens.
 

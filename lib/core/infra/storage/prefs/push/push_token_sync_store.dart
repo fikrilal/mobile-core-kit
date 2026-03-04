@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - `lastSentSessionHash` + `lastSentTokenHash` are used to dedupe repeated
 ///   `PUT /me/push-token` calls for the same session + token.
 /// - `pushNotConfiguredUntil` is used to back off after the backend returns
-///   `PUSH_NOT_CONFIGURED` (501).
+///   `AUTH_PUSH_NOT_CONFIGURED` (501).
 class PushTokenSyncStore {
   PushTokenSyncStore({Future<SharedPreferences>? prefs})
     : _prefsFuture = prefs ?? SharedPreferences.getInstance();

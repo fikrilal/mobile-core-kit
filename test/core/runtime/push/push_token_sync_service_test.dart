@@ -157,7 +157,7 @@ void main() {
       ).called(1);
     });
 
-    test('PUSH_NOT_CONFIGURED sets cooldown', () async {
+    test('AUTH_PUSH_NOT_CONFIGURED sets cooldown', () async {
       sessionNotifier.value = _session(refreshToken: 'rt1');
 
       final now = DateTime(2026, 1, 24, 10);
