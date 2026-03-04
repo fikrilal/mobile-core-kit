@@ -463,6 +463,94 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
+  "profileSecurityAndPrivacyBody": "Kelola kata sandi dan pengaturan penghapusan akun Anda.",
+  "@profileSecurityAndPrivacyBody": {
+    "description": "Body copy shown in the security and privacy page."
+  },
+  "profileChangePasswordSubtitle": "Perbarui kata sandi untuk menjaga keamanan akun",
+  "@profileChangePasswordSubtitle": {
+    "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileDeleteAccountTitle": "Hapus akun",
+  "@profileDeleteAccountTitle": {
+    "description": "Title for the delete-account action in security settings."
+  },
+  "profileDeleteAccountSubtitle": "Ajukan penghapusan permanen akun Anda",
+  "@profileDeleteAccountSubtitle": {
+    "description": "Subtitle for the delete-account action when no request is scheduled."
+  },
+  "profileDeleteAccountScheduledSubtitle": "Penghapusan dijadwalkan pada {date}",
+  "@profileDeleteAccountScheduledSubtitle": {
+    "description": "Subtitle for the delete-account action when deletion is already scheduled.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "30 Maret 2026"
+      }
+    }
+  },
+  "accountDeletionRequestBody": "Mengajukan penghapusan akun akan menjadwalkan akun Anda untuk dihapus permanen setelah masa tunggu.",
+  "@accountDeletionRequestBody": {
+    "description": "Body copy in the request account deletion screen."
+  },
+  "accountDeletionRequestWarning": "Anda masih dapat masuk selama masa tunggu, tetapi tindakan ini bisa tidak dapat dibatalkan setelah jadwal tercapai.",
+  "@accountDeletionRequestWarning": {
+    "description": "Warning copy in the request account deletion screen."
+  },
+  "accountDeletionScheduledBody": "Permintaan penghapusan akun Anda sudah dijadwalkan.",
+  "@accountDeletionScheduledBody": {
+    "description": "Body copy shown when account deletion has already been requested."
+  },
+  "accountDeletionScheduledBodyWithDate": "Permintaan penghapusan akun Anda sudah dijadwalkan pada {date}.",
+  "@accountDeletionScheduledBodyWithDate": {
+    "description": "Body copy shown when account deletion has already been requested with a known schedule date.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "30 Maret 2026"
+      }
+    }
+  },
+  "accountDeletionRequestCta": "Ajukan penghapusan akun",
+  "@accountDeletionRequestCta": {
+    "description": "Primary button label to request account deletion."
+  },
+  "accountDeletionAlreadyRequestedCta": "Penghapusan sudah diajukan",
+  "@accountDeletionAlreadyRequestedCta": {
+    "description": "Disabled button label when account deletion has already been requested."
+  },
+  "accountDeletionRequestSubmitting": "Mengirim permintaan...",
+  "@accountDeletionRequestSubmitting": {
+    "description": "Loading text for account deletion request submission."
+  },
+  "accountDeletionConfirmTitle": "Ajukan penghapusan akun?",
+  "@accountDeletionConfirmTitle": {
+    "description": "Confirmation dialog title before submitting an account deletion request."
+  },
+  "accountDeletionConfirmBody": "Akun Anda akan dijadwalkan untuk dihapus. Anda bisa membatalkan lewat dukungan sebelum waktu terjadwal, sesuai kebijakan.",
+  "@accountDeletionConfirmBody": {
+    "description": "Confirmation dialog message before submitting an account deletion request."
+  },
+  "accountDeletionConfirmCta": "Ya, ajukan penghapusan",
+  "@accountDeletionConfirmCta": {
+    "description": "Confirmation dialog primary action for account deletion request."
+  },
+  "accountDeletionRequestSuccessMessage": "Permintaan penghapusan akun berhasil dikirim.",
+  "@accountDeletionRequestSuccessMessage": {
+    "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionErrorLastAdmin": "Anda adalah admin terakhir. Alihkan akses admin sebelum menghapus akun ini.",
+  "@accountDeletionErrorLastAdmin": {
+    "description": "Error shown when trying to delete the last admin account."
+  },
+  "accountDeletionErrorInProgress": "Permintaan penghapusan sedang diproses. Mohon tunggu lalu coba lagi.",
+  "@accountDeletionErrorInProgress": {
+    "description": "Error shown when an idempotent deletion request is still in progress."
+  },
+  "accountDeletionErrorAlreadyRequested": "Penghapusan sudah diajukan untuk akun ini.",
+  "@accountDeletionErrorAlreadyRequested": {
+    "description": "Error shown when account deletion has already been requested."
+  },
   "profileNotifications": "Notifikasi",
   "@profileNotifications": {
     "description": "Profile/settings list item label for notifications."

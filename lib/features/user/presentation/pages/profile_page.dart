@@ -323,27 +323,7 @@ class _ProfileContent extends StatelessWidget {
                 ),
                 title: context.l10n.profileSecurityAndPrivacy,
                 subtitle: context.l10n.profileSecurityAndPrivacySubtitle,
-                onTap: () {},
-              ),
-              AppListTile(
-                leading: AppIconBadge(
-                  icon: PhosphorIcon(
-                    PhosphorIconsRegular.userCircle,
-                    size: AppSizing.iconSizeMedium,
-                  ),
-                ),
-                title: context.l10n.commonChangeProfilePhoto,
-                onTap: showProfilePhotoPicker,
-              ),
-              AppListTile(
-                leading: AppIconBadge(
-                  icon: PhosphorIcon(
-                    PhosphorIconsRegular.key,
-                    size: AppSizing.iconSizeMedium,
-                  ),
-                ),
-                title: context.l10n.authChangePasswordTitle,
-                onTap: () => context.push(UserRoutes.changePassword),
+                onTap: () => context.push(UserRoutes.securityPrivacy),
               ),
               AppListTile(
                 leading: AppIconBadge(
@@ -355,6 +335,16 @@ class _ProfileContent extends StatelessWidget {
                 title: context.l10n.profileNotifications,
                 subtitle: context.l10n.profileNotificationsSubtitle,
                 onTap: () {},
+              ),
+              AppListTile(
+                leading: AppIconBadge(
+                  icon: PhosphorIcon(
+                    PhosphorIconsRegular.userCircle,
+                    size: AppSizing.iconSizeMedium,
+                  ),
+                ),
+                title: context.l10n.commonChangeProfilePhoto,
+                onTap: showProfilePhotoPicker,
               ),
               ThemeModeSettingTile(controller: themeModeController),
               LocaleSettingTile(

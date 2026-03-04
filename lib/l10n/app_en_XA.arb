@@ -463,6 +463,94 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
+  "profileSecurityAndPrivacyBody": "⟪Ḿåñåğḗ ẏǿüŗ ρåşşẇǿŗḓ åñḓ åççǿüñŧ ḓḗŀḗŧīǿñ şḗŧŧīñğş.⟫",
+  "@profileSecurityAndPrivacyBody": {
+    "description": "Body copy shown in the security and privacy page."
+  },
+  "profileChangePasswordSubtitle": "⟪Üρḓåŧḗ ẏǿüŗ ρåşşẇǿŗḓ ŧǿ ķḗḗρ ẏǿüŗ åççǿüñŧ şḗçüŗḗ⟫",
+  "@profileChangePasswordSubtitle": {
+    "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileDeleteAccountTitle": "⟪Ḓḗŀḗŧḗ åççǿüñŧ⟫",
+  "@profileDeleteAccountTitle": {
+    "description": "Title for the delete-account action in security settings."
+  },
+  "profileDeleteAccountSubtitle": "⟪Ŗḗɋüḗşŧ ρḗŗḿåñḗñŧ ḓḗŀḗŧīǿñ ǿƒ ẏǿüŗ åççǿüñŧ⟫",
+  "@profileDeleteAccountSubtitle": {
+    "description": "Subtitle for the delete-account action when no request is scheduled."
+  },
+  "profileDeleteAccountScheduledSubtitle": "⟪Ḓḗŀḗŧīǿñ şçħḗḓüŀḗḓ ƒǿŗ {date}⟫",
+  "@profileDeleteAccountScheduledSubtitle": {
+    "description": "Subtitle for the delete-account action when deletion is already scheduled.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestBody": "⟪Ŗḗɋüḗşŧīñğ åççǿüñŧ ḓḗŀḗŧīǿñ ẇīŀŀ şçħḗḓüŀḗ ẏǿüŗ åççǿüñŧ ƒǿŗ ρḗŗḿåñḗñŧ ḓḗŀḗŧīǿñ åƒŧḗŗ å ẇåīŧīñğ ρḗŗīǿḓ.⟫",
+  "@accountDeletionRequestBody": {
+    "description": "Body copy in the request account deletion screen."
+  },
+  "accountDeletionRequestWarning": "⟪Ẏǿü çåñ şŧīŀŀ şīğñ īñ ḓüŗīñğ ŧħḗ ẇåīŧīñğ ρḗŗīǿḓ, ƀüŧ ŧħīş åçŧīǿñ ḿåẏ ƀḗ īŗŗḗṽḗŗşīƀŀḗ ǿñçḗ ŧħḗ şçħḗḓüŀḗ īş ŗḗåçħḗḓ.⟫",
+  "@accountDeletionRequestWarning": {
+    "description": "Warning copy in the request account deletion screen."
+  },
+  "accountDeletionScheduledBody": "⟪Ẏǿüŗ åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ īş åŀŗḗåḓẏ şçħḗḓüŀḗḓ.⟫",
+  "@accountDeletionScheduledBody": {
+    "description": "Body copy shown when account deletion has already been requested."
+  },
+  "accountDeletionScheduledBodyWithDate": "⟪Ẏǿüŗ åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ īş åŀŗḗåḓẏ şçħḗḓüŀḗḓ ƒǿŗ {date}.⟫",
+  "@accountDeletionScheduledBodyWithDate": {
+    "description": "Body copy shown when account deletion has already been requested with a known schedule date.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestCta": "⟪Ŗḗɋüḗşŧ åççǿüñŧ ḓḗŀḗŧīǿñ⟫",
+  "@accountDeletionRequestCta": {
+    "description": "Primary button label to request account deletion."
+  },
+  "accountDeletionAlreadyRequestedCta": "⟪Ḓḗŀḗŧīǿñ åŀŗḗåḓẏ ŗḗɋüḗşŧḗḓ⟫",
+  "@accountDeletionAlreadyRequestedCta": {
+    "description": "Disabled button label when account deletion has already been requested."
+  },
+  "accountDeletionRequestSubmitting": "⟪Şüƀḿīŧŧīñğ ŗḗɋüḗşŧ...⟫",
+  "@accountDeletionRequestSubmitting": {
+    "description": "Loading text for account deletion request submission."
+  },
+  "accountDeletionConfirmTitle": "⟪Ŗḗɋüḗşŧ åççǿüñŧ ḓḗŀḗŧīǿñ?⟫",
+  "@accountDeletionConfirmTitle": {
+    "description": "Confirmation dialog title before submitting an account deletion request."
+  },
+  "accountDeletionConfirmBody": "⟪Ẏǿüŗ åççǿüñŧ ẇīŀŀ ƀḗ şçħḗḓüŀḗḓ ƒǿŗ ḓḗŀḗŧīǿñ. Ẏǿü çåñ çåñçḗŀ ƒŗǿḿ şüρρǿŗŧ ƀḗƒǿŗḗ ŧħḗ şçħḗḓüŀḗḓ ŧīḿḗ, ḓḗρḗñḓīñğ ǿñ ρǿŀīçẏ.⟫",
+  "@accountDeletionConfirmBody": {
+    "description": "Confirmation dialog message before submitting an account deletion request."
+  },
+  "accountDeletionConfirmCta": "⟪Ẏḗş, ŗḗɋüḗşŧ ḓḗŀḗŧīǿñ⟫",
+  "@accountDeletionConfirmCta": {
+    "description": "Confirmation dialog primary action for account deletion request."
+  },
+  "accountDeletionRequestSuccessMessage": "⟪Åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ şüƀḿīŧŧḗḓ.⟫",
+  "@accountDeletionRequestSuccessMessage": {
+    "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionErrorLastAdmin": "⟪Ẏǿü åŗḗ ŧħḗ ŀåşŧ åḓḿīñ. Ŧŗåñşƒḗŗ åḓḿīñ åççḗşş ƀḗƒǿŗḗ ḓḗŀḗŧīñğ ŧħīş åççǿüñŧ.⟫",
+  "@accountDeletionErrorLastAdmin": {
+    "description": "Error shown when trying to delete the last admin account."
+  },
+  "accountDeletionErrorInProgress": "⟪Å ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ īş åŀŗḗåḓẏ ƀḗīñğ ρŗǿçḗşşḗḓ. Ƥŀḗåşḗ ẇåīŧ åñḓ ŧŗẏ åğåīñ.⟫",
+  "@accountDeletionErrorInProgress": {
+    "description": "Error shown when an idempotent deletion request is still in progress."
+  },
+  "accountDeletionErrorAlreadyRequested": "⟪Ḓḗŀḗŧīǿñ ħåş åŀŗḗåḓẏ ƀḗḗñ ŗḗɋüḗşŧḗḓ ƒǿŗ ŧħīş åççǿüñŧ.⟫",
+  "@accountDeletionErrorAlreadyRequested": {
+    "description": "Error shown when account deletion has already been requested."
+  },
   "profileNotifications": "⟪Ńǿŧīƒīçåŧīǿñş⟫",
   "@profileNotifications": {
     "description": "Profile/settings list item label for notifications."

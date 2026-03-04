@@ -463,6 +463,94 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
+  "profileSecurityAndPrivacyBody": "Manage your password and account deletion settings.",
+  "@profileSecurityAndPrivacyBody": {
+    "description": "Body copy shown in the security and privacy page."
+  },
+  "profileChangePasswordSubtitle": "Update your password to keep your account secure",
+  "@profileChangePasswordSubtitle": {
+    "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileDeleteAccountTitle": "Delete account",
+  "@profileDeleteAccountTitle": {
+    "description": "Title for the delete-account action in security settings."
+  },
+  "profileDeleteAccountSubtitle": "Request permanent deletion of your account",
+  "@profileDeleteAccountSubtitle": {
+    "description": "Subtitle for the delete-account action when no request is scheduled."
+  },
+  "profileDeleteAccountScheduledSubtitle": "Deletion scheduled for {date}",
+  "@profileDeleteAccountScheduledSubtitle": {
+    "description": "Subtitle for the delete-account action when deletion is already scheduled.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestBody": "Requesting account deletion will schedule your account for permanent deletion after a waiting period.",
+  "@accountDeletionRequestBody": {
+    "description": "Body copy in the request account deletion screen."
+  },
+  "accountDeletionRequestWarning": "You can still sign in during the waiting period, but this action may be irreversible once the schedule is reached.",
+  "@accountDeletionRequestWarning": {
+    "description": "Warning copy in the request account deletion screen."
+  },
+  "accountDeletionScheduledBody": "Your account deletion request is already scheduled.",
+  "@accountDeletionScheduledBody": {
+    "description": "Body copy shown when account deletion has already been requested."
+  },
+  "accountDeletionScheduledBodyWithDate": "Your account deletion request is already scheduled for {date}.",
+  "@accountDeletionScheduledBodyWithDate": {
+    "description": "Body copy shown when account deletion has already been requested with a known schedule date.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestCta": "Request account deletion",
+  "@accountDeletionRequestCta": {
+    "description": "Primary button label to request account deletion."
+  },
+  "accountDeletionAlreadyRequestedCta": "Deletion already requested",
+  "@accountDeletionAlreadyRequestedCta": {
+    "description": "Disabled button label when account deletion has already been requested."
+  },
+  "accountDeletionRequestSubmitting": "Submitting request...",
+  "@accountDeletionRequestSubmitting": {
+    "description": "Loading text for account deletion request submission."
+  },
+  "accountDeletionConfirmTitle": "Request account deletion?",
+  "@accountDeletionConfirmTitle": {
+    "description": "Confirmation dialog title before submitting an account deletion request."
+  },
+  "accountDeletionConfirmBody": "Your account will be scheduled for deletion. You can cancel from support before the scheduled time, depending on policy.",
+  "@accountDeletionConfirmBody": {
+    "description": "Confirmation dialog message before submitting an account deletion request."
+  },
+  "accountDeletionConfirmCta": "Yes, request deletion",
+  "@accountDeletionConfirmCta": {
+    "description": "Confirmation dialog primary action for account deletion request."
+  },
+  "accountDeletionRequestSuccessMessage": "Account deletion request submitted.",
+  "@accountDeletionRequestSuccessMessage": {
+    "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionErrorLastAdmin": "You are the last admin. Transfer admin access before deleting this account.",
+  "@accountDeletionErrorLastAdmin": {
+    "description": "Error shown when trying to delete the last admin account."
+  },
+  "accountDeletionErrorInProgress": "A deletion request is already being processed. Please wait and try again.",
+  "@accountDeletionErrorInProgress": {
+    "description": "Error shown when an idempotent deletion request is still in progress."
+  },
+  "accountDeletionErrorAlreadyRequested": "Deletion has already been requested for this account.",
+  "@accountDeletionErrorAlreadyRequested": {
+    "description": "Error shown when account deletion has already been requested."
+  },
   "profileNotifications": "Notifications",
   "@profileNotifications": {
     "description": "Profile/settings list item label for notifications."
