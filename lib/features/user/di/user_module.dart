@@ -46,6 +46,7 @@ import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 
 class UserModule {
   static bool _dbRegistered = false;
@@ -269,6 +270,15 @@ class UserModule {
           getIt<RefreshProfileAvatarCacheUseCase>(),
           getIt<SaveProfileAvatarCacheUseCase>(),
           getIt<ClearProfileAvatarCacheUseCase>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<RequestAccountDeletionCubit>()) {
+      getIt.registerFactory<RequestAccountDeletionCubit>(
+        () => RequestAccountDeletionCubit(
+          getIt<RequestAccountDeletionUseCase>(),
+          getIt<UserContextService>(),
         ),
       );
     }
