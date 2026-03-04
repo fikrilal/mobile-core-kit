@@ -8,6 +8,7 @@ import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart'
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 
 import '../../../../support/fixture_loader.dart';
 import '../../../../support/network_test_harness.dart';
@@ -22,6 +23,16 @@ ResponseBody _jsonResponse(
     statusCode,
     headers: <String, List<String>>{
       Headers.contentTypeHeader: <String>[Headers.jsonContentType],
+      if (requestId != null) 'x-request-id': <String>[requestId],
+    },
+  );
+}
+
+ResponseBody _emptyResponse(int statusCode, {String? requestId}) {
+  return ResponseBody.fromString(
+    '',
+    statusCode,
+    headers: <String, List<String>>{
       if (requestId != null) 'x-request-id': <String>[requestId],
     },
   );
@@ -143,6 +154,48 @@ void main() {
               ),
             ]),
           );
+        }, (_) => fail('Expected Left'));
+      },
+    );
+
+    test('requestAccountDeletion maps 204 response to success', () async {
+      final repository = _buildRepository((options) async {
+        expect(options.method, 'POST');
+        expect(options.path, UserEndpoint.meAccountDeletionRequest);
+        expect(options.data, isNull);
+        return _emptyResponse(204, requestId: 'rid-request-account-deletion');
+      });
+
+      final result = await repository.requestAccountDeletion(
+        const RequestAccountDeletionRequestEntity(),
+      );
+
+      expect(result.isRight(), isTrue);
+    });
+
+    test(
+      'requestAccountDeletion maps conflict response to AuthFailure.unexpected',
+      () async {
+        final fixture = <String, dynamic>{
+          'code': 'CONFLICT',
+          'message': 'Account deletion request already exists.',
+        };
+        final repository = _buildRepository((options) async {
+          expect(options.method, 'POST');
+          expect(options.path, UserEndpoint.meAccountDeletionRequest);
+          return _jsonResponse(
+            fixture,
+            409,
+            requestId: 'rid-request-account-deletion-conflict',
+          );
+        });
+
+        final result = await repository.requestAccountDeletion(
+          const RequestAccountDeletionRequestEntity(),
+        );
+
+        result.match((failure) {
+          expect(failure, const AuthFailure.unexpected(message: 'CONFLICT'));
         }, (_) => fail('Expected Left'));
       },
     );

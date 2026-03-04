@@ -34,6 +34,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/register_request_ent
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
@@ -96,8 +97,12 @@ void main() {
       final router = GoRouter(
         initialLocation: AppRoutes.root,
         refreshListenable: Listenable.merge([startup, deepLinks]),
-        redirect: (context, state) =>
-            appRedirectUri(state.uri, startup, deepLinks, DeepLinkParser(allowedHosts: const {'links.fikril.dev'})),
+        redirect: (context, state) => appRedirectUri(
+          state.uri,
+          startup,
+          deepLinks,
+          DeepLinkParser(allowedHosts: const {'links.fikril.dev'}),
+        ),
         routes: [
           GoRoute(
             path: AppRoutes.root,
@@ -322,6 +327,13 @@ class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, UserEntity>> patchMeProfile(
     PatchMeProfileRequestEntity request,
+  ) async {
+    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  }
+
+  @override
+  Future<Either<AuthFailure, Unit>> requestAccountDeletion(
+    RequestAccountDeletionRequestEntity request,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

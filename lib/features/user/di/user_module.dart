@@ -40,6 +40,7 @@ import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_u
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/request_account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
@@ -162,6 +163,12 @@ class UserModule {
     if (!getIt.isRegistered<PatchMeProfileUseCase>()) {
       getIt.registerFactory<PatchMeProfileUseCase>(
         () => PatchMeProfileUseCase(getIt<UserRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<RequestAccountDeletionUseCase>()) {
+      getIt.registerFactory<RequestAccountDeletionUseCase>(
+        () => RequestAccountDeletionUseCase(getIt<UserRepository>()),
       );
     }
 
