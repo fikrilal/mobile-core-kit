@@ -18,14 +18,17 @@ import 'package:mobile_core_kit/features/user/data/datasource/local/profile_avat
 import 'package:mobile_core_kit/features/user/data/datasource/local/profile_draft_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/me_push_token_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/datasource/remote/me_session_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_avatar_download_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/profile_image_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
+import 'package:mobile_core_kit/features/user/data/repository/me_session_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_avatar_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_draft_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/profile_image_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/services/user_avatar_cache_session_listener.dart';
+import 'package:mobile_core_kit/features/user/domain/repository/me_session_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/profile_image_repository.dart';
@@ -39,9 +42,11 @@ import 'package:mobile_core_kit/features/user/domain/usecase/get_cached_profile_
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_profile_image_url_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/list_me_sessions_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/request_account_deletion_usecase.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/revoke_me_session_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
@@ -89,6 +94,12 @@ class UserModule {
       );
     }
 
+    if (!getIt.isRegistered<MeSessionRemoteDataSource>()) {
+      getIt.registerLazySingleton<MeSessionRemoteDataSource>(
+        () => MeSessionRemoteDataSource(getIt<ApiHelper>()),
+      );
+    }
+
     if (!getIt.isRegistered<ProfileImageRemoteDataSource>()) {
       getIt.registerLazySingleton<ProfileImageRemoteDataSource>(
         () => ProfileImageRemoteDataSource(getIt<ApiHelper>()),
@@ -110,6 +121,12 @@ class UserModule {
     if (!getIt.isRegistered<UserRepository>()) {
       getIt.registerLazySingleton<UserRepository>(
         () => UserRepositoryImpl(getIt<UserRemoteDataSource>()),
+      );
+    }
+
+    if (!getIt.isRegistered<MeSessionRepository>()) {
+      getIt.registerLazySingleton<MeSessionRepository>(
+        () => MeSessionRepositoryImpl(getIt<MeSessionRemoteDataSource>()),
       );
     }
 
@@ -141,6 +158,18 @@ class UserModule {
     if (!getIt.isRegistered<GetMeUseCase>()) {
       getIt.registerFactory<GetMeUseCase>(
         () => GetMeUseCase(getIt<UserRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<ListMeSessionsUseCase>()) {
+      getIt.registerFactory<ListMeSessionsUseCase>(
+        () => ListMeSessionsUseCase(getIt<MeSessionRepository>()),
+      );
+    }
+
+    if (!getIt.isRegistered<RevokeMeSessionUseCase>()) {
+      getIt.registerFactory<RevokeMeSessionUseCase>(
+        () => RevokeMeSessionUseCase(getIt<MeSessionRepository>()),
       );
     }
 
