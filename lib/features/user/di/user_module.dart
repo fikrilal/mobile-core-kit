@@ -51,6 +51,7 @@ import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_avatar
 import 'package:mobile_core_kit/features/user/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 
@@ -316,6 +317,15 @@ class UserModule {
           getIt<RequestAccountDeletionUseCase>(),
           getIt<CancelAccountDeletionUseCase>(),
           getIt<UserContextService>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<MeSessionsCubit>()) {
+      getIt.registerFactory<MeSessionsCubit>(
+        () => MeSessionsCubit(
+          getIt<ListMeSessionsUseCase>(),
+          getIt<RevokeMeSessionUseCase>(),
         ),
       );
     }
