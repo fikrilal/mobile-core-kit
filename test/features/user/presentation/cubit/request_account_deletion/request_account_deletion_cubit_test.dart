@@ -5,7 +5,9 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/features/user/domain/entity/cancel_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
+import 'package:mobile_core_kit/features/user/domain/usecase/cancel_account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/request_account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_state.dart';
@@ -14,18 +16,24 @@ import 'package:mocktail/mocktail.dart';
 class _MockRequestAccountDeletionUseCase extends Mock
     implements RequestAccountDeletionUseCase {}
 
+class _MockCancelAccountDeletionUseCase extends Mock
+    implements CancelAccountDeletionUseCase {}
+
 class _MockUserContextService extends Mock implements UserContextService {}
 
 void main() {
   setUpAll(() {
     registerFallbackValue(const RequestAccountDeletionRequestEntity());
+    registerFallbackValue(const CancelAccountDeletionRequestEntity());
   });
 
   late _MockRequestAccountDeletionUseCase requestAccountDeletion;
+  late _MockCancelAccountDeletionUseCase cancelAccountDeletion;
   late _MockUserContextService userContext;
 
   setUp(() {
     requestAccountDeletion = _MockRequestAccountDeletionUseCase();
+    cancelAccountDeletion = _MockCancelAccountDeletionUseCase();
     userContext = _MockUserContextService();
     when(
       () => userContext.refreshUser(
@@ -43,14 +51,25 @@ void main() {
       when(
         () => requestAccountDeletion(any()),
       ).thenAnswer((_) async => right(unit));
-      return RequestAccountDeletionCubit(requestAccountDeletion, userContext);
+      when(
+        () => cancelAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      return RequestAccountDeletionCubit(
+        requestAccountDeletion,
+        cancelAccountDeletion,
+        userContext,
+      );
     },
     act: (cubit) async => cubit.request(),
     expect: () => const [
       RequestAccountDeletionState(
         status: RequestAccountDeletionStatus.submitting,
+        action: AccountDeletionAction.request,
       ),
-      RequestAccountDeletionState(status: RequestAccountDeletionStatus.success),
+      RequestAccountDeletionState(
+        status: RequestAccountDeletionStatus.success,
+        action: AccountDeletionAction.request,
+      ),
     ],
     verify: (_) {
       final captured =
@@ -63,6 +82,48 @@ void main() {
           logoutOnUnauthenticated: false,
         ),
       ).called(1);
+      verifyNever(() => cancelAccountDeletion(any()));
+    },
+  );
+
+  blocTest<RequestAccountDeletionCubit, RequestAccountDeletionState>(
+    'emits submitting then success when cancel succeeds',
+    build: () {
+      when(
+        () => requestAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      when(
+        () => cancelAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      return RequestAccountDeletionCubit(
+        requestAccountDeletion,
+        cancelAccountDeletion,
+        userContext,
+      );
+    },
+    act: (cubit) async => cubit.cancel(),
+    expect: () => const [
+      RequestAccountDeletionState(
+        status: RequestAccountDeletionStatus.submitting,
+        action: AccountDeletionAction.cancel,
+      ),
+      RequestAccountDeletionState(
+        status: RequestAccountDeletionStatus.success,
+        action: AccountDeletionAction.cancel,
+      ),
+    ],
+    verify: (_) {
+      final captured =
+          verify(() => cancelAccountDeletion(captureAny())).captured.single
+              as CancelAccountDeletionRequestEntity;
+      expect(captured.idempotencyKey, isNull);
+      verify(
+        () => userContext.refreshUser(
+          reason: 'account_deletion_canceled',
+          logoutOnUnauthenticated: false,
+        ),
+      ).called(1);
+      verifyNever(() => requestAccountDeletion(any()));
     },
   );
 
@@ -72,15 +133,24 @@ void main() {
       when(
         () => requestAccountDeletion(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
-      return RequestAccountDeletionCubit(requestAccountDeletion, userContext);
+      when(
+        () => cancelAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      return RequestAccountDeletionCubit(
+        requestAccountDeletion,
+        cancelAccountDeletion,
+        userContext,
+      );
     },
     act: (cubit) async => cubit.request(),
     expect: () => const [
       RequestAccountDeletionState(
         status: RequestAccountDeletionStatus.submitting,
+        action: AccountDeletionAction.request,
       ),
       RequestAccountDeletionState(
         status: RequestAccountDeletionStatus.failure,
+        action: AccountDeletionAction.request,
         failure: AuthFailure.network(),
       ),
     ],
@@ -101,19 +171,30 @@ void main() {
         () => requestAccountDeletion(any()),
       ).thenAnswer((_) async => right(unit));
       when(
+        () => cancelAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      when(
         () => userContext.refreshUser(
           reason: any(named: 'reason'),
           logoutOnUnauthenticated: any(named: 'logoutOnUnauthenticated'),
         ),
       ).thenAnswer((_) async => left(const SessionFailure.network()));
-      return RequestAccountDeletionCubit(requestAccountDeletion, userContext);
+      return RequestAccountDeletionCubit(
+        requestAccountDeletion,
+        cancelAccountDeletion,
+        userContext,
+      );
     },
     act: (cubit) async => cubit.request(),
     expect: () => const [
       RequestAccountDeletionState(
         status: RequestAccountDeletionStatus.submitting,
+        action: AccountDeletionAction.request,
       ),
-      RequestAccountDeletionState(status: RequestAccountDeletionStatus.success),
+      RequestAccountDeletionState(
+        status: RequestAccountDeletionStatus.success,
+        action: AccountDeletionAction.request,
+      ),
     ],
   );
 
@@ -123,7 +204,14 @@ void main() {
       when(
         () => requestAccountDeletion(any()),
       ).thenAnswer((_) async => right(unit));
-      return RequestAccountDeletionCubit(requestAccountDeletion, userContext);
+      when(
+        () => cancelAccountDeletion(any()),
+      ).thenAnswer((_) async => right(unit));
+      return RequestAccountDeletionCubit(
+        requestAccountDeletion,
+        cancelAccountDeletion,
+        userContext,
+      );
     },
     act: (cubit) async {
       await cubit.request();
@@ -132,8 +220,12 @@ void main() {
     expect: () => const [
       RequestAccountDeletionState(
         status: RequestAccountDeletionStatus.submitting,
+        action: AccountDeletionAction.request,
       ),
-      RequestAccountDeletionState(status: RequestAccountDeletionStatus.success),
+      RequestAccountDeletionState(
+        status: RequestAccountDeletionStatus.success,
+        action: AccountDeletionAction.request,
+      ),
       RequestAccountDeletionState(status: RequestAccountDeletionStatus.initial),
     ],
   );

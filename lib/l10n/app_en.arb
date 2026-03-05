@@ -523,6 +523,14 @@
   "@accountDeletionRequestSubmitting": {
     "description": "Loading text for account deletion request submission."
   },
+  "accountDeletionCancelCta": "Cancel deletion request",
+  "@accountDeletionCancelCta": {
+    "description": "Primary button label to cancel a scheduled account deletion."
+  },
+  "accountDeletionCancelSubmitting": "Canceling request...",
+  "@accountDeletionCancelSubmitting": {
+    "description": "Loading text for account deletion cancellation."
+  },
   "accountDeletionConfirmTitle": "Request account deletion?",
   "@accountDeletionConfirmTitle": {
     "description": "Confirmation dialog title before submitting an account deletion request."
@@ -535,9 +543,25 @@
   "@accountDeletionConfirmCta": {
     "description": "Confirmation dialog primary action for account deletion request."
   },
+  "accountDeletionCancelConfirmTitle": "Cancel account deletion request?",
+  "@accountDeletionCancelConfirmTitle": {
+    "description": "Confirmation dialog title before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmBody": "This will remove the scheduled deletion and keep your account active.",
+  "@accountDeletionCancelConfirmBody": {
+    "description": "Confirmation dialog message before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmCta": "Yes, cancel deletion",
+  "@accountDeletionCancelConfirmCta": {
+    "description": "Confirmation dialog primary action for canceling a scheduled account deletion."
+  },
   "accountDeletionRequestSuccessMessage": "Account deletion request submitted.",
   "@accountDeletionRequestSuccessMessage": {
     "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionCancelSuccessMessage": "Account deletion request canceled.",
+  "@accountDeletionCancelSuccessMessage": {
+    "description": "Success snackbar message after account deletion cancellation."
   },
   "accountDeletionErrorLastAdmin": "You are the last admin. Transfer admin access before deleting this account.",
   "@accountDeletionErrorLastAdmin": {

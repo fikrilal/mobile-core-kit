@@ -52,7 +52,9 @@ class RequestAccountDeletionPage extends StatelessWidget {
               if (state.status == RequestAccountDeletionStatus.success) {
                 AppSnackBar.showSuccess(
                   context,
-                  message: context.l10n.accountDeletionRequestSuccessMessage,
+                  message: state.action == AccountDeletionAction.cancel
+                      ? context.l10n.accountDeletionCancelSuccessMessage
+                      : context.l10n.accountDeletionRequestSuccessMessage,
                 );
                 context.read<RequestAccountDeletionCubit>().resetStatus();
               }
@@ -103,23 +105,34 @@ class RequestAccountDeletionPage extends StatelessWidget {
                             ),
                           ],
                           const SizedBox(height: AppSpacing.space24),
-                          AppButton.danger(
-                            text: isScheduled
-                                ? context
-                                      .l10n
-                                      .accountDeletionAlreadyRequestedCta
-                                : context.l10n.accountDeletionRequestCta,
-                            isExpanded: true,
-                            isLoading: isSubmitting,
-                            isDisabled: isSubmitting || isScheduled,
-                            loadingText:
-                                context.l10n.accountDeletionRequestSubmitting,
-                            semanticLabel:
-                                context.l10n.accountDeletionRequestCta,
-                            onPressed: isScheduled || isSubmitting
-                                ? null
-                                : () => _confirmAndSubmit(context),
-                          ),
+                          if (isScheduled)
+                            AppButton.outline(
+                              text: context.l10n.accountDeletionCancelCta,
+                              isExpanded: true,
+                              isLoading: isSubmitting,
+                              isDisabled: isSubmitting,
+                              loadingText:
+                                  context.l10n.accountDeletionCancelSubmitting,
+                              semanticLabel:
+                                  context.l10n.accountDeletionCancelCta,
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () => _confirmAndCancel(context),
+                            )
+                          else
+                            AppButton.danger(
+                              text: context.l10n.accountDeletionRequestCta,
+                              isExpanded: true,
+                              isLoading: isSubmitting,
+                              isDisabled: isSubmitting,
+                              loadingText:
+                                  context.l10n.accountDeletionRequestSubmitting,
+                              semanticLabel:
+                                  context.l10n.accountDeletionRequestCta,
+                              onPressed: isSubmitting
+                                  ? null
+                                  : () => _confirmAndSubmit(context),
+                            ),
                           const SizedBox(height: AppSpacing.space8),
                           AppButton.outline(
                             text: context.l10n.commonCancel,
@@ -157,6 +170,27 @@ class RequestAccountDeletionPage extends StatelessWidget {
     if (confirmed != true || !context.mounted) return;
 
     await context.read<RequestAccountDeletionCubit>().request(
+      idempotencyKey: IdempotencyKeyUtils.generate(),
+    );
+  }
+
+  Future<void> _confirmAndCancel(BuildContext context) async {
+    final confirmed = await showAppConfirmationDialog(
+      context: context,
+      title: context.l10n.accountDeletionCancelConfirmTitle,
+      message: context.l10n.accountDeletionCancelConfirmBody,
+      confirmLabel: context.l10n.accountDeletionCancelConfirmCta,
+      cancelLabel: context.l10n.commonCancel,
+      variant: AppConfirmationDialogVariant.featured,
+      icon: Icon(
+        PhosphorIconsBold.arrowCounterClockwise,
+        semanticLabel: context.l10n.accountDeletionCancelConfirmTitle,
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    await context.read<RequestAccountDeletionCubit>().cancel(
       idempotencyKey: IdempotencyKeyUtils.generate(),
     );
   }

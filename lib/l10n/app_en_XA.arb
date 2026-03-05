@@ -523,6 +523,14 @@
   "@accountDeletionRequestSubmitting": {
     "description": "Loading text for account deletion request submission."
   },
+  "accountDeletionCancelCta": "⟪Çåñçḗŀ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ⟫",
+  "@accountDeletionCancelCta": {
+    "description": "Primary button label to cancel a scheduled account deletion."
+  },
+  "accountDeletionCancelSubmitting": "⟪Çåñçḗŀīñğ ŗḗɋüḗşŧ...⟫",
+  "@accountDeletionCancelSubmitting": {
+    "description": "Loading text for account deletion cancellation."
+  },
   "accountDeletionConfirmTitle": "⟪Ŗḗɋüḗşŧ åççǿüñŧ ḓḗŀḗŧīǿñ?⟫",
   "@accountDeletionConfirmTitle": {
     "description": "Confirmation dialog title before submitting an account deletion request."
@@ -535,9 +543,25 @@
   "@accountDeletionConfirmCta": {
     "description": "Confirmation dialog primary action for account deletion request."
   },
+  "accountDeletionCancelConfirmTitle": "⟪Çåñçḗŀ åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ?⟫",
+  "@accountDeletionCancelConfirmTitle": {
+    "description": "Confirmation dialog title before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmBody": "⟪Ŧħīş ẇīŀŀ ŗḗḿǿṽḗ ŧħḗ şçħḗḓüŀḗḓ ḓḗŀḗŧīǿñ åñḓ ķḗḗρ ẏǿüŗ åççǿüñŧ åçŧīṽḗ.⟫",
+  "@accountDeletionCancelConfirmBody": {
+    "description": "Confirmation dialog message before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmCta": "⟪Ẏḗş, çåñçḗŀ ḓḗŀḗŧīǿñ⟫",
+  "@accountDeletionCancelConfirmCta": {
+    "description": "Confirmation dialog primary action for canceling a scheduled account deletion."
+  },
   "accountDeletionRequestSuccessMessage": "⟪Åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ şüƀḿīŧŧḗḓ.⟫",
   "@accountDeletionRequestSuccessMessage": {
     "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionCancelSuccessMessage": "⟪Åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ çåñçḗŀḗḓ.⟫",
+  "@accountDeletionCancelSuccessMessage": {
+    "description": "Success snackbar message after account deletion cancellation."
   },
   "accountDeletionErrorLastAdmin": "⟪Ẏǿü åŗḗ ŧħḗ ŀåşŧ åḓḿīñ. Ŧŗåñşƒḗŗ åḓḿīñ åççḗşş ƀḗƒǿŗḗ ḓḗŀḗŧīñğ ŧħīş åççǿüñŧ.⟫",
   "@accountDeletionErrorLastAdmin": {

@@ -285,6 +285,7 @@ class UserModule {
       getIt.registerFactory<RequestAccountDeletionCubit>(
         () => RequestAccountDeletionCubit(
           getIt<RequestAccountDeletionUseCase>(),
+          getIt<CancelAccountDeletionUseCase>(),
           getIt<UserContextService>(),
         ),
       );

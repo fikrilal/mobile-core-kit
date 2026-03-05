@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RequestAccountDeletionState {
 
- RequestAccountDeletionStatus get status; AuthFailure? get failure;
+ RequestAccountDeletionStatus get status; AccountDeletionAction? get action; AuthFailure? get failure;
 /// Create a copy of RequestAccountDeletionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RequestAccountDeletionStateCopyWith<RequestAccountDeletionState> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RequestAccountDeletionState&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RequestAccountDeletionState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,failure);
+int get hashCode => Object.hash(runtimeType,status,action,failure);
 
 @override
 String toString() {
-  return 'RequestAccountDeletionState(status: $status, failure: $failure)';
+  return 'RequestAccountDeletionState(status: $status, action: $action, failure: $failure)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RequestAccountDeletionStateCopyWith<$Res>  {
   factory $RequestAccountDeletionStateCopyWith(RequestAccountDeletionState value, $Res Function(RequestAccountDeletionState) _then) = _$RequestAccountDeletionStateCopyWithImpl;
 @useResult
 $Res call({
- RequestAccountDeletionStatus status, AuthFailure? failure
+ RequestAccountDeletionStatus status, AccountDeletionAction? action, AuthFailure? failure
 });
 
 
@@ -62,10 +62,11 @@ class _$RequestAccountDeletionStateCopyWithImpl<$Res>
 
 /// Create a copy of RequestAccountDeletionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? action = freezed,Object? failure = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as RequestAccountDeletionStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as RequestAccountDeletionStatus,action: freezed == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as AccountDeletionAction?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as AuthFailure?,
   ));
 }
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RequestAccountDeletionStatus status,  AuthFailure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RequestAccountDeletionStatus status,  AccountDeletionAction? action,  AuthFailure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RequestAccountDeletionState() when $default != null:
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status,_that.action,_that.failure);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.status,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RequestAccountDeletionStatus status,  AuthFailure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RequestAccountDeletionStatus status,  AccountDeletionAction? action,  AuthFailure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _RequestAccountDeletionState():
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status,_that.action,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.status,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RequestAccountDeletionStatus status,  AuthFailure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RequestAccountDeletionStatus status,  AccountDeletionAction? action,  AuthFailure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _RequestAccountDeletionState() when $default != null:
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status,_that.action,_that.failure);case _:
   return null;
 
 }
@@ -219,10 +220,11 @@ return $default(_that.status,_that.failure);case _:
 
 
 class _RequestAccountDeletionState extends RequestAccountDeletionState {
-  const _RequestAccountDeletionState({this.status = RequestAccountDeletionStatus.initial, this.failure}): super._();
+  const _RequestAccountDeletionState({this.status = RequestAccountDeletionStatus.initial, this.action, this.failure}): super._();
   
 
 @override@JsonKey() final  RequestAccountDeletionStatus status;
+@override final  AccountDeletionAction? action;
 @override final  AuthFailure? failure;
 
 /// Create a copy of RequestAccountDeletionState
@@ -235,16 +237,16 @@ _$RequestAccountDeletionStateCopyWith<_RequestAccountDeletionState> get copyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RequestAccountDeletionState&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RequestAccountDeletionState&&(identical(other.status, status) || other.status == status)&&(identical(other.action, action) || other.action == action)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,failure);
+int get hashCode => Object.hash(runtimeType,status,action,failure);
 
 @override
 String toString() {
-  return 'RequestAccountDeletionState(status: $status, failure: $failure)';
+  return 'RequestAccountDeletionState(status: $status, action: $action, failure: $failure)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$RequestAccountDeletionStateCopyWith<$Res> implements $Req
   factory _$RequestAccountDeletionStateCopyWith(_RequestAccountDeletionState value, $Res Function(_RequestAccountDeletionState) _then) = __$RequestAccountDeletionStateCopyWithImpl;
 @override @useResult
 $Res call({
- RequestAccountDeletionStatus status, AuthFailure? failure
+ RequestAccountDeletionStatus status, AccountDeletionAction? action, AuthFailure? failure
 });
 
 
@@ -272,10 +274,11 @@ class __$RequestAccountDeletionStateCopyWithImpl<$Res>
 
 /// Create a copy of RequestAccountDeletionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? action = freezed,Object? failure = freezed,}) {
   return _then(_RequestAccountDeletionState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as RequestAccountDeletionStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as RequestAccountDeletionStatus,action: freezed == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as AccountDeletionAction?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as AuthFailure?,
   ));
 }

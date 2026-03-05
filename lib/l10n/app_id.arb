@@ -523,6 +523,14 @@
   "@accountDeletionRequestSubmitting": {
     "description": "Loading text for account deletion request submission."
   },
+  "accountDeletionCancelCta": "Batalkan permintaan penghapusan",
+  "@accountDeletionCancelCta": {
+    "description": "Primary button label to cancel a scheduled account deletion."
+  },
+  "accountDeletionCancelSubmitting": "Membatalkan permintaan...",
+  "@accountDeletionCancelSubmitting": {
+    "description": "Loading text for account deletion cancellation."
+  },
   "accountDeletionConfirmTitle": "Ajukan penghapusan akun?",
   "@accountDeletionConfirmTitle": {
     "description": "Confirmation dialog title before submitting an account deletion request."
@@ -535,9 +543,25 @@
   "@accountDeletionConfirmCta": {
     "description": "Confirmation dialog primary action for account deletion request."
   },
+  "accountDeletionCancelConfirmTitle": "Batalkan permintaan penghapusan akun?",
+  "@accountDeletionCancelConfirmTitle": {
+    "description": "Confirmation dialog title before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmBody": "Ini akan menghapus jadwal penghapusan dan menjaga akun Anda tetap aktif.",
+  "@accountDeletionCancelConfirmBody": {
+    "description": "Confirmation dialog message before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmCta": "Ya, batalkan penghapusan",
+  "@accountDeletionCancelConfirmCta": {
+    "description": "Confirmation dialog primary action for canceling a scheduled account deletion."
+  },
   "accountDeletionRequestSuccessMessage": "Permintaan penghapusan akun berhasil dikirim.",
   "@accountDeletionRequestSuccessMessage": {
     "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionCancelSuccessMessage": "Permintaan penghapusan akun dibatalkan.",
+  "@accountDeletionCancelSuccessMessage": {
+    "description": "Success snackbar message after account deletion cancellation."
   },
   "accountDeletionErrorLastAdmin": "Anda adalah admin terakhir. Alihkan akses admin sebelum menghapus akun ini.",
   "@accountDeletionErrorLastAdmin": {
