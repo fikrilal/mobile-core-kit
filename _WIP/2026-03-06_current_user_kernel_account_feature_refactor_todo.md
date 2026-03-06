@@ -206,18 +206,31 @@ Goal: establish the new top-level boundary before moving workflows.
 
 Goal: move non-workflow root composition out of `features/user`.
 
-- [ ] Decide root account composition page naming:
+- [x] Decide root account composition page naming:
   - [ ] `account_home_page.dart`
-  - [ ] or `account_page.dart`
-- [ ] Move/rename current composition page(s):
-  - [ ] `lib/features/user/presentation/pages/profile_page.dart`
-  - [ ] any account-root presentation that is not owned by a single subfeature
+  - [x] or `account_page.dart`
+- [x] Move/rename current composition page(s):
+  - [x] `lib/features/user/presentation/pages/profile_page.dart`
+  - [x] any account-root presentation that is not owned by a single subfeature
 - [ ] Move shared root widgets if reused across multiple subfeatures:
-  - [ ] `locale_setting_tile.dart`
-  - [ ] `theme_mode_setting_tile.dart`
-- [ ] Keep root composition light:
-  - [ ] no workflow-specific use cases
-  - [ ] no workflow-specific repositories
+  - [x] `locale_setting_tile.dart`
+  - [x] `theme_mode_setting_tile.dart`
+- [x] Keep root composition light:
+  - [x] no workflow-specific use cases
+  - [x] no workflow-specific repositories
+
+### Phase 2 output — root account composition move (2026-03-07)
+
+- Root composition page renamed and moved:
+  - from `lib/features/user/presentation/pages/profile_page.dart`
+  - to `lib/features/account/presentation/pages/account_page.dart`
+- Shared account-root widgets moved:
+  - `lib/features/account/presentation/widgets/locale_setting_tile.dart`
+  - `lib/features/account/presentation/widgets/theme_mode_setting_tile.dart`
+- `app_router` now renders `AccountPage` for the shell profile tab
+- Temporary architecture-lint exception added:
+  - `features/account/presentation/**` may depend on transitional `features/user/**`
+  - remove this once the profile-image flow moves into the account/profile subfeature
 
 ## Phase 3 — Profile subfeature full vertical split
 

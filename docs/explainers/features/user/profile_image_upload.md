@@ -119,7 +119,7 @@ lib/features/user/
 │  │  ├─ profile_image_cubit.dart
 │  │  └─ profile_image_state.dart
 │  └─ pages/
-│     └─ profile_page.dart              # “Change profile photo” UI entry
+│     └─ account_page.dart              # “Change profile photo” UI entry
 └─ di/
    └─ user_module.dart                  # DI wiring
 ```
@@ -170,7 +170,7 @@ The backend render URL is still produced by:
 High-level sequence:
 
 ```
-ProfilePage
+AccountPage
   -> ImagePickerService.pickFromGallery|pickFromCamera (bytes + contentType)
   -> ProfileImageCubit.upload(bytes, contentType, idempotencyKey)
      -> UploadProfileImageUseCase
@@ -191,7 +191,7 @@ Then the UI:
 High-level sequence:
 
 ```
-ProfilePage -> ProfileImageCubit.clear(idempotencyKey)
+AccountPage -> ProfileImageCubit.clear(idempotencyKey)
   -> ClearProfileImageUseCase
      -> ProfileImageRepository.clearProfileImage(...) (DELETE /v1/me/profile-image)
      -> GetMeUseCase                                 (GET /v1/me)

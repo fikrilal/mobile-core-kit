@@ -107,7 +107,7 @@ Text(context.l10n.commonItemsCount(count: items.length))
 2. Copy all keys + metadata from `app_en.arb` (keep descriptions consistent).
 3. Run `flutter gen-l10n` and fix any missing keys.
 4. If you want to expose the locale in the in-app language override UI, update the language picker:
-   - `lib/features/profile/presentation/pages/profile_page.dart`
+   - `lib/features/account/presentation/pages/account_page.dart`
 
 Notes:
 - `preferred-supported-locales` in `l10n.yaml` controls ordering/fallback preference.
@@ -126,7 +126,7 @@ Where to look:
 - Persistence: `lib/core/infra/storage/prefs/localization/locale_store.dart`
 - Runtime controller: `lib/core/runtime/localization/locale_controller.dart`
 - App shell wiring: `lib/app.dart`
-- UI entrypoint: `lib/features/profile/presentation/pages/profile_page.dart`
+- UI entrypoint: `lib/features/account/presentation/pages/account_page.dart`
 
 ---
 

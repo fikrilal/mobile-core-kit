@@ -50,6 +50,11 @@ rules:
           - lib/features/account/**
           - lib/features/user/**
 
+      - from: lib/features/account/presentation/**
+        allow:
+          - lib/features/account/**
+          - lib/features/user/**
+
       - from: lib/features/account/di/**
         allow:
           - lib/features/account/**

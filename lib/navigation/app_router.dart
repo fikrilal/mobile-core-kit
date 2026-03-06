@@ -16,12 +16,12 @@ import 'package:mobile_core_kit/core/runtime/navigation/navigation_service.dart'
 import 'package:mobile_core_kit/core/runtime/navigation/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/features/account/presentation/pages/account_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/logout_failure_localizer.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
-import 'package:mobile_core_kit/features/user/presentation/pages/profile_page.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
@@ -95,7 +95,7 @@ GoRouter createRouter() {
                     },
                     child: BlocBuilder<LogoutCubit, LogoutState>(
                       builder: (context, logoutState) {
-                        return ProfilePage(
+                        return AccountPage(
                           userContext: locator<UserContextService>(),
                           themeModeController: locator<ThemeModeController>(),
                           localeController: locator<LocaleController>(),

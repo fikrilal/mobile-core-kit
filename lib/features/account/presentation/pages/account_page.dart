@@ -26,17 +26,17 @@ import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.da
 import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
+import 'package:mobile_core_kit/features/account/presentation/widgets/locale_setting_tile.dart';
+import 'package:mobile_core_kit/features/account/presentation/widgets/theme_mode_setting_tile.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_state.dart';
-import 'package:mobile_core_kit/features/user/presentation/widgets/locale_setting_tile.dart';
-import 'package:mobile_core_kit/features/user/presentation/widgets/theme_mode_setting_tile.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({
+class AccountPage extends StatelessWidget {
+  const AccountPage({
     super.key,
     required this.userContext,
     required this.themeModeController,
@@ -116,7 +116,7 @@ class ProfilePage extends StatelessWidget {
       child: AppLoadingOverlay(
         isLoading: isOverlayLoading,
         message: overlayMessage,
-        child: _ProfileContent(
+        child: _AccountContent(
           isLoggingOut: isLoggingOut,
           isProfileImageBusy: isProfileImageBusy,
           userContext: userContext,
@@ -130,8 +130,8 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-class _ProfileContent extends StatelessWidget {
-  const _ProfileContent({
+class _AccountContent extends StatelessWidget {
+  const _AccountContent({
     required this.isLoggingOut,
     required this.isProfileImageBusy,
     required this.userContext,
