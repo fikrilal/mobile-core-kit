@@ -22,12 +22,12 @@ Canonical docs (post-implementation):
 - [x] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
 - [x] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
 - [x] **Core “current user” access is implemented:** `UserContextService` exists, is wired, and used by Profile UI.
-- [x] **Verification passes:** `dart run tool/verify.dart --env dev` (or WSL wrapper) is green.
+- [x] **Verification passes:** `dart run tool/verify.dart --env dev` is green.
 
 ## Phase 0 — Baseline & scoping (no behavior changes)
 
 - [x] Re-run full verification and capture the output in this doc (for before/after):
-  - [x] `tool/agent/dartw --no-stdin run tool/verify.dart --env dev`
+  - [x] `dart run tool/verify.dart --env dev`
 - [x] Write a short “current flow” diagram (1 page max) covering:
   - [x] login/register → session persisted (tokens + user)
   - [x] cold start → session restored → cached user restored → `GET /me` hydration
@@ -43,7 +43,7 @@ Canonical docs (post-implementation):
 Command:
 
 ```bash
-tool/agent/dartw --no-stdin run tool/verify.dart --env dev
+dart run tool/verify.dart --env dev
 ```
 
 Result (2026-01-20):

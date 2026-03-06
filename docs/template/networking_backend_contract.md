@@ -205,10 +205,3 @@ Mobile (this repo):
 1) Ensure `.env/dev.yaml` points to the reachable base URL (see section 2.1).
 2) Regenerate build config: `dart run tool/gen_config.dart --env dev`
 3) Run: `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`
-
-WSL note:
-
-- Prefer using the wrappers under `tool/agent/` when running Flutter/Dart from WSL:
-  - `tool/agent/dartw --no-stdin run tool/gen_config.dart --env dev`
-  - `tool/agent/flutterw analyze`
-  - `tool/agent/flutterw --no-stdin test`

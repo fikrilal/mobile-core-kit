@@ -42,10 +42,10 @@ If you need generic network error copy, use the core localizer:
 4. Run `flutter gen-l10n` (CI and `tool/verify.dart` do this too).
 5. Use it from `context.l10n`.
 
-Commands (WSL-safe):
-- `tool/agent/flutterw --no-stdin gen-l10n`
-- `tool/agent/flutterw --no-stdin analyze`
-- `tool/agent/flutterw --no-stdin test`
+Commands:
+- `flutter gen-l10n`
+- `fvm flutter analyze`
+- `fvm flutter test`
 
 ---
 
@@ -183,4 +183,3 @@ Scaling rule:
   - ARB files are compatible with common TMS platforms (Crowdin/Lokalise/etc).
   - Pseudo locales provide a cheap, continuous UI QA safety net.
 - CI remains deterministic because generation runs before analyze/tests.
-

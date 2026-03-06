@@ -5,7 +5,7 @@ This system has “looks fine in the happy path” traps. The template includes 
 Run everything:
 
 ```bash
-tool/agent/dartw --no-stdin run tool/verify.dart --env dev
+dart run tool/verify.dart --env dev
 ```
 
 ---

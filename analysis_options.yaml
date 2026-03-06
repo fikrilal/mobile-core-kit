@@ -8,7 +8,7 @@
 # The following line activates a set of recommended lints for Flutter apps.
 #
 # Note: We vendor these lints under `tool/lints/` to avoid `dart format`
-# include-resolution warnings in WSL/Windows toolchain setups.
+# include-resolution warnings across local toolchain setups.
 include: tool/lints/flutter_lints.yaml
 
 analyzer:
