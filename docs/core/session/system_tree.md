@@ -104,13 +104,14 @@ lib/
 | Persist session (impl) | `SessionRepositoryImpl` | `lib/core/runtime/session/session_repository_impl.dart` | Core |
 | Secure token IO | `TokenSecureStorage` | `lib/core/infra/storage/secure/token_secure_storage.dart` | Core |
 | Cached user IO (interface) | `CachedUserStore` | `lib/core/domain/session/cached_user_store.dart` | Core |
-| Cached user IO (impl) | `UserLocalDataSource` | `lib/features/user/data/datasource/local/user_local_datasource.dart` | User feature |
+| Cached user IO (impl adapter) | `AccountCachedUserStoreAdapter` | `lib/features/account/adapters/cached_user_store_adapter.dart` | Account feature |
+| Cached user local datasource | `UserLocalDataSource` | `lib/features/user/data/datasource/local/user_local_datasource.dart` | User feature (transitional) |
 | Refresh tokens (interface) | `TokenRefresher` | `lib/core/domain/session/token_refresher.dart` | Core |
 | Refresh tokens (impl adapter) | `_AuthRepositoryTokenRefresher` | `lib/features/auth/di/auth_module.dart` | Auth feature |
 | Failure semantics | `SessionFailure` | `lib/core/domain/session/session_failure.dart` | Core |
 | User identity | `UserEntity` | `lib/core/domain/user/entity/user_entity.dart` | Core |
 | Fetch “me” (interface) | `CurrentUserFetcher` | `lib/core/domain/user/current_user_fetcher.dart` | Core |
-| Fetch “me” (impl adapter) | `_GetMeCurrentUserFetcher` | `lib/features/user/di/user_module.dart` | User feature |
+| Fetch “me” (impl adapter) | `AccountCurrentUserFetcherAdapter` | `lib/features/account/adapters/current_user_fetcher_adapter.dart` | Account feature |
 | Startup hydration | `AppStartupController` | `lib/core/runtime/startup/app_startup_controller.dart` | Core |
 | UI current user | `UserContextService` | `lib/core/runtime/user_context/user_context_service.dart` | Core |
 | UI state | `CurrentUserState` | `lib/core/runtime/user_context/current_user_state.dart` | Core |

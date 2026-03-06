@@ -100,7 +100,8 @@ Checklist:
 Where:
 
 - core contract: `lib/core/domain/session/cached_user_store.dart`
-- implementation: `lib/features/user/data/datasource/local/user_local_datasource.dart`
+- implementation adapter: `lib/features/account/adapters/cached_user_store_adapter.dart`
+- underlying datasource: `lib/features/user/data/datasource/local/user_local_datasource.dart`
 - db bootstrap: `lib/core/infra/database/app_database.dart`, `lib/features/user/di/user_module.dart`
 
 Checklist:
@@ -117,7 +118,7 @@ Where:
 
 - `lib/core/runtime/startup/app_startup_controller.dart`
 - `lib/core/domain/user/current_user_fetcher.dart`
-- `lib/features/user/di/user_module.dart` (adapter mapping)
+- `lib/features/account/adapters/current_user_fetcher_adapter.dart` (adapter mapping)
 
 Checklist:
 

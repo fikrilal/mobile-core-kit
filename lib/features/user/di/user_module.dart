@@ -1,10 +1,4 @@
-import 'package:fpdart/fpdart.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
-import 'package:mobile_core_kit/core/domain/session/cached_user_store.dart';
-import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
-import 'package:mobile_core_kit/core/domain/user/current_user_fetcher.dart';
-import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/infra/database/app_database.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/infra/network/download/presigned_download_client.dart';
@@ -80,12 +74,6 @@ class UserModule {
     if (!getIt.isRegistered<ProfileAvatarCacheLocalDataSource>()) {
       getIt.registerLazySingleton<ProfileAvatarCacheLocalDataSource>(
         () => ProfileAvatarCacheLocalDataSource(),
-      );
-    }
-
-    if (!getIt.isRegistered<CachedUserStore>()) {
-      getIt.registerLazySingleton<CachedUserStore>(
-        () => getIt<UserLocalDataSource>(),
       );
     }
 
@@ -329,40 +317,5 @@ class UserModule {
         ),
       );
     }
-
-    if (!getIt.isRegistered<CurrentUserFetcher>()) {
-      getIt.registerFactory<CurrentUserFetcher>(
-        () => _GetMeCurrentUserFetcher(getIt<GetMeUseCase>()),
-      );
-    }
-  }
-}
-
-class _GetMeCurrentUserFetcher implements CurrentUserFetcher {
-  _GetMeCurrentUserFetcher(this._getMe);
-
-  final GetMeUseCase _getMe;
-
-  @override
-  Future<Either<SessionFailure, UserEntity>> fetch() async {
-    final result = await _getMe();
-    return result.mapLeft(_toSessionFailure);
-  }
-
-  SessionFailure _toSessionFailure(AuthFailure failure) {
-    return failure.when(
-      network: () => const SessionFailure.network(),
-      cancelled: () => const SessionFailure.unexpected(),
-      unauthenticated: () => const SessionFailure.unauthenticated(),
-      passwordNotSet: () => const SessionFailure.unexpected(),
-      emailTaken: () => const SessionFailure.unexpected(),
-      emailNotVerified: () => const SessionFailure.unexpected(),
-      validation: (_) => const SessionFailure.unexpected(),
-      invalidCredentials: () => const SessionFailure.unexpected(),
-      tooManyRequests: () => const SessionFailure.tooManyRequests(),
-      userSuspended: () => const SessionFailure.unexpected(),
-      serverError: (message) => SessionFailure.serverError(message),
-      unexpected: (message) => SessionFailure.unexpected(message),
-    );
   }
 }

@@ -1,0 +1,419 @@
+# TODO — Current-User Kernel + `account` Feature Refactor
+
+**Companion proposal:** `_WIP/2026-03-06_current_user_kernel_account_feature_engineering_proposal.md`
+
+## Decisions (locked)
+
+- [ ] Target architecture is authoritative:
+  - `lib/core/**` owns the current-user kernel
+  - `lib/features/account/**` owns account-management workflows
+  - `lib/features/account/subfeatures/*` are full vertical slices with `data`, `domain`, `presentation`, and `di`
+- [ ] `features/account` root stays thin:
+  - kernel adapters
+  - feature entry DI
+  - composition pages
+  - shared widgets reused across account subfeatures
+- [ ] `features/user/**` is transitional and must be removed at the end
+- [ ] `change_password` remains in `features/auth` for this refactor
+- [ ] No product behavior changes unless explicitly called out in a phase
+
+## Definition of Done
+
+- [ ] `core` owns all current-user kernel contracts/runtime:
+  - [ ] `CurrentUserFetcher`
+  - [ ] `CachedUserStore`
+  - [ ] current-user entities
+  - [ ] `UserContextService`
+- [ ] `features/account` exists as the account-management feature boundary
+- [ ] `profile`, `security`, and `account_deletion` are full vertical subfeatures
+- [ ] `features/account` root contains no workflow-specific repository/usecase/datasource clutter
+- [ ] `features/user/**` is deleted
+- [ ] navigation and DI use `account` naming/ownership consistently
+- [ ] tests are updated for all moved paths
+- [ ] `dart run tool/verify.dart --env dev` passes
+
+## Phase 0 — Baseline, guardrails, and inventory
+
+- [x] Re-run full verification baseline:
+  - [x] `dart run tool/verify.dart --env dev`
+- [x] Freeze current architectural rules in this document:
+  - [x] kernel vs feature vs subfeature ownership
+  - [x] thin `features/account` root rule
+  - [x] no workflow code in `core`
+- [x] Inventory current `features/user/**` into target buckets:
+  - [x] current-user kernel support
+  - [x] account root composition
+  - [x] profile
+  - [x] security
+  - [x] account deletion
+- [x] Inventory all route files and imports that reference `user`
+- [x] Inventory all tests mirroring `features/user/**`
+- [x] Inventory generated files (`*.freezed.dart`, `*.g.dart`) that must move with source files
+
+### Phase 0 output — verification baseline (2026-03-07)
+
+Command:
+
+```bash
+dart run tool/verify.dart --env dev
+```
+
+Result:
+
+- Substantive verification steps passed:
+  - `flutter pub get`
+  - env schema validation
+  - build config generation
+  - `flutter gen-l10n`
+  - untranslated message verification
+  - AGENTS project map drift verification
+  - `flutter analyze`
+  - `dart run custom_lint`
+  - modal entrypoint verification
+  - hardcoded UI color verification
+  - full `flutter test` suite
+- Final status: non-zero exit at the last formatter check
+- Existing files reformatted by the final step:
+  - `lib/app.dart`
+  - `lib/features/user/data/model/remote/request_account_deletion_request_model.dart`
+  - `lib/features/user/domain/entity/request_account_deletion_request_entity.dart`
+- Phase 0 decision:
+  - leave those formatter-only changes untouched
+  - do not include them in this refactor scope
+
+### Phase 0 output — current `features/user` inventory
+
+Current counts:
+
+- `lib/features/user/**`: 125 files
+- generated files under `lib/features/user/**`: 37 files
+- `test/features/user/**`: 25 test files
+
+Bucket summary:
+
+- Current-user kernel support / feature-root support: 7 clearly-root files
+  - `data/datasource/local/user_local_datasource.dart`
+  - `data/datasource/remote/user_remote_datasource.dart`
+  - `data/datasource/remote/me_push_token_remote_datasource.dart`
+  - `data/model/local/user_local_model.dart`
+  - `data/model/local/user_local_model.freezed.dart`
+  - `data/services/user_avatar_cache_session_listener.dart`
+  - `di/user_module.dart`
+- Account root composition: 3 files
+  - `presentation/pages/profile_page.dart`
+  - `presentation/widgets/locale_setting_tile.dart`
+  - `presentation/widgets/theme_mode_setting_tile.dart`
+- Profile slice: 65 files
+  - draft persistence
+  - profile mutation
+  - profile image upload/clear
+  - avatar cache/download
+  - complete-profile cubit/page
+- Security slice: 24 files
+  - active sessions remote/data/domain/presentation
+  - `security_privacy_page.dart`
+- Account deletion slice: 15 files
+  - request/cancel deletion entities, models, use cases, cubit, page, localizer
+- Ambiguous flat-root files still needing Phase 6 cleanup: 11 files
+  - `data/datasource/local/dao/user_dao.dart`
+  - `data/error/user_failure_mapper.dart`
+  - `data/model/remote/me_push_token_upsert_request_model.*`
+  - `data/model/remote/patch_me_request_model.*`
+  - `data/repository/user_repository_impl.dart`
+  - `domain/repository/user_repository.dart`
+  - `domain/usecase/get_me_usecase.dart`
+
+### Phase 0 output — route inventory
+
+- Route files under current user namespace:
+  - `lib/navigation/user/user_routes.dart`
+  - `lib/navigation/user/user_routes_list.dart`
+- Current navigation/test/doc references using `user` naming or paths: 31 hits across:
+  - `lib/navigation/**`
+  - `test/navigation/**`
+  - `docs/core/**`
+  - `docs/explainers/core/**`
+  - `docs/explainers/features/**`
+- Current `core -> features/user` direct import count:
+  - 1 real import, in composition root only:
+    - `lib/core/di/registrars/feature_modules_registrar.dart`
+
+### Phase 0 output — test inventory
+
+- `test/features/user/**`: 25 test files
+- Covered areas:
+  - local datasources
+  - remote datasources
+  - failure mappers
+  - repositories
+  - domain use cases
+  - domain value objects
+  - presentation cubits
+  - user pages (`me_sessions`, `request_account_deletion`)
+
+### Phase 0 output — generated file inventory
+
+- Generated files to move with source files: 37
+- Main generated hotspots:
+  - request/response models under `data/model/remote/**`
+  - local model under `data/model/local/**`
+  - domain entities under `domain/entity/**`
+  - Freezed presentation state files under `presentation/cubit/**`
+
+## Phase 1 — Create `features/account` root and kernel adapter boundary
+
+Goal: establish the new top-level boundary before moving workflows.
+
+- [x] Create `lib/features/account/`
+- [ ] Add thin feature root folders:
+  - [x] `adapters/`
+  - [x] `di/`
+  - [ ] `presentation/pages/`
+  - [ ] `presentation/widgets/`
+- [x] Add `lib/features/account/di/account_module.dart`
+- [x] Add `lib/features/account/di/account_kernel_adapter_module.dart`
+- [x] Add explicit kernel adapter files:
+  - [x] `lib/features/account/adapters/current_user_fetcher_adapter.dart`
+  - [x] `lib/features/account/adapters/cached_user_store_adapter.dart`
+- [x] Extract current `CurrentUserFetcher` implementation out of:
+  - [x] `lib/features/user/di/user_module.dart`
+- [x] Stop using a datasource itself as the kernel port implementation:
+  - [x] `CachedUserStore` should be implemented by an explicit adapter, not directly by the account datasource
+- [x] Register `CurrentUserFetcher` from `AccountKernelAdapterModule`
+- [x] Register `CachedUserStore` from `AccountKernelAdapterModule`
+- [x] Keep `core` depending only on:
+  - [x] `CurrentUserFetcher`
+  - [x] `CachedUserStore`
+- [ ] Keep the app composition root wiring clean:
+  - [x] update `lib/core/di/registrars/feature_modules_registrar.dart`
+
+### Phase 1 output — adapter boundary extraction (2026-03-07)
+
+- New account-root DI boundary:
+  - `lib/features/account/di/account_module.dart`
+  - `lib/features/account/di/account_kernel_adapter_module.dart`
+- New explicit kernel adapters:
+  - `lib/features/account/adapters/current_user_fetcher_adapter.dart`
+  - `lib/features/account/adapters/cached_user_store_adapter.dart`
+- `CurrentUserFetcher` no longer lives as a private class inside `UserModule`
+- `CachedUserStore` is no longer implemented directly by `UserLocalDataSource`
+- Core composition now imports `AccountModule` instead of `UserModule`
+- Temporary architecture-lint exception added:
+  - `features/account/{adapters,di}` may import transitional `features/user/**`
+  - this exception must be removed once later phases move the workflow code
+
+## Phase 2 — Move account root composition pages and shared widgets
+
+Goal: move non-workflow root composition out of `features/user`.
+
+- [ ] Decide root account composition page naming:
+  - [ ] `account_home_page.dart`
+  - [ ] or `account_page.dart`
+- [ ] Move/rename current composition page(s):
+  - [ ] `lib/features/user/presentation/pages/profile_page.dart`
+  - [ ] any account-root presentation that is not owned by a single subfeature
+- [ ] Move shared root widgets if reused across multiple subfeatures:
+  - [ ] `locale_setting_tile.dart`
+  - [ ] `theme_mode_setting_tile.dart`
+- [ ] Keep root composition light:
+  - [ ] no workflow-specific use cases
+  - [ ] no workflow-specific repositories
+
+## Phase 3 — Profile subfeature full vertical split
+
+Goal: `profile` becomes a complete vertical slice.
+
+- [ ] Create `lib/features/account/subfeatures/profile/`
+- [ ] Add:
+  - [ ] `data/`
+  - [ ] `domain/`
+  - [ ] `presentation/`
+  - [ ] `di/`
+
+### Presentation
+- [ ] Move:
+  - [ ] `lib/features/user/presentation/cubit/complete_profile/**`
+  - [ ] `lib/features/user/presentation/cubit/profile_image/**`
+  - [ ] `lib/features/user/presentation/pages/complete_profile_page.dart`
+- [ ] Move any profile-owned widgets under:
+  - [ ] `subfeatures/profile/presentation/widgets/`
+
+### Domain
+- [ ] Move profile-owned entities/value objects:
+  - [ ] `patch_me_profile_request_entity.dart`
+  - [ ] `profile_draft_entity.dart`
+  - [ ] `profile_image_*`
+  - [ ] `profile_avatar_cache_entry_entity.dart`
+  - [ ] `given_name.dart`
+  - [ ] `family_name.dart`
+- [ ] Move profile-owned repositories:
+  - [ ] `profile_draft_repository.dart`
+  - [ ] `profile_image_repository.dart`
+  - [ ] `profile_avatar_repository.dart`
+- [ ] Move profile-owned use cases:
+  - [ ] draft use cases
+  - [ ] patch profile use case
+  - [ ] profile image use cases
+  - [ ] avatar cache use cases
+
+### Data
+- [ ] Move local datasources:
+  - [ ] `profile_draft_local_datasource.dart`
+  - [ ] `profile_avatar_cache_local_datasource.dart`
+- [ ] Move remote datasources:
+  - [ ] `profile_image_remote_datasource.dart`
+  - [ ] `profile_avatar_download_datasource.dart`
+- [ ] Move repositories:
+  - [ ] `profile_draft_repository_impl.dart`
+  - [ ] `profile_image_repository_impl.dart`
+  - [ ] `profile_avatar_repository_impl.dart`
+- [ ] Move profile-related error mappers/codes
+- [ ] Move associated models and generated files
+
+### DI
+- [ ] Add `lib/features/account/subfeatures/profile/di/account_profile_module.dart`
+- [ ] Register all profile datasources, repositories, use cases, cubits
+
+## Phase 4 — Security subfeature full vertical split
+
+Goal: `security` becomes a complete vertical slice.
+
+- [ ] Create `lib/features/account/subfeatures/security/`
+- [ ] Add:
+  - [ ] `data/`
+  - [ ] `domain/`
+  - [ ] `presentation/`
+  - [ ] `di/`
+
+### Presentation
+- [ ] Move:
+  - [ ] `lib/features/user/presentation/cubit/me_sessions/**`
+  - [ ] `lib/features/user/presentation/pages/me_sessions_page.dart`
+  - [ ] `lib/features/user/presentation/pages/security_privacy_page.dart`
+  - [ ] `lib/features/user/presentation/widgets/skeleton/me_sessions_skeleton.dart`
+
+### Domain
+- [ ] Move security-owned entities:
+  - [ ] `me_session_entity.dart`
+  - [ ] `list_me_sessions_request_entity.dart`
+  - [ ] `revoke_me_session_request_entity.dart`
+- [ ] Move security repository:
+  - [ ] `me_session_repository.dart`
+    - [ ] rename if needed to `account_security_repository.dart` only when it improves clarity
+- [ ] Move security use cases:
+  - [ ] `list_me_sessions_usecase.dart`
+  - [ ] `revoke_me_session_usecase.dart`
+
+### Data
+- [ ] Move remote datasource:
+  - [ ] `me_session_remote_datasource.dart`
+- [ ] Move repository implementation:
+  - [ ] `me_session_repository_impl.dart`
+- [ ] Move related request/response models and generated files
+
+### DI
+- [ ] Add `lib/features/account/subfeatures/security/di/account_security_module.dart`
+- [ ] Register all security datasources, repositories, use cases, cubits
+
+## Phase 5 — Account deletion subfeature full vertical split
+
+Goal: `account_deletion` becomes a complete vertical slice.
+
+- [ ] Create `lib/features/account/subfeatures/account_deletion/`
+- [ ] Add:
+  - [ ] `data/`
+  - [ ] `domain/`
+  - [ ] `presentation/`
+  - [ ] `di/`
+
+### Presentation
+- [ ] Move:
+  - [ ] `lib/features/user/presentation/cubit/request_account_deletion/**`
+  - [ ] `lib/features/user/presentation/pages/request_account_deletion_page.dart`
+  - [ ] `lib/features/user/presentation/localization/account_deletion_failure_localizer.dart`
+
+### Domain
+- [ ] Move deletion-owned repository:
+  - [ ] split current deletion operations away from flat `UserRepository`
+- [ ] Move deletion-owned request entities:
+  - [ ] `request_account_deletion_request_entity.dart`
+  - [ ] `cancel_account_deletion_request_entity.dart`
+- [ ] Move deletion use cases:
+  - [ ] `request_account_deletion_usecase.dart`
+  - [ ] `cancel_account_deletion_usecase.dart`
+- [ ] Keep `AccountDeletionEntity` in `core` if it remains part of canonical `/me` shape
+
+### Data
+- [ ] Split deletion API behavior away from the flat user repository implementation
+- [ ] Move deletion-specific datasource/repository code
+- [ ] Move deletion-specific request models and generated files
+- [ ] Add a dedicated deletion failure mapper if the current generic mapper is too broad
+
+### DI
+- [ ] Add `lib/features/account/subfeatures/account_deletion/di/account_deletion_module.dart`
+- [ ] Register all deletion datasources, repositories, use cases, cubits
+
+## Phase 6 — Current-user adapter support infrastructure
+
+Goal: the `account` feature fully backs kernel ports without relying on `features/user`.
+
+- [ ] Move current-user remote fetch support out of `features/user`:
+  - [ ] `user_remote_datasource.dart`
+  - [ ] any flat user repository code used only for `/me`
+- [ ] Move cached-user local persistence support out of `features/user`:
+  - [ ] `user_local_datasource.dart`
+  - [ ] `data/datasource/local/dao/user_dao.dart`
+  - [ ] `data/model/local/user_local_model.dart`
+- [ ] Rename moved account-side current-user support code if it improves clarity:
+  - [ ] `me_remote_datasource.dart`
+  - [ ] `account_cached_user_local_datasource.dart`
+- [ ] Ensure this support code stays outside workflow subfeatures and outside `core`
+- [ ] Ensure only adapters expose these kernel-backed capabilities to `core`
+
+## Phase 7 — Repository and naming cleanup
+
+Goal: remove historical flat contracts and align naming to the new architecture.
+
+- [ ] Delete the old flat `UserRepository` contract
+- [ ] Delete the old flat `UserRepositoryImpl`
+- [ ] Remove any remaining mixed-responsibility repository methods
+- [ ] Rename `navigation/user/**` to `navigation/account/**`
+- [ ] Decide route path stability policy:
+  - [ ] keep existing `/user/...` paths temporarily if deep-link stability matters
+  - [ ] or rename to `/account/...` if safe and intentional
+- [ ] Update imports across:
+  - [ ] app code
+  - [ ] tests
+  - [ ] docs
+
+## Phase 8 — Remove `features/user` and finalize docs
+
+Goal: complete the cutover.
+
+- [ ] Delete `lib/features/user/**`
+- [ ] Delete `UserModule`
+- [ ] Remove `features/user` references from:
+  - [ ] DI registrars
+  - [ ] routes
+  - [ ] docs
+  - [ ] `_WIP` documents where relevant
+- [ ] Update architecture docs if this refactor becomes the new canonical standard
+
+## Phase 9 — Verification and closeout
+
+- [ ] Run focused checks during each phase:
+  - [ ] `fvm flutter analyze`
+  - [ ] `dart run custom_lint`
+  - [ ] `fvm flutter test`
+  - [ ] `dart run tool/verify_project_map_drift.dart`
+- [ ] Run full verification at milestone boundaries:
+  - [ ] `dart run tool/verify.dart --env dev`
+- [ ] Confirm no stale `features/user` imports remain:
+  - [ ] `rg -n "features/user" lib test docs`
+- [ ] Confirm no stale `navigation/user` imports remain
+
+## Notes
+
+- This TODO is intentionally phased for reversible implementation.
+- The target architecture should remain strict even if some intermediate phases use transitional wiring.
+- If a phase reveals a boundary mistake, update the proposal and this TODO before continuing further.

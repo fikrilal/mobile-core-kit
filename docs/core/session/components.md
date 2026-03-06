@@ -329,9 +329,9 @@ Role:
 - Implements `TokenRefresher` by calling `AuthRepository.refreshToken(...)`
 - Maps `AuthFailure` → `SessionFailure`
 
-### User feature adapter: `_GetMeCurrentUserFetcher`
+### Account feature adapter: `AccountCurrentUserFetcherAdapter`
 
-**File:** `lib/features/user/di/user_module.dart`
+**File:** `lib/features/account/adapters/current_user_fetcher_adapter.dart`
 
 Role:
 
