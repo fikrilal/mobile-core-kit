@@ -36,13 +36,6 @@ class AuthRemoteDataSource {
       throwOnError: false,
       parser: AuthResponseModel.fromJson,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'User registration failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -59,13 +52,6 @@ class AuthRemoteDataSource {
       throwOnError: false,
       parser: AuthResponseModel.fromJson,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'User login failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -82,13 +68,6 @@ class AuthRemoteDataSource {
       throwOnError: false,
       parser: AuthResultModel.fromJson,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Token refresh failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -102,13 +81,6 @@ class AuthRemoteDataSource {
       requiresAuth: false,
       throwOnError: false,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Remote logout failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -129,13 +101,6 @@ class AuthRemoteDataSource {
       throwOnError: false,
       parser: AuthResponseModel.fromJson,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'OIDC exchange failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -151,13 +116,6 @@ class AuthRemoteDataSource {
       requiresAuth: false,
       throwOnError: false,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Verify email failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -170,13 +128,6 @@ class AuthRemoteDataSource {
       requiresAuth: true,
       throwOnError: false,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Resend verification email failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -196,13 +147,6 @@ class AuthRemoteDataSource {
         'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
       },
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Change password failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -218,13 +162,6 @@ class AuthRemoteDataSource {
       requiresAuth: false,
       throwOnError: false,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Password reset request failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 
@@ -241,13 +178,6 @@ class AuthRemoteDataSource {
       requiresAuth: false,
       throwOnError: false,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Password reset confirm failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 }
