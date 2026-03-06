@@ -64,6 +64,17 @@ class SecurityPrivacyPage extends StatelessWidget {
                     AppListTile(
                       leading: AppIconBadge(
                         icon: PhosphorIcon(
+                          PhosphorIconsRegular.userCircle,
+                          size: AppSizing.iconSizeMedium,
+                        ),
+                      ),
+                      title: context.l10n.profileActiveSessionsTitle,
+                      subtitle: context.l10n.profileActiveSessionsSubtitle,
+                      onTap: () => context.push(UserRoutes.meSessions),
+                    ),
+                    AppListTile(
+                      leading: AppIconBadge(
+                        icon: PhosphorIcon(
                           PhosphorIconsRegular.userMinus,
                           size: AppSizing.iconSizeMedium,
                         ),

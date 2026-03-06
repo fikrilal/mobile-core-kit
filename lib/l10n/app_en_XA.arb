@@ -463,13 +463,21 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
-  "profileSecurityAndPrivacyBody": "⟪Ḿåñåğḗ ẏǿüŗ ρåşşẇǿŗḓ åñḓ åççǿüñŧ ḓḗŀḗŧīǿñ şḗŧŧīñğş.⟫",
+  "profileSecurityAndPrivacyBody": "⟪Ḿåñåğḗ ẏǿüŗ ρåşşẇǿŗḓ, åçŧīṽḗ şḗşşīǿñş, åñḓ åççǿüñŧ ḓḗŀḗŧīǿñ şḗŧŧīñğş.⟫",
   "@profileSecurityAndPrivacyBody": {
     "description": "Body copy shown in the security and privacy page."
   },
   "profileChangePasswordSubtitle": "⟪Üρḓåŧḗ ẏǿüŗ ρåşşẇǿŗḓ ŧǿ ķḗḗρ ẏǿüŗ åççǿüñŧ şḗçüŗḗ⟫",
   "@profileChangePasswordSubtitle": {
     "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileActiveSessionsTitle": "⟪Åçŧīṽḗ şḗşşīǿñş⟫",
+  "@profileActiveSessionsTitle": {
+    "description": "Title for the active sessions action in security settings."
+  },
+  "profileActiveSessionsSubtitle": "⟪Ŗḗṽīḗẇ åñḓ ŗḗṽǿķḗ şḗşşīǿñş ǿñ ǿŧħḗŗ ḓḗṽīçḗş⟫",
+  "@profileActiveSessionsSubtitle": {
+    "description": "Subtitle for the active sessions action in security settings."
   },
   "profileDeleteAccountTitle": "⟪Ḓḗŀḗŧḗ åççǿüñŧ⟫",
   "@profileDeleteAccountTitle": {
@@ -562,6 +570,102 @@
   "accountDeletionCancelSuccessMessage": "⟪Åççǿüñŧ ḓḗŀḗŧīǿñ ŗḗɋüḗşŧ çåñçḗŀḗḓ.⟫",
   "@accountDeletionCancelSuccessMessage": {
     "description": "Success snackbar message after account deletion cancellation."
+  },
+  "meSessionsPageBody": "⟪Çħḗçķ ẇħḗŗḗ ẏǿüŗ åççǿüñŧ īş şīğñḗḓ īñ åñḓ ŗḗṽǿķḗ åççḗşş ẏǿü ñǿ ŀǿñğḗŗ ŧŗüşŧ.⟫",
+  "@meSessionsPageBody": {
+    "description": "Body copy shown on the sessions management page."
+  },
+  "meSessionsEmptyTitle": "⟪Ñǿ şḗşşīǿñş ƒǿüñḓ⟫",
+  "@meSessionsEmptyTitle": {
+    "description": "Empty-state title shown when no sessions are returned."
+  },
+  "meSessionsEmptyDescription": "⟪Ẇḗ çǿüŀḓñ'ŧ ƒīñḓ åñẏ åçŧīṽḗ şḗşşīǿñş ƒǿŗ ẏǿüŗ åççǿüñŧ.⟫",
+  "@meSessionsEmptyDescription": {
+    "description": "Empty-state description shown when no sessions are returned."
+  },
+  "meSessionsRetryCta": "⟪Ŧŗẏ åğåīñ⟫",
+  "@meSessionsRetryCta": {
+    "description": "Retry action label shown on sessions load failure."
+  },
+  "meSessionsRevokeCta": "⟪Ŗḗṽǿķḗ⟫",
+  "@meSessionsRevokeCta": {
+    "description": "Button label to revoke a non-current active session."
+  },
+  "meSessionsRevokeSubmitting": "⟪Ŗḗṽǿķīñğ...⟫",
+  "@meSessionsRevokeSubmitting": {
+    "description": "Loading text shown while a session revoke request is in progress."
+  },
+  "meSessionsRevokeSuccessMessage": "⟪Şḗşşīǿñ ŗḗṽǿķḗḓ şüççḗşşƒüŀŀẏ.⟫",
+  "@meSessionsRevokeSuccessMessage": {
+    "description": "Success snackbar shown after revoking a session."
+  },
+  "meSessionsRevokeConfirmTitle": "⟪Ŗḗṽǿķḗ ŧħīş şḗşşīǿñ?⟫",
+  "@meSessionsRevokeConfirmTitle": {
+    "description": "Confirmation dialog title before revoking a session."
+  },
+  "meSessionsRevokeConfirmBody": "⟪Ŧħīş ẇīŀŀ şīğñ ǿüŧ {device} ƒŗǿḿ ẏǿüŗ åççǿüñŧ.⟫",
+  "@meSessionsRevokeConfirmBody": {
+    "description": "Confirmation dialog body before revoking a session.",
+    "placeholders": {
+      "device": {
+        "type": "String",
+        "example": "iPhone 14"
+      }
+    }
+  },
+  "meSessionsRevokeConfirmCta": "⟪Ẏḗş, ŗḗṽǿķḗ şḗşşīǿñ⟫",
+  "@meSessionsRevokeConfirmCta": {
+    "description": "Confirmation dialog primary action for revoking a session."
+  },
+  "meSessionsStatusCurrentDevice": "⟪Ŧħīş ḓḗṽīçḗ⟫",
+  "@meSessionsStatusCurrentDevice": {
+    "description": "Status badge label for the current device session."
+  },
+  "meSessionsStatusActive": "⟪Åçŧīṽḗ⟫",
+  "@meSessionsStatusActive": {
+    "description": "Status badge label for an active session."
+  },
+  "meSessionsStatusRevoked": "⟪Ŗḗṽǿķḗḓ⟫",
+  "@meSessionsStatusRevoked": {
+    "description": "Status badge label for a revoked session."
+  },
+  "meSessionsStatusExpired": "⟪Ḗẋρīŗḗḓ⟫",
+  "@meSessionsStatusExpired": {
+    "description": "Status badge label for an expired session."
+  },
+  "meSessionsSessionUnknownDevice": "⟪Üñķñǿẇñ ḓḗṽīçḗ⟫",
+  "@meSessionsSessionUnknownDevice": {
+    "description": "Fallback device name when session device metadata is missing."
+  },
+  "meSessionsLastSeenWithDate": "⟪Ŀåşŧ şḗḗñ {date}⟫",
+  "@meSessionsLastSeenWithDate": {
+    "description": "Session metadata text showing when the session was last seen.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Mar 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsExpiresAtWithDate": "⟪Ḗẋρīŗḗş {date}⟫",
+  "@meSessionsExpiresAtWithDate": {
+    "description": "Session metadata text showing when the session expires.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Apr 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsIpAddress": "⟪ĪƤ {ip}⟫",
+  "@meSessionsIpAddress": {
+    "description": "Session metadata text showing the IP address.",
+    "placeholders": {
+      "ip": {
+        "type": "String",
+        "example": "203.0.113.2"
+      }
+    }
   },
   "accountDeletionErrorLastAdmin": "⟪Ẏǿü åŗḗ ŧħḗ ŀåşŧ åḓḿīñ. Ŧŗåñşƒḗŗ åḓḿīñ åççḗşş ƀḗƒǿŗḗ ḓḗŀḗŧīñğ ŧħīş åççǿüñŧ.⟫",
   "@accountDeletionErrorLastAdmin": {

@@ -463,13 +463,21 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
-  "profileSecurityAndPrivacyBody": "Kelola kata sandi dan pengaturan penghapusan akun Anda.",
+  "profileSecurityAndPrivacyBody": "Kelola kata sandi, sesi aktif, dan pengaturan penghapusan akun Anda.",
   "@profileSecurityAndPrivacyBody": {
     "description": "Body copy shown in the security and privacy page."
   },
   "profileChangePasswordSubtitle": "Perbarui kata sandi untuk menjaga keamanan akun",
   "@profileChangePasswordSubtitle": {
     "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileActiveSessionsTitle": "Sesi aktif",
+  "@profileActiveSessionsTitle": {
+    "description": "Title for the active sessions action in security settings."
+  },
+  "profileActiveSessionsSubtitle": "Tinjau dan cabut sesi di perangkat lain",
+  "@profileActiveSessionsSubtitle": {
+    "description": "Subtitle for the active sessions action in security settings."
   },
   "profileDeleteAccountTitle": "Hapus akun",
   "@profileDeleteAccountTitle": {
@@ -562,6 +570,102 @@
   "accountDeletionCancelSuccessMessage": "Permintaan penghapusan akun dibatalkan.",
   "@accountDeletionCancelSuccessMessage": {
     "description": "Success snackbar message after account deletion cancellation."
+  },
+  "meSessionsPageBody": "Periksa di mana akun Anda sedang masuk dan cabut akses yang tidak lagi Anda percayai.",
+  "@meSessionsPageBody": {
+    "description": "Body copy shown on the sessions management page."
+  },
+  "meSessionsEmptyTitle": "Tidak ada sesi",
+  "@meSessionsEmptyTitle": {
+    "description": "Empty-state title shown when no sessions are returned."
+  },
+  "meSessionsEmptyDescription": "Kami tidak menemukan sesi aktif untuk akun Anda.",
+  "@meSessionsEmptyDescription": {
+    "description": "Empty-state description shown when no sessions are returned."
+  },
+  "meSessionsRetryCta": "Coba lagi",
+  "@meSessionsRetryCta": {
+    "description": "Retry action label shown on sessions load failure."
+  },
+  "meSessionsRevokeCta": "Cabut sesi",
+  "@meSessionsRevokeCta": {
+    "description": "Button label to revoke a non-current active session."
+  },
+  "meSessionsRevokeSubmitting": "Mencabut...",
+  "@meSessionsRevokeSubmitting": {
+    "description": "Loading text shown while a session revoke request is in progress."
+  },
+  "meSessionsRevokeSuccessMessage": "Sesi berhasil dicabut.",
+  "@meSessionsRevokeSuccessMessage": {
+    "description": "Success snackbar shown after revoking a session."
+  },
+  "meSessionsRevokeConfirmTitle": "Cabut sesi ini?",
+  "@meSessionsRevokeConfirmTitle": {
+    "description": "Confirmation dialog title before revoking a session."
+  },
+  "meSessionsRevokeConfirmBody": "Tindakan ini akan mengeluarkan {device} dari akun Anda.",
+  "@meSessionsRevokeConfirmBody": {
+    "description": "Confirmation dialog body before revoking a session.",
+    "placeholders": {
+      "device": {
+        "type": "String",
+        "example": "iPhone 14"
+      }
+    }
+  },
+  "meSessionsRevokeConfirmCta": "Ya, cabut sesi",
+  "@meSessionsRevokeConfirmCta": {
+    "description": "Confirmation dialog primary action for revoking a session."
+  },
+  "meSessionsStatusCurrentDevice": "Perangkat ini",
+  "@meSessionsStatusCurrentDevice": {
+    "description": "Status badge label for the current device session."
+  },
+  "meSessionsStatusActive": "Aktif",
+  "@meSessionsStatusActive": {
+    "description": "Status badge label for an active session."
+  },
+  "meSessionsStatusRevoked": "Dicabut",
+  "@meSessionsStatusRevoked": {
+    "description": "Status badge label for a revoked session."
+  },
+  "meSessionsStatusExpired": "Kedaluwarsa",
+  "@meSessionsStatusExpired": {
+    "description": "Status badge label for an expired session."
+  },
+  "meSessionsSessionUnknownDevice": "Perangkat tidak dikenal",
+  "@meSessionsSessionUnknownDevice": {
+    "description": "Fallback device name when session device metadata is missing."
+  },
+  "meSessionsLastSeenWithDate": "Terakhir aktif {date}",
+  "@meSessionsLastSeenWithDate": {
+    "description": "Session metadata text showing when the session was last seen.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 Mar 2026 10.30"
+      }
+    }
+  },
+  "meSessionsExpiresAtWithDate": "Kedaluwarsa {date}",
+  "@meSessionsExpiresAtWithDate": {
+    "description": "Session metadata text showing when the session expires.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 Apr 2026 10.30"
+      }
+    }
+  },
+  "meSessionsIpAddress": "IP {ip}",
+  "@meSessionsIpAddress": {
+    "description": "Session metadata text showing the IP address.",
+    "placeholders": {
+      "ip": {
+        "type": "String",
+        "example": "203.0.113.2"
+      }
+    }
   },
   "accountDeletionErrorLastAdmin": "Anda adalah admin terakhir. Alihkan akses admin sebelum menghapus akun ini.",
   "@accountDeletionErrorLastAdmin": {

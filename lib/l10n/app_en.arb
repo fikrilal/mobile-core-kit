@@ -463,13 +463,21 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
-  "profileSecurityAndPrivacyBody": "Manage your password and account deletion settings.",
+  "profileSecurityAndPrivacyBody": "Manage your password, active sessions, and account deletion settings.",
   "@profileSecurityAndPrivacyBody": {
     "description": "Body copy shown in the security and privacy page."
   },
   "profileChangePasswordSubtitle": "Update your password to keep your account secure",
   "@profileChangePasswordSubtitle": {
     "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileActiveSessionsTitle": "Active sessions",
+  "@profileActiveSessionsTitle": {
+    "description": "Title for the active sessions action in security settings."
+  },
+  "profileActiveSessionsSubtitle": "Review and revoke sessions on other devices",
+  "@profileActiveSessionsSubtitle": {
+    "description": "Subtitle for the active sessions action in security settings."
   },
   "profileDeleteAccountTitle": "Delete account",
   "@profileDeleteAccountTitle": {
@@ -562,6 +570,102 @@
   "accountDeletionCancelSuccessMessage": "Account deletion request canceled.",
   "@accountDeletionCancelSuccessMessage": {
     "description": "Success snackbar message after account deletion cancellation."
+  },
+  "meSessionsPageBody": "Check where your account is signed in and revoke access you no longer trust.",
+  "@meSessionsPageBody": {
+    "description": "Body copy shown on the sessions management page."
+  },
+  "meSessionsEmptyTitle": "No sessions found",
+  "@meSessionsEmptyTitle": {
+    "description": "Empty-state title shown when no sessions are returned."
+  },
+  "meSessionsEmptyDescription": "We couldn't find any active sessions for your account.",
+  "@meSessionsEmptyDescription": {
+    "description": "Empty-state description shown when no sessions are returned."
+  },
+  "meSessionsRetryCta": "Try again",
+  "@meSessionsRetryCta": {
+    "description": "Retry action label shown on sessions load failure."
+  },
+  "meSessionsRevokeCta": "Revoke",
+  "@meSessionsRevokeCta": {
+    "description": "Button label to revoke a non-current active session."
+  },
+  "meSessionsRevokeSubmitting": "Revoking...",
+  "@meSessionsRevokeSubmitting": {
+    "description": "Loading text shown while a session revoke request is in progress."
+  },
+  "meSessionsRevokeSuccessMessage": "Session revoked successfully.",
+  "@meSessionsRevokeSuccessMessage": {
+    "description": "Success snackbar shown after revoking a session."
+  },
+  "meSessionsRevokeConfirmTitle": "Revoke this session?",
+  "@meSessionsRevokeConfirmTitle": {
+    "description": "Confirmation dialog title before revoking a session."
+  },
+  "meSessionsRevokeConfirmBody": "This will sign out {device} from your account.",
+  "@meSessionsRevokeConfirmBody": {
+    "description": "Confirmation dialog body before revoking a session.",
+    "placeholders": {
+      "device": {
+        "type": "String",
+        "example": "iPhone 14"
+      }
+    }
+  },
+  "meSessionsRevokeConfirmCta": "Yes, revoke session",
+  "@meSessionsRevokeConfirmCta": {
+    "description": "Confirmation dialog primary action for revoking a session."
+  },
+  "meSessionsStatusCurrentDevice": "This device",
+  "@meSessionsStatusCurrentDevice": {
+    "description": "Status badge label for the current device session."
+  },
+  "meSessionsStatusActive": "Active",
+  "@meSessionsStatusActive": {
+    "description": "Status badge label for an active session."
+  },
+  "meSessionsStatusRevoked": "Revoked",
+  "@meSessionsStatusRevoked": {
+    "description": "Status badge label for a revoked session."
+  },
+  "meSessionsStatusExpired": "Expired",
+  "@meSessionsStatusExpired": {
+    "description": "Status badge label for an expired session."
+  },
+  "meSessionsSessionUnknownDevice": "Unknown device",
+  "@meSessionsSessionUnknownDevice": {
+    "description": "Fallback device name when session device metadata is missing."
+  },
+  "meSessionsLastSeenWithDate": "Last seen {date}",
+  "@meSessionsLastSeenWithDate": {
+    "description": "Session metadata text showing when the session was last seen.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Mar 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsExpiresAtWithDate": "Expires {date}",
+  "@meSessionsExpiresAtWithDate": {
+    "description": "Session metadata text showing when the session expires.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Apr 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsIpAddress": "IP {ip}",
+  "@meSessionsIpAddress": {
+    "description": "Session metadata text showing the IP address.",
+    "placeholders": {
+      "ip": {
+        "type": "String",
+        "example": "203.0.113.2"
+      }
+    }
   },
   "accountDeletionErrorLastAdmin": "You are the last admin. Transfer admin access before deleting this account.",
   "@accountDeletionErrorLastAdmin": {
