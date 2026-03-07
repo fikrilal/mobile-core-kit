@@ -1,48 +1,5 @@
 # Repository Guidelines
 
-## Project Map (where to look)
-
-```
-assets/
-├─ fonts/
-├─ icons/
-└─ images/
-
-lib/
-├─ app.dart                        # MaterialApp.router + theme
-├─ main_dev.dart                   # entrypoint (ENV=dev)
-├─ main_staging.dart               # entrypoint (ENV=staging) [optional]
-├─ main_prod.dart                  # entrypoint (ENV=prod) [optional]
-├─ core/                           # cross-cutting infrastructure (template-level)
-│  ├─ design_system/               # adaptive specs, theming, and shared UI widgets
-│  ├─ dev_tools/                   # internal debug tooling/showcases
-│  ├─ di/                          # GetIt composition + registrars/composers
-│  ├─ domain/                      # cross-feature domain contracts (auth/session/user)
-│  ├─ foundation/                  # config, utilities, validation primitives
-│  ├─ infra/                       # network/database/storage implementations
-│  ├─ platform/                    # device integrations (links, push, media, etc.)
-│  ├─ presentation/                # app-level presentation/localization helpers
-│  └─ runtime/                     # app orchestration (startup, session, analytics, navigation)
-├─ features/                       # vertical slices
-│  └─ <feature>/
-│     ├─ data/                     # datasources + DTOs + repository impl
-│     ├─ domain/                   # entities/values/usecases + repo interfaces
-│     ├─ presentation/             # bloc|cubit, pages, widgets
-│     └─ di/                       # <feature>_module.dart
-└─ navigation/                     # GoRouter composition per feature + shells
-
-test/
-└─ mirrors lib/                    # `test/<path-under-lib>_test.dart`
-
-.env/
-├─ dev.yaml
-├─ staging.yaml
-└─ prod.yaml
-
-tool/
-└─ verify.dart                     # full verify pipeline
-```
-
 ## Simplicity First
 
 - Minimum code that solves the problem. Nothing speculative.
@@ -57,16 +14,9 @@ tool/
 ## Coding Style & Naming
 
 - Lints: `flutter_lints` (see `analysis_options.yaml`).
-- Custom lints: `custom_lint` is enabled (see `analysis_options.yaml`). Run it via `dart run custom_lint`
-  (note: `flutter analyze` does **not** run custom lints).
-  - `architecture_imports` (config: `tool/lints/architecture_lints.yaml`) — enforces Clean Architecture import boundaries.
-  - `modal_entrypoints` — modal routing/widget entrypoints conventions.
-  - `hardcoded_ui_colors` — bans hardcoded UI colors (use tokens; allowlist is in `analysis_options.yaml`).
-  - `hardcoded_font_sizes` — bans hardcoded font sizes (use typography tokens/components).
-  - `manual_text_scaling` — bans manual text scaling in UI widgets.
-  - `spacing_tokens` — enforces spacing tokens usage (no raw padding/margins).
-  - `state_opacity_tokens` — enforces opacity tokens usage.
-  - `motion_durations` — enforces motion duration tokens usage.
+- Custom lints: run `dart run custom_lint` (note: `flutter analyze` does **not** run custom lints).
+- Architecture import boundaries are enforced via `tool/lints/architecture_lints.yaml`.
+- UI token and modal conventions are enforced by custom lints; do not rely on memory where the lint already exists.
 - Indentation: 2 spaces; file names `snake_case.dart`.
 - Widgets/classes: `PascalCase`; methods/fields: `camelCase`.
 - Use Freezed for immutable models and JSON (keep `part '*.g.dart'` lines in sync via build_runner).
@@ -92,6 +42,26 @@ tool/
 - Use native `git` commands.
 - Don’t commit or push unless explicitly asked; if committing, use Conventional Commits.
 
+## Harness Expectations
+
+- Treat agent legibility as a repo-level quality goal:
+  - keep boundaries explicit
+  - keep naming stable and searchable
+  - prefer code and docs that are easy for a future agent run to rediscover
+- For non-trivial work, create an execution plan first:
+  - `docs/exec-plans/README.md`
+  - `docs/exec-plans/active/`
+- If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
+  - lint rule
+  - verify script
+  - template/scaffold update
+  - engineering doc update
+  - source-local `README.md`
+- Keep `AGENTS.md` small. Use it for the operating contract. Put detailed guidance in:
+  - `docs/engineering/*`
+  - ADRs under `ADR/records/`
+  - source-local `README.md` files near boundary-heavy code
+
 ## Agent Verification (required)
 
 Agents must verify changes before claiming completion (when feasible). Use native commands:
@@ -115,37 +85,32 @@ Auto-fix (format + import/directive ordering):
 
 - `dart run tool/fix.dart --apply`
 
+Risk-based evidence expectations:
+
+- `low`: code checks are usually sufficient
+- `medium`: code checks + targeted runtime evidence when behavior is user-facing, navigation-related, API/session-related, or otherwise hard to prove statically
+- `high`: code checks + runtime evidence + human review expectation before merge
+
+Runtime evidence guidance:
+
+- For medium/high-risk mobile changes, follow `docs/engineering/mobile_runtime_harness.md`
+- PR delivery workflow and evidence expectations are defined in `docs/engineering/agent_pr_loop.md`
+
 ## Agent Preferences (Code Authoring)
 
-- Prioritize clean, readable code. Keep widgets small and focused; extract private helpers for
-  clarity.
-- Before adding new UI constants or bespoke widgets, search `lib/core/` for existing tokens,
-  theme extensions (`context.*`), adaptive specs, core widgets, and shared services. Avoid
-  hardcoded spacing/sizing/colors/typography; if a token/component is missing, add it to
-  `lib/core/` and use it from there.
-- UI state must follow `docs/engineering/ui_state_architecture.md`:
-  - Cubit-first (forms/simple slices). Prefer Bloc for complex orchestration/concurrency.
-  - State is a single immutable snapshot. Default to a `status` enum; use Freezed union states for complex/mutually-exclusive states.
-  - For multi-status screens, render via `BlocBuilder` + `switch (state.status)` and delegate to private `_build...` methods for readability.
-  - One-shot effects (snackbar/nav) via `BlocListener` + `listenWhen`; avoid side effects inside `build`.
-  - Dispatch initial intent at provider creation (route builder), not inside widgets/post-frame.
-- Provide skeletons/placeholders for loading states (when applicable), colocated under `presentation/widgets/skeleton/`.
-- Prefer enums and value objects over raw strings for domain concepts (avoid “magic strings”).
-- For forms, follow the validation architecture: real-time validation in Bloc/Cubit + final-gate validation in use cases (use VOs + stable `ValidationError.code`).
-- Reuse theme tokens and extensions (`context.*`) for colors/spacing/typography; avoid hard-coded
-  styling values when a token exists.
-- Prefer existing components in `lib/core/widgets` (buttons, toggles, etc.). If a required UI
-  piece is missing, pause and confirm with the user before introducing a new bespoke widget.
-- Keep UI responsive and accessible: avoid cramped rows, prefer Wrap/Grid when space-constrained,
-  and respect existing spacing scales.
-- Respect existing DI patterns: register datasources, repositories, usecases, and BLoCs in the
-  feature `di/*_module.dart` and consume via `locator`.
-- Navigation: use the route constants under `navigation/*` and pass parameters via `state.extra` or
-  query parameters as established.
-- Avoid adding speculative features or placeholders (e.g., social interactions) unless backed by
-  data in this repo.
-- When mapping API -> model -> entity, keep conversion helpers small, null-safe, and symmetric with
-  existing patterns.
+- Prioritize clean, readable code. Keep responsibilities small and control flow simple.
+- Reuse existing `lib/core/` tokens, theme extensions, widgets, and shared services before adding new UI primitives.
+- Prefer small widgets and private helpers when they improve readability, not as ceremony.
+- Follow the established architecture and state-management patterns:
+  - `docs/engineering/project_architecture.md`
+  - `docs/engineering/ui_state_architecture.md`
+  - `docs/engineering/validation_architecture.md`
+- Respect existing DI and navigation patterns:
+  - register feature dependencies in `di/*_module.dart`
+  - use established route constants and argument patterns under `navigation/*`
+- Prefer enums and value objects over raw strings for domain concepts.
+- Keep mapping code small, null-safe, and symmetric across API -> model -> entity conversions.
+- Avoid speculative features, placeholder behavior, or bespoke components unless the repo clearly needs them.
 
 ## Documentation & Best Practices
 
@@ -161,39 +126,15 @@ Auto-fix (format + import/directive ordering):
   - Create new ADRs by copying `ADR/template/adr-template.md` to `ADR/records/00xx-short-title.md` (next number).
   - If a decision changes, add a new ADR and mark the old one as superseded.
   - Link the ADR from relevant docs (usually under `docs/engineering/` or `docs/template/`).
-- Key engineering guides (source of truth):
-  - Architecture & boundaries:
-    - `docs/engineering/project_architecture.md`
-    - `docs/engineering/data_domain_guide.md`
-    - `docs/engineering/model_entity_guide.md`
-    - `docs/engineering/architecture_linting.md`
-  - UI state & UX governance:
-    - `docs/engineering/ui_state_architecture.md`
-    - `docs/engineering/modal_governance.md`
-    - `docs/engineering/splash_best_practices.md`
-  - Validation:
-    - `docs/engineering/validation_architecture.md`
-    - `docs/engineering/validation_cookbook.md`
-    - `docs/engineering/value_objects_validation.md`
-  - API contracts & usage:
-    - `docs/engineering/api/api_error_handling_contract.md`
-    - `docs/engineering/api/api_pagination_cursor_support.md`
-    - `docs/engineering/api/api_usage_get.md`
-    - `docs/engineering/api/api_usage_post.md`
-    - `docs/engineering/api/` (see usage examples)
-  - Localization:
-    - `docs/engineering/localization.md`
-    - `docs/engineering/localization_playbook.md`
-  - Testing:
-    - `docs/engineering/testing_strategy.md`
-  - Analytics:
-    - `docs/engineering/analytics_documentation.md`
-  - Firebase:
-    - `docs/engineering/firebase_setup.md`
-  - CI/CD:
-    - `docs/engineering/android_ci_cd.md`
-- Template + core docs (how to apply this repo as a starter):
-  - `docs/template/README.md`
-  - `docs/core/README.md` and `docs/core/session/README.md`
-  - `docs/contracts/README.md`
+- High-signal entry points:
+  - Architecture & boundaries: `docs/engineering/project_architecture.md`
+  - UI state: `docs/engineering/ui_state_architecture.md`
+  - Testing: `docs/engineering/testing_strategy.md`
+  - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
+  - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+  - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.
+- For non-trivial changes, default to the repo's harness workflow:
+  - plan first
+  - verify mechanically
+  - collect runtime evidence when risk warrants it
