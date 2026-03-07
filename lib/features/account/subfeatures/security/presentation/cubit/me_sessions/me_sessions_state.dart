@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/me_session_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
 
 part 'me_sessions_state.freezed.dart';
 

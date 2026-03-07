@@ -15,10 +15,10 @@ import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmati
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/me_session_entity.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_cubit.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_state.dart';
-import 'package:mobile_core_kit/features/user/presentation/widgets/skeleton/me_sessions_skeleton.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_state.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/widgets/skeleton/me_sessions_skeleton.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MeSessionsPage extends StatelessWidget {

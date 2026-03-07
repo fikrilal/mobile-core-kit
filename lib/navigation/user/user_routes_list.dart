@@ -5,13 +5,13 @@ import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/pages/complete_profile_page.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/pages/me_sessions_page.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/pages/security_privacy_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/change_password_page.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
-import 'package:mobile_core_kit/features/user/presentation/pages/me_sessions_page.dart';
 import 'package:mobile_core_kit/features/user/presentation/pages/request_account_deletion_page.dart';
-import 'package:mobile_core_kit/features/user/presentation/pages/security_privacy_page.dart';
 import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 
 final List<GoRoute> userRoutes = [

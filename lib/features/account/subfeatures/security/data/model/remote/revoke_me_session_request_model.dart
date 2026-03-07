@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/revoke_me_session_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/revoke_me_session_request_entity.dart';
 
 part 'revoke_me_session_request_model.freezed.dart';
 

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/list_me_sessions_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/list_me_sessions_request_entity.dart';
 
 part 'list_me_sessions_request_model.freezed.dart';
 

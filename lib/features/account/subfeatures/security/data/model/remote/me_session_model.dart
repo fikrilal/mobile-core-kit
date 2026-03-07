@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_paginated_result.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/me_session_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
 
 part 'me_session_model.freezed.dart';
 part 'me_session_model.g.dart';

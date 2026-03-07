@@ -312,42 +312,48 @@ Goal: `profile` becomes a complete vertical slice.
 
 Goal: `security` becomes a complete vertical slice.
 
-- [ ] Create `lib/features/account/subfeatures/security/`
-- [ ] Add:
-  - [ ] `data/`
-  - [ ] `domain/`
-  - [ ] `presentation/`
-  - [ ] `di/`
+- [x] Create `lib/features/account/subfeatures/security/`
+- [x] Add:
+  - [x] `data/`
+  - [x] `domain/`
+  - [x] `presentation/`
+  - [x] `di/`
 
 ### Presentation
-- [ ] Move:
-  - [ ] `lib/features/user/presentation/cubit/me_sessions/**`
-  - [ ] `lib/features/user/presentation/pages/me_sessions_page.dart`
-  - [ ] `lib/features/user/presentation/pages/security_privacy_page.dart`
-  - [ ] `lib/features/user/presentation/widgets/skeleton/me_sessions_skeleton.dart`
+- [x] Move:
+  - [x] `lib/features/user/presentation/cubit/me_sessions/**`
+  - [x] `lib/features/user/presentation/pages/me_sessions_page.dart`
+  - [x] `lib/features/user/presentation/pages/security_privacy_page.dart`
+  - [x] `lib/features/user/presentation/widgets/skeleton/me_sessions_skeleton.dart`
 
 ### Domain
-- [ ] Move security-owned entities:
-  - [ ] `me_session_entity.dart`
-  - [ ] `list_me_sessions_request_entity.dart`
-  - [ ] `revoke_me_session_request_entity.dart`
-- [ ] Move security repository:
-  - [ ] `me_session_repository.dart`
-    - [ ] rename if needed to `account_security_repository.dart` only when it improves clarity
-- [ ] Move security use cases:
-  - [ ] `list_me_sessions_usecase.dart`
-  - [ ] `revoke_me_session_usecase.dart`
+- [x] Move security-owned entities:
+  - [x] `me_session_entity.dart`
+  - [x] `list_me_sessions_request_entity.dart`
+  - [x] `revoke_me_session_request_entity.dart`
+- [x] Move security repository:
+  - [x] `me_session_repository.dart`
+    - [x] keep `MeSessionRepository`; the narrower name is still clear
+- [x] Move security use cases:
+  - [x] `list_me_sessions_usecase.dart`
+  - [x] `revoke_me_session_usecase.dart`
 
 ### Data
-- [ ] Move remote datasource:
-  - [ ] `me_session_remote_datasource.dart`
-- [ ] Move repository implementation:
-  - [ ] `me_session_repository_impl.dart`
-- [ ] Move related request/response models and generated files
+- [x] Move remote datasource:
+  - [x] `me_session_remote_datasource.dart`
+- [x] Move repository implementation:
+  - [x] `me_session_repository_impl.dart`
+- [x] Move related request/response models and generated files
+- [x] Add a security-local failure mapper to avoid a reverse dependency on `features/user/**`
 
 ### DI
-- [ ] Add `lib/features/account/subfeatures/security/di/account_security_module.dart`
-- [ ] Register all security datasources, repositories, use cases, cubits
+- [x] Add `lib/features/account/subfeatures/security/di/account_security_module.dart`
+- [x] Register all security datasources, repositories, use cases, cubits
+
+### Verification notes
+- `fvm flutter analyze` passes
+- `dart run tool/verify_project_map_drift.dart` passes
+- `dart run custom_lint` currently hangs in this environment; a bounded retry (`timeout 30s dart run custom_lint --no-fatal-infos`) timed out without diagnostics after stale lint daemons were cleared
 
 ## Phase 5 — Account deletion subfeature full vertical split
 

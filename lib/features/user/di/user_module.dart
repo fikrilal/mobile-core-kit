@@ -6,18 +6,12 @@ import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.d
 import 'package:mobile_core_kit/features/user/data/datasource/local/dao/user_dao.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/local/user_local_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/me_push_token_remote_datasource.dart';
-import 'package:mobile_core_kit/features/user/data/datasource/remote/me_session_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
-import 'package:mobile_core_kit/features/user/data/repository/me_session_repository_impl.dart';
 import 'package:mobile_core_kit/features/user/data/repository/user_repository_impl.dart';
-import 'package:mobile_core_kit/features/user/domain/repository/me_session_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/cancel_account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/get_me_usecase.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/list_me_sessions_usecase.dart';
 import 'package:mobile_core_kit/features/user/domain/usecase/request_account_deletion_usecase.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/revoke_me_session_usecase.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_cubit.dart';
 import 'package:mobile_core_kit/features/user/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 
 class UserModule {
@@ -42,12 +36,6 @@ class UserModule {
       );
     }
 
-    if (!getIt.isRegistered<MeSessionRemoteDataSource>()) {
-      getIt.registerLazySingleton<MeSessionRemoteDataSource>(
-        () => MeSessionRemoteDataSource(getIt<ApiHelper>()),
-      );
-    }
-
     if (!getIt.isRegistered<PushTokenRegistrar>()) {
       getIt.registerLazySingleton<PushTokenRegistrar>(
         () => MePushTokenRemoteDataSource(getIt<ApiHelper>()),
@@ -60,27 +48,9 @@ class UserModule {
       );
     }
 
-    if (!getIt.isRegistered<MeSessionRepository>()) {
-      getIt.registerLazySingleton<MeSessionRepository>(
-        () => MeSessionRepositoryImpl(getIt<MeSessionRemoteDataSource>()),
-      );
-    }
-
     if (!getIt.isRegistered<GetMeUseCase>()) {
       getIt.registerFactory<GetMeUseCase>(
         () => GetMeUseCase(getIt<UserRepository>()),
-      );
-    }
-
-    if (!getIt.isRegistered<ListMeSessionsUseCase>()) {
-      getIt.registerFactory<ListMeSessionsUseCase>(
-        () => ListMeSessionsUseCase(getIt<MeSessionRepository>()),
-      );
-    }
-
-    if (!getIt.isRegistered<RevokeMeSessionUseCase>()) {
-      getIt.registerFactory<RevokeMeSessionUseCase>(
-        () => RevokeMeSessionUseCase(getIt<MeSessionRepository>()),
       );
     }
 
@@ -102,15 +72,6 @@ class UserModule {
           getIt<RequestAccountDeletionUseCase>(),
           getIt<CancelAccountDeletionUseCase>(),
           getIt<UserContextService>(),
-        ),
-      );
-    }
-
-    if (!getIt.isRegistered<MeSessionsCubit>()) {
-      getIt.registerFactory<MeSessionsCubit>(
-        () => MeSessionsCubit(
-          getIt<ListMeSessionsUseCase>(),
-          getIt<RevokeMeSessionUseCase>(),
         ),
       );
     }

@@ -2,13 +2,13 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/list_me_sessions_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/me_session_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/revoke_me_session_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/list_me_sessions_usecase.dart';
-import 'package:mobile_core_kit/features/user/domain/usecase/revoke_me_session_usecase.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_cubit.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/me_sessions/me_sessions_state.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/list_me_sessions_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/revoke_me_session_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/list_me_sessions_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/revoke_me_session_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_state.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockListMeSessionsUseCase extends Mock
