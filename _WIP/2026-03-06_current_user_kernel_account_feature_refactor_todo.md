@@ -4,32 +4,32 @@
 
 ## Decisions (locked)
 
-- [ ] Target architecture is authoritative:
+- [x] Target architecture is authoritative:
   - `lib/core/**` owns the current-user kernel
   - `lib/features/account/**` owns account-management workflows
   - `lib/features/account/subfeatures/*` are full vertical slices with `data`, `domain`, `presentation`, and `di`
-- [ ] `features/account` root stays thin:
+- [x] `features/account` root stays thin:
   - kernel adapters
   - feature entry DI
   - composition pages
   - shared widgets reused across account subfeatures
-- [ ] `features/user/**` is transitional and must be removed at the end
-- [ ] `change_password` remains in `features/auth` for this refactor
-- [ ] No product behavior changes unless explicitly called out in a phase
+- [x] `features/user/**` is transitional and must be removed at the end
+- [x] `change_password` remains in `features/auth` for this refactor
+- [x] No product behavior changes unless explicitly called out in a phase
 
 ## Definition of Done
 
-- [ ] `core` owns all current-user kernel contracts/runtime:
-  - [ ] `CurrentUserFetcher`
-  - [ ] `CachedUserStore`
-  - [ ] current-user entities
-  - [ ] `UserContextService`
-- [ ] `features/account` exists as the account-management feature boundary
-- [ ] `profile`, `security`, and `account_deletion` are full vertical subfeatures
-- [ ] `features/account` root contains no workflow-specific repository/usecase/datasource clutter
-- [ ] `features/user/**` is deleted
-- [ ] navigation and DI use `account` naming/ownership consistently
-- [ ] tests are updated for all moved paths
+- [x] `core` owns all current-user kernel contracts/runtime:
+  - [x] `CurrentUserFetcher`
+  - [x] `CachedUserStore`
+  - [x] current-user entities
+  - [x] `UserContextService`
+- [x] `features/account` exists as the account-management feature boundary
+- [x] `profile`, `security`, and `account_deletion` are full vertical subfeatures
+- [x] `features/account` root contains no workflow-specific repository/usecase/datasource clutter
+- [x] `features/user/**` is deleted
+- [x] navigation and DI use `account` naming/ownership consistently
+- [x] tests are updated for all moved paths
 - [ ] `dart run tool/verify.dart --env dev` passes
 
 ## Phase 0 — Baseline, guardrails, and inventory
@@ -477,12 +477,22 @@ Goal: complete the cutover.
 
 - [x] Delete `lib/features/user/**`
 - [x] Delete `UserModule`
-- [ ] Remove `features/user` references from:
-  - [ ] DI registrars
-  - [ ] routes
-  - [ ] docs
-  - [ ] `_WIP` documents where relevant
+- [x] Remove `features/user` references from:
+  - [x] DI registrars
+  - [x] routes
+  - [x] docs
+  - [x] `_WIP` documents where relevant
 - [ ] Update architecture docs if this refactor becomes the new canonical standard
+
+### Phase 8 output — final account cutover cleanup (2026-03-07)
+
+- `lib/features/user/**` is fully removed from tracked source
+- `UserModule` is gone; `AccountModule` is the feature entrypoint
+- Live feature explainers moved:
+  - from `docs/explainers/features/user/**`
+  - to `docs/explainers/features/account/**`
+- Feature explainer index updated to the account namespace
+- Historical `_WIP/examples/**` files intentionally retain old `features/user` references as archive material and are not part of runtime ownership
 
 ## Phase 9 — Verification and closeout
 

@@ -8,5 +8,5 @@ Example:
 
 Current:
 
-- `docs/explainers/features/user/profile_draft.md` — client-only persistence for the Complete Profile form.
-- `docs/explainers/features/user/profile_image_upload.md` — presigned profile image upload + render URL flow.
+- `docs/explainers/features/account/profile_draft.md` — client-only persistence for the Complete Profile form.
+- `docs/explainers/features/account/profile_image_upload.md` — presigned profile image upload + render URL flow.

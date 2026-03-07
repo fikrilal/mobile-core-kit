@@ -219,7 +219,7 @@ Then the UI re-loads the avatar, which becomes `null` (placeholder) when there i
 The avatar is rendered from a **disk cache**, not from the presigned URL directly.
 
 See also:
-- `docs/explainers/features/user/profile_avatar_disk_cache.md`
+- `docs/explainers/features/account/profile_avatar_disk_cache.md`
 
 Policy:
 

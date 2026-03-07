@@ -450,7 +450,7 @@ Recommended sequence:
 2. move account workflow presentation into full subfeature folders
 3. move workflow-owned data/domain contracts into the same subfeatures
 4. add account adapter modules for `CurrentUserFetcher` and `CachedUserStore`
-5. delete `features/user` once only kernel-facing adapters and old imports are gone
+5. delete `features/user` after the account cutover is complete
 
 The migration path may be gradual.  
 The target architecture should not be diluted because of migration convenience.
