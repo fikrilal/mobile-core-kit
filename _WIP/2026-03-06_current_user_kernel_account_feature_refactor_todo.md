@@ -359,39 +359,45 @@ Goal: `security` becomes a complete vertical slice.
 
 Goal: `account_deletion` becomes a complete vertical slice.
 
-- [ ] Create `lib/features/account/subfeatures/account_deletion/`
-- [ ] Add:
-  - [ ] `data/`
-  - [ ] `domain/`
-  - [ ] `presentation/`
-  - [ ] `di/`
+- [x] Create `lib/features/account/subfeatures/account_deletion/`
+- [x] Add:
+  - [x] `data/`
+  - [x] `domain/`
+  - [x] `presentation/`
+  - [x] `di/`
 
 ### Presentation
-- [ ] Move:
-  - [ ] `lib/features/user/presentation/cubit/request_account_deletion/**`
-  - [ ] `lib/features/user/presentation/pages/request_account_deletion_page.dart`
-  - [ ] `lib/features/user/presentation/localization/account_deletion_failure_localizer.dart`
+- [x] Move:
+  - [x] `lib/features/user/presentation/cubit/request_account_deletion/**`
+  - [x] `lib/features/user/presentation/pages/request_account_deletion_page.dart`
+  - [x] `lib/features/user/presentation/localization/account_deletion_failure_localizer.dart`
 
 ### Domain
-- [ ] Move deletion-owned repository:
-  - [ ] split current deletion operations away from flat `UserRepository`
-- [ ] Move deletion-owned request entities:
-  - [ ] `request_account_deletion_request_entity.dart`
-  - [ ] `cancel_account_deletion_request_entity.dart`
-- [ ] Move deletion use cases:
-  - [ ] `request_account_deletion_usecase.dart`
-  - [ ] `cancel_account_deletion_usecase.dart`
-- [ ] Keep `AccountDeletionEntity` in `core` if it remains part of canonical `/me` shape
+- [x] Move deletion-owned repository:
+  - [x] split current deletion operations away from flat `UserRepository`
+- [x] Move deletion-owned request entities:
+  - [x] `request_account_deletion_request_entity.dart`
+  - [x] `cancel_account_deletion_request_entity.dart`
+- [x] Move deletion use cases:
+  - [x] `request_account_deletion_usecase.dart`
+  - [x] `cancel_account_deletion_usecase.dart`
+- [x] Keep `AccountDeletionEntity` in `core` if it remains part of canonical `/me` shape
 
 ### Data
-- [ ] Split deletion API behavior away from the flat user repository implementation
-- [ ] Move deletion-specific datasource/repository code
-- [ ] Move deletion-specific request models and generated files
-- [ ] Add a dedicated deletion failure mapper if the current generic mapper is too broad
+- [x] Split deletion API behavior away from the flat user repository implementation
+- [x] Move deletion-specific datasource/repository code
+- [x] Move deletion-specific request models and generated files
+- [x] Add a dedicated deletion failure mapper if the current generic mapper is too broad
 
 ### DI
-- [ ] Add `lib/features/account/subfeatures/account_deletion/di/account_deletion_module.dart`
-- [ ] Register all deletion datasources, repositories, use cases, cubits
+- [x] Add `lib/features/account/subfeatures/account_deletion/di/account_deletion_module.dart`
+- [x] Register all deletion datasources, repositories, use cases, cubits
+
+### Verification notes
+- `fvm flutter analyze` passes
+- `dart run tool/verify_project_map_drift.dart` passes
+- `dart run custom_lint` still hangs in this environment even after stale lint daemons were cleared; a bounded retry did not produce diagnostics
+- `fvm flutter test test/features/account/subfeatures/account_deletion` is blocked by the existing local Flutter SDK / `dart:ui` mismatch, not by Phase 5 code
 
 ## Phase 6 — Current-user adapter support infrastructure
 

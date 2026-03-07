@@ -40,8 +40,6 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/cancel_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
@@ -347,20 +345,6 @@ class _FakeAuthRepository implements AuthRepository {
 class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, UserEntity>> getMe() async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
-  }
-
-  @override
-  Future<Either<AuthFailure, Unit>> requestAccountDeletion(
-    RequestAccountDeletionRequestEntity request,
-  ) async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
-  }
-
-  @override
-  Future<Either<AuthFailure, Unit>> cancelAccountDeletion(
-    CancelAccountDeletionRequestEntity request,
-  ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 }
