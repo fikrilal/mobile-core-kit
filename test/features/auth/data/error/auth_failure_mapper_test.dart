@@ -186,6 +186,44 @@ void main() {
       expect(mapAuthFailure(failure), const AuthFailure.tooManyRequests());
     });
 
+    test('maps CONFLICT code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'Conflict',
+        statusCode: 409,
+        code: ApiErrorCodes.conflict,
+      );
+
+      expect(
+        mapAuthFailure(failure),
+        const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
+      );
+    });
+
+    test('maps IDEMPOTENCY_IN_PROGRESS code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'In progress',
+        statusCode: 409,
+        code: ApiErrorCodes.idempotencyInProgress,
+      );
+
+      expect(
+        mapAuthFailure(failure),
+        const AuthFailure.unexpected(
+          message: ApiErrorCodes.idempotencyInProgress,
+        ),
+      );
+    });
+
+    test('maps INTERNAL code to serverError', () {
+      final failure = ApiFailure(
+        message: 'Internal',
+        statusCode: 500,
+        code: ApiErrorCodes.internal,
+      );
+
+      expect(mapAuthFailure(failure), const AuthFailure.serverError());
+    });
+
     test('falls back to status codes when code is missing', () {
       expect(
         mapAuthFailure(ApiFailure(message: 'no', statusCode: 401)),
@@ -197,7 +235,7 @@ void main() {
       );
       expect(
         mapAuthFailure(ApiFailure(message: 'no', statusCode: 409)),
-        const AuthFailure.emailTaken(),
+        const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
       );
       expect(
         mapAuthFailure(ApiFailure(message: 'no', statusCode: -1)),
@@ -293,6 +331,70 @@ void main() {
       expect(
         mapAuthFailureForOidcExchange(failure),
         const AuthFailure.invalidCredentials(),
+      );
+    });
+
+    test('maps AUTH_OIDC_LINK_REQUIRED to oidcLinkRequired', () {
+      final failure = ApiFailure(
+        message: 'Link required',
+        statusCode: 409,
+        code: AuthErrorCodes.oidcLinkRequired,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps CONFLICT code to oidcLinkRequired', () {
+      final failure = ApiFailure(
+        message: 'Conflict',
+        statusCode: 409,
+        code: ApiErrorCodes.conflict,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps 409 fallback to oidcLinkRequired', () {
+      final failure = ApiFailure(message: 'Conflict', statusCode: 409);
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.oidcLinkRequired(),
+      );
+    });
+
+    test('maps AUTH_USER_SUSPENDED to userSuspended', () {
+      final failure = ApiFailure(
+        message: 'Suspended',
+        statusCode: 403,
+        code: AuthErrorCodes.userSuspended,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
+      );
+    });
+
+    test('maps FORBIDDEN code to userSuspended for OIDC exchange', () {
+      final failure = ApiFailure(
+        message: 'Forbidden',
+        statusCode: 403,
+        code: ApiErrorCodes.forbidden,
+      );
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
+      );
+    });
+
+    test('maps 403 fallback to userSuspended for OIDC exchange', () {
+      final failure = ApiFailure(message: 'Forbidden', statusCode: 403);
+      expect(
+        mapAuthFailureForOidcExchange(failure),
+        const AuthFailure.userSuspended(),
       );
     });
   });

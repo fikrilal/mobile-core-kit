@@ -59,3 +59,7 @@ lib/core/foundation/config/build_config_values.dart
 # Localization (gen-l10n)
 lib/l10n/gen/
 tool/untranslated_messages.json
+
+# Runtime evidence artifacts
+_artifacts/*
+!_artifacts/.gitkeep

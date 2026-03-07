@@ -31,6 +31,7 @@ class PendingDeepLinkController extends ChangeNotifier {
   final DateTime Function() _now;
 
   DeepLinkIntent? _pending;
+  DeepLinkIntent? _inFlightRedirectResume;
   Future<void>? _initFuture;
 
   DeepLinkIntent? get pending => _pending;
@@ -50,10 +51,12 @@ class PendingDeepLinkController extends ChangeNotifier {
     try {
       final loaded = await _store.readValid();
       _pending = loaded;
+      _inFlightRedirectResume = null;
       notifyListeners();
     } catch (_) {
       // Best-effort: deep link persistence should never break startup.
       _pending = null;
+      _inFlightRedirectResume = null;
     }
   }
 
@@ -74,6 +77,7 @@ class PendingDeepLinkController extends ChangeNotifier {
       receivedAt: _now(),
       source: source,
     );
+    _inFlightRedirectResume = null;
     try {
       await _store.save(_pending!);
     } catch (_) {
@@ -119,6 +123,7 @@ class PendingDeepLinkController extends ChangeNotifier {
       receivedAt: _now(),
       source: source,
     );
+    _inFlightRedirectResume = null;
 
     unawaited(_store.save(_pending!));
     final telemetry = _telemetry;
@@ -138,8 +143,9 @@ class PendingDeepLinkController extends ChangeNotifier {
   /// Clears persistence best-effort. Returns the consumed intent, or null.
   DeepLinkIntent? consumePendingIntentForRedirect() {
     final intent = _pending;
-    if (intent == null) return null;
+    if (intent == null) return _inFlightRedirectResume;
 
+    _inFlightRedirectResume = intent;
     _pending = null;
     unawaited(_store.clear());
     final telemetry = _telemetry;
@@ -156,9 +162,21 @@ class PendingDeepLinkController extends ChangeNotifier {
     return consumePendingIntentForRedirect()?.location;
   }
 
+  /// Clears in-flight redirect resume state once the router arrives there.
+  ///
+  /// This is used to avoid stale "resume target" carry-over after successful
+  /// redirect resumption in multi-pass GoRouter redirect evaluation.
+  void acknowledgeRedirectLocation(String location) {
+    final resume = _inFlightRedirectResume;
+    if (resume == null) return;
+    if (!_matchesLocation(resume.location, location)) return;
+    _inFlightRedirectResume = null;
+  }
+
   Future<void> clear({String reason = 'clear'}) async {
     final previous = _pending;
     _pending = null;
+    _inFlightRedirectResume = null;
     try {
       await _store.clear();
     } catch (_) {
@@ -171,5 +189,20 @@ class PendingDeepLinkController extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  static bool _matchesLocation(String a, String b) {
+    final ua = Uri.parse(a);
+    final ub = Uri.parse(b);
+    final pathA = _normalizePath(ua.path);
+    final pathB = _normalizePath(ub.path);
+    return pathA == pathB && ua.query == ub.query;
+  }
+
+  static String _normalizePath(String path) {
+    if (path.isEmpty) return '/';
+    if (path == '/') return '/';
+    if (path.endsWith('/')) return path.substring(0, path.length - 1);
+    return path;
   }
 }

@@ -181,6 +181,7 @@ class LoginCubit extends Cubit<LoginState> {
       passwordNotSet: (_) => _emitFailure(failure),
       emailTaken: (_) => _emitFailure(failure),
       emailNotVerified: (_) => _emitFailure(failure),
+      oidcLinkRequired: (_) => _emitFailure(failure),
       validation: (v) {
         ValidationError? emailError;
         ValidationError? passwordError;

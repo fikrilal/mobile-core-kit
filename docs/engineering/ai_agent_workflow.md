@@ -4,6 +4,10 @@ This template is intentionally strict so AI-assisted development stays scalable 
 
 If you’re using an AI coding agent (or reviewing AI-authored code), follow this workflow to keep PRs “boring”:
 
+PR delivery loop details: `docs/engineering/agent_pr_loop.md`
+Execution plan system: `docs/exec-plans/README.md`
+Mobile runtime harness: `docs/engineering/mobile_runtime_harness.md`
+
 ## 1) Orient first (avoid architecture drift)
 
 - Read `AGENTS.md` (repo map + verification commands + guardrail expectations).
@@ -15,6 +19,8 @@ If you’re using an AI coding agent (or reviewing AI-authored code), follow thi
   - Navigation wiring belongs in `lib/navigation/**`
 
 ## 2) Use the guardrails as your default
+
+For medium/high complexity work, create a plan in `docs/exec-plans/active/` from `docs/exec-plans/_template.md` before implementation.
 
 - Run safe auto-fixes before review:
   - `dart run tool/fix.dart --apply`
@@ -43,4 +49,3 @@ This generates the standard structure + test skeletons and avoids common lint fa
 
 - If you hit a guardrail violation repeatedly, prefer improving the allowlists/configs instead of adding suppressions.
 - If a suppression is truly needed, scope it tightly and leave a reason.
-

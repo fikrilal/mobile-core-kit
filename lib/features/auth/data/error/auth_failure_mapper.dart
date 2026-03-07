@@ -65,6 +65,11 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
         return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.unauthenticated();
+      case ApiErrorCodes.conflict:
+      case ApiErrorCodes.idempotencyInProgress:
+        return AuthFailure.unexpected(message: code);
+      case ApiErrorCodes.internal:
+        return const AuthFailure.serverError();
       case ApiErrorCodes.rateLimited:
         return const AuthFailure.tooManyRequests();
     }
@@ -76,7 +81,7 @@ AuthFailure mapAuthFailure(ApiFailure failure) {
     case 429:
       return const AuthFailure.tooManyRequests();
     case 409:
-      return const AuthFailure.emailTaken();
+      return const AuthFailure.unexpected(message: ApiErrorCodes.conflict);
     case 422:
     case 400:
       return AuthFailure.validation(failure.validationErrors ?? const []);
@@ -126,10 +131,18 @@ AuthFailure mapAuthFailureForOidcExchange(ApiFailure failure) {
         return const AuthFailure.emailNotVerified();
       case AuthErrorCodes.oidcTokenInvalid:
         return const AuthFailure.invalidCredentials();
+      case AuthErrorCodes.oidcLinkRequired:
+        return const AuthFailure.oidcLinkRequired();
+      case AuthErrorCodes.oidcNotConfigured:
+        return const AuthFailure.serverError();
       case AuthErrorCodes.userSuspended:
         return const AuthFailure.userSuspended();
       case ApiErrorCodes.unauthorized:
         return const AuthFailure.invalidCredentials();
+      case ApiErrorCodes.forbidden:
+        return const AuthFailure.userSuspended();
+      case ApiErrorCodes.conflict:
+        return const AuthFailure.oidcLinkRequired();
       case ApiErrorCodes.internal:
         return const AuthFailure.serverError();
       case ApiErrorCodes.rateLimited:
@@ -141,8 +154,9 @@ AuthFailure mapAuthFailureForOidcExchange(ApiFailure failure) {
     case 401:
       return const AuthFailure.invalidCredentials();
     case 403:
+      return const AuthFailure.userSuspended();
     case 409:
-      return const AuthFailure.unexpected();
+      return const AuthFailure.oidcLinkRequired();
     case 400:
       return AuthFailure.validation(failure.validationErrors ?? const []);
     case 429:

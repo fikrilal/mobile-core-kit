@@ -9,6 +9,7 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).
 - `docs/explainers/` — deep dives on “how this works” that are not daily guides (complex flows, tricky components, feature internals).
 - `docs/core/` — deep dives on **core runtime systems** (session, startup, networking policies) intended to be stable across cloned products.
+- `docs/exec-plans/` — active/completed execution plans and technical debt tracking for non-trivial tasks.
 - `docs/_WIP/` — drafts and notes that are not ready to be treated as reference.
 
 ## Suggested conventions

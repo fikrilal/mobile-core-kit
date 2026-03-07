@@ -191,6 +191,10 @@
   "@authErrorsPasswordNotSet": {
     "description": "Message shown when the user tries to change password but the account has no password set (e.g. OIDC-only)."
   },
+  "authErrorsOidcLinkRequired": "Email ini sudah terdaftar. Masuk dengan kata sandi terlebih dahulu, lalu hubungkan Google di pengaturan.",
+  "@authErrorsOidcLinkRequired": {
+    "description": "Message shown when Google OIDC exchange requires linking an existing password account."
+  },
   "authErrorsLogoutFailed": "Gagal keluar. Silakan coba lagi.",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."

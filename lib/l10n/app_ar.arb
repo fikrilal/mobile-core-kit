@@ -191,6 +191,10 @@
   "@authErrorsPasswordNotSet": {
     "description": "Message shown when the user tries to change password but the account has no password set (e.g. OIDC-only)."
   },
+  "authErrorsOidcLinkRequired": "⟪RTL⟫ This email is already registered. Sign in with your password first, then link Google in settings.",
+  "@authErrorsOidcLinkRequired": {
+    "description": "Message shown when Google OIDC exchange requires linking an existing password account."
+  },
   "authErrorsLogoutFailed": "⟪RTL⟫ Failed to log out. Please try again.",
   "@authErrorsLogoutFailed": {
     "description": "Message shown when the app cannot complete a logout flow."

@@ -24,6 +24,7 @@ class AccountCurrentUserFetcherAdapter implements CurrentUserFetcher {
       passwordNotSet: () => const SessionFailure.unexpected(),
       emailTaken: () => const SessionFailure.unexpected(),
       emailNotVerified: () => const SessionFailure.unexpected(),
+      oidcLinkRequired: () => const SessionFailure.unexpected(),
       validation: (_) => const SessionFailure.unexpected(),
       invalidCredentials: () => const SessionFailure.unexpected(),
       tooManyRequests: () => const SessionFailure.tooManyRequests(),

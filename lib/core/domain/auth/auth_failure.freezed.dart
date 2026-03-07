@@ -55,7 +55,7 @@ extension AuthFailurePatterns on AuthFailure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _NetworkFailure value)?  network,TResult Function( _CancelledFailure value)?  cancelled,TResult Function( _UnauthenticatedFailure value)?  unauthenticated,TResult Function( _PasswordNotSetFailure value)?  passwordNotSet,TResult Function( _EmailTakenFailure value)?  emailTaken,TResult Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult Function( _ValidationFailure value)?  validation,TResult Function( _InvalidCredentials value)?  invalidCredentials,TResult Function( _RateLimited value)?  tooManyRequests,TResult Function( _UserSuspendedFailure value)?  userSuspended,TResult Function( _ServerError value)?  serverError,TResult Function( _UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _NetworkFailure value)?  network,TResult Function( _CancelledFailure value)?  cancelled,TResult Function( _UnauthenticatedFailure value)?  unauthenticated,TResult Function( _PasswordNotSetFailure value)?  passwordNotSet,TResult Function( _EmailTakenFailure value)?  emailTaken,TResult Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult Function( _OidcLinkRequiredFailure value)?  oidcLinkRequired,TResult Function( _ValidationFailure value)?  validation,TResult Function( _InvalidCredentials value)?  invalidCredentials,TResult Function( _RateLimited value)?  tooManyRequests,TResult Function( _UserSuspendedFailure value)?  userSuspended,TResult Function( _ServerError value)?  serverError,TResult Function( _UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
@@ -64,7 +64,8 @@ return cancelled(_that);case _UnauthenticatedFailure() when unauthenticated != n
 return unauthenticated(_that);case _PasswordNotSetFailure() when passwordNotSet != null:
 return passwordNotSet(_that);case _EmailTakenFailure() when emailTaken != null:
 return emailTaken(_that);case _EmailNotVerifiedFailure() when emailNotVerified != null:
-return emailNotVerified(_that);case _ValidationFailure() when validation != null:
+return emailNotVerified(_that);case _OidcLinkRequiredFailure() when oidcLinkRequired != null:
+return oidcLinkRequired(_that);case _ValidationFailure() when validation != null:
 return validation(_that);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials(_that);case _RateLimited() when tooManyRequests != null:
 return tooManyRequests(_that);case _UserSuspendedFailure() when userSuspended != null:
@@ -88,7 +89,7 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _NetworkFailure value)  network,required TResult Function( _CancelledFailure value)  cancelled,required TResult Function( _UnauthenticatedFailure value)  unauthenticated,required TResult Function( _PasswordNotSetFailure value)  passwordNotSet,required TResult Function( _EmailTakenFailure value)  emailTaken,required TResult Function( _EmailNotVerifiedFailure value)  emailNotVerified,required TResult Function( _ValidationFailure value)  validation,required TResult Function( _InvalidCredentials value)  invalidCredentials,required TResult Function( _RateLimited value)  tooManyRequests,required TResult Function( _UserSuspendedFailure value)  userSuspended,required TResult Function( _ServerError value)  serverError,required TResult Function( _UnexpectedFailure value)  unexpected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _NetworkFailure value)  network,required TResult Function( _CancelledFailure value)  cancelled,required TResult Function( _UnauthenticatedFailure value)  unauthenticated,required TResult Function( _PasswordNotSetFailure value)  passwordNotSet,required TResult Function( _EmailTakenFailure value)  emailTaken,required TResult Function( _EmailNotVerifiedFailure value)  emailNotVerified,required TResult Function( _OidcLinkRequiredFailure value)  oidcLinkRequired,required TResult Function( _ValidationFailure value)  validation,required TResult Function( _InvalidCredentials value)  invalidCredentials,required TResult Function( _RateLimited value)  tooManyRequests,required TResult Function( _UserSuspendedFailure value)  userSuspended,required TResult Function( _ServerError value)  serverError,required TResult Function( _UnexpectedFailure value)  unexpected,}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure():
@@ -97,7 +98,8 @@ return cancelled(_that);case _UnauthenticatedFailure():
 return unauthenticated(_that);case _PasswordNotSetFailure():
 return passwordNotSet(_that);case _EmailTakenFailure():
 return emailTaken(_that);case _EmailNotVerifiedFailure():
-return emailNotVerified(_that);case _ValidationFailure():
+return emailNotVerified(_that);case _OidcLinkRequiredFailure():
+return oidcLinkRequired(_that);case _ValidationFailure():
 return validation(_that);case _InvalidCredentials():
 return invalidCredentials(_that);case _RateLimited():
 return tooManyRequests(_that);case _UserSuspendedFailure():
@@ -117,7 +119,7 @@ return unexpected(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _NetworkFailure value)?  network,TResult? Function( _CancelledFailure value)?  cancelled,TResult? Function( _UnauthenticatedFailure value)?  unauthenticated,TResult? Function( _PasswordNotSetFailure value)?  passwordNotSet,TResult? Function( _EmailTakenFailure value)?  emailTaken,TResult? Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult? Function( _ValidationFailure value)?  validation,TResult? Function( _InvalidCredentials value)?  invalidCredentials,TResult? Function( _RateLimited value)?  tooManyRequests,TResult? Function( _UserSuspendedFailure value)?  userSuspended,TResult? Function( _ServerError value)?  serverError,TResult? Function( _UnexpectedFailure value)?  unexpected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _NetworkFailure value)?  network,TResult? Function( _CancelledFailure value)?  cancelled,TResult? Function( _UnauthenticatedFailure value)?  unauthenticated,TResult? Function( _PasswordNotSetFailure value)?  passwordNotSet,TResult? Function( _EmailTakenFailure value)?  emailTaken,TResult? Function( _EmailNotVerifiedFailure value)?  emailNotVerified,TResult? Function( _OidcLinkRequiredFailure value)?  oidcLinkRequired,TResult? Function( _ValidationFailure value)?  validation,TResult? Function( _InvalidCredentials value)?  invalidCredentials,TResult? Function( _RateLimited value)?  tooManyRequests,TResult? Function( _UserSuspendedFailure value)?  userSuspended,TResult? Function( _ServerError value)?  serverError,TResult? Function( _UnexpectedFailure value)?  unexpected,}){
 final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
@@ -126,7 +128,8 @@ return cancelled(_that);case _UnauthenticatedFailure() when unauthenticated != n
 return unauthenticated(_that);case _PasswordNotSetFailure() when passwordNotSet != null:
 return passwordNotSet(_that);case _EmailTakenFailure() when emailTaken != null:
 return emailTaken(_that);case _EmailNotVerifiedFailure() when emailNotVerified != null:
-return emailNotVerified(_that);case _ValidationFailure() when validation != null:
+return emailNotVerified(_that);case _OidcLinkRequiredFailure() when oidcLinkRequired != null:
+return oidcLinkRequired(_that);case _ValidationFailure() when validation != null:
 return validation(_that);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials(_that);case _RateLimited() when tooManyRequests != null:
 return tooManyRequests(_that);case _UserSuspendedFailure() when userSuspended != null:
@@ -149,7 +152,7 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  cancelled,TResult Function()?  unauthenticated,TResult Function()?  passwordNotSet,TResult Function()?  emailTaken,TResult Function()?  emailNotVerified,TResult Function( List<ValidationError> errors)?  validation,TResult Function()?  invalidCredentials,TResult Function()?  tooManyRequests,TResult Function()?  userSuspended,TResult Function( String? message)?  serverError,TResult Function( String? message)?  unexpected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  cancelled,TResult Function()?  unauthenticated,TResult Function()?  passwordNotSet,TResult Function()?  emailTaken,TResult Function()?  emailNotVerified,TResult Function()?  oidcLinkRequired,TResult Function( List<ValidationError> errors)?  validation,TResult Function()?  invalidCredentials,TResult Function()?  tooManyRequests,TResult Function()?  userSuspended,TResult Function( String? message)?  serverError,TResult Function( String? message)?  unexpected,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
 return network();case _CancelledFailure() when cancelled != null:
@@ -157,7 +160,8 @@ return cancelled();case _UnauthenticatedFailure() when unauthenticated != null:
 return unauthenticated();case _PasswordNotSetFailure() when passwordNotSet != null:
 return passwordNotSet();case _EmailTakenFailure() when emailTaken != null:
 return emailTaken();case _EmailNotVerifiedFailure() when emailNotVerified != null:
-return emailNotVerified();case _ValidationFailure() when validation != null:
+return emailNotVerified();case _OidcLinkRequiredFailure() when oidcLinkRequired != null:
+return oidcLinkRequired();case _ValidationFailure() when validation != null:
 return validation(_that.errors);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials();case _RateLimited() when tooManyRequests != null:
 return tooManyRequests();case _UserSuspendedFailure() when userSuspended != null:
@@ -181,7 +185,7 @@ return unexpected(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  cancelled,required TResult Function()  unauthenticated,required TResult Function()  passwordNotSet,required TResult Function()  emailTaken,required TResult Function()  emailNotVerified,required TResult Function( List<ValidationError> errors)  validation,required TResult Function()  invalidCredentials,required TResult Function()  tooManyRequests,required TResult Function()  userSuspended,required TResult Function( String? message)  serverError,required TResult Function( String? message)  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  cancelled,required TResult Function()  unauthenticated,required TResult Function()  passwordNotSet,required TResult Function()  emailTaken,required TResult Function()  emailNotVerified,required TResult Function()  oidcLinkRequired,required TResult Function( List<ValidationError> errors)  validation,required TResult Function()  invalidCredentials,required TResult Function()  tooManyRequests,required TResult Function()  userSuspended,required TResult Function( String? message)  serverError,required TResult Function( String? message)  unexpected,}) {final _that = this;
 switch (_that) {
 case _NetworkFailure():
 return network();case _CancelledFailure():
@@ -189,7 +193,8 @@ return cancelled();case _UnauthenticatedFailure():
 return unauthenticated();case _PasswordNotSetFailure():
 return passwordNotSet();case _EmailTakenFailure():
 return emailTaken();case _EmailNotVerifiedFailure():
-return emailNotVerified();case _ValidationFailure():
+return emailNotVerified();case _OidcLinkRequiredFailure():
+return oidcLinkRequired();case _ValidationFailure():
 return validation(_that.errors);case _InvalidCredentials():
 return invalidCredentials();case _RateLimited():
 return tooManyRequests();case _UserSuspendedFailure():
@@ -209,7 +214,7 @@ return unexpected(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  cancelled,TResult? Function()?  unauthenticated,TResult? Function()?  passwordNotSet,TResult? Function()?  emailTaken,TResult? Function()?  emailNotVerified,TResult? Function( List<ValidationError> errors)?  validation,TResult? Function()?  invalidCredentials,TResult? Function()?  tooManyRequests,TResult? Function()?  userSuspended,TResult? Function( String? message)?  serverError,TResult? Function( String? message)?  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  cancelled,TResult? Function()?  unauthenticated,TResult? Function()?  passwordNotSet,TResult? Function()?  emailTaken,TResult? Function()?  emailNotVerified,TResult? Function()?  oidcLinkRequired,TResult? Function( List<ValidationError> errors)?  validation,TResult? Function()?  invalidCredentials,TResult? Function()?  tooManyRequests,TResult? Function()?  userSuspended,TResult? Function( String? message)?  serverError,TResult? Function( String? message)?  unexpected,}) {final _that = this;
 switch (_that) {
 case _NetworkFailure() when network != null:
 return network();case _CancelledFailure() when cancelled != null:
@@ -217,7 +222,8 @@ return cancelled();case _UnauthenticatedFailure() when unauthenticated != null:
 return unauthenticated();case _PasswordNotSetFailure() when passwordNotSet != null:
 return passwordNotSet();case _EmailTakenFailure() when emailTaken != null:
 return emailTaken();case _EmailNotVerifiedFailure() when emailNotVerified != null:
-return emailNotVerified();case _ValidationFailure() when validation != null:
+return emailNotVerified();case _OidcLinkRequiredFailure() when oidcLinkRequired != null:
+return oidcLinkRequired();case _ValidationFailure() when validation != null:
 return validation(_that.errors);case _InvalidCredentials() when invalidCredentials != null:
 return invalidCredentials();case _RateLimited() when tooManyRequests != null:
 return tooManyRequests();case _UserSuspendedFailure() when userSuspended != null:
@@ -415,6 +421,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'AuthFailure.emailNotVerified()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _OidcLinkRequiredFailure implements AuthFailure {
+  const _OidcLinkRequiredFailure();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OidcLinkRequiredFailure);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthFailure.oidcLinkRequired()';
 }
 
 

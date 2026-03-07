@@ -26,10 +26,10 @@ AuthFailure mapCurrentUserFailure(ApiFailure failure) {
   switch (failure.statusCode) {
     case 401:
       return const AuthFailure.unauthenticated();
-    case 409:
-      return const AuthFailure.unexpected(message: ApiErrorCodes.conflict);
     case 404:
       return const AuthFailure.unexpected(message: ApiErrorCodes.notFound);
+    case 409:
+      return const AuthFailure.unexpected(message: ApiErrorCodes.conflict);
     case 429:
       return const AuthFailure.tooManyRequests();
     case 500:

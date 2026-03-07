@@ -79,6 +79,19 @@ void main() {
       );
     });
 
+    test('maps NOT_FOUND code to unexpected(message)', () {
+      final failure = ApiFailure(
+        message: 'Not found',
+        statusCode: 404,
+        code: ApiErrorCodes.notFound,
+      );
+
+      expect(
+        mapCurrentUserFailure(failure),
+        const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
+      );
+    });
+
     test('maps INTERNAL code to serverError', () {
       final failure = ApiFailure(
         message: 'Internal',
@@ -97,6 +110,10 @@ void main() {
       expect(
         mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 409)),
         const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
+      );
+      expect(
+        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 404)),
+        const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
       );
       expect(
         mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 429)),

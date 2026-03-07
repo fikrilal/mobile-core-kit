@@ -24,6 +24,9 @@ sealed class AuthFailure with _$AuthFailure {
 
   const factory AuthFailure.emailTaken() = _EmailTakenFailure;
   const factory AuthFailure.emailNotVerified() = _EmailNotVerifiedFailure;
+
+  /// OIDC exchange requires linking via password sign-in first.
+  const factory AuthFailure.oidcLinkRequired() = _OidcLinkRequiredFailure;
   const factory AuthFailure.validation(List<ValidationError> errors) =
       _ValidationFailure;
   // Login

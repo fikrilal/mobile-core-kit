@@ -17,6 +17,7 @@ String messageForAuthFailure(AuthFailure failure, AppLocalizations l10n) {
     passwordNotSet: () => l10n.authErrorsPasswordNotSet,
     emailTaken: () => l10n.authErrorsEmailTaken,
     emailNotVerified: () => l10n.authErrorsEmailNotVerified,
+    oidcLinkRequired: () => l10n.authErrorsOidcLinkRequired,
     validation: (_) => l10n.errorsValidation,
     invalidCredentials: () => l10n.authErrorsInvalidCredentials,
     tooManyRequests: () => l10n.errorsTooManyRequests,
