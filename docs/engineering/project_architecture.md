@@ -147,6 +147,83 @@ features/<feature>/subfeatures/<slice>/
 
 Prefer keeping domain/data at the feature root unless a slice truly needs different contracts.
 
+### Choosing Feature Internal Structure
+
+Not every feature should have the same internal folder shape.
+
+Use the smallest structure that matches the actual maintenance pressure:
+
+1. Flat feature
+```
+features/<feature>/
+  data/
+  domain/
+  presentation/
+  di/
+```
+
+Use this when the feature is still easy to navigate and most behavior belongs to
+one shared flow family.
+
+2. Presentation-first subfeatures
+```
+features/<feature>/
+  data/            # shared
+  domain/          # shared
+  subfeatures/
+    <slice>/presentation/
+  di/
+```
+
+Use this when:
+
+- the feature is still one cohesive bounded context
+- pages, cubits, and route bindings are becoming crowded
+- data/domain are still shared and do not justify separate repositories or
+  datasources
+
+3. Full vertical subfeatures
+```
+features/<feature>/
+  subfeatures/
+    <slice>/
+      data/
+      domain/
+      presentation/
+  di/
+```
+
+Use this when slices have clearly different:
+
+- workflows
+- data ownership or endpoints
+- domain contracts or use cases
+- change cadence
+- review/ownership boundaries
+
+Guiding rule:
+
+- keep principles universal
+- do not force folder symmetry
+
+Examples in this repository:
+
+- `features/auth` uses presentation-first subfeatures because the auth
+  workflows are numerous, but the shared auth data/domain surface remains
+  cohesive.
+- `features/account` uses stronger slice separation because profile, security,
+  and account-deletion concerns are more independent and interface with the
+  current-user kernel differently.
+
+If a feature feels "big", ask two questions before splitting:
+
+1. Is the feature hard to navigate mainly because of presentation/workflow
+   volume?
+2. Or do the slices also have different data/domain ownership?
+
+If only the first is true, prefer presentation-first subfeatures. If both are
+true, use full vertical subfeatures.
+
 ---
 
 ## 3) Domain Layer (per feature)
