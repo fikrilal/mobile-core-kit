@@ -11,7 +11,7 @@ import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.da
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SecurityPrivacyPage extends StatelessWidget {
@@ -59,7 +59,7 @@ class SecurityPrivacyPage extends StatelessWidget {
                       ),
                       title: context.l10n.authChangePasswordTitle,
                       subtitle: context.l10n.profileChangePasswordSubtitle,
-                      onTap: () => context.push(UserRoutes.changePassword),
+                      onTap: () => context.push(AccountRoutes.changePassword),
                     ),
                     AppListTile(
                       leading: AppIconBadge(
@@ -70,7 +70,7 @@ class SecurityPrivacyPage extends StatelessWidget {
                       ),
                       title: context.l10n.profileActiveSessionsTitle,
                       subtitle: context.l10n.profileActiveSessionsSubtitle,
-                      onTap: () => context.push(UserRoutes.meSessions),
+                      onTap: () => context.push(AccountRoutes.meSessions),
                     ),
                     AppListTile(
                       leading: AppIconBadge(
@@ -83,7 +83,7 @@ class SecurityPrivacyPage extends StatelessWidget {
                       title: context.l10n.profileDeleteAccountTitle,
                       subtitle: deletionSubtitle,
                       onTap: () =>
-                          context.push(UserRoutes.requestAccountDeletion),
+                          context.push(AccountRoutes.requestAccountDeletion),
                     ),
                   ],
                 ),

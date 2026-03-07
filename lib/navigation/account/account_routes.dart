@@ -1,5 +1,5 @@
-class UserRoutes {
-  UserRoutes._();
+class AccountRoutes {
+  AccountRoutes._();
 
   static const String completeProfile = '/user/complete-profile';
   static const String changePassword = '/user/change-password';

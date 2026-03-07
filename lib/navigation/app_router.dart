@@ -22,13 +22,13 @@ import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_c
 import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/presentation/localization/logout_failure_localizer.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes_list.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes_list.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/shell/app_shell_page.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes_list.dart';
 
 /// Builds the global [GoRouter] used by the app.
 ///
@@ -115,7 +115,7 @@ GoRouter createRouter() {
       if (BuildConfig.env == BuildEnv.dev) ...devToolsRoutes,
       ...authRoutes,
       ...onboardingRoutes,
-      ...userRoutes,
+      ...accountRoutes,
     ],
   );
 }

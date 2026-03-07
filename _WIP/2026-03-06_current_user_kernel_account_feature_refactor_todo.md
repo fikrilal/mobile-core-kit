@@ -439,24 +439,44 @@ Implementation notes:
 
 Goal: remove historical flat contracts and align naming to the new architecture.
 
-- [ ] Delete the old flat `UserRepository` contract
-- [ ] Delete the old flat `UserRepositoryImpl`
-- [ ] Remove any remaining mixed-responsibility repository methods
-- [ ] Rename `navigation/user/**` to `navigation/account/**`
+- [x] Delete the old flat `UserRepository` contract
+- [x] Delete the old flat `UserRepositoryImpl`
+- [x] Remove any remaining mixed-responsibility repository methods
+- [x] Rename `navigation/user/**` to `navigation/account/**`
 - [ ] Decide route path stability policy:
-  - [ ] keep existing `/user/...` paths temporarily if deep-link stability matters
+  - [x] keep existing `/user/...` paths temporarily if deep-link stability matters
   - [ ] or rename to `/account/...` if safe and intentional
-- [ ] Update imports across:
-  - [ ] app code
-  - [ ] tests
-  - [ ] docs
+- [x] Update imports across:
+  - [x] app code
+  - [x] tests
+  - [x] docs
+
+### Phase 7 output — navigation/account naming cleanup (2026-03-07)
+
+- Route namespace moved:
+  - from `lib/navigation/user/**`
+  - to `lib/navigation/account/**`
+- Route constant type renamed:
+  - from `UserRoutes`
+  - to `AccountRoutes`
+- Route list renamed:
+  - from `userRoutes`
+  - to `accountRoutes`
+- App code, navigation guards, tests, and affected docs now import the account namespace
+- Route path strings intentionally remain stable as `/user/...` in this phase to avoid deep-link churn while the architectural cutover is still in progress
+
+### Verification notes
+- `fvm flutter analyze` passes
+- `dart run tool/verify_project_map_drift.dart` passes
+- `timeout 30s dart run custom_lint --no-fatal-infos` still times out in this environment without diagnostics
+- `fvm flutter test test/navigation/app_redirect_test.dart` is still blocked by the existing local Flutter SDK / `dart:ui` mismatch, not by Phase 7 code
 
 ## Phase 8 — Remove `features/user` and finalize docs
 
 Goal: complete the cutover.
 
-- [ ] Delete `lib/features/user/**`
-- [ ] Delete `UserModule`
+- [x] Delete `lib/features/user/**`
+- [x] Delete `UserModule`
 - [ ] Remove `features/user` references from:
   - [ ] DI registrars
   - [ ] routes

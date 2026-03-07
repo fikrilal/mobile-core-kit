@@ -13,11 +13,11 @@ import 'package:mobile_core_kit/core/runtime/navigation/pending_deep_link_contro
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -408,7 +408,7 @@ void main() {
           parser,
         );
 
-        expect(redirect, UserRoutes.completeProfile);
+        expect(redirect, AccountRoutes.completeProfile);
         expect(deepLinks.pendingLocation, '/profile');
 
         // Once the profile is complete, allow resuming the pending location.
@@ -432,7 +432,7 @@ void main() {
         );
 
         final resume = appRedirectUri(
-          Uri.parse(UserRoutes.completeProfile),
+          Uri.parse(AccountRoutes.completeProfile),
           startup.controller,
           deepLinks,
           parser,
@@ -476,7 +476,7 @@ void main() {
           parser,
         );
 
-        expect(redirect, UserRoutes.completeProfile);
+        expect(redirect, AccountRoutes.completeProfile);
       },
     );
 

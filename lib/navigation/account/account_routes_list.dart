@@ -12,11 +12,11 @@ import 'package:mobile_core_kit/features/account/subfeatures/security/presentati
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/pages/security_privacy_page.dart';
 import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
 import 'package:mobile_core_kit/features/auth/presentation/pages/change_password_page.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 
-final List<GoRoute> userRoutes = [
+final List<GoRoute> accountRoutes = [
   GoRoute(
-    path: UserRoutes.completeProfile,
+    path: AccountRoutes.completeProfile,
     name: 'complete-profile',
     builder: (context, state) => BlocProvider<CompleteProfileCubit>(
       create: (_) => locator<CompleteProfileCubit>()..loadDraft(),
@@ -24,7 +24,7 @@ final List<GoRoute> userRoutes = [
     ),
   ),
   GoRoute(
-    path: UserRoutes.changePassword,
+    path: AccountRoutes.changePassword,
     name: 'change-password',
     builder: (context, state) => BlocProvider<ChangePasswordCubit>(
       create: (_) => locator<ChangePasswordCubit>(),
@@ -32,13 +32,13 @@ final List<GoRoute> userRoutes = [
     ),
   ),
   GoRoute(
-    path: UserRoutes.securityPrivacy,
+    path: AccountRoutes.securityPrivacy,
     name: 'security-privacy',
     builder: (context, state) =>
         SecurityPrivacyPage(userContext: locator<UserContextService>()),
   ),
   GoRoute(
-    path: UserRoutes.meSessions,
+    path: AccountRoutes.meSessions,
     name: 'me-sessions',
     builder: (context, state) => BlocProvider<MeSessionsCubit>(
       create: (_) => locator<MeSessionsCubit>()..load(),
@@ -46,7 +46,7 @@ final List<GoRoute> userRoutes = [
     ),
   ),
   GoRoute(
-    path: UserRoutes.requestAccountDeletion,
+    path: AccountRoutes.requestAccountDeletion,
     name: 'request-account-deletion',
     builder: (context, state) => BlocProvider<RequestAccountDeletionCubit>(
       create: (_) => locator<RequestAccountDeletionCubit>(),

@@ -31,8 +31,8 @@ import 'package:mobile_core_kit/features/account/presentation/widgets/theme_mode
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AccountPage extends StatelessWidget {
@@ -323,7 +323,7 @@ class _AccountContent extends StatelessWidget {
                 ),
                 title: context.l10n.profileSecurityAndPrivacy,
                 subtitle: context.l10n.profileSecurityAndPrivacySubtitle,
-                onTap: () => context.push(UserRoutes.securityPrivacy),
+                onTap: () => context.push(AccountRoutes.securityPrivacy),
               ),
               AppListTile(
                 leading: AppIconBadge(

@@ -85,8 +85,8 @@ lib/features/account/subfeatures/profile/
 └─ di/
    └─ account_profile_module.dart                 # DI wiring
 
-lib/navigation/user/
-└─ user_routes_list.dart                          # route names are still transitional in Phase 3
+lib/navigation/account/
+└─ account_routes_list.dart                          # route names are still transitional in Phase 3
 ```
 
 Tests:
@@ -125,7 +125,7 @@ Drafts expire on read:
 
 The draft is loaded when the Complete Profile route is built:
 
-- In `lib/navigation/user/user_routes_list.dart`, we create the cubit and immediately call:
+- In `lib/navigation/account/account_routes_list.dart`, we create the cubit and immediately call:
   - `locator<CompleteProfileCubit>()..loadDraft()`
 
 No widget post-frame work is used; it matches the repo’s UI-state guide.
