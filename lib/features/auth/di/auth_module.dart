@@ -20,13 +20,13 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_re
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/email_verification/email_verification_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_cubit.dart';
 
 class AuthModule {
   static void register(GetIt getIt) {

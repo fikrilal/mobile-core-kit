@@ -18,9 +18,9 @@ import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/account/presentation/pages/account_page.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/logout/logout_state.dart';
-import 'package:mobile_core_kit/features/auth/presentation/localization/logout_failure_localizer.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_state.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/localization/logout_failure_localizer.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
 import 'package:mobile_core_kit/navigation/account/account_routes_list.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';

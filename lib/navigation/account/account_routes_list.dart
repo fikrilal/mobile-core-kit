@@ -10,8 +10,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/presentatio
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/pages/me_sessions_page.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/pages/security_privacy_page.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/change_password/change_password_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/pages/change_password_page.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/pages/change_password_page.dart';
 import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 
 final List<GoRoute> accountRoutes = [
