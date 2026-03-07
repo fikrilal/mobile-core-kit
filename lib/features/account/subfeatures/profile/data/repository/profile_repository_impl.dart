@@ -34,7 +34,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
           .mapLeft(mapProfileFailure)
           .map((model) => model.toEntity());
     } catch (e, st) {
-      Log.error('PatchMeProfile unexpected error', e, st, true, 'ProfileRepository');
+      Log.error(
+        'PatchMeProfile unexpected error',
+        e,
+        st,
+        true,
+        'ProfileRepository',
+      );
       return left(const AuthFailure.unexpected());
     }
   }

@@ -59,7 +59,7 @@ If you only need the big picture: see `docs/core/session/flows.md`.
 
 - HTTP retry policy → owned by `AuthTokenInterceptor`
 - “current user” presentation helpers → owned by `UserContextService`
-- “me” fetching details → owned by user feature via `CurrentUserFetcher`
+- “me” fetching details → owned by account current-user support via `CurrentUserFetcher`
 
 **Concurrency and race guards:**
 
@@ -365,7 +365,7 @@ Role:
 
 Session system relies on:
 
-- User feature calling `AppDatabase.registerOnCreate(...)` to register the `users` table creation task.
+- Account current-user support calling `AppDatabase.registerOnCreate(...)` to register the `users` table creation task.
 
 Testing helper:
 

@@ -105,7 +105,7 @@ This template separates responsibilities explicitly:
 - **Session orchestration** lives in `lib/core/runtime/session/` (`SessionManager`, `SessionRepositoryImpl`).
 - **User identity (“me”)** is exposed to UI via `lib/core/runtime/user_context/` (`UserContextService`).
 - **Auth feature** owns login/refresh/logout flows and provides the `TokenRefresher` adapter via DI.
-- **User feature** owns `GET /me` and cached-user persistence (sqflite) and provides:
+- **Account feature** owns current-user support (`GET /me` + cached-user persistence in sqflite) and provides:
   - `CurrentUserFetcher` implementation (interface in `lib/core/domain/user/current_user_fetcher.dart`)
   - `CachedUserStore` implementation (interface in `lib/core/domain/session/cached_user_store.dart`)
 

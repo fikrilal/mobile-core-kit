@@ -482,7 +482,7 @@ Goal: complete the cutover.
   - [x] routes
   - [x] docs
   - [x] `_WIP` documents where relevant
-- [ ] Update architecture docs if this refactor becomes the new canonical standard
+- [x] Update architecture docs if this refactor becomes the new canonical standard
 
 ### Phase 8 output — final account cutover cleanup (2026-03-07)
 
@@ -496,16 +496,28 @@ Goal: complete the cutover.
 
 ## Phase 9 — Verification and closeout
 
-- [ ] Run focused checks during each phase:
-  - [ ] `fvm flutter analyze`
-  - [ ] `dart run custom_lint`
-  - [ ] `fvm flutter test`
-  - [ ] `dart run tool/verify_project_map_drift.dart`
-- [ ] Run full verification at milestone boundaries:
-  - [ ] `dart run tool/verify.dart --env dev`
-- [ ] Confirm no stale `features/user` imports remain:
-  - [ ] `rg -n "features/user" lib test docs`
-- [ ] Confirm no stale `navigation/user` imports remain
+- [x] Run focused checks during each phase:
+  - [x] `fvm flutter analyze`
+  - [x] `dart run custom_lint`
+  - [x] `fvm flutter test`
+  - [x] `dart run tool/verify_project_map_drift.dart`
+- [x] Run full verification at milestone boundaries:
+  - [x] `dart run tool/verify.dart --env dev`
+- [x] Confirm no stale `features/user` imports remain:
+  - [x] `rg -n "features/user" lib test docs`
+- [x] Confirm no stale `navigation/user` imports remain
+
+### Phase 9 output — final verification and closeout (2026-03-07)
+
+- Full verification passed:
+  - `dart run tool/verify.dart --env dev`
+- Verified clean source/doc cutover:
+  - `rg -n "features/user|navigation/user" lib test integration_test docs`
+- Canonical docs now describe the account/current-user ownership model:
+  - `docs/template/current_user.md`
+  - `docs/engineering/project_architecture.md`
+  - `docs/core/session/components.md`
+  - `docs/core/session/flows.md`
 
 ## Notes
 

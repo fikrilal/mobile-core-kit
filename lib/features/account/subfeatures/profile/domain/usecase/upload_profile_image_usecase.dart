@@ -109,14 +109,14 @@ class UploadProfileImageUseCase {
   static AuthFailure _mapSessionFailure(SessionFailure failure) {
     return switch (failure.type) {
       SessionFailureType.network => const AuthFailure.network(),
-      SessionFailureType.unauthenticated =>
-        const AuthFailure.unauthenticated(),
-      SessionFailureType.tooManyRequests =>
-        const AuthFailure.tooManyRequests(),
-      SessionFailureType.serverError =>
-        AuthFailure.serverError(failure.message),
-      SessionFailureType.unexpected =>
-        AuthFailure.unexpected(message: failure.message),
+      SessionFailureType.unauthenticated => const AuthFailure.unauthenticated(),
+      SessionFailureType.tooManyRequests => const AuthFailure.tooManyRequests(),
+      SessionFailureType.serverError => AuthFailure.serverError(
+        failure.message,
+      ),
+      SessionFailureType.unexpected => AuthFailure.unexpected(
+        message: failure.message,
+      ),
     };
   }
 

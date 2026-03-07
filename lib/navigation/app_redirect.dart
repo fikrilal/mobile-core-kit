@@ -181,7 +181,9 @@ enum _RouteZone { root, onboarding, auth, profileCompletion, other }
 _RouteZone _routeZone(String path) {
   if (path == AppRoutes.root) return _RouteZone.root;
   if (path == OnboardingRoutes.onboarding) return _RouteZone.onboarding;
-  if (path == AccountRoutes.completeProfile) return _RouteZone.profileCompletion;
+  if (path == AccountRoutes.completeProfile) {
+    return _RouteZone.profileCompletion;
+  }
   if (path.startsWith('/auth')) return _RouteZone.auth;
   return _RouteZone.other;
 }

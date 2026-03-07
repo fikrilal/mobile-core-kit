@@ -36,7 +36,10 @@ void main() {
 
       expect(result, right(user));
 
-      verifyInOrder([() => repo.clearProfileImage(any()), () => fetcher.fetch()]);
+      verifyInOrder([
+        () => repo.clearProfileImage(any()),
+        () => fetcher.fetch(),
+      ]);
     });
 
     test('returns failure and does not call getMe when clear fails', () async {

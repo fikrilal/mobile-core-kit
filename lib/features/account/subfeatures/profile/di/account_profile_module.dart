@@ -154,7 +154,8 @@ class AccountProfileModule {
 
     if (!getIt.isRegistered<RefreshProfileAvatarCacheUseCase>()) {
       getIt.registerFactory<RefreshProfileAvatarCacheUseCase>(
-        () => RefreshProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
+        () =>
+            RefreshProfileAvatarCacheUseCase(getIt<ProfileAvatarRepository>()),
       );
     }
 
@@ -172,7 +173,9 @@ class AccountProfileModule {
 
     if (!getIt.isRegistered<ClearAllProfileAvatarCachesUseCase>()) {
       getIt.registerFactory<ClearAllProfileAvatarCachesUseCase>(
-        () => ClearAllProfileAvatarCachesUseCase(getIt<ProfileAvatarRepository>()),
+        () => ClearAllProfileAvatarCachesUseCase(
+          getIt<ProfileAvatarRepository>(),
+        ),
       );
     }
 

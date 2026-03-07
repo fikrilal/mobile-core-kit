@@ -272,7 +272,7 @@ flowchart LR
   Session["SessionManager\n(sessionNotifier)"] -->|observe| UCtx["UserContextService\n(stateListenable + helpers)"]
   UCtx --> UI["UI (Profile header, settings, etc.)"]
 
-  UCtx -->|refreshUser()| Fetch["CurrentUserFetcher\n(user feature adapter)"]
+  UCtx -->|refreshUser()| Fetch["CurrentUserFetcher\n(account feature adapter)"]
   Fetch -->|GET /me| API["Backend"]
   Fetch --> UCtx
   UCtx -->|setUser(user)| Session
