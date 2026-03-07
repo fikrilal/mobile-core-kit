@@ -161,7 +161,7 @@ Use a startup overlay only when there is a real gating requirement.
 In this repo, the current “startup” checks are lightweight:
 - Onboarding flag is `SharedPreferences` (`AppLaunchServiceImpl` in `lib/core/infra/storage/prefs/app_launch/app_launch_service_impl.dart`).
 - Auth session restore is local IO (secure storage + local DB) via `SessionManager.init()` (`lib/core/runtime/session/session_manager.dart`).
-- Auth hydration (`GetMeUseCase`) is already best-effort and should generally **not** block showing onboarding/auth/home UI.
+- Auth hydration (`GetCurrentUserUseCase`) is already best-effort and should generally **not** block showing onboarding/auth/home UI.
 
 So the industry-aligned default is: **no Flutter splash route** (use native + optional overlay gate only when needed).
 

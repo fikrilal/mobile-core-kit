@@ -403,18 +403,37 @@ Goal: `account_deletion` becomes a complete vertical slice.
 
 Goal: the `account` feature fully backs kernel ports without relying on `features/user`.
 
-- [ ] Move current-user remote fetch support out of `features/user`:
-  - [ ] `user_remote_datasource.dart`
-  - [ ] any flat user repository code used only for `/me`
-- [ ] Move cached-user local persistence support out of `features/user`:
-  - [ ] `user_local_datasource.dart`
-  - [ ] `data/datasource/local/dao/user_dao.dart`
-  - [ ] `data/model/local/user_local_model.dart`
-- [ ] Rename moved account-side current-user support code if it improves clarity:
-  - [ ] `me_remote_datasource.dart`
-  - [ ] `account_cached_user_local_datasource.dart`
-- [ ] Ensure this support code stays outside workflow subfeatures and outside `core`
-- [ ] Ensure only adapters expose these kernel-backed capabilities to `core`
+- [x] Move current-user remote fetch support out of `features/user`:
+  - [x] `user_remote_datasource.dart`
+  - [x] any flat user repository code used only for `/me`
+- [x] Move cached-user local persistence support out of `features/user`:
+  - [x] `user_local_datasource.dart`
+  - [x] `data/datasource/local/dao/user_dao.dart`
+  - [x] `data/model/local/user_local_model.dart`
+- [x] Rename moved account-side current-user support code if it improves clarity:
+  - [x] `me_remote_datasource.dart`
+  - [x] `account_cached_user_local_datasource.dart`
+- [x] Ensure this support code stays outside workflow subfeatures and outside `core`
+- [x] Ensure only adapters expose these kernel-backed capabilities to `core`
+
+Implementation notes:
+
+- Current-user support now lives in `lib/features/account/data/**` and `lib/features/account/domain/**`.
+- `AccountCurrentUserModule` now owns:
+  - cached-user DB bootstrap
+  - `/me` remote fetch support
+  - `PushTokenRegistrar` binding
+  - `CurrentUserRepository`
+  - `GetCurrentUserUseCase`
+- `AccountKernelAdapterModule` now depends only on account-side current-user support.
+- App integration tests were decoupled from repository internals and now fake `CurrentUserFetcher` directly.
+
+### Verification notes
+- `fvm flutter analyze` passes
+- `dart run tool/verify_project_map_drift.dart` passes
+- `dart test test/features/account/adapters/current_user_fetcher_adapter_test.dart` passes
+- `dart run custom_lint` still hangs in this environment; a bounded retry (`timeout 30s dart run custom_lint --no-fatal-infos`) timed out without diagnostics
+- `fvm flutter test test/features/account/data/datasource/local/account_cached_user_local_datasource_test.dart` is still blocked by the existing local Flutter SDK / `dart:ui` mismatch, not by Phase 6 code
 
 ## Phase 7 — Repository and naming cleanup
 

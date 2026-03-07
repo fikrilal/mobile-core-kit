@@ -101,8 +101,8 @@ Where:
 
 - core contract: `lib/core/domain/session/cached_user_store.dart`
 - implementation adapter: `lib/features/account/adapters/cached_user_store_adapter.dart`
-- underlying datasource: `lib/features/user/data/datasource/local/user_local_datasource.dart`
-- db bootstrap: `lib/core/infra/database/app_database.dart`, `lib/features/user/di/user_module.dart`
+- underlying datasource: `lib/features/account/data/datasource/local/account_cached_user_local_datasource.dart`
+- db bootstrap: `lib/core/infra/database/app_database.dart`, `lib/features/account/di/account_current_user_module.dart`
 
 Checklist:
 
@@ -110,7 +110,7 @@ Checklist:
 - [ ] table creation is registered via `AppDatabase.registerOnCreate`
 - [ ] defensive `createTable()` calls remain safe (or document removal)
 - [ ] update tests:
-  - `test/features/user/data/datasource/local/user_local_datasource_test.dart`
+  - `test/features/account/data/datasource/local/account_cached_user_local_datasource_test.dart`
 
 ### If you change hydration logic
 

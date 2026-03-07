@@ -167,7 +167,7 @@ Pattern:
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../domain/entity/user_entity.dart';
 
-part 'user_local_model.freezed.dart';
+part 'cached_user_local_model.freezed.dart';
 
 @freezed
 abstract class UserLocalModel with _$UserLocalModel {

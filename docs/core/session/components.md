@@ -335,16 +335,16 @@ Role:
 
 Role:
 
-- Implements `CurrentUserFetcher` by calling `GetMeUseCase`
+- Implements `CurrentUserFetcher` by calling `GetCurrentUserUseCase`
 - Maps `AuthFailure` → `SessionFailure`
 
-### User feature adapter: `UserLocalDataSource` (implements `CachedUserStore`)
+### Account feature local datasource: `AccountCachedUserLocalDataSource`
 
-**File:** `lib/features/user/data/datasource/local/user_local_datasource.dart`
+**File:** `lib/features/account/data/datasource/local/account_cached_user_local_datasource.dart`
 
 Role:
 
-- Implements `CachedUserStore` so core can persist cached “me”.
+- Persists cached “me” data for `AccountCachedUserStoreAdapter`.
 
 Important note:
 

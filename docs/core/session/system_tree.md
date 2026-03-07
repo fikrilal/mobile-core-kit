@@ -25,7 +25,7 @@ This is enforced by architecture linting (`custom_lint`), so the system remains 
 - `lib/core/runtime/events/**` — app-level event bus + event types.
 - `lib/core/infra/network/**` — request-time auth header injection + refresh/retry policy.
 - `lib/features/auth/**` — login/logout/refresh flows + adapter implementing `TokenRefresher`.
-- `lib/features/user/**` — `GET /me` + local persistence + adapters implementing:
+- `lib/features/account/**` — current-user kernel support plus adapters implementing:
   - `CurrentUserFetcher`
   - `CachedUserStore`
 
@@ -75,24 +75,29 @@ lib/
    ├─ auth/
    │  └─ di/
    │     └─ auth_module.dart
-   └─ user/
+   └─ account/
+      ├─ adapters/
+      │  ├─ cached_user_store_adapter.dart
+      │  └─ current_user_fetcher_adapter.dart
       ├─ di/
-      │  └─ user_module.dart
+      │  ├─ account_current_user_module.dart
+      │  └─ account_kernel_adapter_module.dart
       ├─ domain/
       │  ├─ repository/
-      │  │  └─ user_repository.dart
+      │  │  └─ current_user_repository.dart
       │  └─ usecase/
-      │     └─ get_me_usecase.dart
+      │     └─ get_current_user_usecase.dart
       └─ data/
-         └─ datasource/
-            ├─ remote/
-            │  └─ user_remote_datasource.dart
+         ├─ datasource/
+         │  ├─ remote/
+         │  │  └─ me_remote_datasource.dart
+         │  └─ local/
+         │     ├─ account_cached_user_local_datasource.dart
+         │     └─ dao/
+         │        └─ cached_user_dao.dart
+         └─ model/
             └─ local/
-               ├─ user_local_datasource.dart
-               ├─ dao/
-               │  └─ user_dao.dart
-               └─ model/
-                  └─ user_local_model.dart
+               └─ cached_user_local_model.dart
 ```
 
 ## Responsibility map (class → file → owner)
@@ -105,7 +110,7 @@ lib/
 | Secure token IO | `TokenSecureStorage` | `lib/core/infra/storage/secure/token_secure_storage.dart` | Core |
 | Cached user IO (interface) | `CachedUserStore` | `lib/core/domain/session/cached_user_store.dart` | Core |
 | Cached user IO (impl adapter) | `AccountCachedUserStoreAdapter` | `lib/features/account/adapters/cached_user_store_adapter.dart` | Account feature |
-| Cached user local datasource | `UserLocalDataSource` | `lib/features/user/data/datasource/local/user_local_datasource.dart` | User feature (transitional) |
+| Cached user local datasource | `AccountCachedUserLocalDataSource` | `lib/features/account/data/datasource/local/account_cached_user_local_datasource.dart` | Account feature |
 | Refresh tokens (interface) | `TokenRefresher` | `lib/core/domain/session/token_refresher.dart` | Core |
 | Refresh tokens (impl adapter) | `_AuthRepositoryTokenRefresher` | `lib/features/auth/di/auth_module.dart` | Auth feature |
 | Failure semantics | `SessionFailure` | `lib/core/domain/session/session_failure.dart` | Core |

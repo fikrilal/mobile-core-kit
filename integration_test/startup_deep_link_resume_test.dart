@@ -33,7 +33,6 @@ import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_reque
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
-import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
@@ -65,7 +64,6 @@ void main() {
       final connectivity = _FakeConnectivityService();
       final sessionRepo = _InMemorySessionRepository();
       final authRepo = _FakeAuthRepository();
-      final userRepo = _FakeUserRepository();
 
       final tokenRefresher = _AuthRepositoryTokenRefresher(authRepo);
       final events = AppEventBus();
@@ -75,7 +73,7 @@ void main() {
         events: events,
       );
 
-      final currentUserFetcher = _UserRepositoryCurrentUserFetcher(userRepo);
+      const currentUserFetcher = _FakeCurrentUserFetcher();
       final startup = AppStartupController(
         appLaunch: appLaunch,
         connectivity: connectivity,
@@ -316,10 +314,12 @@ class _FakeAuthRepository implements AuthRepository {
   }
 }
 
-class _FakeUserRepository implements UserRepository {
+class _FakeCurrentUserFetcher implements CurrentUserFetcher {
+  const _FakeCurrentUserFetcher();
+
   @override
-  Future<Either<AuthFailure, UserEntity>> getMe() async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  Future<Either<SessionFailure, UserEntity>> fetch() async {
+    return left(const SessionFailure.unexpected());
   }
 }
 
@@ -345,18 +345,6 @@ class _AuthRepositoryTokenRefresher implements TokenRefresher {
     final result = await _repository.refreshToken(
       RefreshRequestEntity(refreshToken: refreshToken),
     );
-    return result.mapLeft(_toSessionFailure);
-  }
-}
-
-class _UserRepositoryCurrentUserFetcher implements CurrentUserFetcher {
-  _UserRepositoryCurrentUserFetcher(this._repository);
-
-  final UserRepository _repository;
-
-  @override
-  Future<Either<SessionFailure, UserEntity>> fetch() async {
-    final result = await _repository.getMe();
     return result.mapLeft(_toSessionFailure);
   }
 }
