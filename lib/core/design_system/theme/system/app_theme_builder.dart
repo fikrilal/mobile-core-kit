@@ -28,6 +28,7 @@ abstract final class AppThemeBuilder {
     return ThemeData(
       brightness: brightness,
       useMaterial3: true,
+      splashFactory: InkRipple.splashFactory,
       scaffoldBackgroundColor: scheme.surface,
       colorScheme: scheme,
       appBarTheme: AppBarTheme(

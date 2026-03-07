@@ -128,11 +128,11 @@ This template includes a small E2E/UI suite under `integration_test/` (device/em
 - Run a single test (recommended):  
   `flutter test -d emulator-5554 --flavor dev integration_test/auth_happy_path_test.dart`
 
-### WSL + Windows toolchain (recommended when developing in WSL)
+### Repo-pinned SDK via FVM
 
-Use the repo-pinned SDK to avoid CRLF shim issues:
+Use the repo-pinned SDK for integration tests:
 
-`cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\flutter.bat test -d emulator-5554 --flavor dev integration_test/auth_happy_path_test.dart"`
+`fvm flutter test -d emulator-5554 --flavor dev integration_test/auth_happy_path_test.dart`
 
 Notes:
 - `--flavor dev` is required because this project uses Android product flavors (`app-dev-debug.apk`, etc.).

@@ -467,6 +467,222 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
+  "profileSecurityAndPrivacyBody": "Kelola kata sandi, sesi aktif, dan pengaturan penghapusan akun Anda.",
+  "@profileSecurityAndPrivacyBody": {
+    "description": "Body copy shown in the security and privacy page."
+  },
+  "profileChangePasswordSubtitle": "Perbarui kata sandi untuk menjaga keamanan akun",
+  "@profileChangePasswordSubtitle": {
+    "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileActiveSessionsTitle": "Sesi aktif",
+  "@profileActiveSessionsTitle": {
+    "description": "Title for the active sessions action in security settings."
+  },
+  "profileActiveSessionsSubtitle": "Tinjau dan cabut sesi di perangkat lain",
+  "@profileActiveSessionsSubtitle": {
+    "description": "Subtitle for the active sessions action in security settings."
+  },
+  "profileDeleteAccountTitle": "Hapus akun",
+  "@profileDeleteAccountTitle": {
+    "description": "Title for the delete-account action in security settings."
+  },
+  "profileDeleteAccountSubtitle": "Ajukan penghapusan permanen akun Anda",
+  "@profileDeleteAccountSubtitle": {
+    "description": "Subtitle for the delete-account action when no request is scheduled."
+  },
+  "profileDeleteAccountScheduledSubtitle": "Penghapusan dijadwalkan pada {date}",
+  "@profileDeleteAccountScheduledSubtitle": {
+    "description": "Subtitle for the delete-account action when deletion is already scheduled.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "30 Maret 2026"
+      }
+    }
+  },
+  "accountDeletionRequestBody": "Mengajukan penghapusan akun akan menjadwalkan akun Anda untuk dihapus permanen setelah masa tunggu.",
+  "@accountDeletionRequestBody": {
+    "description": "Body copy in the request account deletion screen."
+  },
+  "accountDeletionRequestWarning": "Anda masih dapat masuk selama masa tunggu, tetapi tindakan ini bisa tidak dapat dibatalkan setelah jadwal tercapai.",
+  "@accountDeletionRequestWarning": {
+    "description": "Warning copy in the request account deletion screen."
+  },
+  "accountDeletionScheduledBody": "Permintaan penghapusan akun Anda sudah dijadwalkan.",
+  "@accountDeletionScheduledBody": {
+    "description": "Body copy shown when account deletion has already been requested."
+  },
+  "accountDeletionScheduledBodyWithDate": "Permintaan penghapusan akun Anda sudah dijadwalkan pada {date}.",
+  "@accountDeletionScheduledBodyWithDate": {
+    "description": "Body copy shown when account deletion has already been requested with a known schedule date.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "30 Maret 2026"
+      }
+    }
+  },
+  "accountDeletionRequestCta": "Ajukan penghapusan akun",
+  "@accountDeletionRequestCta": {
+    "description": "Primary button label to request account deletion."
+  },
+  "accountDeletionAlreadyRequestedCta": "Penghapusan sudah diajukan",
+  "@accountDeletionAlreadyRequestedCta": {
+    "description": "Disabled button label when account deletion has already been requested."
+  },
+  "accountDeletionRequestSubmitting": "Mengirim permintaan...",
+  "@accountDeletionRequestSubmitting": {
+    "description": "Loading text for account deletion request submission."
+  },
+  "accountDeletionCancelCta": "Batalkan permintaan penghapusan",
+  "@accountDeletionCancelCta": {
+    "description": "Primary button label to cancel a scheduled account deletion."
+  },
+  "accountDeletionCancelSubmitting": "Membatalkan permintaan...",
+  "@accountDeletionCancelSubmitting": {
+    "description": "Loading text for account deletion cancellation."
+  },
+  "accountDeletionConfirmTitle": "Ajukan penghapusan akun?",
+  "@accountDeletionConfirmTitle": {
+    "description": "Confirmation dialog title before submitting an account deletion request."
+  },
+  "accountDeletionConfirmBody": "Akun Anda akan dijadwalkan untuk dihapus. Anda bisa membatalkan lewat dukungan sebelum waktu terjadwal, sesuai kebijakan.",
+  "@accountDeletionConfirmBody": {
+    "description": "Confirmation dialog message before submitting an account deletion request."
+  },
+  "accountDeletionConfirmCta": "Ya, ajukan penghapusan",
+  "@accountDeletionConfirmCta": {
+    "description": "Confirmation dialog primary action for account deletion request."
+  },
+  "accountDeletionCancelConfirmTitle": "Batalkan permintaan penghapusan akun?",
+  "@accountDeletionCancelConfirmTitle": {
+    "description": "Confirmation dialog title before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmBody": "Ini akan menghapus jadwal penghapusan dan menjaga akun Anda tetap aktif.",
+  "@accountDeletionCancelConfirmBody": {
+    "description": "Confirmation dialog message before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmCta": "Ya, batalkan penghapusan",
+  "@accountDeletionCancelConfirmCta": {
+    "description": "Confirmation dialog primary action for canceling a scheduled account deletion."
+  },
+  "accountDeletionRequestSuccessMessage": "Permintaan penghapusan akun berhasil dikirim.",
+  "@accountDeletionRequestSuccessMessage": {
+    "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionCancelSuccessMessage": "Permintaan penghapusan akun dibatalkan.",
+  "@accountDeletionCancelSuccessMessage": {
+    "description": "Success snackbar message after account deletion cancellation."
+  },
+  "meSessionsPageBody": "Periksa di mana akun Anda sedang masuk dan cabut akses yang tidak lagi Anda percayai.",
+  "@meSessionsPageBody": {
+    "description": "Body copy shown on the sessions management page."
+  },
+  "meSessionsEmptyTitle": "Tidak ada sesi",
+  "@meSessionsEmptyTitle": {
+    "description": "Empty-state title shown when no sessions are returned."
+  },
+  "meSessionsEmptyDescription": "Kami tidak menemukan sesi aktif untuk akun Anda.",
+  "@meSessionsEmptyDescription": {
+    "description": "Empty-state description shown when no sessions are returned."
+  },
+  "meSessionsRetryCta": "Coba lagi",
+  "@meSessionsRetryCta": {
+    "description": "Retry action label shown on sessions load failure."
+  },
+  "meSessionsRevokeCta": "Cabut sesi",
+  "@meSessionsRevokeCta": {
+    "description": "Button label to revoke a non-current active session."
+  },
+  "meSessionsRevokeSubmitting": "Mencabut...",
+  "@meSessionsRevokeSubmitting": {
+    "description": "Loading text shown while a session revoke request is in progress."
+  },
+  "meSessionsRevokeSuccessMessage": "Sesi berhasil dicabut.",
+  "@meSessionsRevokeSuccessMessage": {
+    "description": "Success snackbar shown after revoking a session."
+  },
+  "meSessionsRevokeConfirmTitle": "Cabut sesi ini?",
+  "@meSessionsRevokeConfirmTitle": {
+    "description": "Confirmation dialog title before revoking a session."
+  },
+  "meSessionsRevokeConfirmBody": "Tindakan ini akan mengeluarkan {device} dari akun Anda.",
+  "@meSessionsRevokeConfirmBody": {
+    "description": "Confirmation dialog body before revoking a session.",
+    "placeholders": {
+      "device": {
+        "type": "String",
+        "example": "iPhone 14"
+      }
+    }
+  },
+  "meSessionsRevokeConfirmCta": "Ya, cabut sesi",
+  "@meSessionsRevokeConfirmCta": {
+    "description": "Confirmation dialog primary action for revoking a session."
+  },
+  "meSessionsStatusCurrentDevice": "Perangkat ini",
+  "@meSessionsStatusCurrentDevice": {
+    "description": "Status badge label for the current device session."
+  },
+  "meSessionsStatusActive": "Aktif",
+  "@meSessionsStatusActive": {
+    "description": "Status badge label for an active session."
+  },
+  "meSessionsStatusRevoked": "Dicabut",
+  "@meSessionsStatusRevoked": {
+    "description": "Status badge label for a revoked session."
+  },
+  "meSessionsStatusExpired": "Kedaluwarsa",
+  "@meSessionsStatusExpired": {
+    "description": "Status badge label for an expired session."
+  },
+  "meSessionsSessionUnknownDevice": "Perangkat tidak dikenal",
+  "@meSessionsSessionUnknownDevice": {
+    "description": "Fallback device name when session device metadata is missing."
+  },
+  "meSessionsLastSeenWithDate": "Terakhir aktif {date}",
+  "@meSessionsLastSeenWithDate": {
+    "description": "Session metadata text showing when the session was last seen.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 Mar 2026 10.30"
+      }
+    }
+  },
+  "meSessionsExpiresAtWithDate": "Kedaluwarsa {date}",
+  "@meSessionsExpiresAtWithDate": {
+    "description": "Session metadata text showing when the session expires.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 Apr 2026 10.30"
+      }
+    }
+  },
+  "meSessionsIpAddress": "IP {ip}",
+  "@meSessionsIpAddress": {
+    "description": "Session metadata text showing the IP address.",
+    "placeholders": {
+      "ip": {
+        "type": "String",
+        "example": "203.0.113.2"
+      }
+    }
+  },
+  "accountDeletionErrorLastAdmin": "Anda adalah admin terakhir. Alihkan akses admin sebelum menghapus akun ini.",
+  "@accountDeletionErrorLastAdmin": {
+    "description": "Error shown when trying to delete the last admin account."
+  },
+  "accountDeletionErrorInProgress": "Permintaan penghapusan sedang diproses. Mohon tunggu lalu coba lagi.",
+  "@accountDeletionErrorInProgress": {
+    "description": "Error shown when an idempotent deletion request is still in progress."
+  },
+  "accountDeletionErrorAlreadyRequested": "Penghapusan sudah diajukan untuk akun ini.",
+  "@accountDeletionErrorAlreadyRequested": {
+    "description": "Error shown when account deletion has already been requested."
+  },
   "profileNotifications": "Notifikasi",
   "@profileNotifications": {
     "description": "Profile/settings list item label for notifications."

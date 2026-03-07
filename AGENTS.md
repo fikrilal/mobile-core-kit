@@ -40,7 +40,6 @@ test/
 └─ prod.yaml
 
 tool/
-├─ agent/                          # local toolchain wrappers
 └─ verify.dart                     # full verify pipeline
 ```
 
@@ -90,21 +89,21 @@ tool/
 
 - PRs: clear description, linked issues, steps to test, and screenshots/GIFs for UI.
 - Keep CI green: analyze, tests, and generated code up to date.
-- Use `git` for git commands in scripts/automation.
+- Use native `git` commands.
 - Don’t commit or push unless explicitly asked; if committing, use Conventional Commits.
 
 ## Agent Verification (required)
 
-Agents must verify changes before claiming completion (when feasible). Prefer these commands:
+Agents must verify changes before claiming completion (when feasible). Use native commands:
 
-- Flutter: `flutter <command...>`
+- Flutter: `fvm flutter <command...>`
 - Dart: `dart <command...>`
 
 Minimum checks (pick what’s relevant to what you changed):
 
-- Analyze: `flutter analyze`
+- Analyze: `fvm flutter analyze`
 - Custom lints: `dart run custom_lint`
-- Tests: `flutter test`
+- Tests: `fvm flutter test`
 - Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
 - AGENTS project-map drift: `dart run tool/verify_project_map_drift.dart`
 
@@ -151,9 +150,9 @@ Auto-fix (format + import/directive ordering):
 ## Documentation & Best Practices
 
 - Start here: `docs/README.md` (docs index + navigation).
-- Backend contract source of truth (for any API/network/auth/users work): `/home/fikrilal/devs/core/backend-core-kit`
-  - OpenAPI: `/home/fikrilal/devs/core/backend-core-kit/docs/openapi/openapi.yaml`
-  - Standards: `/home/fikrilal/devs/core/backend-core-kit/docs/standards/`
+- Backend contract source of truth (for any API/network/auth/users work): `/mnt/c/Development/_CORE/backend-core-kit`
+  - OpenAPI: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
+  - Standards: `/mnt/c/Development/_CORE/backend-core-kit/docs/standards/`
 - For dependency/package changes:
   - Read upstream docs/changelogs; if web access is needed, ask before guessing.
   - Use `flutter pub outdated` to review version constraints and plan safe upgrades.

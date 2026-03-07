@@ -22,7 +22,7 @@ Canonical docs (post-implementation):
 - [x] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
 - [x] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
 - [x] **Core “current user” access is implemented:** `UserContextService` exists, is wired, and used by Profile UI.
-- [x] **Verification passes:** `dart run tool/verify.dart --env dev` (or WSL wrapper) is green.
+- [x] **Verification passes:** `dart run tool/verify.dart --env dev` is green.
 
 ## Phase 0 — Baseline & scoping (no behavior changes)
 

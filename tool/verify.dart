@@ -147,22 +147,8 @@ class _CommandRunner {
   final _RunnerMode _mode;
 
   static _CommandRunner detect(Directory rootDir) {
-    if (_isWsl()) return _CommandRunner(rootDir, _RunnerMode.wslWindows);
     if (Platform.isWindows) return _CommandRunner(rootDir, _RunnerMode.windows);
     return _CommandRunner(rootDir, _RunnerMode.posix);
-  }
-
-  static bool _isWsl() {
-    final env = Platform.environment;
-    if (env.containsKey('WSL_DISTRO_NAME') || env.containsKey('WSL_INTEROP')) {
-      return true;
-    }
-    try {
-      final version = File('/proc/version').readAsStringSync();
-      return version.toLowerCase().contains('microsoft');
-    } catch (_) {
-      return false;
-    }
   }
 
   Future<int> run(List<String> command) async {
@@ -172,7 +158,6 @@ class _CommandRunner {
     final args = command.sublist(1);
 
     return switch (_mode) {
-      _RunnerMode.wslWindows => _runViaWindowsToolchain(executable, args),
       _RunnerMode.windows => _runNativeWindows(executable, args),
       _RunnerMode.posix => _runPosix(executable, args),
     };
@@ -223,53 +208,6 @@ class _CommandRunner {
     }
     return _ResolvedCommand(executable);
   }
-
-  Future<int> _runViaWindowsToolchain(
-    String executable,
-    List<String> args,
-  ) async {
-    final windowsRoot = _toWindowsPath(_rootDir.path);
-    final resolved = _resolveWindowsExecutable(executable);
-
-    final joinedArgs = args.map(_escapeWindowsArg).join(' ');
-    final cmd =
-        'cd /d $windowsRoot && ${resolved.executable} '
-        '$joinedArgs';
-
-    final process = await Process.start(
-      'cmd.exe',
-      ['/C', cmd],
-      workingDirectory: _rootDir.path,
-      mode: ProcessStartMode.normal,
-    );
-
-    // Non-interactive safe: prevent Windows console handshake hangs in PTY runners
-    // by closing stdin (equivalent to `< /dev/null` in bash).
-    await process.stdin.close();
-
-    final stdoutFuture = stdout.addStream(process.stdout);
-    final stderrFuture = stderr.addStream(process.stderr);
-    final exitCode = await process.exitCode;
-    await Future.wait([stdoutFuture, stderrFuture]);
-    return exitCode;
-  }
-
-  static String _toWindowsPath(String wslPath) {
-    final normalized = wslPath.replaceAll('\\', '/');
-    final match = RegExp(r'^/mnt/([a-zA-Z])/(.*)$').firstMatch(normalized);
-    if (match == null) return wslPath;
-    final drive = match.group(1)!.toUpperCase();
-    final rest = match.group(2)!.replaceAll('/', '\\');
-    return '$drive:\\$rest';
-  }
-
-  static String _escapeWindowsArg(String value) {
-    if (value.isEmpty) return '""';
-    final needsQuotes =
-        value.contains(' ') || value.contains('"') || value.contains('&');
-    if (!needsQuotes) return value;
-    return '"${value.replaceAll('"', r'\"')}"';
-  }
 }
 
 class _ResolvedCommand {
@@ -278,4 +216,4 @@ class _ResolvedCommand {
   final String executable;
 }
 
-enum _RunnerMode { wslWindows, windows, posix }
+enum _RunnerMode { windows, posix }

@@ -467,6 +467,222 @@
   "@profileSecurityAndPrivacySubtitle": {
     "description": "Subtitle describing security and privacy settings."
   },
+  "profileSecurityAndPrivacyBody": "⟪RTL⟫ Manage your password, active sessions, and account deletion settings.",
+  "@profileSecurityAndPrivacyBody": {
+    "description": "Body copy shown in the security and privacy page."
+  },
+  "profileChangePasswordSubtitle": "⟪RTL⟫ Update your password to keep your account secure",
+  "@profileChangePasswordSubtitle": {
+    "description": "Subtitle shown for the change password action in security settings."
+  },
+  "profileActiveSessionsTitle": "⟪RTL⟫ Active sessions",
+  "@profileActiveSessionsTitle": {
+    "description": "Title for the active sessions action in security settings."
+  },
+  "profileActiveSessionsSubtitle": "⟪RTL⟫ Review and revoke sessions on other devices",
+  "@profileActiveSessionsSubtitle": {
+    "description": "Subtitle for the active sessions action in security settings."
+  },
+  "profileDeleteAccountTitle": "⟪RTL⟫ Delete account",
+  "@profileDeleteAccountTitle": {
+    "description": "Title for the delete-account action in security settings."
+  },
+  "profileDeleteAccountSubtitle": "⟪RTL⟫ Request permanent deletion of your account",
+  "@profileDeleteAccountSubtitle": {
+    "description": "Subtitle for the delete-account action when no request is scheduled."
+  },
+  "profileDeleteAccountScheduledSubtitle": "⟪RTL⟫ Deletion scheduled for {date}",
+  "@profileDeleteAccountScheduledSubtitle": {
+    "description": "Subtitle for the delete-account action when deletion is already scheduled.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestBody": "⟪RTL⟫ Requesting account deletion will schedule your account for permanent deletion after a waiting period.",
+  "@accountDeletionRequestBody": {
+    "description": "Body copy in the request account deletion screen."
+  },
+  "accountDeletionRequestWarning": "⟪RTL⟫ You can still sign in during the waiting period, but this action may be irreversible once the schedule is reached.",
+  "@accountDeletionRequestWarning": {
+    "description": "Warning copy in the request account deletion screen."
+  },
+  "accountDeletionScheduledBody": "⟪RTL⟫ Your account deletion request is already scheduled.",
+  "@accountDeletionScheduledBody": {
+    "description": "Body copy shown when account deletion has already been requested."
+  },
+  "accountDeletionScheduledBodyWithDate": "⟪RTL⟫ Your account deletion request is already scheduled for {date}.",
+  "@accountDeletionScheduledBodyWithDate": {
+    "description": "Body copy shown when account deletion has already been requested with a known schedule date.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "March 30, 2026"
+      }
+    }
+  },
+  "accountDeletionRequestCta": "⟪RTL⟫ Request account deletion",
+  "@accountDeletionRequestCta": {
+    "description": "Primary button label to request account deletion."
+  },
+  "accountDeletionAlreadyRequestedCta": "⟪RTL⟫ Deletion already requested",
+  "@accountDeletionAlreadyRequestedCta": {
+    "description": "Disabled button label when account deletion has already been requested."
+  },
+  "accountDeletionRequestSubmitting": "⟪RTL⟫ Submitting request...",
+  "@accountDeletionRequestSubmitting": {
+    "description": "Loading text for account deletion request submission."
+  },
+  "accountDeletionCancelCta": "⟪RTL⟫ Cancel deletion request",
+  "@accountDeletionCancelCta": {
+    "description": "Primary button label to cancel a scheduled account deletion."
+  },
+  "accountDeletionCancelSubmitting": "⟪RTL⟫ Canceling request...",
+  "@accountDeletionCancelSubmitting": {
+    "description": "Loading text for account deletion cancellation."
+  },
+  "accountDeletionConfirmTitle": "⟪RTL⟫ Request account deletion?",
+  "@accountDeletionConfirmTitle": {
+    "description": "Confirmation dialog title before submitting an account deletion request."
+  },
+  "accountDeletionConfirmBody": "⟪RTL⟫ Your account will be scheduled for deletion. You can cancel from support before the scheduled time, depending on policy.",
+  "@accountDeletionConfirmBody": {
+    "description": "Confirmation dialog message before submitting an account deletion request."
+  },
+  "accountDeletionConfirmCta": "⟪RTL⟫ Yes, request deletion",
+  "@accountDeletionConfirmCta": {
+    "description": "Confirmation dialog primary action for account deletion request."
+  },
+  "accountDeletionCancelConfirmTitle": "⟪RTL⟫ Cancel account deletion request?",
+  "@accountDeletionCancelConfirmTitle": {
+    "description": "Confirmation dialog title before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmBody": "⟪RTL⟫ This will remove the scheduled deletion and keep your account active.",
+  "@accountDeletionCancelConfirmBody": {
+    "description": "Confirmation dialog message before canceling a scheduled account deletion."
+  },
+  "accountDeletionCancelConfirmCta": "⟪RTL⟫ Yes, cancel deletion",
+  "@accountDeletionCancelConfirmCta": {
+    "description": "Confirmation dialog primary action for canceling a scheduled account deletion."
+  },
+  "accountDeletionRequestSuccessMessage": "⟪RTL⟫ Account deletion request submitted.",
+  "@accountDeletionRequestSuccessMessage": {
+    "description": "Success snackbar message after account deletion request submission."
+  },
+  "accountDeletionCancelSuccessMessage": "⟪RTL⟫ Account deletion request canceled.",
+  "@accountDeletionCancelSuccessMessage": {
+    "description": "Success snackbar message after account deletion cancellation."
+  },
+  "meSessionsPageBody": "⟪RTL⟫ Check where your account is signed in and revoke access you no longer trust.",
+  "@meSessionsPageBody": {
+    "description": "Body copy shown on the sessions management page."
+  },
+  "meSessionsEmptyTitle": "⟪RTL⟫ No sessions found",
+  "@meSessionsEmptyTitle": {
+    "description": "Empty-state title shown when no sessions are returned."
+  },
+  "meSessionsEmptyDescription": "⟪RTL⟫ We couldn't find any active sessions for your account.",
+  "@meSessionsEmptyDescription": {
+    "description": "Empty-state description shown when no sessions are returned."
+  },
+  "meSessionsRetryCta": "⟪RTL⟫ Try again",
+  "@meSessionsRetryCta": {
+    "description": "Retry action label shown on sessions load failure."
+  },
+  "meSessionsRevokeCta": "⟪RTL⟫ Revoke",
+  "@meSessionsRevokeCta": {
+    "description": "Button label to revoke a non-current active session."
+  },
+  "meSessionsRevokeSubmitting": "⟪RTL⟫ Revoking...",
+  "@meSessionsRevokeSubmitting": {
+    "description": "Loading text shown while a session revoke request is in progress."
+  },
+  "meSessionsRevokeSuccessMessage": "⟪RTL⟫ Session revoked successfully.",
+  "@meSessionsRevokeSuccessMessage": {
+    "description": "Success snackbar shown after revoking a session."
+  },
+  "meSessionsRevokeConfirmTitle": "⟪RTL⟫ Revoke this session?",
+  "@meSessionsRevokeConfirmTitle": {
+    "description": "Confirmation dialog title before revoking a session."
+  },
+  "meSessionsRevokeConfirmBody": "⟪RTL⟫ This will sign out {device} from your account.",
+  "@meSessionsRevokeConfirmBody": {
+    "description": "Confirmation dialog body before revoking a session.",
+    "placeholders": {
+      "device": {
+        "type": "String",
+        "example": "iPhone 14"
+      }
+    }
+  },
+  "meSessionsRevokeConfirmCta": "⟪RTL⟫ Yes, revoke session",
+  "@meSessionsRevokeConfirmCta": {
+    "description": "Confirmation dialog primary action for revoking a session."
+  },
+  "meSessionsStatusCurrentDevice": "⟪RTL⟫ This device",
+  "@meSessionsStatusCurrentDevice": {
+    "description": "Status badge label for the current device session."
+  },
+  "meSessionsStatusActive": "⟪RTL⟫ Active",
+  "@meSessionsStatusActive": {
+    "description": "Status badge label for an active session."
+  },
+  "meSessionsStatusRevoked": "⟪RTL⟫ Revoked",
+  "@meSessionsStatusRevoked": {
+    "description": "Status badge label for a revoked session."
+  },
+  "meSessionsStatusExpired": "⟪RTL⟫ Expired",
+  "@meSessionsStatusExpired": {
+    "description": "Status badge label for an expired session."
+  },
+  "meSessionsSessionUnknownDevice": "⟪RTL⟫ Unknown device",
+  "@meSessionsSessionUnknownDevice": {
+    "description": "Fallback device name when session device metadata is missing."
+  },
+  "meSessionsLastSeenWithDate": "⟪RTL⟫ Last seen {date}",
+  "@meSessionsLastSeenWithDate": {
+    "description": "Session metadata text showing when the session was last seen.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Mar 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsExpiresAtWithDate": "⟪RTL⟫ Expires {date}",
+  "@meSessionsExpiresAtWithDate": {
+    "description": "Session metadata text showing when the session expires.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Apr 5, 2026 10:30 AM"
+      }
+    }
+  },
+  "meSessionsIpAddress": "⟪RTL⟫ IP {ip}",
+  "@meSessionsIpAddress": {
+    "description": "Session metadata text showing the IP address.",
+    "placeholders": {
+      "ip": {
+        "type": "String",
+        "example": "203.0.113.2"
+      }
+    }
+  },
+  "accountDeletionErrorLastAdmin": "⟪RTL⟫ You are the last admin. Transfer admin access before deleting this account.",
+  "@accountDeletionErrorLastAdmin": {
+    "description": "Error shown when trying to delete the last admin account."
+  },
+  "accountDeletionErrorInProgress": "⟪RTL⟫ A deletion request is already being processed. Please wait and try again.",
+  "@accountDeletionErrorInProgress": {
+    "description": "Error shown when an idempotent deletion request is still in progress."
+  },
+  "accountDeletionErrorAlreadyRequested": "⟪RTL⟫ Deletion has already been requested for this account.",
+  "@accountDeletionErrorAlreadyRequested": {
+    "description": "Error shown when account deletion has already been requested."
+  },
   "profileNotifications": "⟪RTL⟫ Notifications",
   "@profileNotifications": {
     "description": "Profile/settings list item label for notifications."

@@ -13,9 +13,6 @@ This template is designed to be **AI-friendly** and **review-friendly**: the cod
   - `dart run tool/fix.dart --apply`
 - Canonical quality gate (local):
   - `dart run tool/verify.dart --env dev`
-- In WSL (use Windows toolchain wrappers):
-  - `dart run tool/fix.dart --apply`
-  - `dart run tool/verify.dart --env dev`
 
 ## Where guardrails live
 
@@ -165,4 +162,3 @@ CI should run the same gate as local development to keep trust high:
 3) If the guardrail is a “repo gate”:
 - Add a `tool/verify_*.dart` script and call it from `tool/verify.dart`.
 - Add it to CI (or rely on CI calling `tool/verify.dart`).
-

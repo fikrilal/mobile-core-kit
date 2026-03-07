@@ -132,15 +132,13 @@ Or via the main verify script:
 dart run tool/verify.dart --env dev --check-codegen
 ```
 
-If you are in WSL, use the same direct Dart commands:
+Use the native commands directly:
 
 ```bash
 dart run custom_lint
 dart run tool/verify.dart --env dev
 dart run tool/verify_codegen.dart
 ```
-
-In non-interactive runners (Codex CLI PTY sessions / scripts), use direct commands and ensure your shell environment is set up with `dart` on `PATH`.
 
 ## IDE Setup
 

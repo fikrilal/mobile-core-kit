@@ -42,10 +42,10 @@ If you need generic network error copy, use the core localizer:
 4. Run `flutter gen-l10n` (CI and `tool/verify.dart` do this too).
 5. Use it from `context.l10n`.
 
-Commands (WSL-safe):
+Commands:
 - `flutter gen-l10n`
-- `flutter analyze`
-- `flutter test`
+- `fvm flutter analyze`
+- `fvm flutter test`
 
 ---
 
@@ -107,7 +107,7 @@ Text(context.l10n.commonItemsCount(count: items.length))
 2. Copy all keys + metadata from `app_en.arb` (keep descriptions consistent).
 3. Run `flutter gen-l10n` and fix any missing keys.
 4. If you want to expose the locale in the in-app language override UI, update the language picker:
-   - `lib/features/profile/presentation/pages/profile_page.dart`
+   - `lib/features/account/presentation/pages/account_page.dart`
 
 Notes:
 - `preferred-supported-locales` in `l10n.yaml` controls ordering/fallback preference.
@@ -126,7 +126,7 @@ Where to look:
 - Persistence: `lib/core/infra/storage/prefs/localization/locale_store.dart`
 - Runtime controller: `lib/core/runtime/localization/locale_controller.dart`
 - App shell wiring: `lib/app.dart`
-- UI entrypoint: `lib/features/profile/presentation/pages/profile_page.dart`
+- UI entrypoint: `lib/features/account/presentation/pages/account_page.dart`
 
 ---
 
@@ -183,4 +183,3 @@ Scaling rule:
   - ARB files are compatible with common TMS platforms (Crowdin/Lokalise/etc).
   - Pseudo locales provide a cheap, continuous UI QA safety net.
 - CI remains deterministic because generation runs before analyze/tests.
-

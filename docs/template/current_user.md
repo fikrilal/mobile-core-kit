@@ -30,7 +30,7 @@ It observes `SessionManager.sessionNotifier` and exposes:
 
 1) **Session lifecycle** is owned by `SessionManager` (tokens + session state):
    - `lib/core/runtime/session/session_manager.dart`
-2) **User feature** owns “me” persistence + remote fetching, but core calls it via interfaces:
+2) **Account feature** owns current-user persistence + remote fetching, but core calls it via interfaces:
    - `CurrentUserFetcher` (`lib/core/domain/user/current_user_fetcher.dart`)
    - `CachedUserStore` (`lib/core/domain/session/cached_user_store.dart`)
 3) `UserContextService` simply *projects* session state into a stable “current user” view model.

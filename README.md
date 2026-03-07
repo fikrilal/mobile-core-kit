@@ -19,11 +19,9 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 ## Prerequisites
 
-- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.38.4`).
+- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.41.4`).
 - Dart SDK bundled with Flutter.
 - Firebase CLI if you want to reconfigure Firebase (`flutterfire configure`).
-
-If you work in WSL, run Flutter/Dart using the Windows toolchain (see `AGENTS.md` for example commands).
 
 ## Getting Started
 
@@ -79,12 +77,6 @@ dart run tool/verify.dart --env dev
 ```
 
 See `docs/engineering/guardrails.md` for the full list of guardrails (lints + verify scripts + scaffolding).
-
-If you work inside WSL, run the repo-pinned Windows toolchain:
-
-```bash
-cmd.exe /C "cd /d C:\Development\_CORE\mobile-core-kit && .fvm\flutter_sdk\bin\dart.bat run tool\verify.dart --env dev"
-```
 
 ## Project Structure
 
@@ -161,6 +153,6 @@ Template customization guides:
 
 - `docs/template/deep_linking.md`
 
-`AGENTS.md` contains some repo-specific tooling notes (e.g., WSL + FVM commands).
+`AGENTS.md` contains repo-specific tooling notes (verification commands, architecture constraints, authoring preferences).
 
 See `docs/engineering/architecture_linting.md` for details on rule semantics and how to extend them.

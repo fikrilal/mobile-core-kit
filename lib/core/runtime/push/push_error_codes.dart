@@ -7,5 +7,5 @@ abstract final class PushErrorCodes {
   /// The backend may return this when FCM/APNs integration is disabled via
   /// environment configuration. Clients should treat it as non-fatal and back
   /// off for a cooldown period.
-  static const String pushNotConfigured = 'PUSH_NOT_CONFIGURED';
+  static const String pushNotConfigured = 'AUTH_PUSH_NOT_CONFIGURED';
 }

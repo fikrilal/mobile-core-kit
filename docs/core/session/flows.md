@@ -53,8 +53,8 @@ sequenceDiagram
   participant Session as SessionManager
   participant Repo as SessionRepositoryImpl
   participant Secure as TokenSecureStorage
-  participant Cache as CachedUserStore (UserLocalDataSource)
-  participant Me as CurrentUserFetcher (GetMeUseCase adapter)
+  participant Cache as CachedUserStore (AccountCachedUserLocalDataSource)
+  participant Me as CurrentUserFetcher (GetCurrentUserUseCase adapter)
 
   App->>DI: registerLocator()
   App->>DI: bootstrapLocator()
@@ -132,7 +132,7 @@ sequenceDiagram
   participant Session as SessionManager
   participant Repo as SessionRepositoryImpl
   participant Secure as TokenSecureStorage
-  participant Cache as CachedUserStore (UserLocalDataSource)
+  participant Cache as CachedUserStore (AccountCachedUserLocalDataSource)
 
   UI->>Auth: login/register
   Auth-->>UI: AuthSessionEntity(tokens + user)
@@ -272,7 +272,7 @@ flowchart LR
   Session["SessionManager\n(sessionNotifier)"] -->|observe| UCtx["UserContextService\n(stateListenable + helpers)"]
   UCtx --> UI["UI (Profile header, settings, etc.)"]
 
-  UCtx -->|refreshUser()| Fetch["CurrentUserFetcher\n(user feature adapter)"]
+  UCtx -->|refreshUser()| Fetch["CurrentUserFetcher\n(account feature adapter)"]
   Fetch -->|GET /me| API["Backend"]
   Fetch --> UCtx
   UCtx -->|setUser(user)| Session

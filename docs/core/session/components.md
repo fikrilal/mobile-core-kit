@@ -59,7 +59,7 @@ If you only need the big picture: see `docs/core/session/flows.md`.
 
 - HTTP retry policy → owned by `AuthTokenInterceptor`
 - “current user” presentation helpers → owned by `UserContextService`
-- “me” fetching details → owned by user feature via `CurrentUserFetcher`
+- “me” fetching details → owned by account current-user support via `CurrentUserFetcher`
 
 **Concurrency and race guards:**
 
@@ -329,22 +329,22 @@ Role:
 - Implements `TokenRefresher` by calling `AuthRepository.refreshToken(...)`
 - Maps `AuthFailure` → `SessionFailure`
 
-### User feature adapter: `_GetMeCurrentUserFetcher`
+### Account feature adapter: `AccountCurrentUserFetcherAdapter`
 
-**File:** `lib/features/user/di/user_module.dart`
+**File:** `lib/features/account/adapters/current_user_fetcher_adapter.dart`
 
 Role:
 
-- Implements `CurrentUserFetcher` by calling `GetMeUseCase`
+- Implements `CurrentUserFetcher` by calling `GetCurrentUserUseCase`
 - Maps `AuthFailure` → `SessionFailure`
 
-### User feature adapter: `UserLocalDataSource` (implements `CachedUserStore`)
+### Account feature local datasource: `AccountCachedUserLocalDataSource`
 
-**File:** `lib/features/user/data/datasource/local/user_local_datasource.dart`
+**File:** `lib/features/account/data/datasource/local/account_cached_user_local_datasource.dart`
 
 Role:
 
-- Implements `CachedUserStore` so core can persist cached “me”.
+- Persists cached “me” data for `AccountCachedUserStoreAdapter`.
 
 Important note:
 
@@ -365,7 +365,7 @@ Role:
 
 Session system relies on:
 
-- User feature calling `AppDatabase.registerOnCreate(...)` to register the `users` table creation task.
+- Account current-user support calling `AppDatabase.registerOnCreate(...)` to register the `users` table creation task.
 
 Testing helper:
 

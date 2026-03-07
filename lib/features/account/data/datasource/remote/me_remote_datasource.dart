@@ -1,0 +1,27 @@
+import 'package:mobile_core_kit/core/foundation/config/api_host.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
+import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
+import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
+
+class MeRemoteDataSource {
+  MeRemoteDataSource(this._apiHelper);
+
+  final String _tag = 'MeRemoteDataSource';
+  final ApiHelper _apiHelper;
+
+  Future<ApiResponse<MeModel>> getMe() async {
+    Log.info('Fetching current user', name: _tag);
+
+    final response = await _apiHelper.getOne<MeModel>(
+      UserEndpoint.me,
+      host: ApiHost.profile,
+      requiresAuth: true,
+      throwOnError: false,
+      parser: MeModel.fromJson,
+    );
+
+    return response;
+  }
+}

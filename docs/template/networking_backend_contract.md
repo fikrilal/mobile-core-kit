@@ -205,10 +205,3 @@ Mobile (this repo):
 1) Ensure `.env/dev.yaml` points to the reachable base URL (see section 2.1).
 2) Regenerate build config: `dart run tool/gen_config.dart --env dev`
 3) Run: `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`
-
-WSL note:
-
-- Use direct commands with your shell/toolchain configured on `PATH`:
-  - `dart run tool/gen_config.dart --env dev`
-  - `flutter analyze`
-  - `flutter test`

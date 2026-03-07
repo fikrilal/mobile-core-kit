@@ -148,7 +148,6 @@ class AppTappable extends StatelessWidget {
                       ? effectiveHighlight
                       : null,
                   splashColor: style.showRipple ? effectiveSplash : null,
-                  splashFactory: InkSparkle.splashFactory,
                 ),
               ),
             ),
@@ -169,7 +168,6 @@ class AppTappable extends StatelessWidget {
           borderRadius: effectiveBorderRadius,
           highlightColor: style.showHighlight ? effectiveHighlight : null,
           splashColor: style.showRipple ? effectiveSplash : null,
-          splashFactory: InkSparkle.splashFactory,
           child: content,
         ),
       );

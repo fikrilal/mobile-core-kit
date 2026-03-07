@@ -8,7 +8,7 @@
 # The following line activates a set of recommended lints for Flutter apps.
 #
 # Note: We vendor these lints under `tool/lints/` to avoid `dart format`
-# include-resolution warnings in WSL/Windows toolchain setups.
+# include-resolution warnings across local toolchain setups.
 include: tool/lints/flutter_lints.yaml
 
 analyzer:
@@ -109,6 +109,8 @@ custom_lint:
         - uri: package:shared_preferences/shared_preferences.dart
           allow:
             - lib/core/infra/storage/prefs/**
+            - lib/features/account/subfeatures/profile/data/datasource/local/profile_draft_local_datasource.dart
+            - lib/features/account/subfeatures/profile/data/datasource/local/profile_avatar_cache_local_datasource.dart
             - lib/features/user/data/datasource/local/profile_draft_local_datasource.dart
             - lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart
           message: Use shared preferences only in stores/services; avoid direct usage in most features.

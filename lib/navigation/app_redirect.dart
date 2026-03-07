@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/runtime/navigation/deep_link_parser.dart';
 import 'package:mobile_core_kit/core/runtime/navigation/pending_deep_link_controller.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes.dart';
-import 'package:mobile_core_kit/navigation/user/user_routes.dart';
 
 /// Central navigation gate for the app.
 ///
@@ -80,7 +80,7 @@ String? appRedirectUri(
     }
 
     if (startup.needsProfileCompletion) {
-      return UserRoutes.completeProfile;
+      return AccountRoutes.completeProfile;
     }
 
     final pending = deepLinks.consumePendingLocationForRedirect();
@@ -152,7 +152,7 @@ String? appRedirectUri(
       source: pendingSource,
       reason: 'needs_profile_completion',
     );
-    return UserRoutes.completeProfile;
+    return AccountRoutes.completeProfile;
   }
 
   if (zone == _RouteZone.profileCompletion) {
@@ -182,7 +182,9 @@ enum _RouteZone { root, onboarding, auth, profileCompletion, other }
 _RouteZone _routeZone(String path) {
   if (path == AppRoutes.root) return _RouteZone.root;
   if (path == OnboardingRoutes.onboarding) return _RouteZone.onboarding;
-  if (path == UserRoutes.completeProfile) return _RouteZone.profileCompletion;
+  if (path == AccountRoutes.completeProfile) {
+    return _RouteZone.profileCompletion;
+  }
   if (path.startsWith('/auth')) return _RouteZone.auth;
   return _RouteZone.other;
 }

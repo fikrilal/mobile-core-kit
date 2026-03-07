@@ -36,5 +36,6 @@ Core:
 Feature adapters (implement core abstractions):
 
 - Token refresh adapter: `lib/features/auth/di/auth_module.dart`
-- Cached user + `GET /me` adapters: `lib/features/user/di/user_module.dart`
-
+- Cached user + `GET /me` adapters:
+  - `lib/features/account/adapters/cached_user_store_adapter.dart`
+  - `lib/features/account/adapters/current_user_fetcher_adapter.dart`

@@ -38,10 +38,8 @@ import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
-import 'package:mobile_core_kit/features/auth/presentation/cubit/login/login_cubit.dart';
-import 'package:mobile_core_kit/features/auth/presentation/pages/sign_in_page.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
@@ -55,7 +53,6 @@ void main() {
     final connectivity = _FakeConnectivityService();
     final sessionRepo = _InMemorySessionRepository();
     final authRepo = _FakeAuthRepository();
-    final userRepo = _FakeUserRepository();
     final analytics = AnalyticsTracker(_NoopAnalyticsService());
 
     final tokenRefresher = _AuthRepositoryTokenRefresher(authRepo);
@@ -66,7 +63,7 @@ void main() {
       events: events,
     );
 
-    final currentUserFetcher = _UserRepositoryCurrentUserFetcher(userRepo);
+    const currentUserFetcher = _FakeCurrentUserFetcher();
     final startup = AppStartupController(
       appLaunch: appLaunch,
       connectivity: connectivity,
@@ -345,17 +342,12 @@ class _FakeAuthRepository implements AuthRepository {
   }
 }
 
-class _FakeUserRepository implements UserRepository {
-  @override
-  Future<Either<AuthFailure, UserEntity>> getMe() async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
-  }
+class _FakeCurrentUserFetcher implements CurrentUserFetcher {
+  const _FakeCurrentUserFetcher();
 
   @override
-  Future<Either<AuthFailure, UserEntity>> patchMeProfile(
-    PatchMeProfileRequestEntity request,
-  ) async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
+  Future<Either<SessionFailure, UserEntity>> fetch() async {
+    return left(const SessionFailure.unexpected());
   }
 }
 
@@ -381,18 +373,6 @@ class _AuthRepositoryTokenRefresher implements TokenRefresher {
     final result = await _repository.refreshToken(
       RefreshRequestEntity(refreshToken: refreshToken),
     );
-    return result.mapLeft(_toSessionFailure);
-  }
-}
-
-class _UserRepositoryCurrentUserFetcher implements CurrentUserFetcher {
-  _UserRepositoryCurrentUserFetcher(this._repository);
-
-  final UserRepository _repository;
-
-  @override
-  Future<Either<SessionFailure, UserEntity>> fetch() async {
-    final result = await _repository.getMe();
     return result.mapLeft(_toSessionFailure);
   }
 }

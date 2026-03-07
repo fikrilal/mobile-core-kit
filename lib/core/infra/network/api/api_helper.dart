@@ -411,6 +411,7 @@ class ApiHelper {
         message: 'No internet connection',
         statusCode: -1,
       );
+      _logApiFailure(method: method, path: path, failure: failure);
       if (throwOnError) throw failure;
       return ApiResponse.error(
         message: failure.message,
@@ -443,7 +444,16 @@ class ApiHelper {
       // 4) happy path (2xx) ---------------------------------------------------
       final result = _processResponse<T>(response, parser);
       if (throwOnError && result.isError) {
-        throw ApiFailure.fromApiResponse(result);
+        final failure = ApiFailure.fromApiResponse(result);
+        _logApiFailure(method: method, path: path, failure: failure);
+        throw failure;
+      }
+      if (result.isError) {
+        _logApiFailure(
+          method: method,
+          path: path,
+          failure: ApiFailure.fromApiResponse(result),
+        );
       }
       return result;
     } on ApiFailure catch (failure) {
@@ -485,6 +495,18 @@ class ApiHelper {
         traceId: failure.traceId,
       );
     }
+  }
+
+  void _logApiFailure({
+    required String method,
+    required String path,
+    required ApiFailure failure,
+  }) {
+    Log.warning(
+      'ApiHelper failure [$method $path] '
+      '(status=${failure.statusCode}, code=${failure.code}): ${failure.message}',
+      name: 'ApiHelper',
+    );
   }
 
   Options _mergeOptions(
