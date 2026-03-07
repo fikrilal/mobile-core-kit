@@ -22,12 +22,6 @@ class MeRemoteDataSource {
       parser: MeModel.fromJson,
     );
 
-    if (response.isError) {
-      Log.warning(
-        'Fetching current user failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
     return response;
   }
 }

@@ -40,13 +40,6 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
       ).toJson(),
     );
 
-    if (response.isError) {
-      Log.warning(
-        'Upserting push token failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
-
     return response;
   }
 
@@ -63,13 +56,6 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
         'Idempotency-Key': IdempotencyKeyUtils.generate(),
       },
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Revoking push token failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
 
     return response;
   }

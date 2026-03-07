@@ -41,13 +41,6 @@ class ProfileImageRemoteDataSource {
       parser: ProfileImageUploadPlanModel.fromJson,
     );
 
-    if (response.isError) {
-      Log.warning(
-        'Creating profile image upload plan failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
-
     return response;
   }
 
@@ -69,13 +62,6 @@ class ProfileImageRemoteDataSource {
       data: CompleteProfileImageUploadRequestModel(fileId: fileId).toJson(),
     );
 
-    if (response.isError) {
-      Log.warning(
-        'Completing profile image upload failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
-
     return response;
   }
 
@@ -93,13 +79,6 @@ class ProfileImageRemoteDataSource {
         'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
       },
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Clearing profile image failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
 
     return response;
   }
@@ -119,13 +98,6 @@ class ProfileImageRemoteDataSource {
       throwOnError: false,
       parser: ProfileImageUrlModel.fromJson,
     );
-
-    if (response.isError) {
-      Log.warning(
-        'Fetching profile image URL failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
 
     return response;
   }
