@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/di/registrars/core_foundation_registrar.dar
 import 'package:mobile_core_kit/core/di/registrars/core_infra_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/core_platform_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/core_runtime_registrar.dart';
+import 'package:mobile_core_kit/core/di/registrars/core_session_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/feature_modules_registrar.dart';
 import 'package:mobile_core_kit/core/domain/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
@@ -38,8 +39,10 @@ void main() {
     registerCoreRuntime(locator);
     expect(locator.isRegistered<NavigationService>(), isTrue);
 
-    registerFeatureModules(locator);
+    registerCoreSession(locator);
     expect(locator.isRegistered<SessionManager>(), isTrue);
+
+    registerFeatureModules(locator);
     expect(locator.isRegistered<CurrentUserFetcher>(), isTrue);
 
     registerAppOrchestrators(locator);

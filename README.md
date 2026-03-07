@@ -19,7 +19,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 ## Prerequisites
 
-- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.38.4`).
+- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.41.4`).
 - Dart SDK bundled with Flutter.
 - Firebase CLI if you want to reconfigure Firebase (`flutterfire configure`).
 
