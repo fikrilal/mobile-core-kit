@@ -28,8 +28,8 @@ import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dar
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/account/presentation/widgets/locale_setting_tile.dart';
 import 'package:mobile_core_kit/features/account/presentation/widgets/theme_mode_setting_tile.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_cubit.dart';
-import 'package:mobile_core_kit/features/user/presentation/cubit/profile_image/profile_image_state.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:mobile_core_kit/navigation/user/user_routes.dart';

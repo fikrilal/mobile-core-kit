@@ -63,10 +63,10 @@ lib/core/infra/network/download/
 └─ dio_presigned_download_client.dart      # dedicated Dio (no interceptors)
 ```
 
-User feature (cache + orchestration):
+Account feature / profile subfeature (cache + orchestration):
 
 ```
-lib/features/user/
+lib/features/account/subfeatures/profile/
 ├─ data/
 │  ├─ datasource/local/
 │  │  └─ profile_avatar_cache_local_datasource.dart     # disk + SharedPreferences metadata + TTL
@@ -75,7 +75,7 @@ lib/features/user/
 │  ├─ repository/
 │  │  └─ profile_avatar_repository_impl.dart            # get URL → download bytes → save
 │  └─ services/
-│     └─ user_avatar_cache_session_listener.dart        # clears cache on session end
+│     └─ profile_avatar_cache_session_listener.dart     # clears cache on session end
 ├─ domain/
 │  ├─ entity/
 │  │  └─ profile_avatar_cache_entry_entity.dart
@@ -96,7 +96,7 @@ lib/features/user/
 Tests:
 
 ```
-test/features/user/
+test/features/account/subfeatures/profile/
 ├─ data/datasource/local/profile_avatar_cache_local_datasource_test.dart
 └─ presentation/cubit/profile_image/profile_image_cubit_test.dart
 ```
@@ -180,7 +180,7 @@ After a successful clear:
 
 On `SessionCleared` and `SessionExpired` events:
 
-- `UserAvatarCacheSessionListener` clears all avatar caches (safe default).
+- `ProfileAvatarCacheSessionListener` clears all avatar caches (safe default).
 
 This prevents cross-user bleed when switching accounts and keeps guest mode clean.
 
@@ -191,4 +191,3 @@ This prevents cross-user bleed when switching accounts and keeps guest mode clea
 - “Avatar keeps showing placeholder”: confirm `profileImageFileId` is present in `/me` and `GET /v1/me/profile-image/url` returns `200` (not `204`).
 - “Avatar never updates after upload”: `FileImage` caches by path; the implementation must evict the `FileImage` cache when overwriting the same file.
 - “Wrong avatar after logout/login”: should not happen; cache is cleared on session end. If it happens, it’s a bug in session cleanup wiring.
-

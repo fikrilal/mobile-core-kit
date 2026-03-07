@@ -34,7 +34,6 @@ import 'package:mobile_core_kit/features/auth/domain/entity/register_request_ent
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/cancel_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/user/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/entity/request_account_deletion_request_entity.dart';
 import 'package:mobile_core_kit/features/user/domain/repository/user_repository.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
@@ -322,13 +321,6 @@ class _FakeAuthRepository implements AuthRepository {
 class _FakeUserRepository implements UserRepository {
   @override
   Future<Either<AuthFailure, UserEntity>> getMe() async {
-    return left(const AuthFailure.unexpected(message: 'not implemented'));
-  }
-
-  @override
-  Future<Either<AuthFailure, UserEntity>> patchMeProfile(
-    PatchMeProfileRequestEntity request,
-  ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 

@@ -7,7 +7,6 @@ import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart'
 import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
 import 'package:mobile_core_kit/features/user/data/datasource/remote/user_remote_datasource.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/cancel_account_deletion_request_model.dart';
-import 'package:mobile_core_kit/features/user/data/model/remote/patch_me_request_model.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/request_account_deletion_request_model.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -62,70 +61,6 @@ void main() {
         throwOnError: false,
       ),
     ).called(1);
-    verifyNoMoreInteractions(apiHelper);
-  });
-
-  test('patchMe hits /me on profile host with idempotency key', () async {
-    final apiHelper = _MockApiHelper();
-    final datasource = UserRemoteDataSource(apiHelper);
-
-    final expected = ApiResponse<MeModel>.success(
-      data: const MeModel(
-        id: 'u1',
-        email: 'user@example.com',
-        emailVerified: false,
-        roles: ['USER'],
-        authMethods: ['PASSWORD'],
-        profile: MeProfileModel(givenName: 'Dante', familyName: 'Alighieri'),
-      ),
-    );
-
-    when(
-      () => apiHelper.patch<MeModel>(
-        UserEndpoint.me,
-        parser: any(named: 'parser'),
-        host: ApiHost.profile,
-        throwOnError: false,
-        headers: any(named: 'headers'),
-        data: any(named: 'data'),
-      ),
-    ).thenAnswer((_) async => expected);
-
-    final response = await datasource.patchMe(
-      request: const PatchMeRequestModel(
-        profile: PatchMeProfileModel(
-          givenName: 'Dante',
-          familyName: 'Alighieri',
-        ),
-      ),
-    );
-
-    expect(response, same(expected));
-
-    final captured = verify(
-      () => apiHelper.patch<MeModel>(
-        UserEndpoint.me,
-        parser: any(named: 'parser'),
-        host: ApiHost.profile,
-        throwOnError: false,
-        headers: captureAny(named: 'headers'),
-        data: captureAny(named: 'data'),
-      ),
-    ).captured;
-
-    final headers = captured[0] as Map<String, String>?;
-    expect(headers, isNotNull);
-    expect(headers!.containsKey('Idempotency-Key'), isTrue);
-    expect(headers['Idempotency-Key'], isNotEmpty);
-
-    final data = captured[1] as Object?;
-    expect(
-      data,
-      equals({
-        'profile': {'givenName': 'Dante', 'familyName': 'Alighieri'},
-      }),
-    );
-
     verifyNoMoreInteractions(apiHelper);
   });
 

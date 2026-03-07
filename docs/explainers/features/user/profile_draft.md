@@ -59,7 +59,7 @@ Drafts are stored in `SharedPreferences` because:
 ## System tree (where the code lives)
 
 ```
-lib/features/user/
+lib/features/account/subfeatures/profile/
 ├─ data/
 │  ├─ datasource/
 │  │  └─ local/
@@ -83,16 +83,16 @@ lib/features/user/
 │     └─ complete_profile/
 │        └─ complete_profile_cubit.dart           # loads/saves/clears draft
 └─ di/
-   └─ user_module.dart                            # DI wiring
+   └─ account_profile_module.dart                 # DI wiring
 
 lib/navigation/user/
-└─ user_routes_list.dart                           # cubit creation triggers loadDraft()
+└─ user_routes_list.dart                          # route names are still transitional in Phase 3
 ```
 
 Tests:
 
 ```
-test/features/user/
+test/features/account/subfeatures/profile/
 ├─ data/datasource/local/profile_draft_local_datasource_test.dart
 └─ presentation/cubit/complete_profile/complete_profile_cubit_test.dart
 ```

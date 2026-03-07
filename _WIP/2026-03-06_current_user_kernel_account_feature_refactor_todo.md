@@ -236,56 +236,77 @@ Goal: move non-workflow root composition out of `features/user`.
 
 Goal: `profile` becomes a complete vertical slice.
 
-- [ ] Create `lib/features/account/subfeatures/profile/`
-- [ ] Add:
-  - [ ] `data/`
-  - [ ] `domain/`
-  - [ ] `presentation/`
-  - [ ] `di/`
+- [x] Create `lib/features/account/subfeatures/profile/`
+- [x] Add:
+  - [x] `data/`
+  - [x] `domain/`
+  - [x] `presentation/`
+  - [x] `di/`
 
 ### Presentation
-- [ ] Move:
-  - [ ] `lib/features/user/presentation/cubit/complete_profile/**`
-  - [ ] `lib/features/user/presentation/cubit/profile_image/**`
-  - [ ] `lib/features/user/presentation/pages/complete_profile_page.dart`
-- [ ] Move any profile-owned widgets under:
-  - [ ] `subfeatures/profile/presentation/widgets/`
+- [x] Move:
+  - [x] `lib/features/user/presentation/cubit/complete_profile/**`
+  - [x] `lib/features/user/presentation/cubit/profile_image/**`
+  - [x] `lib/features/user/presentation/pages/complete_profile_page.dart`
+- [x] Move any profile-owned widgets under:
+  - [x] `subfeatures/profile/presentation/widgets/` (none required)
 
 ### Domain
-- [ ] Move profile-owned entities/value objects:
-  - [ ] `patch_me_profile_request_entity.dart`
-  - [ ] `profile_draft_entity.dart`
-  - [ ] `profile_image_*`
-  - [ ] `profile_avatar_cache_entry_entity.dart`
-  - [ ] `given_name.dart`
-  - [ ] `family_name.dart`
-- [ ] Move profile-owned repositories:
-  - [ ] `profile_draft_repository.dart`
-  - [ ] `profile_image_repository.dart`
-  - [ ] `profile_avatar_repository.dart`
-- [ ] Move profile-owned use cases:
-  - [ ] draft use cases
-  - [ ] patch profile use case
-  - [ ] profile image use cases
-  - [ ] avatar cache use cases
+- [x] Move profile-owned entities/value objects:
+  - [x] `patch_me_profile_request_entity.dart`
+  - [x] `profile_draft_entity.dart`
+  - [x] `profile_image_*`
+  - [x] `profile_avatar_cache_entry_entity.dart`
+  - [x] `given_name.dart`
+  - [x] `family_name.dart`
+- [x] Move profile-owned repositories:
+  - [x] `profile_draft_repository.dart`
+  - [x] `profile_image_repository.dart`
+  - [x] `profile_avatar_repository.dart`
+  - [x] split patch profile into `profile_repository.dart`
+- [x] Move profile-owned use cases:
+  - [x] draft use cases
+  - [x] patch profile use case
+  - [x] profile image use cases
+  - [x] avatar cache use cases
 
 ### Data
-- [ ] Move local datasources:
-  - [ ] `profile_draft_local_datasource.dart`
-  - [ ] `profile_avatar_cache_local_datasource.dart`
-- [ ] Move remote datasources:
-  - [ ] `profile_image_remote_datasource.dart`
-  - [ ] `profile_avatar_download_datasource.dart`
-- [ ] Move repositories:
-  - [ ] `profile_draft_repository_impl.dart`
-  - [ ] `profile_image_repository_impl.dart`
-  - [ ] `profile_avatar_repository_impl.dart`
-- [ ] Move profile-related error mappers/codes
-- [ ] Move associated models and generated files
+- [x] Move local datasources:
+  - [x] `profile_draft_local_datasource.dart`
+  - [x] `profile_avatar_cache_local_datasource.dart`
+- [x] Move remote datasources:
+  - [x] `profile_image_remote_datasource.dart`
+  - [x] `profile_avatar_download_datasource.dart`
+  - [x] split patch profile into `profile_remote_datasource.dart`
+- [x] Move repositories:
+  - [x] `profile_draft_repository_impl.dart`
+  - [x] `profile_image_repository_impl.dart`
+  - [x] `profile_avatar_repository_impl.dart`
+  - [x] split patch profile into `profile_repository_impl.dart`
+- [x] Move profile-related error mappers/codes
+- [x] Move associated models and generated files
 
 ### DI
-- [ ] Add `lib/features/account/subfeatures/profile/di/account_profile_module.dart`
-- [ ] Register all profile datasources, repositories, use cases, cubits
+- [x] Add `lib/features/account/subfeatures/profile/di/account_profile_module.dart`
+- [x] Register all profile datasources, repositories, use cases, cubits
+
+### Phase 3 output — profile vertical split (2026-03-07)
+
+- New full profile slice under `lib/features/account/subfeatures/profile/**`
+- New DI boundary:
+  - `lib/features/account/subfeatures/profile/di/account_profile_module.dart`
+- `account_page.dart` and complete-profile routing now depend on account/profile presentation instead of legacy `features/user` presentation
+- Patch-profile behavior is no longer owned by the flat `UserRepository`
+  - new `ProfileRemoteDataSource`
+  - new `ProfileRepository`
+  - new `ProfileRepositoryImpl`
+- Profile image refresh now depends on the core `CurrentUserFetcher` kernel port instead of `GetMeUseCase`
+- Avatar session cleanup renamed to `ProfileAvatarCacheSessionListener`
+- Legacy `features/user` kept only the remaining current-user, security, and account-deletion responsibilities
+- Verification status:
+  - `fvm flutter analyze` — passed
+  - `dart run custom_lint` — passed
+  - `fvm flutter test test/features/account/subfeatures/profile` — blocked by the existing local Flutter SDK / `dart:ui` mismatch, not by Phase 3 code
 
 ## Phase 4 — Security subfeature full vertical split
 

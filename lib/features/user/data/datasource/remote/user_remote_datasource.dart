@@ -7,7 +7,6 @@ import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/core/infra/network/model/remote/me_model.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/cancel_account_deletion_request_model.dart';
-import 'package:mobile_core_kit/features/user/data/model/remote/patch_me_request_model.dart';
 import 'package:mobile_core_kit/features/user/data/model/remote/request_account_deletion_request_model.dart';
 
 class UserRemoteDataSource {
@@ -33,34 +32,6 @@ class UserRemoteDataSource {
         name: _tag,
       );
     }
-    return response;
-  }
-
-  Future<ApiResponse<MeModel>> patchMe({
-    required PatchMeRequestModel request,
-    String? idempotencyKey,
-  }) async {
-    Log.info('Patching current user profile', name: _tag);
-
-    final response = await _apiHelper.patch<MeModel>(
-      UserEndpoint.me,
-      host: ApiHost.profile,
-      requiresAuth: true,
-      throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
-      data: request.toJson(),
-      parser: MeModel.fromJson,
-    );
-
-    if (response.isError) {
-      Log.warning(
-        'Patching current user failed (status=${response.statusCode}): ${response.message}',
-        name: _tag,
-      );
-    }
-
     return response;
   }
 

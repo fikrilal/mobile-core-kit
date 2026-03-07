@@ -83,45 +83,56 @@ lib/core/infra/network/upload/
 └─ dio_presigned_upload_client.dart     # dedicated Dio (no interceptors)
 ```
 
-User feature (API calls + orchestration):
+Account feature / profile subfeature (API calls + orchestration):
 
 ```
-lib/features/user/
-├─ data/
-│  ├─ datasource/remote/
-│  │  └─ profile_image_remote_datasource.dart
-│  ├─ error/
-│  │  ├─ profile_image_error_codes.dart
-│  │  └─ profile_image_failure_mapper.dart
-│  ├─ model/remote/
-│  │  ├─ create_profile_image_upload_request_model.dart
-│  │  ├─ profile_image_upload_plan_model.dart
-│  │  ├─ complete_profile_image_upload_request_model.dart
-│  │  └─ profile_image_url_model.dart
-│  └─ repository/
-│     └─ profile_image_repository_impl.dart
-├─ domain/
-│  ├─ entity/
-│  │  ├─ create_profile_image_upload_plan_request_entity.dart
-│  │  ├─ complete_profile_image_upload_request_entity.dart
-│  │  ├─ clear_profile_image_request_entity.dart
-│  │  ├─ upload_profile_image_request_entity.dart
-│  │  ├─ profile_image_upload_plan_entity.dart
-│  │  └─ profile_image_url_entity.dart
-│  ├─ repository/
-│  │  └─ profile_image_repository.dart
-│  └─ usecase/
-│     ├─ upload_profile_image_usecase.dart
-│     ├─ clear_profile_image_usecase.dart
-│     └─ get_profile_image_url_usecase.dart
+lib/features/account/
 ├─ presentation/
-│  ├─ cubit/profile_image/
-│  │  ├─ profile_image_cubit.dart
-│  │  └─ profile_image_state.dart
 │  └─ pages/
-│     └─ account_page.dart              # “Change profile photo” UI entry
-└─ di/
-   └─ user_module.dart                  # DI wiring
+│     └─ account_page.dart                            # “Change profile photo” UI entry
+└─ subfeatures/profile/
+   ├─ data/
+   │  ├─ datasource/remote/
+   │  │  ├─ profile_remote_datasource.dart
+   │  │  └─ profile_image_remote_datasource.dart
+   │  ├─ error/
+   │  │  ├─ profile_failure_mapper.dart
+   │  │  ├─ profile_image_error_codes.dart
+   │  │  └─ profile_image_failure_mapper.dart
+   │  ├─ model/remote/
+   │  │  ├─ patch_me_request_model.dart
+   │  │  ├─ create_profile_image_upload_request_model.dart
+   │  │  ├─ profile_image_upload_plan_model.dart
+   │  │  ├─ complete_profile_image_upload_request_model.dart
+   │  │  └─ profile_image_url_model.dart
+   │  └─ repository/
+   │     ├─ profile_repository_impl.dart
+   │     └─ profile_image_repository_impl.dart
+   ├─ domain/
+   │  ├─ entity/
+   │  │  ├─ patch_me_profile_request_entity.dart
+   │  │  ├─ create_profile_image_upload_plan_request_entity.dart
+   │  │  ├─ complete_profile_image_upload_request_entity.dart
+   │  │  ├─ clear_profile_image_request_entity.dart
+   │  │  ├─ upload_profile_image_request_entity.dart
+   │  │  ├─ profile_image_upload_plan_entity.dart
+   │  │  └─ profile_image_url_entity.dart
+   │  ├─ repository/
+   │  │  ├─ profile_repository.dart
+   │  │  └─ profile_image_repository.dart
+   │  └─ usecase/
+   │     ├─ patch_me_profile_usecase.dart
+   │     ├─ upload_profile_image_usecase.dart
+   │     ├─ clear_profile_image_usecase.dart
+   │     └─ get_profile_image_url_usecase.dart
+   ├─ presentation/
+   │  ├─ cubit/profile_image/
+   │  │  ├─ profile_image_cubit.dart
+   │  │  └─ profile_image_state.dart
+   │  └─ pages/
+   │     └─ complete_profile_page.dart
+   └─ di/
+      └─ account_profile_module.dart
 ```
 
 Media picking (gallery/camera + downscale/compress-to-fit):
@@ -139,10 +150,12 @@ Tests:
 
 ```
 test/core/infra/network/upload/dio_presigned_upload_client_test.dart
-test/features/user/
+test/features/account/subfeatures/profile/
 ├─ data/datasource/remote/profile_image_remote_datasource_test.dart
-├─ data/error/profile_image_failure_mapper_test.dart
+├─ data/datasource/remote/profile_remote_datasource_test.dart
+├─ data/datasource/remote/profile_remote_datasource_integration_test.dart
 ├─ data/repository/profile_image_repository_impl_test.dart
+├─ data/repository/profile_repository_impl_integration_test.dart
 ├─ domain/usecase/upload_profile_image_usecase_test.dart
 ├─ domain/usecase/clear_profile_image_usecase_test.dart
 ├─ domain/usecase/get_profile_image_url_usecase_test.dart
@@ -177,7 +190,7 @@ AccountPage
         -> ProfileImageRepository.createUploadPlan(...)           (POST /me/profile-image/upload + Idempotency-Key)
         -> ProfileImageRepository.uploadToPresignedUrl(plan, ...) (PUT <presigned url> via DioPresignedUploadClient)
         -> ProfileImageRepository.completeUpload(fileId)          (POST /me/profile-image/complete)
-        -> GetMeUseCase                                          (GET /v1/me)
+        -> CurrentUserFetcher.fetch()                            (GET /v1/me)
 ```
 
 Then the UI:
@@ -194,7 +207,7 @@ High-level sequence:
 AccountPage -> ProfileImageCubit.clear(idempotencyKey)
   -> ClearProfileImageUseCase
      -> ProfileImageRepository.clearProfileImage(...) (DELETE /v1/me/profile-image)
-     -> GetMeUseCase                                 (GET /v1/me)
+     -> CurrentUserFetcher.fetch()                   (GET /v1/me)
 ```
 
 Then the UI re-loads the avatar, which becomes `null` (placeholder) when there is no profile image.

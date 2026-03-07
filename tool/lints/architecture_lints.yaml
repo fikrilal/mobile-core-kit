@@ -43,14 +43,13 @@ rules:
         allow:
           - lib/features/onboarding/**
 
+      - from: lib/features/account/**
+        allow:
+          - lib/features/account/**
+
       # Transitional refactor boundary: account adapters/DI may depend on the
       # legacy user feature until workflows are moved in later phases.
       - from: lib/features/account/adapters/**
-        allow:
-          - lib/features/account/**
-          - lib/features/user/**
-
-      - from: lib/features/account/presentation/**
         allow:
           - lib/features/account/**
           - lib/features/user/**
@@ -205,6 +204,7 @@ rules:
       - from: lib/features/account/di/**
         allow:
           - lib/features/account/di/**
+          - lib/features/account/subfeatures/**/di/**
           - lib/features/user/di/**
 
   - id: no_service_locator_imports_outside_edges
