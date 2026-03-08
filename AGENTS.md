@@ -57,6 +57,8 @@
   - template/scaffold update
   - engineering doc update
   - source-local `README.md`
+- If multiple agents are working concurrently, follow `docs/engineering/parallel_agent_workflow.md`.
+  Prefer `git worktree` + one branch per agent.
 - Keep `AGENTS.md` small. Use it for the operating contract. Put detailed guidance in:
   - `docs/engineering/*`
   - ADRs under `ADR/records/`
@@ -131,6 +133,7 @@ Runtime evidence guidance:
   - UI state: `docs/engineering/ui_state_architecture.md`
   - Testing: `docs/engineering/testing_strategy.md`
   - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
+  - Parallel coordination: `docs/engineering/parallel_agent_workflow.md`
   - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
   - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.

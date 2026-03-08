@@ -22,6 +22,7 @@ Use these documents together, not interchangeably:
 - architecture rules: `docs/engineering/project_architecture.md`
 - mechanical enforcement: `docs/engineering/guardrails.md`
 - runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+- multi-agent coordination: `docs/engineering/parallel_agent_workflow.md`
 
 ## Loop Contract
 
