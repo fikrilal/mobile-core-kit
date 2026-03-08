@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/sizing.dart';
@@ -8,6 +7,7 @@ import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/badge/app_icon_badge.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/date_utils.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
@@ -34,7 +34,10 @@ class SecurityPrivacyPage extends StatelessWidget {
             valueListenable: userContext.stateListenable,
             builder: (context, state, _) {
               final scheduledFor = state.user?.accountDeletion?.scheduledFor;
-              final scheduledDate = _formatDate(context, scheduledFor);
+              final scheduledDate = AppDateUtils.tryFormatLongDateFromIso(
+                scheduledFor,
+                locale: Localizations.localeOf(context).toLanguageTag(),
+              );
               final deletionSubtitle = scheduledDate == null
                   ? context.l10n.profileDeleteAccountSubtitle
                   : context.l10n.profileDeleteAccountScheduledSubtitle(
@@ -94,12 +97,4 @@ class SecurityPrivacyPage extends StatelessWidget {
       ),
     );
   }
-}
-
-String? _formatDate(BuildContext context, String? isoDateTime) {
-  if (isoDateTime == null || isoDateTime.trim().isEmpty) return null;
-  final parsed = DateTime.tryParse(isoDateTime);
-  if (parsed == null) return null;
-  final locale = Localizations.localeOf(context).toLanguageTag();
-  return DateFormat.yMMMMd(locale).format(parsed.toLocal());
 }

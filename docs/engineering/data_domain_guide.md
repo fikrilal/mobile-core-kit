@@ -1,263 +1,490 @@
-# Data & Domain Layer Guide
+# Data & Domain Guide
 
-This guide codifies how features in this codebase structure and implement their Data and Domain
-layers. It aims to make implementations predictable and readable, simplify pagination, and reduce
-ambiguity between model mapping and query serialization.
+This guide explains how to write feature `data/` and `domain/` code in this repository.
+
+Use this document when deciding:
+- where code belongs
+- what a datasource should do
+- what a repository should do
+- when a type belongs in feature `domain/` vs `core/domain/`
+- how remote/local persistence should map into domain objects
+
+For the exact shape of models and entities, see:
+- `docs/engineering/model_entity_guide.md`
 
 ## Goals
 
-- Keep responsibilities clear between Domain, Data, and Presentation layers.
-- Standardize pagination and error handling with core helpers.
-- Make repositories thin (orchestration only) and keep HTTP/DB details in datasources.
-- Prefer model→domain mapping next to the model for pure structural conversions.
-- Allow small repository-local mapping helpers when conversion logic is endpoint/repository specific.
+- Keep ownership explicit between `domain/`, `data/`, and `presentation/`.
+- Make datasource, repository, and mapper code predictable across features.
+- Keep repositories thin but meaningful.
+- Keep transport, storage, and serialization details out of domain code.
+- Keep structural model/entity mapping easy to find and easy to test.
 
-## Layer Responsibilities
+## 1. Layer Responsibilities
 
-- Domain
-    - Entities (Freezed): immutable, UI‑agnostic domain objects.
-    - Value Objects (VOs): typed inputs and invariants (immutable).
-    - Param VOs: typed query parameters for GET endpoints (immutable).
-    - Failures: feature‑scoped failure types (with `userMessage`).
-    - Usecases: domain entry points. Return `Either<Failure, Domain>`.
+### Domain
 
-- Data
-    - Models (remote/local): Freezed + JSON. Own model→domain mapping via extensions or helpers in
-      the same file when practical.
-    - Datasources (remote/local): own HTTP/DB specifics (paths, headers, serialization) and call
-      core `ApiHelper` / DB adapters.
-      - GET endpoints: accept a Param VO and serialize via a mapper (`*_mapper.dart`) into query
-        parameters.
-      - POST/PATCH endpoints: accept a request model (built via `Model.fromEntity(...)`) and call
-        `toJson()` for request bodies.
-    - Mappers: for Param VO → query parameter maps only (keep simple and pure).
-    - Failure mappers: map `ApiFailure`/backend codes into feature failures (keep repo readable).
-    - Repositories: orchestrate datasource calls, convert `ApiResponse<T>` to `Either`, map
-      failures, and map models to domain using model-owned mappers or small repository-local helpers.
+Feature `domain/` owns business-facing contracts and types for that feature.
 
-- Presentation
-    - BLoC/Cubit: consume usecases and manage UI state (covered in UI state docs).
+It contains:
+- entities
+- value objects
+- feature failures
+- repository interfaces
+- use cases
 
-## Project Structure (conventions)
+It does not contain:
+- HTTP payloads
+- database rows
+- Dio/sqflite/GetIt imports
+- endpoint paths
+- JSON or SQL serialization
 
-- Domain
-    - `lib/features/<feature>/domain/entity/*_entity.dart`
-    - `lib/features/<feature>/domain/value/*` (Value Objects for inputs/invariants)
-    - `lib/features/<feature>/domain/param/*_query.dart`
-    - `lib/features/<feature>/domain/repository/*_repository.dart`
-    - `lib/features/<feature>/domain/usecase/*_usecase.dart`
+### Data
 
-- Data
-    - `lib/features/<feature>/data/model/remote/*_model.dart`
-    - `lib/features/<feature>/data/model/local/*_model.dart`
-    - `lib/features/<feature>/data/datasource/remote/*_remote_datasource.dart`
-    - `lib/features/<feature>/data/datasource/local/*_local_datasource.dart`
-    - `lib/features/<feature>/data/services/*_service.dart` (optional; feature-owned runtime listeners/adapters)
-    - `lib/features/<feature>/data/repository/*_repository_impl.dart`
-    - `lib/features/<feature>/data/mapper/*_mapper.dart` (VO→query params only)
-    - `lib/features/<feature>/data/error/*_failure_mapper.dart`
+Feature `data/` owns implementation details.
 
-- DI
-    - `lib/features/<feature>/di/*_module.dart`
+It contains:
+- remote and local datasources
+- request/response/cache models
+- query mappers
+- failure mappers
+- repository implementations
+- feature-owned runtime listeners/adapters when needed
 
-## Core Helpers You Should Use
+It does not contain:
+- presentation state
+- UI concerns
+- domain business rules that belong in use cases/value objects
 
-- Pagination (cursor‑based, typed): `ApiHelper.getPaginated` / `ApiHelper.postPaginated` +
-  `ApiPaginatedResult<T>`
-    - Cursor: `ApiPaginatedResult.nextCursor`
-    - Limit: `ApiPaginatedResult.limit`
-    - Extra meta: `ApiPaginatedResult.additionalMeta` (all meta keys except `nextCursor`/`limit`)
-- Response to Either: `ApiResponseEitherX.toEitherWithFallback()`
+### Presentation
 
-## Canonical Pattern (example: Book Reviews)
+Presentation consumes use cases and domain types.
 
-- VO (Domain): `lib/features/review/domain/param/review_comments_query.dart`
+It should not know:
+- endpoint paths
+- raw JSON shapes
+- local database details
+- `ApiFailure`
+
+## 2. Feature `domain/` vs `core/domain/`
+
+This repository uses `core/domain/` as a shared kernel for cross-feature contracts.
+
+Put code in feature `domain/` when:
+- it belongs to one feature or subfeature
+- it describes one workflow or product area
+- other features should not depend on it directly
+
+Put code in `core/domain/` when all of these are true:
+- it is cross-feature or runtime-facing
+- it is pure Dart
+- it is a stable contract or shared business type
+- `core/runtime` or multiple features need it
+
+Typical shared-kernel examples:
+- a `CurrentUserFetcher` contract used by runtime to refresh the signed-in user
+- a `CachedUserStore` contract used by session/runtime to persist the current user
+- a shared `UserEntity` consumed by multiple features and runtime services
+- a shared `AuthFailure` vocabulary used by auth/session-related flows
+
+Rule:
+- feature `data/` may implement a `core/domain` port
+- `core/domain` must not import feature code
+
+See also:
+- `lib/core/domain/README.md`
+- `docs/engineering/project_architecture.md`
+
+## 3. Datasource Rules
+
+Datasources own transport and persistence details. Nothing more.
+
+### Remote datasource responsibilities
+
+A remote datasource should:
+- choose the endpoint
+- choose the host
+- serialize request payloads
+- pass query parameters
+- choose the `ApiHelper` method (`getOne`, `getList`, `getPaginated`, `post`, etc.)
+- provide the response parser
+- optionally emit high-level request-start logs when useful
+
+A remote datasource should not:
+- return `Either`
+- map to feature failures
+- build domain entities
+- own business branching
+- duplicate API failure logging already handled by `ApiHelper`
+
+Generic pattern:
 
 ```dart
-@immutable
-class ReviewCommentsQuery {
-  const ReviewCommentsQuery({
-    required this.workId,
-    this.limit = 10,
-    this.cursor,
-    this.sortBy = ReviewSortBy.recent,
-    this.sortOrder = ReviewSortOrder.desc,
-    this.visibility = ReviewVisibility.public,
-    this.status = ReviewStatus.published,
-  });
-// fields...
-  final String? cursor;
-}
-```
+class UserRemoteDataSource {
+  UserRemoteDataSource(this._apiHelper);
 
-- VO → Query params (Mapper): `lib/features/review/data/mapper/review_comment_mapper.dart`
+  final ApiHelper _apiHelper;
 
-```dart
-Map<String, dynamic> bookReviewsQueryToMap(ReviewCommentsQuery q) =>
-    {
-      'limit': q.limit,
-      if (q.cursor != null) 'cursor': q.cursor,
-      'sortBy': q.sortBy.toJson(),
-      'sortOrder': q.sortOrder.toJson(),
-      'visibility': q.visibility.toJson(),
-      'status': q.status.toJson(),
-    };
-```
-
-- Datasource (VO‑driven, typed pagination):
-  `lib/features/review/data/datasource/remote/review_remote_datasource.dart`
-
-```dart
-Future<ApiResponse<ApiPaginatedResult<ReviewCommentModel>>> getBookReviews({
-  required ReviewCommentsQuery query,
-}) =>
-    _apiHelper.getPaginated(
-      DiscoverEndpoint.bookReviews(query.workId),
+  Future<ApiResponse<UserModel>> getCurrentUser() {
+    return _apiHelper.getOne<UserModel>(
+      UserEndpoint.me,
       host: ApiHost.core,
-      queryParameters: bookReviewsQueryToMap(query),
-      itemParser: (j) => ReviewCommentModel.fromJson(Map<String, dynamic>.from(j)),
+      requiresAuth: true,
+      throwOnError: false,
+      parser: UserModel.fromJson,
     );
-```
-
-- Repository (orchestration only): `lib/features/review/data/repository/review_repository_impl.dart`
-
-```dart
-
-final resp = await
-_remote.getBookReviews
-(
-query: query);
-return resp
-    .toEitherWithFallback('Failed to load book reviews.')
-    .mapLeft(_mapApiFailure)
-    .map(
-bookReviewsResultToEntity
-);
-```
-
-- Model → Domain mapping (in the model):
-  `lib/features/review/data/model/remote/review_comment_model.dart`
-
-```dart
-extension ReviewCommentModelX on ReviewCommentModel {
-  ReviewCommentEntity toEntity() =>
-      ReviewCommentEntity(
-        id: id,
-        userId: userId,
-        workId: workId,
-        editionId: editionId,
-        rating: rating,
-        reviewText: reviewText,
-        visibility: ReviewVisibility.fromJson(visibility),
-        status: ReviewStatus.fromJson(status),
-        isSpoiler: isSpoiler,
-        helpfulCount: helpfulCount,
-        flagCount: flagCount,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-        user: ReviewCommentUserEntity(
-          id: user.id, username: user.username,
-          displayName: user.displayName, avatarUrl: user.avatarUrl,
-        ),
-      );
-}
-
-ReviewCommentsEntity bookReviewsResultToEntity(ApiPaginatedResult<ReviewCommentModel> result,) {
-  final items = result.items.map((m) => m.toEntity()).toList(growable: false);
-  final meta = result.additionalMeta ?? const <String, dynamic>{};
-  final f = (meta['filters'] is Map)
-      ? Map<String, dynamic>.from(meta['filters'] as Map)
-      : const <String, dynamic>{};
-  return ReviewCommentsEntity(
-    comments: items,
-    meta: ReviewCommentsMetaEntity(
-      workId: (meta['workId'] as String?) ?? '',
-      pagination: ReviewCommentsPaginationEntity(
-        limit: result.limit ?? 0,
-        nextCursor: result.nextCursor,
-        hasNext: result.nextCursor != null && result.nextCursor!.isNotEmpty,
-      ),
-      filters: ReviewCommentFiltersEntity(
-        visibility: ReviewVisibility.fromJson(f['visibility'] as String?),
-        status: ReviewStatus.fromJson(f['status'] as String?),
-        sortBy: ReviewSortBy.fromJson(f['sortBy'] as String?),
-        sortOrder: ReviewSortOrder.fromJson(f['sortOrder'] as String?),
-      ),
-    ),
-  );
+  }
 }
 ```
 
-## Repository Rules
+### Local datasource responsibilities
 
-- Accept VO. Don’t build raw query maps here.
-- Call VO‑driven datasource. Datasource assembles path and params.
-- Convert `ApiResponse<T>` → `Either<ApiFailure, T>` using core helper.
-- Map left to feature failure, right to domain via model-owned mapping or repository-local helper.
-- Return `Either<FeatureFailure, Domain>`.
+A local datasource should:
+- read/write/delete from the concrete storage layer
+- own DAO usage and transaction boundaries
+- convert local models to and from storage maps
+- return local models or domain objects only when that boundary is already standardized in the feature
 
-## Pagination Rules
+A local datasource should not:
+- know feature failures
+- return `Either`
+- contain workflow orchestration
+- duplicate repository decisions
 
-- Use `getPaginated` / `postPaginated` whenever the backend returns cursor pagination metadata
-  (`meta.nextCursor`, optionally `meta.limit`).
-- Model cursor pagination in a Param VO:
-  - `cursor: String?` (null means first page)
-  - `limit: int` (optional; keep a stable default)
-- Pass `cursor` as a query parameter (only when non‑null) and store the returned
-  `ApiPaginatedResult.nextCursor` for the next request.
-- Treat `nextCursor == null` (or empty) as “no next page”.
-- Read non‑pagination meta from `ApiPaginatedResult.additionalMeta`.
+Generic local pattern:
 
-## Error Handling
+```dart
+class CachedUserLocalDataSource {
+  const CachedUserLocalDataSource(this._dao);
 
-- Datasources return `ApiResponse<T>` without throwing on logical errors.
-- Repositories turn `ApiResponse<T>` into `Either` with `toEitherWithFallback()`, then map to
-  feature failure.
-- Keep user messages in failure types via `userMessage` extensions.
-- Prefer mapping by backend `code` first, and fall back to HTTP status codes for resilience.
-  See `docs/engineering/api/api_error_handling_contract.md`.
+  final CachedUserDao _dao;
 
-## DI Guidelines
+  Future<UserEntity?> read() async {
+    final model = await _dao.getFirst();
+    return model?.toEntity();
+  }
 
-- Register in the feature DI module:
-    - `ReviewRemoteDataSource` (lazy singleton)
-    - `ReviewRepository` (lazy singleton)
-    - Usecases (lazy singleton)
-    - BLoC (factory) in the module where it’s consumed
+  Future<void> write(UserEntity user) async {
+    await _dao.replace(UserLocalModel.fromEntity(user));
+  }
 
-## Testing Guidelines
+  Future<void> clear() => _dao.deleteAll();
+}
+```
 
-- Mapper tests (pure):
-    - VO → query params
-    - Model → entity
-- Repository tests:
-    - Mock datasource `ApiResponse` (success/error), assert `Either` mapping
-- Don’t test HTTP in repositories; cover path assembly and `itemParser` in datasource tests if
-  needed
+### Datasource method signatures
 
-## Migration Notes
+Preferred patterns:
+- remote: `Future<ApiResponse<Model>>`
+- remote paginated: `Future<ApiResponse<ApiPaginatedResult<Model>>>`
+- local: `Future<Model?>`, `Future<void>`, `Future<List<Model>>`, or another simple storage-facing shape
 
-- Prefer `getPaginated` / `postPaginated` for list endpoints that include cursor pagination metadata
-  (`meta.nextCursor`, `meta.limit`).
-- Move model→domain mapping into model files. Keep mappers for Param VO→query params only.
-- Repos should not rebuild `meta` maps; rely on typed `ApiPaginatedResult` and
-  `ApiPaginatedResult.additionalMeta`.
+Do not return:
+- `Either`
+- feature failures
+- presentation states
 
-## FAQ
+### Logging rule
 
-- Mapper vs Model mapping?
-    - Mapper: VO→query params only. Model mapping belongs to the model file (via extensions), so
-      conversions are easy to find and test.
-- When to use `getList`?
-    - Only for plain arrays without pagination/meta. If the backend returns cursor pagination
-      metadata (`meta.nextCursor`), use `getPaginated` / `postPaginated`.
-- How to add a new paginated endpoint?
-    - Add VO (Domain), add VO→params mapper, add VO‑driven datasource with `getPaginated`, add
-      repository method using `toEitherWithFallback` + model‑owned mapping.
+Transport-level API failure logging belongs in `ApiHelper`.
 
-## Related Docs
+Datasource logging should be limited to:
+- useful request-start diagnostics
+- non-duplicative local-storage diagnostics if they materially help debugging
 
-- `docs/engineering/api/api_pagination_cursor_support.md` — cursor pagination contract (`nextCursor`).
-- `docs/engineering/api/api_error_handling_contract.md` — error payload + mapping rules.
-- `lib/core/infra/network/api/api_documentation.md` — `ApiHelper` usage patterns and examples.
-- UI state, VO validation, and architecture docs under `docs/engineering/`.
+Do not add per-method `if (response.isError) Log.warning(...)` branches in datasources.
+
+## 4. Model Rules
+
+Models represent concrete payload/storage shapes.
+
+Use models for:
+- remote request DTOs
+- remote response DTOs
+- local cache/database rows
+
+Do not use models as domain contracts in presentation.
+
+General rule:
+- structural `model -> entity` mapping lives close to the model
+- repositories orchestrate when multiple models or additional metadata need to be combined
+
+For detailed model/entity authoring rules, see:
+- `docs/engineering/model_entity_guide.md`
+
+## 5. Repository Rules
+
+Repositories are the feature's implementation boundary.
+
+A repository implementation should:
+- call one or more datasources
+- convert `ApiResponse<T>` into `Either`
+- map `ApiFailure` into feature or shared domain failures
+- map models into domain entities
+- orchestrate multi-step reads/writes when a single use case needs it
+
+A repository should not:
+- build raw query maps
+- know endpoint paths
+- write JSON bodies directly
+- contain widget/UI logic
+- duplicate simple storage/transport details that belong in datasources
+
+Canonical pattern:
+
+```dart
+class UserRepositoryImpl implements UserRepository {
+  UserRepositoryImpl(this._remote);
+
+  final UserRemoteDataSource _remote;
+
+  @override
+  Future<Either<UserFailure, UserEntity>> getCurrentUser() async {
+    try {
+      final apiResponse = await _remote.getCurrentUser();
+      return apiResponse
+          .toEitherWithFallback('Failed to load user.')
+          .mapLeft(mapUserFailure)
+          .map((model) => model.toEntity());
+    } catch (_) {
+      return left(const UserFailure.unexpected());
+    }
+  }
+}
+```
+
+### Repository error handling
+
+Use this pattern for remote calls:
+1. datasource returns `ApiResponse<T>`
+2. repository calls `toEitherWithFallback(...)`
+3. repository maps `ApiFailure` to feature/shared domain failure
+4. repository maps success payload to domain
+5. repository catches truly unexpected exceptions and returns a stable fallback failure
+
+Current helpers:
+- `ApiResponseEitherX.toEitherWithFallback()`
+- feature failure mappers in `data/error/`
+
+Generic failure-mapper pattern:
+
+```dart
+FeatureFailure mapUserFailure(ApiFailure failure) {
+  switch (failure.code) {
+    case ApiErrorCodes.validationFailed:
+      return FeatureFailure.validation(failure.validationErrors ?? const []);
+    case ApiErrorCodes.unauthorized:
+      return const FeatureFailure.unauthenticated();
+    case ApiErrorCodes.rateLimited:
+      return const FeatureFailure.tooManyRequests();
+  }
+
+  switch (failure.statusCode) {
+    case 401:
+      return const FeatureFailure.unauthenticated();
+    case 429:
+      return const FeatureFailure.tooManyRequests();
+    case 500:
+      return const FeatureFailure.serverError();
+    default:
+      return const FeatureFailure.unexpected();
+  }
+}
+```
+
+### Repository-local mapping vs model-owned mapping
+
+Prefer model-owned mapping for pure structural conversion:
+- `UserModel.toEntity()`
+- `UserLocalModel.toEntity()`
+
+Use repository-local helpers only when the repository must combine:
+- multiple models
+- paginated metadata
+- endpoint-specific derived state
+- cross-model orchestration
+
+Rule:
+- if the mapping is just one model becoming one entity, keep it near the model
+- if the mapping depends on repository context, keep it in the repository (or a small repository-local helper)
+
+## 6. Param Objects, Request Models, and Mappers
+
+Use the following split:
+
+### Value object / param object in `domain/`
+
+Use a domain type when the input is part of the feature contract.
+
+Typical examples:
+- filters and pagination queries
+- validated request inputs
+- typed sort/order enums
+
+### Request model in `data/model/remote/`
+
+Use a request DTO when talking to the backend.
+
+Typical examples:
+- `LoginRequestModel`
+- `UpdateProfileRequestModel`
+- `RevokeSessionRequestModel`
+
+Rule:
+- a request model mirrors the backend payload shape
+- if the backend payload differs from the domain request shape, that conversion happens in data/repository or via `Model.fromEntity(...)`
+
+### Mapper in `data/mapper/`
+
+Use a mapper only for small pure conversions such as:
+- query object -> `Map<String, dynamic>`
+
+Do not create mapper files for every model/entity conversion by default.
+
+## 7. Remote API Pattern
+
+Preferred flow:
+
+1. Use case calls repository interface
+2. Repository builds request model if needed
+3. Repository calls datasource
+4. Datasource calls `ApiHelper`
+5. Repository converts `ApiResponse<T>` -> `Either`
+6. Repository maps failure and success into domain
+7. Presentation consumes domain output only
+
+Example:
+- request entity: `LoginRequest`
+- request model: `LoginRequestModel.fromEntity(...)`
+- datasource: `AuthRemoteDataSource.login(...)`
+- repository: `AuthRepositoryImpl.login(...)`
+- output: `Either<AuthFailure, AuthSession>`
+
+## 8. Local Persistence Pattern
+
+Preferred flow:
+
+1. Repository or adapter decides to read/write cache
+2. Local datasource uses DAO / database adapter
+3. Local model owns `fromMap`, `toMap`, and usually `toEntity`
+4. Repository or adapter returns domain-facing result
+
+Guideline:
+- keep SQL/table/column concerns in local models or DAOs
+- do not leak storage row shape into repositories or presentation
+
+## 9. Pagination Pattern
+
+Use `ApiHelper.getPaginated` / `postPaginated` when the backend returns cursor pagination metadata.
+
+Model cursor pagination in a domain query object:
+- `cursor: String?`
+- `limit: int`
+
+Serialize it in a simple mapper:
+- include `cursor` only when non-null
+- keep default limits stable
+
+Repository rules for paginated responses:
+- map the list items to entities
+- read `nextCursor` / `limit` from `ApiPaginatedResult`
+- read other metadata from `additionalMeta`
+- do not rebuild raw `meta` parsing logic in multiple places if one helper can keep it localized
+
+## 10. Failure Mapping Pattern
+
+Failure mapping belongs in `data/error/`.
+
+Why:
+- repositories stay readable
+- backend code/status handling stays centralized per feature
+- API contract drift is easier to update in one place
+
+Preferred order:
+1. backend `code`
+2. HTTP status fallback
+3. generic unexpected fallback
+
+Rule:
+- datasources do not map feature failures
+- repositories do not inline large switch statements when a feature error mapper can own them cleanly
+
+## 11. Use Case Rules
+
+Use cases are domain entry points.
+
+A use case should:
+- depend on the repository interface
+- return `Either<Failure, T>` when the operation can fail
+- keep business meaning explicit
+
+A use case may be thin. That is acceptable.
+
+Do not add use cases only for ceremony.
+If a feature already uses use cases consistently, keep following that pattern.
+
+## 12. Testing Rules
+
+Test at the boundary where logic lives.
+
+### Model tests
+Test:
+- `fromJson` / `toJson` when behavior is non-trivial
+- `fromMap` / `toMap` for local models
+- `toEntity()` and `fromEntity()` when present
+
+### Mapper tests
+Test:
+- query object -> query map
+- enum/string conversion helpers
+
+### Repository tests
+Test:
+- datasource success -> correct domain mapping
+- datasource error -> correct failure mapping
+- repository orchestration when multiple steps are involved
+
+Do not test:
+- raw HTTP inside repository tests
+- widget concerns in data/domain tests
+
+### Datasource tests
+Add datasource tests when they provide real value, for example:
+- path assembly
+- parser wiring
+- local DAO interaction
+- tricky request-body serialization
+
+## 13. Decision Checklist
+
+When adding new code, ask:
+
+1. Is this a business-facing contract or pure type?
+- put it in `domain/`
+
+2. Is this a transport/storage implementation detail?
+- put it in `data/`
+
+3. Is this a shared runtime/kernel contract used across features?
+- put it in `core/domain/`
+
+4. Is this a simple structural model/entity conversion?
+- keep it near the model
+
+5. Is this mapping endpoint/repository-specific or combining multiple sources?
+- keep it in the repository or a small repository-local helper
+
+6. Am I about to make the datasource decide business behavior?
+- stop and move that decision upward
+
+7. Am I about to make the repository rebuild endpoint/query/body details?
+- stop and move that detail downward
+
+## 14. Related Docs
+
+- `docs/engineering/model_entity_guide.md`
+- `docs/engineering/project_architecture.md`
+- `docs/engineering/api/api_error_handling_contract.md`
+- `docs/engineering/api/api_pagination_cursor_support.md`
+- `lib/core/domain/README.md`

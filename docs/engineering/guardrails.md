@@ -1,164 +1,154 @@
-# Guardrails (Lints + Verify + Scaffolding)
+# Guardrails
 
-This template is designed to be **AI-friendly** and **review-friendly**: the codebase stays maintainable because correctness and consistency are enforced by automated guardrails.
+This document explains the mechanical guardrails that keep the codebase consistent and reviewable.
 
-**Principle:** the “happy path” should also be the *fastest* path:
-- Use the standard structure (feature scaffolder).
-- Run one canonical verification command before opening a PR.
-- Let lints/verify fail fast when something is off.
+Use this document when the question is:
+- what checks exist?
+- where do they live?
+- when should we add a new guardrail?
 
-## TL;DR (what to run)
+Use `docs/engineering/agent_pr_loop.md` for the delivery workflow.
 
-- Auto-fix safe style issues (format + directive ordering):
-  - `dart run tool/fix.dart --apply`
-- Canonical quality gate (local):
-  - `dart run tool/verify.dart --env dev`
+## Principles
 
-## Where guardrails live
+Guardrails should make the correct path the easiest path.
 
-- Analyzer + custom lints:
-  - `analysis_options.yaml`
-  - `tool/lints/architecture_lints.yaml` (architecture import boundaries)
-  - `packages/mobile_core_kit_lints/` (custom lint plugin)
-- Verify pipeline:
-  - `tool/verify.dart` (canonical)
-  - `tool/verify_*.dart` (specialized gates)
-  - `tool/fix.dart` (safe auto-fix)
-- Scaffolding:
-  - `tool/scaffold_feature.dart`
-- CI parity:
-  - `.github/workflows/android.yml`
+Prefer guardrails that are:
+- deterministic
+- cheap to run locally
+- hard to misinterpret
+- better than repeating the same review comment
 
-## Canonical gate: `tool/verify.dart`
+Do not add a new guardrail unless it solves repeated real pain.
 
-`tool/verify.dart` is the single command that should represent “this PR is healthy”.
+## Canonical Commands
 
-What it does (high-level):
+Safe auto-fix:
 
-- Dependency install: `flutter pub get`
-- Build config generation: `dart run tool/gen_config.dart --env <env>`
-- Localization generation: `flutter gen-l10n`
-- I18n hygiene gate: `dart run tool/verify_untranslated_messages.dart`
-- Static analysis: `flutter analyze`
-- Custom lints: `dart run custom_lint`
-- Specialized gates:
-  - `dart run tool/verify_modal_entrypoints.dart`
-  - `dart run tool/verify_hardcoded_ui_colors.dart`
-- Tests: `flutter test` (unless skipped)
-- Formatting check: `dart format --set-exit-if-changed .` (unless skipped)
+```bash
+dart run tool/fix.dart --apply
+```
 
-Optional flag:
-- `--check-codegen` runs `tool/verify_codegen.dart` (build_runner freshness gate).
+Canonical quality gate:
 
-## Auto-fix: `tool/fix.dart`
+```bash
+dart run tool/verify.dart --env dev
+```
 
-`tool/fix.dart` is intentionally conservative:
+Targeted checks:
 
-- Applies `dart fix --apply --code directives_ordering`
-- Runs `dart format .`
+```bash
+fvm flutter analyze
+dart run custom_lint
+fvm flutter test
+dart run tool/verify_codegen.dart
+dart run tool/verify_project_map_drift.dart
+```
 
-This keeps diffs clean and prevents “import order” noise from failing `flutter analyze`.
+## Where Guardrails Live
 
-## Custom lints (IDE + CI)
+### Analyzer and lint policy
+- `analysis_options.yaml`
+- `tool/lints/architecture_lints.yaml`
+- `packages/mobile_core_kit_lints/`
 
-Custom lints run:
-- In IDEs via the analyzer plugin (`custom_lint`)
-- In CI / verify via `dart run custom_lint`
+### Verification pipeline
+- `tool/verify.dart`
+- `tool/verify_*.dart`
+- `tool/fix.dart`
 
-The lints are the “policy layer” that keeps architecture + UX consistent as the codebase scales.
+### Scaffolding
+- `tool/scaffold_feature.dart`
 
-**How to suppress (rare):**
+### CI
+- `.github/workflows/android.yml`
 
-- Line-level: `// ignore: <lint_name>`
-- File-level: `// ignore_for_file: <lint_name>`
+## What The Guardrails Enforce
 
-If you find yourself suppressing often, prefer improving the rule (allowlist/config) instead.
+### 1. Architecture boundaries
 
-### Architecture & dependency boundaries
-
-- `architecture_imports` (config: `tool/lints/architecture_lints.yaml`)
-  - Enforces Clean Architecture import boundaries and feature boundaries.
-  - Also restricts importing `lib/core/di/service_locator.dart` to composition roots.
-- `restricted_imports` (config: `analysis_options.yaml`)
-  - Prevents importing low-level dependencies (e.g., `dio`, `firebase_*`, `shared_preferences`) outside approved scopes.
-
-### UX/content consistency
-
-- `hardcoded_ui_strings`
-  - Blocks user-facing string literals in common widget contexts (prefer `context.l10n.*`).
-- `route_string_literals`
-  - Blocks route path literals in navigation calls and route definitions (prefer route constants).
-
-### Design token usage (avoid “magic numbers”)
-
-- `hardcoded_ui_colors`
-- `hardcoded_font_sizes`
-- `manual_text_scaling`
-- `spacing_tokens`
-- `radius_tokens`
-- `icon_size_tokens`
-- `state_opacity_tokens`
-- `motion_durations`
-
-### Networking policy (feature datasources)
-
-- `api_helper_datasource_policy`
-  - Enforces explicit `host:` + `throwOnError: false` + explicit `requiresAuth:` for `_apiHelper.*` calls in feature datasources.
-
-For more detail on rule intent and extension patterns, see `docs/engineering/architecture_linting.md`.
-
-## Specialized verify scripts
-
-These scripts are used directly in CI and/or called by `tool/verify.dart`:
-
-- `tool/verify_untranslated_messages.dart`
-  - Fails if `tool/untranslated_messages.json` contains untranslated keys.
-- `tool/verify_codegen.dart`
-  - Runs `build_runner` and fails if generated outputs (`*.g.dart`, `*.freezed.dart`, `*.gr.dart`) are out of date.
-- `tool/verify_modal_entrypoints.dart`
-  - Ensures modal entrypoints follow the modal governance rules.
-- `tool/verify_hardcoded_ui_colors.dart`
-  - Verifies no hardcoded UI colors appear in the codebase.
-
-## Feature scaffolding: `tool/scaffold_feature.dart`
-
-Use the scaffolder to avoid “structure drift” and to create lint-friendly, review-friendly defaults.
+Enforced through custom lints and lint config.
 
 Examples:
-- `dart run tool/scaffold_feature.dart --feature review`
-- `dart run tool/scaffold_feature.dart --feature review --slice list`
-- `dart run tool/scaffold_feature.dart --feature review --slice list --dry-run`
+- `core` must not import features by default
+- feature domain must stay framework- and infra-free
+- feature-to-feature imports are restricted
+- service locator usage is limited to composition roots
 
-What it generates:
-- `lib/features/<feature>/...` (data/domain/presentation/di + skeletons)
-- `lib/navigation/<feature>/...` (routes stubs)
-- `test/features/<feature>/...` (test skeleton mirroring lib paths)
+Source of truth:
+- `docs/engineering/architecture_linting.md`
 
-Important behavior:
-- Refuses invalid `snake_case` feature/slice names.
-- Refuses to overwrite existing directories/files.
-- Does **not** auto-create l10n keys (to avoid failing the untranslated messages gate); it prints a checklist instead.
+### 2. UI/content consistency
 
-## CI parity
+Examples:
+- no hardcoded user-facing strings in UI contexts
+- no route string literals when route constants should be used
+- no hardcoded design-token values where linted tokens exist
 
-CI should run the same gate as local development to keep trust high:
+### 3. Networking policy
 
-- `.github/workflows/android.yml` uses `dart run tool/verify.dart --env prod --check-codegen` as the canonical gate.
-- Lint plugin tests (`packages/mobile_core_kit_lints`) run separately because they are a different package boundary.
+Examples:
+- feature datasources must use the approved HTTP helper conventions
+- explicit request defaults are required where the lint enforces them
 
-## How to add a new guardrail
+### 4. Repo-level verification
 
-1) Prefer config-driven rules first:
-- Add/extend architecture boundaries in `tool/lints/architecture_lints.yaml`.
+Examples:
+- localization generation/hygiene
+- modal entrypoint checks
+- hardcoded color checks
+- generated code freshness
+- formatting
+- tests
 
-2) If you need AST-level enforcement:
-- Add a custom lint rule in `packages/mobile_core_kit_lints/`.
-- Add config in `analysis_options.yaml`.
-- Add unit tests in `packages/mobile_core_kit_lints/test/`.
-- Document it in:
-  - `docs/engineering/architecture_linting.md`
-  - this file (`docs/engineering/guardrails.md`)
+## When To Add A New Guardrail
 
-3) If the guardrail is a “repo gate”:
-- Add a `tool/verify_*.dart` script and call it from `tool/verify.dart`.
-- Add it to CI (or rely on CI calling `tool/verify.dart`).
+Add a guardrail when:
+- the same bug or review comment appears repeatedly
+- the rule is objective enough to automate
+- the automation is cheaper than future human review effort
+
+Choose the lightest mechanism that solves the problem:
+1. config change
+2. lint rule
+3. verify script
+4. scaffold/template update
+5. doc or source-local README
+
+## How To Extend The Guardrails
+
+### Lint/config path
+Use when the rule is local, structural, or AST-detectable.
+
+Typical path:
+- update `tool/lints/architecture_lints.yaml`
+- or add/extend a custom lint in `packages/mobile_core_kit_lints/`
+- update tests for the lint plugin when needed
+- document stable policy in `docs/engineering/architecture_linting.md`
+
+### Verify-script path
+Use when the rule is repository-wide and better expressed as a command.
+
+Typical path:
+- add or update `tool/verify_*.dart`
+- call it from `tool/verify.dart` if it belongs in the canonical gate
+- ensure local and CI usage stay aligned
+
+### Scaffold/template path
+Use when the problem is caused by bad starting structure rather than bad edits.
+
+Typical path:
+- update `tool/scaffold_feature.dart`
+- update relevant templates/docs
+
+## Suppressions
+
+Suppress lint rules rarely and narrowly.
+
+If suppressions become common, fix the rule or the boundary instead.
+
+## Related Docs
+
+- `docs/engineering/agent_pr_loop.md`
+- `docs/engineering/architecture_linting.md`
+- `docs/engineering/project_architecture.md`

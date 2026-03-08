@@ -23,14 +23,18 @@ Risk notes:
 List exact commands and outcomes.
 
 ```bash
-tool/agent/pr_ready_check.sh --env dev
+dart run tool/verify.dart --env dev
 ```
 
 Additional checks:
 
 ```bash
-# example:
-# tool/agent/pr_ready_check.sh --env dev --check-codegen
+# examples:
+# fvm flutter analyze
+# dart run custom_lint
+# fvm flutter test
+# dart run tool/verify_codegen.dart
+# dart run tool/verify_project_map_drift.dart
 ```
 
 ## Evidence
@@ -42,13 +46,13 @@ Additional checks:
 - [ ] No speculative refactor mixed into this PR
 
 Links/artifacts:
-- 
+-
 
 Runtime evidence details (if applicable):
 - Device ID:
 - Flavor:
 - Integration targets:
-- Evidence summary path:
+- Evidence artifact paths:
 
 ## Safety And Rollback
 
@@ -59,4 +63,4 @@ Runtime evidence details (if applicable):
 ## Reviewer Focus
 
 Point reviewers to the highest-risk files/decisions:
-- 
+-

@@ -1,183 +1,183 @@
-# Architecture Linting (IDE + CI)
+# Architecture Linting
 
-This repo enforces **architecture import boundaries** in two places:
+This document explains the lint-enforced architecture boundaries in this template.
 
-- **In the IDE** (VS Code / Android Studio) via `custom_lint` (an analyzer plugin).
-- **In CI and `tool/verify.dart`** via `dart run custom_lint` (because `flutter analyze` does not run custom lints).
+Use this document when the question is:
+- what architectural imports are allowed?
+- where is the source of truth for those rules?
+- how should a boundary be updated when the architecture evolves?
 
-The goal is to make boundary violations hard to introduce accidentally and easy to catch during reviews.
+## Purpose
+
+Architecture lints exist to make boundary violations:
+- hard to introduce accidentally
+- easy to detect locally
+- cheap to review
+
+The goal is not folder symmetry. The goal is explicit dependency direction.
+
+## Where The Rules Live
+
+Primary sources of truth:
+- `tool/lints/architecture_lints.yaml`
+- `analysis_options.yaml`
+- `packages/mobile_core_kit_lints/`
+
+Run locally with:
+
+```bash
+dart run custom_lint
+```
+
+The canonical gate also runs them:
+
+```bash
+dart run tool/verify.dart --env dev
+```
 
 ## What Is Enforced
 
-The main rule today is `architecture_imports`, configured by:
+### 1. Core -> feature boundaries
 
-- `tool/lints/architecture_lints.yaml`
+Default rule:
+- `lib/core/**` must not import `lib/features/**`
 
-This file is the **single source of truth** for the architecture rules. It uses glob patterns relative to the repo root (always use `/` as the separator).
+Exceptions must be explicit and rare.
+Use them only when the architecture intentionally allows a composition boundary.
 
-### Current Policy (Core → Features)
+Examples of acceptable exceptions:
+- feature DI composition
+- temporary migration seams that are documented and scheduled for removal
 
-- Default: `lib/core/**` MUST NOT import `lib/features/**`.
-- Exceptions are explicitly allowlisted in `tool/lints/architecture_lints.yaml` (e.g. feature DI composition).
+### 2. Feature domain purity
 
-Note: some exceptions are marked **TEMP** and have TODOs to refactor away.
+Feature `domain/` code must stay framework- and infra-free.
 
-### Current Policy (Feature Domain Purity)
+Feature domain should not import:
+- feature `data/`
+- feature `presentation/`
+- navigation
+- network/storage/database implementations
+- UI/theme/design-system code
+- DI
+- localization generators
 
-Feature domain code (`lib/features/*/domain/**`) MUST remain framework- and infra-free:
+This keeps the domain layer portable and easy to test.
 
-- It MUST NOT import feature data/presentation or navigation.
-- It MUST NOT import infrastructure concerns such as:
-  - networking (`lib/core/infra/network/**`)
-  - persistence (`lib/core/infra/database/**`, `lib/core/infra/storage/**`)
-  - UI/theme (`lib/core/design_system/widgets/**`, `lib/core/design_system/theme/**`, `lib/core/design_system/adaptive/**`)
-  - DI (`lib/core/di/**`)
-  - generated localization (`lib/l10n/**`)
+### 3. Feature -> feature boundaries
 
-This keeps the domain layer testable and portable across apps that adopt this template.
+Default rule:
+- features do not import other feature code directly
 
-### Current Policy (Features → Features)
+If something is genuinely shared, it should move to:
+- `lib/core/**`
+- or a dedicated shared package if the codebase grows to that point
 
-Features MUST NOT import other feature code by default.
+This rule matters even when features use different internal shapes.
+A feature may be:
+- flat
+- presentation-first subfeatures
+- full vertical subfeatures
 
-- Default: `lib/features/**` MUST NOT import `lib/features/**`.
-- Exceptions are explicit and rare (see `features_no_cross_feature_imports`).
+The lint should enforce dependency boundaries, not force all features to look identical.
 
-This is enforced so “shared contracts” do not accidentally live inside a random feature.
-If something is genuinely shared across features, it belongs in `lib/core/**` (or a dedicated shared package).
+### 4. Service locator boundaries
 
-### Current Policy (Service Locator)
+Only composition roots should import the service locator directly.
 
-Only **composition roots** may import `lib/core/di/service_locator.dart`.
+Typical allowed scopes:
+- core DI/bootstrap
+- feature DI modules
+- navigation route builders
+- app entrypoints
 
-Allowed scopes:
-- `lib/core/di/**` (registrations / bootstrap)
-- `lib/navigation/**` (route-time providers)
-- `lib/features/*/di/**` (feature module registration)
-- `lib/app.dart`, `lib/main_*.dart` (root composition)
+Typical disallowed scopes:
+- feature presentation widgets
+- feature repositories/datasources
+- design system code
+- low-level infrastructure code
 
-Disallowed scopes (examples):
-- `lib/features/*/presentation/**`
-- `lib/core/infra/network/**`
-- `lib/core/design_system/widgets/**`
+Rule:
+- resolve dependencies in composition
+- pass them down via constructors or providers
 
-Pattern to follow:
-- Resolve dependencies in navigation/DI.
-- Pass dependencies via constructors (widgets) or providers (`BlocProvider` at route build time).
+### 5. Restricted low-level dependencies
 
-### Restricted Imports (Low-Level Dependencies)
+Some low-level packages should only appear in approved scopes.
 
-This repo also enforces “dependency boundaries” via a separate custom lint:
+Typical examples:
+- networking packages in networking infrastructure only
+- secure storage packages in secure-storage infrastructure only
+- analytics/crash-reporting SDKs in dedicated runtime/platform adapters only
 
-- `restricted_imports` (configured in `analysis_options.yaml`)
+This keeps future migrations cheaper and prevents vendor spread.
 
-It prevents low-level packages from being imported directly in feature code (unless explicitly allowlisted),
-so we keep migrations and refactors cheap.
+### 6. UI/content/navigation guardrails
 
-Examples of restricted dependencies:
-- `dio` → must live under `lib/core/infra/network/**`
-- `firebase_analytics` → must live under `lib/core/runtime/analytics/**`
-- `firebase_crashlytics` → must live under `lib/core/platform/crash_reporting/**` / logging utilities
-- `shared_preferences` → only allowed in store/service implementations (plus explicit template allowlists)
-- `flutter_secure_storage` → must live under `lib/core/infra/storage/secure/**`
+Related custom lints also enforce adjacent policy such as:
+- no hardcoded user-facing strings in UI contexts
+- no route string literals when route constants should be used
+- no hardcoded tokenized design values where project policy already defines tokens
 
-### Content & Navigation Guardrails
+These are not architecture boundaries in the strict sense, but they serve the same review goal: reduce drift and ambiguity.
 
-These lints exist to reduce reviewer cognitive load and keep the UX consistent:
+## How To Change A Boundary Safely
 
-- `hardcoded_ui_strings`: blocks user-facing string literals in common widget contexts (use `context.l10n.*`).
-  - Excludes dev tools and showcase screens by default.
-- `route_string_literals`: blocks route path literals in `context.go/push` and `GoRoute(path: ...)` (use route constants).
+When a lint starts fighting the architecture, do not suppress it by default.
 
-### Design Token Guardrails
+Instead ask:
+1. Is the code in the wrong layer?
+2. Is the architecture rule too strict for a valid pattern?
+3. Is this a temporary migration seam that should be allowlisted with a removal plan?
 
-These lints enforce consistent UI sizing and reduce “random magic numbers”:
+Preferred order of action:
+1. move the code to the correct boundary
+2. refine config in `tool/lints/architecture_lints.yaml`
+3. add a temporary documented exception
+4. only then consider a tightly-scoped suppression
 
-- `spacing_tokens`: blocks hardcoded spacing in `EdgeInsets`/`SizedBox` (use `AppSpacing.*`).
-- `radius_tokens`: blocks hardcoded `Radius.circular(x)` / `BorderRadius.circular(x)` (use `AppRadii.*`).
-- `icon_size_tokens`: blocks hardcoded icon sizes (`Icon(size: x)`, `PhosphorIcon(size: x)`, `IconButton(iconSize: x)`) (use `AppSizing.iconSize*`).
-- `state_opacity_tokens`: blocks hardcoded alpha values for disabled/pressed/hovered states (use `StateOpacities.*`).
-- `motion_durations`: blocks hardcoded durations for common motion (use `MotionDurations.*`).
+## Temporary Exceptions
 
-### Networking Guardrails
+Temporary exceptions are acceptable only when all are true:
+- there is a real migration in progress
+- the boundary is intentionally transitional
+- the exception is documented
+- there is a plan to remove it
 
-- `api_helper_datasource_policy`: enforces explicit `ApiHelper` call defaults inside feature datasources:
-  - explicit `host:`
-  - `throwOnError: false`
-  - explicit `requiresAuth: true|false`
+Do not normalize temporary allowlists into permanent architecture.
 
-## Running Locally (CLI)
+## Adding Or Extending Rules
 
-Run custom lints:
+### Config-first
 
-```bash
-dart run custom_lint
-```
+Prefer config changes when the rule is about import boundaries.
 
-Run the full verify pipeline (includes custom lint):
+Typical path:
+- update `tool/lints/architecture_lints.yaml`
+- verify locally with `dart run custom_lint`
+- document the stable policy here if the rule changes conceptually
 
-```bash
-dart run tool/verify.dart --env dev
-```
+### Custom lint path
 
-Run the codegen freshness gate (ensures generated outputs are committed + up-to-date):
+Use a custom lint implementation when the rule needs AST-level analysis beyond import globs.
 
-```bash
-dart run tool/verify_codegen.dart
-```
-
-Or via the main verify script:
-
-```bash
-dart run tool/verify.dart --env dev --check-codegen
-```
-
-Use the native commands directly:
-
-```bash
-dart run custom_lint
-dart run tool/verify.dart --env dev
-dart run tool/verify_codegen.dart
-```
-
-## IDE Setup
-
-Custom linting is enabled through `analysis_options.yaml`:
-
-- `analyzer.plugins: [custom_lint]`
-- `custom_lint.rules` is configured in `analysis_options.yaml`:
-
-```yaml
-custom_lint:
-  rules:
-    - architecture_imports:
-      config: tool/lints/architecture_lints.yaml
-```
-
-After you run `flutter pub get`, you may need to restart the analyzer:
-
-- **VS Code**: Command Palette → `Dart: Restart Analysis Server`
-- **Android Studio / IntelliJ**: `Tools` → `Dart` → `Restart Dart Analysis Server`
-
-## Extending the Rules
-
-Add new rules in `tool/lints/architecture_lints.yaml`. Each rule has:
-
-- `from`: files the rule applies to
-- `deny`: forbidden import targets (project-relative)
-- `exceptions`: allowlists scoped by `from` + `allow`
-
-Examples of common “next rules” in mature apps:
-
-- Domain purity: `features/*/domain/**` cannot import Flutter/UI, networking, or platform SDK packages.
-- Feature layering: `features/*/presentation/**` cannot import `features/*/data/**`.
-- Cross-feature boundaries: restrict direct imports between features (route through `core/` or a shared contract).
+Typical path:
+- add or extend the lint in `packages/mobile_core_kit_lints/`
+- add tests for the lint package
+- expose/configure it in `analysis_options.yaml`
+- document the stable behavior in the relevant engineering guide
 
 ## Troubleshooting
 
-- If you only run `flutter analyze`, you will **not** see `custom_lint` violations. Use `dart run custom_lint` or `dart run tool/verify.dart`.
-- If lints don’t show in the IDE, confirm:
-  - `custom_lint` is in `dev_dependencies` in `pubspec.yaml`
-  - `analysis_options.yaml` has `analyzer.plugins: [custom_lint]`
-  - You ran `flutter pub get`
-  - You restarted the Dart analysis server
+- `flutter analyze` does not run custom lints. Use `dart run custom_lint` or the full verify gate.
+- If the IDE is not showing custom-lint diagnostics:
+  - confirm `custom_lint` is in `dev_dependencies`
+  - confirm `analysis_options.yaml` enables the plugin
+  - run dependency install
+  - restart the Dart/Flutter analysis server
+
+## Related Docs
+
+- `docs/engineering/project_architecture.md`
+- `docs/engineering/guardrails.md`
+- `docs/engineering/data_domain_guide.md`

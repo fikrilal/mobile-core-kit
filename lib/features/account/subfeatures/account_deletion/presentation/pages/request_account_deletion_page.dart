@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/widgets/app_page_container.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
@@ -9,6 +8,7 @@ import 'package:mobile_core_kit/core/design_system/theme/typography/components/t
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmation_dialog.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/date_utils.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
@@ -75,10 +75,13 @@ class RequestAccountDeletionPage extends StatelessWidget {
                           .watch<RequestAccountDeletionCubit>()
                           .state;
                       final accountDeletion = userState.user?.accountDeletion;
-                      final scheduledDate = _formatDate(
-                        context,
-                        accountDeletion?.scheduledFor,
-                      );
+                      final scheduledDate =
+                          AppDateUtils.tryFormatLongDateFromIso(
+                            accountDeletion?.scheduledFor,
+                            locale: Localizations.localeOf(
+                              context,
+                            ).toLanguageTag(),
+                          );
                       final isScheduled = accountDeletion != null;
                       final isSubmitting = cubitState.isSubmitting;
 
@@ -194,12 +197,4 @@ class RequestAccountDeletionPage extends StatelessWidget {
       idempotencyKey: IdempotencyKeyUtils.generate(),
     );
   }
-}
-
-String? _formatDate(BuildContext context, String? isoDateTime) {
-  if (isoDateTime == null || isoDateTime.trim().isEmpty) return null;
-  final parsed = DateTime.tryParse(isoDateTime);
-  if (parsed == null) return null;
-  final locale = Localizations.localeOf(context).toLanguageTag();
-  return DateFormat.yMMMMd(locale).format(parsed.toLocal());
 }

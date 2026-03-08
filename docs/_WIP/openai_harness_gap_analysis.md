@@ -20,7 +20,7 @@ Capture current-state gaps between this repo and the workflow model described in
    - `.github/workflows/governance.yml`
 3. Agent-aware repo guidance exists and is concise.
    - `AGENTS.md`
-   - `docs/engineering/ai_agent_workflow.md`
+   - `docs/engineering/agent_pr_loop.md`
 4. Architecture constraints are codified, not aspirational.
    - `docs/engineering/guardrails.md`
    - `tool/lints/architecture_lints.yaml`
