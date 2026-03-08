@@ -7,6 +7,19 @@ import 'package:intl/intl.dart';
 class AppDateUtils {
   AppDateUtils._();
 
+  /// Parses a nullable ISO date/time string and formats it as a long date.
+  ///
+  /// Returns `null` when the input is null, blank, or cannot be parsed.
+  static String? tryFormatLongDateFromIso(
+    String? isoDateTime, {
+    String? locale,
+  }) {
+    if (isoDateTime == null || isoDateTime.trim().isEmpty) return null;
+    final parsed = DateTime.tryParse(isoDateTime);
+    if (parsed == null) return null;
+    return formatLongDate(parsed.toLocal(), locale: locale);
+  }
+
   /// Formats a date like "May 2020" using Intl when available.
   static String formatMonthYear(DateTime date) {
     try {
@@ -34,9 +47,9 @@ class AppDateUtils {
   }
 
   /// Formats a date in a short, locale-aware form like "Jan 5, 2025".
-  static String formatShortDate(DateTime date) {
+  static String formatShortDate(DateTime date, {String? locale}) {
     try {
-      return DateFormat.yMMMd().format(date);
+      return DateFormat.yMMMd(locale).format(date);
     } catch (_) {
       // Fallback: "YYYY-MM-DD"
       final mm = date.month.toString().padLeft(2, '0');
@@ -46,18 +59,18 @@ class AppDateUtils {
   }
 
   /// Formats a date in a long, locale-aware form like "January 5, 2025".
-  static String formatLongDate(DateTime date) {
+  static String formatLongDate(DateTime date, {String? locale}) {
     try {
-      return DateFormat.yMMMMd().format(date);
+      return DateFormat.yMMMMd(locale).format(date);
     } catch (_) {
-      return formatShortDate(date);
+      return formatShortDate(date, locale: locale);
     }
   }
 
   /// Formats a time in a short, locale-aware form like "14:30" or "2:30 PM".
-  static String formatTime(DateTime date) {
+  static String formatTime(DateTime date, {String? locale}) {
     try {
-      return DateFormat.jm().format(date);
+      return DateFormat.jm(locale).format(date);
     } catch (_) {
       final hh = date.hour.toString().padLeft(2, '0');
       final mm = date.minute.toString().padLeft(2, '0');
@@ -65,11 +78,25 @@ class AppDateUtils {
     }
   }
 
+  /// Formats a date and time in a short, locale-aware form like
+  /// "Jan 5, 2025 2:30 PM".
+  static String formatShortDateTime(DateTime date, {String? locale}) {
+    try {
+      return DateFormat.yMMMd(locale).add_jm().format(date);
+    } catch (_) {
+      return '${formatShortDate(date, locale: locale)} ${formatTime(date, locale: locale)}';
+    }
+  }
+
   /// Generic formatter using a custom pattern.
   /// Prefer the semantic helpers above where possible.
-  static String formatWithPattern(DateTime date, String pattern) {
+  static String formatWithPattern(
+    DateTime date,
+    String pattern, {
+    String? locale,
+  }) {
     try {
-      return DateFormat(pattern).format(date);
+      return DateFormat(pattern, locale).format(date);
     } catch (_) {
       return date.toIso8601String();
     }
