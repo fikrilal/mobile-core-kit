@@ -3,8 +3,8 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/datasource/remote/profile_remote_datasource.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/data/error/profile_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/model/remote/patch_me_request_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_repository.dart';
@@ -31,7 +31,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
       return apiResponse
           .toEitherWithFallback('Failed to update profile.')
-          .mapLeft(mapProfileFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((model) => model.toEntity());
     } catch (e, st) {
       Log.error(

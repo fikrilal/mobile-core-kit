@@ -4,7 +4,7 @@ import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
 import 'package:mobile_core_kit/features/account/data/datasource/remote/me_remote_datasource.dart';
-import 'package:mobile_core_kit/features/account/data/error/current_user_failure_mapper.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/domain/repository/current_user_repository.dart';
 
 class CurrentUserRepositoryImpl implements CurrentUserRepository {
@@ -18,7 +18,7 @@ class CurrentUserRepositoryImpl implements CurrentUserRepository {
       final apiResponse = await _remote.getMe();
       return apiResponse
           .toEitherWithFallback('Failed to load user.')
-          .mapLeft(mapCurrentUserFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((model) => model.toEntity());
     } catch (e, st) {
       Log.error(

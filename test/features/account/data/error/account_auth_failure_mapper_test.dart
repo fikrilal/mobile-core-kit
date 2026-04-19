@@ -3,10 +3,10 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
-import 'package:mobile_core_kit/features/account/data/error/current_user_failure_mapper.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 
 void main() {
-  group('mapCurrentUserFailure', () {
+  group('mapAccountAuthFailure', () {
     test('maps VALIDATION_FAILED code to validation', () {
       final failure = ApiFailure(
         message: 'Validation failed',
@@ -18,7 +18,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.validation([
           ValidationError(field: 'profile.givenName', message: 'Required'),
         ]),
@@ -33,7 +33,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.unauthenticated(),
       );
     });
@@ -46,7 +46,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.tooManyRequests(),
       );
     });
@@ -59,7 +59,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.unexpected(
           message: ApiErrorCodes.idempotencyInProgress,
         ),
@@ -74,7 +74,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
       );
     });
@@ -87,7 +87,7 @@ void main() {
       );
 
       expect(
-        mapCurrentUserFailure(failure),
+        mapAccountAuthFailure(failure),
         const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
       );
     });
@@ -99,43 +99,43 @@ void main() {
         code: ApiErrorCodes.internal,
       );
 
-      expect(mapCurrentUserFailure(failure), const AuthFailure.serverError());
+      expect(mapAccountAuthFailure(failure), const AuthFailure.serverError());
     });
 
     test('falls back to status codes when code is missing', () {
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 401)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: 401)),
         const AuthFailure.unauthenticated(),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 409)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: 409)),
         const AuthFailure.unexpected(message: ApiErrorCodes.conflict),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 404)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: 404)),
         const AuthFailure.unexpected(message: ApiErrorCodes.notFound),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 429)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: 429)),
         const AuthFailure.tooManyRequests(),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: 500)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: 500)),
         const AuthFailure.serverError(),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: -1)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: -1)),
         const AuthFailure.network(),
       );
       expect(
-        mapCurrentUserFailure(ApiFailure(message: 'no', statusCode: -2)),
+        mapAccountAuthFailure(ApiFailure(message: 'no', statusCode: -2)),
         const AuthFailure.network(),
       );
     });
 
     test('maps unexpected status to unexpected() (fallback)', () {
       final failure = ApiFailure(message: 'weird', statusCode: 418);
-      expect(mapCurrentUserFailure(failure), const AuthFailure.unexpected());
+      expect(mapAccountAuthFailure(failure), const AuthFailure.unexpected());
     });
   });
 }

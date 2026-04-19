@@ -63,3 +63,6 @@ tool/untranslated_messages.json
 # Runtime evidence artifacts
 _artifacts/*
 !_artifacts/.gitkeep
+
+# Local analysis scratch output
+.tmp/

@@ -2,7 +2,9 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 
-AuthFailure mapProfileFailure(ApiFailure failure) {
+/// Maps account feature API failures onto the auth-domain failure vocabulary
+/// used by current-user and account-management flows.
+AuthFailure mapAccountAuthFailure(ApiFailure failure) {
   final code = failure.code;
   if (code != null) {
     switch (code) {

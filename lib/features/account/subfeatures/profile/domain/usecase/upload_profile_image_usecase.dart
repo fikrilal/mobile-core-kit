@@ -1,6 +1,5 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
-import 'package:mobile_core_kit/core/domain/session/session_failure.dart';
 import 'package:mobile_core_kit/core/domain/user/current_user_fetcher.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
@@ -9,6 +8,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/enti
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/create_profile_image_upload_plan_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/upload_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_image_repository.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/refresh_current_user_after_profile_image_mutation.dart';
 
 class UploadProfileImageUseCase {
   UploadProfileImageUseCase(this._repository, this._currentUserFetcher);
@@ -95,29 +95,11 @@ class UploadProfileImageUseCase {
 
         return completeResult.match(
           (failure) => Future.value(left(failure)),
-          (_) => _refreshCurrentUser(),
+          (_) =>
+              refreshCurrentUserAfterProfileImageMutation(_currentUserFetcher),
         );
       });
     });
-  }
-
-  Future<Either<AuthFailure, UserEntity>> _refreshCurrentUser() async {
-    final result = await _currentUserFetcher.fetch();
-    return result.mapLeft(_mapSessionFailure);
-  }
-
-  static AuthFailure _mapSessionFailure(SessionFailure failure) {
-    return switch (failure.type) {
-      SessionFailureType.network => const AuthFailure.network(),
-      SessionFailureType.unauthenticated => const AuthFailure.unauthenticated(),
-      SessionFailureType.tooManyRequests => const AuthFailure.tooManyRequests(),
-      SessionFailureType.serverError => AuthFailure.serverError(
-        failure.message,
-      ),
-      SessionFailureType.unexpected => AuthFailure.unexpected(
-        message: failure.message,
-      ),
-    };
   }
 
   static String _normalizeContentType(String input) {

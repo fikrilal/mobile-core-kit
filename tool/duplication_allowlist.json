@@ -1,0 +1,12 @@
+{
+  "reviewedAcceptable": [
+    {
+      "firstPath": "lib/features/auth/data/model/remote/auth_response_model.dart",
+      "secondPath": "lib/features/auth/data/model/remote/auth_result_model.dart",
+      "category": "model_translation",
+      "reason": "Distinct backend contracts and distinct user DTO types; shared token/session conversion alone is not worth forcing a common DTO abstraction.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    }
+  ]
+}

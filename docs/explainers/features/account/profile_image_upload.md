@@ -96,7 +96,7 @@ lib/features/account/
    │  │  ├─ profile_remote_datasource.dart
    │  │  └─ profile_image_remote_datasource.dart
    │  ├─ error/
-   │  │  ├─ profile_failure_mapper.dart
+   │  │  ├─ account_auth_failure_mapper.dart
    │  │  ├─ profile_image_error_codes.dart
    │  │  └─ profile_image_failure_mapper.dart
    │  ├─ model/remote/

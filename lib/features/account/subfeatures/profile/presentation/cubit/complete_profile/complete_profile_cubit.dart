@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/design_system/theme/system/motion_durations.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
@@ -138,11 +139,11 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
           validation: (errors) {
             emit(
               state.copyWith(
-                givenNameError: _firstFieldError(errors, [
+                givenNameError: findFirstValidationErrorForFields(errors, [
                   'givenName',
                   'profile.givenName',
                 ]),
-                familyNameError: _firstFieldError(errors, [
+                familyNameError: findFirstValidationErrorForFields(errors, [
                   'familyName',
                   'profile.familyName',
                 ]),
@@ -185,21 +186,6 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
       (f) => ValidationError(field: 'familyName', message: '', code: f.code),
       (_) => null,
     );
-  }
-
-  ValidationError? _firstFieldError(
-    List<ValidationError> errors,
-    List<String> fieldCandidates,
-  ) {
-    for (final err in errors) {
-      final field = err.field;
-      if (field == null || field.isEmpty) continue;
-
-      for (final candidate in fieldCandidates) {
-        if (field == candidate || field.endsWith(candidate)) return err;
-      }
-    }
-    return null;
   }
 
   void _scheduleDraftSave() {
