@@ -63,6 +63,7 @@ dart run custom_lint
 fvm flutter test
 dart run tool/verify_project_map_drift.dart
 ./tool/check_duplication.sh
+./tool/check_presentation_duplication.sh
 ```
 
 Use native commands as the source of truth for verification.
@@ -79,6 +80,16 @@ The report distinguishes:
 - `actionable` duplicate groups: open maintainability debt worth review
 - `reviewed acceptable` duplicate groups: explicitly reviewed and recorded in
   `tool/duplication_allowlist.json`
+
+Use `./tool/check_presentation_duplication.sh` for Flutter presentation-heavy
+changes such as:
+- repeated form pages or settings pages
+- repeated cubit validation/failure handling in `presentation/cubit/`
+- repeated micro-widgets or page-local display helpers
+
+This presentation check is intentionally separate from the main duplication
+check. It focuses on narrow presentation patterns and uses its own allowlist:
+- `tool/presentation_duplication_allowlist.json`
 
 ### 4. Runtime evidence (when required)
 

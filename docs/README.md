@@ -11,6 +11,9 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   - `docs/engineering/parallel_agent_workflow.md`
   - duplication self-review uses `./tool/check_duplication.sh` and is described in
     `docs/engineering/agent_pr_loop.md`
+  - Flutter presentation duplication review uses
+    `./tool/check_presentation_duplication.sh` and is described in
+    `docs/engineering/agent_pr_loop.md`
 - `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, etc.).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).
 - `docs/explainers/` — deep dives on “how this works” that are not daily guides (complex flows, tricky components, feature internals).

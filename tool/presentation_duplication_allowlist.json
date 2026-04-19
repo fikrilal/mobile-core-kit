@@ -1,0 +1,68 @@
+{
+  "reviewedAcceptable": [
+    {
+      "firstPath": "lib/features/auth/subfeatures/credential_management/presentation/pages/change_password_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_confirm_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional parallel auth form screens with different flow semantics and success/failure states; a shared scaffold here would add indirection without enough payoff.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_confirm_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional parallel auth form screens with different field sets and navigation outcomes; layout similarity alone is not enough reason to abstract.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_request_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional parallel auth form screens sharing the same design language; keep page composition explicit instead of introducing a generic shell for this pair.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/registration/presentation/pages/register_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional parallel auth form screens; the repeated field/button section is acceptable because the workflows still differ materially.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/account/subfeatures/profile/presentation/pages/complete_profile_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/registration/presentation/pages/register_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional parallel onboarding-style forms across different features; similar section structure does not justify a shared generic page abstraction yet.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/credential_management/presentation/pages/change_password_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional auth form parallelism driven by the common design system rather than accidental duplication; keep these pages explicit for now.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/email_verification/presentation/pages/verify_email_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional auth flow composition with shared form-shell layout but different user journey and state handling; not worth abstracting yet.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_request_page.dart",
+      "secondPath": "lib/features/auth/subfeatures/registration/presentation/pages/register_page.dart",
+      "category": "form_page_section",
+      "reason": "Intentional auth form page parallelism; page-level structure is similar but the flows remain clearer as separate explicit widgets.",
+      "reviewedOn": "2026-04-19",
+      "status": "reviewed_acceptable"
+    }
+  ]
+}

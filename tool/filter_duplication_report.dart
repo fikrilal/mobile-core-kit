@@ -11,6 +11,12 @@ Future<int> _run(List<String> argv) async {
   final parser = ArgParser()
     ..addFlag('help', abbr: 'h', negatable: false)
     ..addOption(
+      'profile',
+      defaultsTo: _Profile.core.name,
+      allowed: _Profile.values.map((profile) => profile.name),
+      help: 'Duplication filter profile to use.',
+    )
+    ..addOption(
       'report',
       defaultsTo: '.tmp/jscpd-phase1/jscpd-report.json',
       help: 'Path to the jscpd JSON report.',
@@ -32,23 +38,19 @@ Future<int> _run(List<String> argv) async {
       [
         'filter_duplication_report.dart',
         '',
-        'Filters raw jscpd output into a maintainability-focused duplication',
-        'summary for this repository.',
+        'Filters raw jscpd output into a repository-specific duplication',
+        'summary.',
         '',
-        'Detected categories:',
-        '- failure mapper',
-        '- bridge translation',
-        '- model translation',
-        '- workflow tail/helper',
-        '- parser helper',
-        '- formatter helper',
-        '- normalization helper',
+        'Profiles:',
+        '- core: non-presentation maintainability duplication',
+        '- presentation: narrow Flutter presentation duplication',
         '',
         'Reviewed acceptable duplicates can be recorded in the allowlist so',
         'they remain visible but stop showing up as actionable debt.',
         '',
         'Usage:',
         '  dart run tool/filter_duplication_report.dart',
+        '  dart run tool/filter_duplication_report.dart --profile presentation',
         '  dart run tool/filter_duplication_report.dart --fatal-found',
         '',
         'Options:',
@@ -58,6 +60,9 @@ Future<int> _run(List<String> argv) async {
     return 0;
   }
 
+  final profile = _Profile.values.firstWhere(
+    (candidate) => candidate.name == args.option('profile')!,
+  );
   final reportPath = args.option('report')!;
   final reportFile = File(reportPath);
   if (!reportFile.existsSync()) {
@@ -88,7 +93,7 @@ Future<int> _run(List<String> argv) async {
   final crossFile = duplicates.where((dup) => !dup.isSelfFile).toList();
 
   final categorized = crossFile
-      .map((dup) => _CategorizedDuplicate(dup, _categorize(dup)))
+      .map((dup) => _CategorizedDuplicate(dup, _categorize(profile, dup)))
       .toList(growable: false);
 
   final reviewed = <_ReviewedDuplicate>[];
@@ -114,7 +119,7 @@ Future<int> _run(List<String> argv) async {
   final actionableGroups = _groupActionable(actionable);
   final reviewedGroups = _groupReviewed(reviewed);
 
-  stdout.writeln('Duplication summary');
+  stdout.writeln('Duplication summary (${profile.name})');
   stdout.writeln('Report: $reportPath');
   stdout.writeln('- Raw duplicates: ${duplicates.length}');
   stdout.writeln('- Self-file filtered out: $selfFileCount');
@@ -263,7 +268,14 @@ String _groupKey(_Duplicate duplicate, _Category category) {
   return '${category.name}::${pair.$1}::${pair.$2}';
 }
 
-_Category? _categorize(_Duplicate duplicate) {
+_Category? _categorize(_Profile profile, _Duplicate duplicate) {
+  return switch (profile) {
+    _Profile.core => _categorizeCore(duplicate),
+    _Profile.presentation => _categorizePresentation(duplicate),
+  };
+}
+
+_Category? _categorizeCore(_Duplicate duplicate) {
   final pathText =
       '${duplicate.firstPath.toLowerCase()} ${duplicate.secondPath.toLowerCase()}';
   final fragment = duplicate.fragment;
@@ -319,6 +331,60 @@ _Category? _categorize(_Duplicate duplicate) {
   return null;
 }
 
+_Category? _categorizePresentation(_Duplicate duplicate) {
+  final pathText =
+      '${duplicate.firstPath.toLowerCase()} ${duplicate.secondPath.toLowerCase()}';
+  final fragment = duplicate.fragment;
+
+  final looksLikeCubitFieldValidation =
+      _presentationCubitPathPattern.hasMatch(pathText) &&
+      fragment.contains('ValidationError(') &&
+      fragment.contains('state.copyWith(') &&
+      (fragment.contains('emailChanged(') ||
+          fragment.contains('passwordChanged(') ||
+          fragment.contains('tokenChanged(') ||
+          fragment.contains('newPasswordChanged(') ||
+          fragment.contains('confirmNewPasswordChanged('));
+  if (looksLikeCubitFieldValidation) {
+    return _Category.cubitFieldValidation;
+  }
+
+  final looksLikeCubitFailureHandling =
+      _presentationCubitPathPattern.hasMatch(pathText) &&
+      (fragment.contains('_handleFailure(') ||
+          fragment.contains('failure.map(') ||
+          fragment.contains('_firstFieldError('));
+  if (looksLikeCubitFailureHandling) {
+    return _Category.cubitFailureHandling;
+  }
+
+  final looksLikeFormPageSection =
+      _presentationPagePathPattern.hasMatch(pathText) &&
+      (fragment.contains('AppTextField(') ||
+          fragment.contains('AppPageContainer(') ||
+          fragment.contains('BlocBuilder<') ||
+          fragment.contains('TextButton('));
+  if (looksLikeFormPageSection) {
+    return _Category.formPageSection;
+  }
+
+  final looksLikeDisplayHelper =
+      _presentationPathPattern.hasMatch(pathText) &&
+      _presentationDisplayHelperPattern.hasMatch(fragment);
+  if (looksLikeDisplayHelper) {
+    return _Category.displayHelper;
+  }
+
+  final looksLikeMicroWidget =
+      _presentationWidgetPathPattern.hasMatch(pathText) &&
+      _presentationMicroWidgetPattern.hasMatch(fragment);
+  if (looksLikeMicroWidget) {
+    return _Category.microWidget;
+  }
+
+  return null;
+}
+
 final _failureMapperPathPattern = RegExp(
   r'(_failure_mapper|_error_mapper|/error/)',
   caseSensitive: false,
@@ -367,10 +433,40 @@ final _normalizationPatterns = <RegExp>[
   RegExp(r'\?\?'),
 ];
 
+final _presentationPathPattern = RegExp(
+  r'(/presentation/)',
+  caseSensitive: false,
+);
+final _presentationCubitPathPattern = RegExp(
+  r'(/presentation/cubit/)',
+  caseSensitive: false,
+);
+final _presentationPagePathPattern = RegExp(
+  r'(/presentation/pages/)',
+  caseSensitive: false,
+);
+final _presentationWidgetPathPattern = RegExp(
+  r'(/presentation/widgets/)',
+  caseSensitive: false,
+);
+final _presentationDisplayHelperPattern = RegExp(
+  r'(_format[A-Z_]\w*|_labelFor[A-Z_]\w*|_subtitleFor[A-Z_]\w*|_display[A-Z_]\w*)',
+);
+final _presentationMicroWidgetPattern = RegExp(
+  r'(extends\s+(StatelessWidget|StatefulWidget)|Widget\s+build\(|class\s+_[A-Z]\w*(Pill|Card|Row|Tile|Section|Item))',
+);
+
+enum _Profile { core, presentation }
+
 enum _Category {
   bridgeTranslation('bridge_translation'),
+  cubitFailureHandling('cubit_failure_handling'),
+  cubitFieldValidation('cubit_field_validation'),
+  displayHelper('display_helper'),
   failureMapper('failure_mapper'),
+  formPageSection('form_page_section'),
   formatterHelper('formatter_helper'),
+  microWidget('micro_widget'),
   modelTranslation('model_translation'),
   normalizationHelper('normalization_helper'),
   parserHelper('parser_helper'),
