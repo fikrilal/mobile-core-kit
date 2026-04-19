@@ -2,8 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/datasource/remote/account_deletion_remote_datasource.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/error/account_deletion_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/model/remote/cancel_account_deletion_request_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/model/remote/request_account_deletion_request_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/cancel_account_deletion_request_entity.dart';
@@ -26,7 +26,7 @@ class AccountDeletionRepositoryImpl implements AccountDeletionRepository {
 
       return apiResponse
           .toEitherWithFallback('Failed to request account deletion.')
-          .mapLeft(mapAccountDeletionFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((_) => unit);
     } catch (e, st) {
       Log.error(
@@ -51,7 +51,7 @@ class AccountDeletionRepositoryImpl implements AccountDeletionRepository {
 
       return apiResponse
           .toEitherWithFallback('Failed to cancel account deletion.')
-          .mapLeft(mapAccountDeletionFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((_) => unit);
     } catch (e, st) {
       Log.error(

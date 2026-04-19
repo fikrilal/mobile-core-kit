@@ -3,7 +3,7 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/upload/presigned_upload_client.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/data/error/profile_failure_mapper.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/error/profile_image_error_codes.dart';
 
 /// Maps profile-image-specific backend failures into [AuthFailure].
@@ -37,7 +37,7 @@ AuthFailure mapProfileImageFailure(ApiFailure failure) {
     }
   }
 
-  return mapProfileFailure(failure);
+  return mapAccountAuthFailure(failure);
 }
 
 AuthFailure mapProfileImageUploadFailure(PresignedUploadFailure failure) {

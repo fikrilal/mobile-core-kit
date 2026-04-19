@@ -2,8 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart';
+import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/data/datasource/remote/me_session_remote_datasource.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/security/data/error/security_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/data/model/remote/list_me_sessions_request_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/data/model/remote/me_session_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/data/model/remote/revoke_me_session_request_model.dart';
@@ -27,7 +27,7 @@ class MeSessionRepositoryImpl implements MeSessionRepository {
       );
       return apiResponse
           .toEitherWithFallback('Failed to load sessions.')
-          .mapLeft(mapSecurityFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((result) => result.toEntity());
     } catch (e, st) {
       Log.error('ListSessions unexpected error', e, st, true, 'MeSessionRepo');
@@ -45,7 +45,7 @@ class MeSessionRepositoryImpl implements MeSessionRepository {
       );
       return apiResponse
           .toEitherWithFallback('Failed to revoke session.')
-          .mapLeft(mapSecurityFailure)
+          .mapLeft(mapAccountAuthFailure)
           .map((_) => unit);
     } catch (e, st) {
       Log.error('RevokeSession unexpected error', e, st, true, 'MeSessionRepo');
