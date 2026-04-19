@@ -62,9 +62,23 @@ fvm flutter analyze
 dart run custom_lint
 fvm flutter test
 dart run tool/verify_project_map_drift.dart
+./tool/check_duplication.sh
 ```
 
 Use native commands as the source of truth for verification.
+
+Use `./tool/check_duplication.sh` when the change is likely to introduce or
+reshape shared logic, for example:
+- extraction/consolidation refactors
+- new helpers, mappers, formatters, or parsers
+- repeated workflow tails
+- cleanup work prompted by agent-generated duplication
+
+Treat the duplication report as a self-review signal, not a default hard gate.
+The report distinguishes:
+- `actionable` duplicate groups: open maintainability debt worth review
+- `reviewed acceptable` duplicate groups: explicitly reviewed and recorded in
+  `tool/duplication_allowlist.json`
 
 ### 4. Runtime evidence (when required)
 
@@ -92,6 +106,9 @@ Before opening or updating the PR, verify:
 - failure paths are explicit and observable
 - no speculative work is bundled into the PR
 - runtime evidence is attached when risk warrants it
+- duplication was checked when the change touched shared logic or repeated helper
+  patterns, and any acceptable duplicates were reviewed explicitly rather than
+  ignored informally
 
 ### 6. Open PR with evidence
 

@@ -5,10 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "$ROOT_DIR"
 
-# Phase 1 duplicate detection focuses on high-ROI maintainability duplication:
-# parsers, formatters, mappers, normalization helpers, and small shared logic.
-# It intentionally excludes presentation-heavy paths for now because that signal
-# is noisier and better treated as a later phase.
+# Duplication detection focuses on high-ROI maintainability duplication:
+# parsers, formatters, mappers, translation helpers, normalization helpers,
+# and small workflow tails. Presentation-heavy paths stay out of scope for now
+# because that signal is still noisier and better handled in a later phase.
 npx --yes jscpd \
   lib/features \
   lib/core/foundation \
@@ -19,4 +19,5 @@ npx --yes jscpd \
   --silent
 
 dart tool/filter_duplication_report.dart \
-  --report .tmp/jscpd-phase1/jscpd-report.json
+  --report .tmp/jscpd-phase1/jscpd-report.json \
+  --allowlist tool/duplication_allowlist.json
