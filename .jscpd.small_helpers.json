@@ -1,0 +1,19 @@
+{
+  "format": "dart",
+  "minLines": 4,
+  "minTokens": 20,
+  "mode": "mild",
+  "reporters": ["json"],
+  "output": "./.tmp/jscpd-small-helpers",
+  "gitignore": true,
+  "ignore": [
+    "**/*.g.dart",
+    "**/*.freezed.dart",
+    "**/*.gen.dart",
+    "**/generated/**",
+    "**/*showcase*.dart",
+    "lib/core/design_system/**",
+    "lib/l10n/**",
+    "lib/firebase_options.dart"
+  ]
+}

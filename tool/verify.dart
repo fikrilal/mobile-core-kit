@@ -11,6 +11,7 @@ Future<int> _run(List<String> argv) async {
     ..addOption('env', abbr: 'e', defaultsTo: 'dev')
     ..addFlag('apply-fixes', defaultsTo: false)
     ..addFlag('check-codegen', defaultsTo: false)
+    ..addFlag('skip-duplication', defaultsTo: false)
     ..addFlag('skip-format', defaultsTo: false)
     ..addFlag('skip-tests', defaultsTo: false);
 
@@ -18,6 +19,7 @@ Future<int> _run(List<String> argv) async {
   final env = args.option('env')!;
   final applyFixes = args.flag('apply-fixes');
   final checkCodegen = args.flag('check-codegen');
+  final skipDuplication = args.flag('skip-duplication');
   final skipFormat = args.flag('skip-format');
   final skipTests = args.flag('skip-tests');
 
@@ -104,6 +106,29 @@ Future<int> _run(List<String> argv) async {
 
   exitCode = await step('Custom lint', ['dart', 'run', 'custom_lint']);
   if (exitCode != 0) return exitCode;
+
+  if (!skipDuplication) {
+    if (Platform.isWindows) {
+      stdout.writeln(
+        '\n==> Duplication harness\nSkipping duplication harness on Windows. '
+        'Run the shell-based duplication checks from a POSIX shell instead:',
+      );
+      stdout.writeln('./tool/check_duplication.sh');
+      stdout.writeln('./tool/check_small_helper_duplication.sh');
+    } else {
+      exitCode = await step('Verify duplication (core)', [
+        'bash',
+        'tool/check_duplication.sh',
+      ]);
+      if (exitCode != 0) return exitCode;
+
+      exitCode = await step('Verify duplication (small helpers)', [
+        'bash',
+        'tool/check_small_helper_duplication.sh',
+      ]);
+      if (exitCode != 0) return exitCode;
+    }
+  }
 
   exitCode = await step('Verify modal entrypoints', [
     'dart',

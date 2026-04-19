@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
@@ -206,9 +207,13 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       validation: (errors) {
         emit(
           state.copyWith(
-            currentPasswordError: _firstFieldError(errors, ['currentPassword']),
-            newPasswordError: _firstFieldError(errors, ['newPassword']),
-            confirmNewPasswordError: _firstFieldError(errors, [
+            currentPasswordError: findFirstValidationErrorForFields(errors, [
+              'currentPassword',
+            ]),
+            newPasswordError: findFirstValidationErrorForFields(errors, [
+              'newPassword',
+            ]),
+            confirmNewPasswordError: findFirstValidationErrorForFields(errors, [
               'confirmNewPassword',
             ]),
             status: ChangePasswordStatus.failure,
@@ -225,20 +230,5 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
         );
       },
     );
-  }
-
-  ValidationError? _firstFieldError(
-    List<ValidationError> errors,
-    List<String> fieldCandidates,
-  ) {
-    for (final err in errors) {
-      final field = err.field;
-      if (field == null || field.isEmpty) continue;
-
-      for (final candidate in fieldCandidates) {
-        if (field == candidate || field.endsWith(candidate)) return err;
-      }
-    }
-    return null;
   }
 }

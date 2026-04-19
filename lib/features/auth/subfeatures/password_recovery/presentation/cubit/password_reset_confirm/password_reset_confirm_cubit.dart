@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
@@ -177,9 +178,11 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
       validation: (errors) {
         emit(
           state.copyWith(
-            tokenError: _firstFieldError(errors, ['token']),
-            newPasswordError: _firstFieldError(errors, ['newPassword']),
-            confirmNewPasswordError: _firstFieldError(errors, [
+            tokenError: findFirstValidationErrorForFields(errors, ['token']),
+            newPasswordError: findFirstValidationErrorForFields(errors, [
+              'newPassword',
+            ]),
+            confirmNewPasswordError: findFirstValidationErrorForFields(errors, [
               'confirmNewPassword',
             ]),
             status: PasswordResetConfirmStatus.failure,
@@ -196,20 +199,5 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
         );
       },
     );
-  }
-
-  ValidationError? _firstFieldError(
-    List<ValidationError> errors,
-    List<String> fieldCandidates,
-  ) {
-    for (final err in errors) {
-      final field = err.field;
-      if (field == null || field.isEmpty) continue;
-
-      for (final candidate in fieldCandidates) {
-        if (field == candidate || field.endsWith(candidate)) return err;
-      }
-    }
-    return null;
   }
 }

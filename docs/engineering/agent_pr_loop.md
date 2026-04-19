@@ -63,6 +63,7 @@ dart run custom_lint
 fvm flutter test
 dart run tool/verify_project_map_drift.dart
 ./tool/check_duplication.sh
+./tool/check_small_helper_duplication.sh
 ./tool/check_presentation_duplication.sh
 ```
 
@@ -75,21 +76,11 @@ reshape shared logic, for example:
 - repeated workflow tails
 - cleanup work prompted by agent-generated duplication
 
-Treat the duplication report as a self-review signal, not a default hard gate.
-The report distinguishes:
-- `actionable` duplicate groups: open maintainability debt worth review
-- `reviewed acceptable` duplicate groups: explicitly reviewed and recorded in
-  `tool/duplication_allowlist.json`
-
-Use `./tool/check_presentation_duplication.sh` for Flutter presentation-heavy
-changes such as:
-- repeated form pages or settings pages
-- repeated cubit validation/failure handling in `presentation/cubit/`
-- repeated micro-widgets or page-local display helpers
-
-This presentation check is intentionally separate from the main duplication
-check. It focuses on narrow presentation patterns and uses its own allowlist:
-- `tool/presentation_duplication_allowlist.json`
+Treat duplication detection as a self-review signal, not a default hard gate.
+See `docs/engineering/duplication_harness.md` for:
+- when to run the core vs small-helper vs presentation profile
+- how to interpret actionable vs reviewed acceptable groups
+- how to record allowlist entries
 
 ### 4. Runtime evidence (when required)
 

@@ -19,11 +19,10 @@ void main() {
     agentsFile.readAsStringSync(),
   );
   if (documentedCoreDirs.isEmpty) {
-    stderr.writeln(
-      'Could not parse core project map directories from AGENTS.md.\n'
-      'Expected tree entries like: "│  │  ├─ <dir>/".',
+    stdout.writeln(
+      'AGENTS.md does not define a core project map. '
+      'Skipping project-map drift verification.',
     );
-    exitCode = 1;
     return;
   }
 

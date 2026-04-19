@@ -12,8 +12,8 @@ Future<int> _run(List<String> argv) async {
     ..addFlag('help', abbr: 'h', negatable: false)
     ..addOption(
       'profile',
-      defaultsTo: _Profile.core.name,
-      allowed: _Profile.values.map((profile) => profile.name),
+      defaultsTo: _Profile.core.label,
+      allowed: _Profile.values.map((profile) => profile.label),
       help: 'Duplication filter profile to use.',
     )
     ..addOption(
@@ -44,6 +44,7 @@ Future<int> _run(List<String> argv) async {
         'Profiles:',
         '- core: non-presentation maintainability duplication',
         '- presentation: narrow Flutter presentation duplication',
+        '- small_helpers: tiny helper duplication across feature/core code',
         '',
         'Reviewed acceptable duplicates can be recorded in the allowlist so',
         'they remain visible but stop showing up as actionable debt.',
@@ -61,7 +62,7 @@ Future<int> _run(List<String> argv) async {
   }
 
   final profile = _Profile.values.firstWhere(
-    (candidate) => candidate.name == args.option('profile')!,
+    (candidate) => candidate.label == args.option('profile')!,
   );
   final reportPath = args.option('report')!;
   final reportFile = File(reportPath);
@@ -119,7 +120,7 @@ Future<int> _run(List<String> argv) async {
   final actionableGroups = _groupActionable(actionable);
   final reviewedGroups = _groupReviewed(reviewed);
 
-  stdout.writeln('Duplication summary (${profile.name})');
+  stdout.writeln('Duplication summary (${profile.label})');
   stdout.writeln('Report: $reportPath');
   stdout.writeln('- Raw duplicates: ${duplicates.length}');
   stdout.writeln('- Self-file filtered out: $selfFileCount');
@@ -272,6 +273,7 @@ _Category? _categorize(_Profile profile, _Duplicate duplicate) {
   return switch (profile) {
     _Profile.core => _categorizeCore(duplicate),
     _Profile.presentation => _categorizePresentation(duplicate),
+    _Profile.smallHelpers => _categorizeSmallHelpers(duplicate),
   };
 }
 
@@ -325,6 +327,65 @@ _Category? _categorizeCore(_Duplicate duplicate) {
       .where((pattern) => pattern.hasMatch(fragmentLower))
       .length;
   if (normalizationSignals >= 3) {
+    return _Category.normalizationHelper;
+  }
+
+  return null;
+}
+
+_Category? _categorizeSmallHelpers(_Duplicate duplicate) {
+  final pathText =
+      '${duplicate.firstPath.toLowerCase()} ${duplicate.secondPath.toLowerCase()}';
+  final fragment = duplicate.fragment;
+  final fragmentLower = fragment.toLowerCase();
+
+  final looksLikeFieldErrorHelper =
+      _presentationCubitPathPattern.hasMatch(pathText) &&
+      (fragment.contains('_firstFieldError(') ||
+          (fragment.contains('List<ValidationError>') &&
+              fragment.contains('fieldCandidates')));
+  if (looksLikeFieldErrorHelper) {
+    return _Category.fieldErrorHelper;
+  }
+
+  final looksLikeFormatterHelper =
+      (_smallHelperSignaturePattern.hasMatch(fragment) ||
+          _smallHelperNamePattern.hasMatch(fragment)) &&
+      (_formatterFragmentPattern.hasMatch(fragment) ||
+          fragment.contains('Localizations.localeOf(') ||
+          fragment.contains('.toLocal()'));
+  if (looksLikeFormatterHelper) {
+    return _Category.formatterHelper;
+  }
+
+  final looksLikeDisplayHelper =
+      (_smallHelperSignaturePattern.hasMatch(fragment) ||
+          _smallHelperNamePattern.hasMatch(fragment)) &&
+      (_displayHelperNamePattern.hasMatch(fragment) ||
+          fragment.contains('context.l10n') ||
+          fragment.contains('AppLocalizations'));
+  if (looksLikeDisplayHelper) {
+    return _Category.displayHelper;
+  }
+
+  final looksLikeParserHelper =
+      (_smallHelperSignaturePattern.hasMatch(fragment) ||
+          _smallHelperNamePattern.hasMatch(fragment)) &&
+      (_parserFragmentPattern.hasMatch(fragment) ||
+          fragment.contains('DateTime.tryParse(') ||
+          fragment.contains('Uri.parse('));
+  if (looksLikeParserHelper) {
+    return _Category.parserHelper;
+  }
+
+  final normalizationSignals = _normalizationPatterns
+      .where((pattern) => pattern.hasMatch(fragmentLower))
+      .length;
+  final looksLikeNormalizationHelper =
+      (_smallHelperSignaturePattern.hasMatch(fragment) ||
+          _smallHelperNamePattern.hasMatch(fragment)) &&
+      normalizationSignals >= 2;
+  if (looksLikeNormalizationHelper) {
     return _Category.normalizationHelper;
   }
 
@@ -455,14 +516,32 @@ final _presentationDisplayHelperPattern = RegExp(
 final _presentationMicroWidgetPattern = RegExp(
   r'(extends\s+(StatelessWidget|StatefulWidget)|Widget\s+build\(|class\s+_[A-Z]\w*(Pill|Card|Row|Tile|Section|Item))',
 );
+final _smallHelperSignaturePattern = RegExp(
+  r'(^|\n)\s*(?:static\s+)?(?:Future(?:<[^>]+>)?|Widget|String|String\?|Locale\?|DateTime|DateTime\?|ValidationError|ValidationError\?|bool|int|double|void|[A-Z_]\w*)\s+_[A-Za-z]\w*\s*\(',
+);
+final _smallHelperNamePattern = RegExp(
+  r'(_firstFieldError|_format[A-Z_]\w*|_labelFor[A-Z_]\w*|_subtitleFor[A-Z_]\w*|_display[A-Z_]\w*|_messageFor[A-Z_]\w*|_normalize[A-Z_]\w*|_parse[A-Z_]\w*)',
+);
+final _displayHelperNamePattern = RegExp(
+  r'(_labelFor[A-Z_]\w*|_subtitleFor[A-Z_]\w*|_display[A-Z_]\w*|_messageFor[A-Z_]\w*|_themeModeLabel|_localeLabel)',
+);
 
-enum _Profile { core, presentation }
+enum _Profile {
+  core('core'),
+  presentation('presentation'),
+  smallHelpers('small_helpers');
+
+  const _Profile(this.label);
+
+  final String label;
+}
 
 enum _Category {
   bridgeTranslation('bridge_translation'),
   cubitFailureHandling('cubit_failure_handling'),
   cubitFieldValidation('cubit_field_validation'),
   displayHelper('display_helper'),
+  fieldErrorHelper('field_error_helper'),
   failureMapper('failure_mapper'),
   formPageSection('form_page_section'),
   formatterHelper('formatter_helper'),

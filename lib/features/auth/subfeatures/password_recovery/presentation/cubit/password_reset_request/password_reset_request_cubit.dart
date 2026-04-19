@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
@@ -83,7 +84,7 @@ class PasswordResetRequestCubit extends Cubit<PasswordResetRequestState> {
       validation: (errors) {
         emit(
           state.copyWith(
-            emailError: _firstFieldError(errors, ['email']),
+            emailError: findFirstValidationErrorForFields(errors, ['email']),
             status: PasswordResetRequestStatus.failure,
             failure: failure,
           ),
@@ -98,20 +99,5 @@ class PasswordResetRequestCubit extends Cubit<PasswordResetRequestState> {
         );
       },
     );
-  }
-
-  ValidationError? _firstFieldError(
-    List<ValidationError> errors,
-    List<String> fieldCandidates,
-  ) {
-    for (final err in errors) {
-      final field = err.field;
-      if (field == null || field.isEmpty) continue;
-
-      for (final candidate in fieldCandidates) {
-        if (field == candidate || field.endsWith(candidate)) return err;
-      }
-    }
-    return null;
   }
 }
