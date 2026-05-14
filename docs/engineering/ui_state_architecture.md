@@ -1,6 +1,6 @@
 # UI State Architecture — Flutter + BLoC/Cubit (Orymu)
 
-This document defines the presentation‑layer architecture using Flutter BLoC/Cubit. It standardizes a “single state snapshot + one‑shot effects” approach and aligns with conventions in this repo (status enums, skeletons, DI, navigation).
+This document defines the presentation‑layer architecture using Flutter BLoC/Cubit. It standardizes a “single state snapshot + explicit one‑shot effects” approach and aligns with conventions in this repo (status enums, skeletons, DI, navigation).
 
 ## 1) Goals & Principles
 
@@ -9,6 +9,7 @@ This document defines the presentation‑layer architecture using Flutter BLoC/C
 - Unidirectional flow: UI intent → Bloc/Cubit → UseCase(s) → State → UI renders.
 - Separation of concerns: presentation (Bloc/Cubit + State), domain (UseCases/Entities), data (repositories).
 - Side effects (snackbar/nav) are one‑shots, handled outside of build.
+- State is for persistent rendering; effects are for one-shot commands.
 
 ## 2) Project Conventions (recap)
 
@@ -42,6 +43,7 @@ lib/features/<feature>/<subfeature>/presentation/
     form/
       form_cubit.dart
       form_state.dart
+      form_effect.dart       # required for mutation-heavy slices
   pages/
     list_page.dart
     detail_page.dart
@@ -52,7 +54,7 @@ Naming & file conventions
 - Bloc files: use the `part` pattern (consistent with existing code like TrendingBooks):
   - `<slice>_bloc.dart` contains the class and `part` directives.
   - `<slice>_event.dart` and `<slice>_state.dart` include `part of '<slice>_bloc.dart';`.
-- Cubit files: no events, only `<slice>_cubit.dart` and `<slice>_state.dart`.
+- Cubit files: no events. Use `<slice>_cubit.dart` and `<slice>_state.dart`; add `<slice>_effect.dart` for mutation flows that emit snackbars, dialogs, navigation, pop results, copy/share/open commands, or parent refresh commands.
 - Page files: `<slice>_page.dart` (Stateful if listening to effects, Stateless otherwise).
 - Tests mirror lib paths under `test/<feature>/<subfeature>/presentation/...`.
 
@@ -219,10 +221,108 @@ BlocProvider(
 
 ## 7) One‑Shot Effects (snackbar/nav)
 
-Default: drive effects from state transitions with `BlocListener`. Do not produce side effects inside `build`. Reserve an effects stream only when a slice truly needs a command channel consumed outside the page. If you use a stream, keep it single‑subscription, close it in `close()`, and test “emit once” semantics.
+Default policy:
 
-1) Listener‑only (default)
-- Drive effects from state transitions using `BlocListener` and `listenWhen`.
+- Query/read flows (`GET`, list/detail loads, refresh, pagination) may be state-only. Render loading/success/empty/failure from state.
+- Mutation flows (`POST`, `PATCH`, `PUT`, `DELETE`) should expose explicit one-shot effects for completion/failure commands such as snackbars, dialogs, navigation, pop-with-result, copy/share/open, and parent-refresh commands.
+- Do not produce side effects inside `build`.
+- Do not store one-shot commands as persistent state.
+- If a slice emits effects, keep the stream single-subscription, close it in `close()`, and test “emit once” semantics.
+
+State-transition listeners are still acceptable for simple read-flow side effects, dependent loads, or legacy slices, but avoid using persistent status as the command channel for mutation flows. Repeated `resetStatus()` calls just to re-arm snackbars are a signal that the slice wants explicit effects.
+
+### 7.1) Explicit Effects (default for mutations)
+
+Use an effect class when a mutation needs a one-shot command.
+
+```dart
+sealed class FormEffect {
+  const FormEffect();
+}
+
+class ShowSaveSuccess extends FormEffect {
+  const ShowSaveSuccess(this.message);
+  final String message;
+}
+
+class ShowSaveFailure extends FormEffect {
+  const ShowSaveFailure(this.message);
+  final String message;
+}
+
+class NavigateBackWithResult extends FormEffect {
+  const NavigateBackWithResult();
+}
+```
+
+Expose a single-subscription stream from the Cubit/Bloc:
+
+```dart
+class FormCubit extends Cubit<FormState> {
+  FormCubit(this._submit) : super(const FormState());
+
+  final SubmitFormUseCase _submit;
+  final _effects = StreamController<FormEffect>();
+  Stream<FormEffect> get effects => _effects.stream;
+
+  Future<void> submit() async {
+    if (state.isSubmitting) return;
+
+    emit(state.copyWith(status: FormStatus.submitting));
+    final result = await _submit(state.toRequest());
+
+    result.match(
+      (failure) {
+        emit(state.copyWith(status: FormStatus.idle, failure: failure));
+        _effects.add(ShowSaveFailure(failure.userMessage));
+      },
+      (_) {
+        emit(state.copyWith(status: FormStatus.idle, failure: null));
+        _effects.add(const ShowSaveSuccess('Saved'));
+        _effects.add(const NavigateBackWithResult());
+      },
+    );
+  }
+
+  @override
+  Future<void> close() async {
+    await _effects.close();
+    return super.close();
+  }
+}
+```
+
+Consume effects once from a coordinating widget:
+
+```dart
+late final StreamSubscription<FormEffect> _effectSub;
+
+@override
+void initState() {
+  super.initState();
+  final cubit = context.read<FormCubit>();
+  _effectSub = cubit.effects.listen((effect) {
+    switch (effect) {
+      case ShowSaveSuccess(:final message):
+        AppSnackBar.showSuccess(context, message: message);
+      case ShowSaveFailure(:final message):
+        AppSnackBar.showError(context, message: message);
+      case NavigateBackWithResult():
+        context.pop(true);
+    }
+  });
+}
+
+@override
+void dispose() {
+  _effectSub.cancel();
+  super.dispose();
+}
+```
+
+### 7.2) Listener-Only Effects (allowed for simple read flows and legacy slices)
+
+Drive effects from state transitions using `BlocListener` and `listenWhen` when the effect is tightly tied to a render-state transition and repeat semantics are not a concern.
 
 ```dart
 BlocListener<FormBloc, FormState>(
@@ -240,9 +340,9 @@ BlocListener<FormBloc, FormState>(
 )
 ```
 
-## 7.1) `AppAsyncStateView` Usage Pattern
+## 7.3) `AppAsyncStateView` Usage Pattern
 
-Use `AppAsyncStateView` for render-only status shells. Keep side effects in `BlocListener`.
+Use `AppAsyncStateView` for render-only status shells. Keep side effects in explicit effect listeners for mutation slices, or in `BlocListener` for simple read-flow side effects.
 
 ```dart
 BlocListener<SliceCubit, SliceState>(
@@ -274,68 +374,9 @@ Notes:
 - `AppAsyncStateView` is render-only; do not trigger navigation/snackbars inside builders.
 - For submit-heavy forms, keep button-level loading/error handling in the form itself; use `AppAsyncStateView` when the whole body state changes.
 
-2) Effects stream (command channel; use sparingly)
-- Expose `Stream<Effect>` from Cubit/Bloc; subscribe once in `initState` from a single coordinating widget and consume. Prefer single‑subscription streams to avoid multiple listeners. Always close in `close()`.
-
-```dart
-sealed class SliceEffect { const SliceEffect(); }
-class ShowError extends SliceEffect { final String message; const ShowError(this.message); }
-class OpenDetail extends SliceEffect { final String id; const OpenDetail(this.id); }
-
-class SliceCubit extends Cubit<SliceState> {
-  SliceCubit(this._load) : super(const SliceState());
-  final Future<Either<Failure, List<Item>>> Function({required int page}) _load;
-  final _effects = StreamController<SliceEffect>(); // single‑subscription
-  Stream<SliceEffect> get effects => _effects.stream;
-
-  Future<void> load() async {
-    emit(state.copyWith(status: SliceStatus.loading, page: 1));
-    final res = await _load(page: 1);
-    res.fold(
-      (f) {
-        final msg = f.userMessage;
-        emit(state.copyWith(status: SliceStatus.failure, errorMessage: msg));
-        _effects.add(ShowError(msg));
-      },
-      (items) => emit(state.copyWith(
-        status: items.isEmpty ? SliceStatus.success : SliceStatus.success,
-        items: items,
-        // include Empty variant via items.isEmpty check if desired
-      )),
-    );
-  }
-
-  void openDetail(String id) => _effects.add(OpenDetail(id));
-
-  @override
-  Future<void> close() async {
-    await _effects.close();
-    return super.close();
-  }
-}
-
-// In the page (StatefulWidget)
-late final StreamSubscription<SliceEffect> _sub;
-@override void initState() {
-  super.initState();
-  final cubit = context.read<SliceCubit>();
-  _sub = cubit.effects.listen((e) {
-    switch (e) {
-      case ShowError(:final message):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      case OpenDetail(:final id):
-        context.push('/detail?id=$id');
-    }
-  });
-}
-@override void dispose() { _sub.cancel(); super.dispose(); }
-```
-
-Choose one approach per slice. Don’t store effects in persistent state.
-
 Testing effects
-- Listener approach: assert that a given state transition (e.g., submitting → success) occurs exactly once.
-- Stream approach: subscribe to `effects`, trigger the intent, expect a single emission, and verify the stream is closed in `close()`.
+- Explicit effect approach: subscribe to `effects`, trigger the intent, expect the exact command sequence, and verify the stream is closed in `close()`.
+- Listener approach: assert that a given state transition (e.g., loading → failure) occurs exactly once.
 
 ## 8) Builder Pattern (rendering)
 
@@ -484,7 +525,7 @@ New list/paginated screen
 - [ ] Events/Methods: Started/Refreshed, FilterChanged, NextPageRequested.
 - [ ] Guard: ignore when `isLoadingMore == true` or `hasNextPage == false`.
 - [ ] UI: one builder + `_build*`; skeletons under `widgets/skeleton/`.
-- [ ] Effects: errors via `BlocListener` or effects stream.
+- [ ] Effects: usually none; render GET failures inline through state. Use an explicit effect only for exceptional one-shot read commands.
 - [ ] Concurrency: `droppable()` for next page; `restartable()` for filter/search.
 - [ ] Initial dispatch at provider creation.
 
@@ -492,7 +533,8 @@ Form/submit flow
 - [ ] State: fields, validation errors, `FormStatus { idle, submitting, success, failure }`, message.
 - [ ] Method/Event: `submitted()` or `Submitted(...)`.
 - [ ] UI: disable while submitting; success/failure handled via listener.
-- [ ] Effects: snackbar + navigate back on success.
+- [ ] Effects: explicit `<slice>_effect.dart` for snackbar/dialog/navigation/pop-result.
+- [ ] Tests: assert submit state transitions and emitted effects.
 
 Detail screen with dependent blocks
 - [ ] Listen to ID changes (from parent Bloc) via `BlocListener` and refetch dependents.
@@ -502,7 +544,7 @@ Detail screen with dependent blocks
 
 - Use `bloc_test` to assert event → state sequences and effect emissions.
 - Mock use cases; test loading/success/error and pagination guards.
-- For effects stream, assert the right commands are emitted once.
+- For mutation effects, subscribe to `effects`, trigger the intent, and assert the right commands are emitted once and in order.
 
 Appendix: Good in‑repo references
 - Discover trending (status + pagination): `lib/features/discover/presentation/bloc/trending/trending_books_state.dart:1`, `lib/features/discover/presentation/bloc/trending/trending_books_bloc.dart:1`.
