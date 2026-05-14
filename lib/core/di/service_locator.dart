@@ -7,6 +7,7 @@ import 'package:mobile_core_kit/core/di/registrars/core_infra_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/core_platform_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/core_runtime_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/core_session_registrar.dart';
+import 'package:mobile_core_kit/core/di/registrars/database_schema_registrar.dart';
 import 'package:mobile_core_kit/core/di/registrars/feature_modules_registrar.dart';
 
 /// Global service locator – access via `locator<MyType>()` anywhere in the codebase.
@@ -27,6 +28,7 @@ final LocatorBootstrapPipeline _bootstrapPipeline = LocatorBootstrapPipeline(
 void registerLocator() {
   final composer = RegisterComposer(
     steps: [
+      registerDatabaseSchema,
       registerCoreFoundation,
       registerCorePlatform,
       registerCoreInfra,
