@@ -10,6 +10,8 @@ Baseline ADRs (apply to `mobile-core-kit` adopters):
 - `records/0006-env-yaml-build-config-flavors.md` — Environment YAML + BuildConfig generator (accepted, 2025‑12‑12)
 - `records/0007-intent-based-deep-linking.md` — Intent‑based deep linking (Option C) with safe startup gating (accepted, 2026‑01‑02)
 - `records/0008-seed-driven-role-based-color-system.md` — Seed-driven, role-based color system (neutral elevation + contrast gates) (accepted, 2026‑01‑16)
+- `records/0009-graduated-feature-decomposition.md` — Use graduated feature decomposition instead of uniform folder shapes (accepted, 2026‑03‑07)
+- `records/0010-modular-database-schema-registration.md` — Modular database schema registration via the composition root (accepted, 2026‑05‑14)
 
 Examples (downstream reference only):
 

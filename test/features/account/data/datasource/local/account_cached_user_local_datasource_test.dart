@@ -2,17 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobile_core_kit/core/di/registrars/database_schema_registrar.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/account_deletion_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/infra/database/app_database.dart';
-import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/features/account/data/datasource/local/account_cached_user_local_datasource.dart';
-import 'package:mobile_core_kit/features/account/di/account_current_user_module.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-class _MockApiHelper extends Mock implements ApiHelper {}
 
 void main() {
   setUpAll(() {
@@ -91,12 +87,9 @@ void main() {
     });
 
     test(
-      'AccountCurrentUserModule registers users table via AppDatabase onCreate tasks',
+      'database schema registrar registers users table via AppDatabase onCreate tasks',
       () async {
-        final getIt = GetIt.asNewInstance();
-        getIt.registerLazySingleton<ApiHelper>(() => _MockApiHelper());
-
-        AccountCurrentUserModule.register(getIt);
+        registerDatabaseSchema(GetIt.asNewInstance());
 
         final db = await AppDatabase().database;
         final tables = await db.rawQuery(
@@ -115,8 +108,6 @@ void main() {
         expect(columnNames, contains('displayName'));
         expect(columnNames, contains('givenName'));
         expect(columnNames, contains('familyName'));
-
-        await getIt.reset();
       },
     );
   });
