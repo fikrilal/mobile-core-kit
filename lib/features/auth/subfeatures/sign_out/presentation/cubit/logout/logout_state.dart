@@ -10,7 +10,6 @@ enum LogoutFailure { failed }
 abstract class LogoutState with _$LogoutState {
   const factory LogoutState({
     @Default(LogoutStatus.initial) LogoutStatus status,
-    LogoutFailure? failure,
   }) = _LogoutState;
 
   const LogoutState._();

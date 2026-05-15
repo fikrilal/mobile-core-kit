@@ -15,6 +15,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usec
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/family_name.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/given_name.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 
 class CompleteProfileCubit extends Cubit<CompleteProfileState> {
@@ -31,9 +32,12 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   final ClearProfileDraftUseCase _clearDraft;
   final PatchMeProfileUseCase _patchMeProfile;
   final SessionManager _sessionManager;
+  final _effects = StreamController<CompleteProfileEffect>.broadcast();
 
   Timer? _draftSaveTimer;
   static const Duration _draftSaveDebounce = MotionDurations.long;
+
+  Stream<CompleteProfileEffect> get effects => _effects.stream;
 
   String? get _currentUserId =>
       _sessionManager.sessionNotifier.value?.user?.id.trim();
@@ -151,8 +155,10 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
                 failure: failure,
               ),
             );
+            _effects.add(CompleteProfileFailureEffect(failure));
           },
           orElse: () {
+            _effects.add(CompleteProfileFailureEffect(failure));
             emit(
               state.copyWith(
                 status: CompleteProfileStatus.failure,
@@ -213,6 +219,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   Future<void> close() async {
     _draftSaveTimer?.cancel();
     _draftSaveTimer = null;
+    unawaited(_effects.close());
     await super.close();
   }
 }

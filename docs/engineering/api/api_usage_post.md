@@ -167,7 +167,7 @@ Future<Either<DiscoverFailure, ReviewCommentEntity>> call(CreateBookReviewReques
 
 - Keep a single immutable state with a `FormStatus` enum (`idle`, `submitting`, `success`, `failure`).
 - On field changes, call VO `create(...)`, store `errorText` in state; do not perform side effects in `build`.
-- On submit, re-validate (VOs + required IDs), call the use case, and emit one-shot effects via a single-subscription `Stream<Effect>` or use `BlocListener` on status changes.
+- On submit, re-validate (VOs + required IDs), call the use case, and emit one-shot effects via a single-subscription `Stream<Effect>`.
 
 ```dart
 // presentation/cubit/create_book_review_cubit.dart
@@ -243,7 +243,7 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - Parsing response envelopes manually in repositories (use `ApiHelper` + typed parsers).
 - Returning raw backend messages to UI without mapping to domain failures.
 - Duplicating validation logic in widgets instead of using VOs.
-- Using broadcast streams for UI effects (can cause duplicate snackbars); prefer single-subscription stream or `BlocListener` on status.
+- Using broadcast streams for UI effects (can cause duplicate snackbars); prefer a single-subscription effect stream for mutation commands.
 
 ## Testing Tips
 

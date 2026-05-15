@@ -13,6 +13,7 @@ import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.d
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -140,7 +141,9 @@ void main() {
 
         final cubit = RegisterCubit(registerUser, sessionManager, analytics);
         final emitted = <RegisterState>[];
+        final effects = <RegisterEffect>[];
         final sub = cubit.stream.listen(emitted.add);
+        final effectSub = cubit.effects.listen(effects.add);
 
         cubit.emailChanged('user@example.com');
         cubit.passwordChanged('password123');
@@ -152,6 +155,8 @@ void main() {
         expect(emitted[3].status, RegisterStatus.failure);
         expect(emitted[3].failure, const AuthFailure.emailTaken());
         expect(emitted[3].emailError?.code, 'email_taken');
+        expect(effects, hasLength(1));
+        expect(effects.single, isA<RegisterFailureEffect>());
 
         cubit.emailChanged('user@example.com');
         await pumpEventQueue();
@@ -162,6 +167,7 @@ void main() {
         verifyNever(() => sessionManager.login(any()));
 
         await sub.cancel();
+        await effectSub.cancel();
         await cubit.close();
       },
     );

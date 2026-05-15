@@ -293,7 +293,7 @@ Contains Bloc/Cubit, state, pages, and feature widgets.
 
 - Bloc/Cubit drive user intents (events or methods) and emit a single immutable State describing the screen.
 - State modeling policy: default to a single state + `status` enum; for complex/mutually exclusive states consider sealed unions with Freezed.
-- Rendering and effects: one BlocBuilder switching on `status`; one‑shot effects via `BlocListener`. Keep skeletons lightweight and colocated.
+- Rendering and effects: one BlocBuilder switching on `status`; mutation flows emit explicit one-shot effects. Keep skeletons lightweight and colocated.
 - Dispatch initial intents at provider creation time (route builders), not inside `build` methods.
 - Prefer Cubit first; use Bloc for orchestration, multi‑input flows, or when using event transformers.
 - No GetX — all new and refactored UI state uses Bloc/Cubit.
@@ -309,7 +309,7 @@ Folder rules and conventions:
 - bloc/ vs cubit/: prefer Cubit for ≤3 intents and simple flows; use Bloc for multi‑input orchestration or when using event transformers.
 - events: name user intents and lifecycle triggers explicitly (`Started`, `Refreshed`, `FilterChanged`, `NextPageRequested`, `Submitted`).
 - state: single immutable snapshot; UI‑shaped fields; derived getters encouraged; keep errors as user‑friendly strings on state.
-- pages/: subscribe to effects via `BlocListener`; dispatch initial intent in providers, not inside `build`.
+- pages/: consume explicit effects for mutation flows; use `BlocListener` for simple read-flow state transitions or legacy slices. Dispatch initial intent in providers, not inside `build`.
 - widgets/: colocate skeletons under `widgets/skeleton/`; keep helpers small and theme‑aware.
 
 ---
@@ -375,7 +375,7 @@ Notes:
 
 - Domain: unit test use cases with mocked repositories; assert business rules and return types.
 - Data: verify DTO ↔ entity mappings and failure translation; add integration tests for API/DB paths where valuable.
-- Presentation: use `bloc_test` to assert intent → state sequences and one‑shot effects; keep widget tests for key screens.
+- Presentation: use `bloc_test` to assert intent → state sequences and explicit one‑shot effects for mutations; keep widget tests for key screens.
 
 Paths:
 - Place tests under `test/` mirroring `lib/` paths.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
@@ -6,6 +8,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/security/domain/ent
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/revoke_me_session_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/list_me_sessions_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/revoke_me_session_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_state.dart';
 
 class MeSessionsCubit extends Cubit<MeSessionsState> {
@@ -22,6 +25,9 @@ class MeSessionsCubit extends Cubit<MeSessionsState> {
   final ListMeSessionsUseCase _listMeSessions;
   final RevokeMeSessionUseCase _revokeMeSession;
   final DateTime Function() _now;
+  final _effects = StreamController<MeSessionsEffect>();
+
+  Stream<MeSessionsEffect> get effects => _effects.stream;
 
   Future<void> load({
     int limit = defaultLimit,
@@ -96,12 +102,13 @@ class MeSessionsCubit extends Cubit<MeSessionsState> {
       (failure) {
         emit(
           state.copyWith(
-            revokeStatus: MeSessionRevokeStatus.failure,
+            revokeStatus: MeSessionRevokeStatus.idle,
             pendingRevokeSessionId: null,
             lastRevokedSessionId: null,
-            revokeFailure: failure,
+            revokeFailure: null,
           ),
         );
+        _effects.add(ShowRevokeSessionFailure(failure));
       },
       (_) {
         final updatedSessions = state.sessions
@@ -119,37 +126,21 @@ class MeSessionsCubit extends Cubit<MeSessionsState> {
           state.copyWith(
             status: _listStatusFor(updatedSessions),
             sessions: updatedSessions,
-            revokeStatus: MeSessionRevokeStatus.success,
+            revokeStatus: MeSessionRevokeStatus.idle,
             pendingRevokeSessionId: null,
-            lastRevokedSessionId: normalized,
+            lastRevokedSessionId: null,
             revokeFailure: null,
           ),
         );
+        _effects.add(ShowRevokeSessionSuccess(normalized));
       },
     );
   }
 
-  void resetRevokeStatus() {
-    if (state.revokeStatus == MeSessionRevokeStatus.idle &&
-        state.pendingRevokeSessionId == null &&
-        state.lastRevokedSessionId == null &&
-        state.revokeFailure == null) {
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        revokeStatus: MeSessionRevokeStatus.idle,
-        pendingRevokeSessionId: null,
-        lastRevokedSessionId: null,
-        revokeFailure: null,
-      ),
-    );
-  }
-
-  void clearFailure() {
-    if (state.failure == null) return;
-    emit(state.copyWith(failure: null));
+  @override
+  Future<void> close() async {
+    unawaited(_effects.close());
+    return super.close();
   }
 
   Future<void> _emitPage({
@@ -165,7 +156,10 @@ class MeSessionsCubit extends Cubit<MeSessionsState> {
             ? _listStatusFor(state.sessions)
             : MeSessionsStatus.failure;
 
-        emit(state.copyWith(status: status, failure: failure));
+        emit(state.copyWith(status: status, failure: append ? null : failure));
+        if (append) {
+          _effects.add(ShowMeSessionsLoadMoreFailure(failure));
+        }
       },
       (page) {
         final merged = append

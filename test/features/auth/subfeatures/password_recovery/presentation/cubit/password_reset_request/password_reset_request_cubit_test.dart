@@ -5,6 +5,7 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error_code
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -26,7 +27,9 @@ void main() {
     test('emits field errors and does not call usecase when invalid', () async {
       final cubit = PasswordResetRequestCubit(requestPasswordReset);
       final emitted = <PasswordResetRequestState>[];
+      final effects = <PasswordResetRequestEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       await cubit.submit();
       await pumpEventQueue();
@@ -38,10 +41,12 @@ void main() {
         emitted.single.emailError?.code,
         ValidationErrorCodes.invalidEmail,
       );
+      expect(effects, isEmpty);
 
       verifyNever(() => requestPasswordReset(any()));
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
 
@@ -52,7 +57,9 @@ void main() {
 
       final cubit = PasswordResetRequestCubit(requestPasswordReset);
       final emitted = <PasswordResetRequestState>[];
+      final effects = <PasswordResetRequestEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       cubit.emailChanged(' user@example.com ');
       await cubit.submit();
@@ -63,6 +70,8 @@ void main() {
         true,
       );
       expect(emitted.last.status, PasswordResetRequestStatus.success);
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<PasswordResetRequestSuccessEffect>());
 
       final captured = verify(
         () => requestPasswordReset(captureAny()),
@@ -74,6 +83,7 @@ void main() {
       );
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
 
@@ -84,7 +94,9 @@ void main() {
 
       final cubit = PasswordResetRequestCubit(requestPasswordReset);
       final emitted = <PasswordResetRequestState>[];
+      final effects = <PasswordResetRequestEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       cubit.emailChanged('user@example.com');
       await cubit.submit();
@@ -92,8 +104,11 @@ void main() {
 
       expect(emitted.last.status, PasswordResetRequestStatus.failure);
       expect(emitted.last.failure, const AuthFailure.tooManyRequests());
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<PasswordResetRequestFailureEffect>());
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
   });

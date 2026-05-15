@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,16 +11,64 @@ import 'package:mobile_core_kit/core/design_system/widgets/async_state/async_sta
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
-import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/presentation/localization/validation_error_localizer.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_state.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
-class PasswordResetRequestPage extends StatelessWidget {
+class PasswordResetRequestPage extends StatefulWidget {
   const PasswordResetRequestPage({super.key});
+
+  @override
+  State<PasswordResetRequestPage> createState() =>
+      _PasswordResetRequestPageState();
+}
+
+class _PasswordResetRequestPageState extends State<PasswordResetRequestPage> {
+  StreamSubscription<PasswordResetRequestEffect>? _effectSubscription;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _effectSubscription ??= context
+        .read<PasswordResetRequestCubit>()
+        .effects
+        .listen(_handleEffect);
+  }
+
+  void _handleEffect(PasswordResetRequestEffect effect) {
+    if (!mounted) return;
+
+    switch (effect) {
+      case PasswordResetRequestSuccessEffect():
+        AppSnackBar.showSuccess(
+          context,
+          message: context.l10n.authPasswordResetRequestSuccessTitle,
+        );
+
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          navigator.pop();
+          return;
+        }
+
+        context.go(AuthRoutes.signIn);
+      case PasswordResetRequestFailureEffect(:final failure):
+        AppSnackBar.showError(
+          context,
+          message: messageForAuthFailure(failure, context.l10n),
+        );
+    }
+  }
+
+  @override
+  void dispose() {
+    unawaited(_effectSubscription?.cancel());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,42 +76,7 @@ class PasswordResetRequestPage extends StatelessWidget {
       appBar: AppBar(
         title: AppText.titleMedium(context.l10n.authPasswordResetRequestTitle),
       ),
-      body: BlocListener<PasswordResetRequestCubit, PasswordResetRequestState>(
-        listenWhen: (prev, curr) => prev.status != curr.status,
-        listener: (context, state) {
-          if (state.status == PasswordResetRequestStatus.success) {
-            AppSnackBar.showSuccess(
-              context,
-              message: context.l10n.authPasswordResetRequestSuccessTitle,
-            );
-
-            final navigator = Navigator.of(context);
-            if (navigator.canPop()) {
-              navigator.pop();
-              return;
-            }
-
-            context.go(AuthRoutes.signIn);
-            return;
-          }
-
-          if (state.status == PasswordResetRequestStatus.failure &&
-              state.failure != null) {
-            final shouldShowSnackBar = state.failure!.maybeWhen(
-              validation: (_) => false,
-              orElse: () => true,
-            );
-
-            if (shouldShowSnackBar) {
-              AppSnackBar.showError(
-                context,
-                message: messageForAuthFailure(state.failure!, context.l10n),
-              );
-            }
-          }
-        },
-        child: const _PasswordResetRequestBody(),
-      ),
+      body: const _PasswordResetRequestBody(),
     );
   }
 }
