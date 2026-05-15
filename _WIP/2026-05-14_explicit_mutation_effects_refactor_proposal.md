@@ -97,7 +97,7 @@ Completed on 2026-05-15.
 ### Reset methods found
 
 - `RequestAccountDeletionCubit.resetStatus()` - removed in Phase 1 after request/cancel effects.
-- `ProfileImageCubit.resetStatus()` - likely removable after upload/clear effects, unless still needed for avatar load state.
+- `ProfileImageCubit.resetStatus()` - removed in Phase 3 after upload/clear effects.
 - `MeSessionsCubit.resetRevokeStatus()` - removed in Phase 2 after revoke effects.
 - `MeSessionsCubit.clearFailure()` - removed in Phase 2 after load-more failure snackbar moved to effects.
 
@@ -137,6 +137,19 @@ Completed on 2026-05-15.
 - Removed `MeSessionsCubit.resetRevokeStatus()`.
 - Removed `MeSessionsCubit.clearFailure()`.
 - Updated session Cubit tests to assert emitted revoke effects and stream closure.
+
+### Phase 3 Implementation Notes
+
+Completed on 2026-05-15.
+
+- Added `profile_image_effect.dart`.
+- `ProfileImageCubit` now exposes a single-subscription `effects` stream and closes it in `close()`.
+- Upload/clear success and failure commands now emit explicit effects.
+- Upload/clear completion returns state to `initial` instead of storing success/failure commands in state.
+- Avatar loading/cache failures remain render-state because they describe the avatar content state.
+- Removed `ProfileImageCubit.resetStatus()`.
+- `AccountPage` subscribes once to profile image effects and no longer uses `BlocListener` for profile image snackbars.
+- Updated profile image Cubit tests to assert mutation effects and stream closure.
 
 ## Current Candidate Slices
 
@@ -265,17 +278,17 @@ Reasoning:
 
 ### Phase 3 — Profile image
 
-- [ ] Add `profile_image_effect.dart`.
-- [ ] Emit upload/clear failure effects for mutation failures only.
-- [ ] Emit upload/clear success effects.
-- [ ] Represent follow-up avatar refresh as either:
+- [x] Add `profile_image_effect.dart`.
+- [x] Emit upload/clear failure effects for mutation failures only.
+- [x] Emit upload/clear success effects.
+- [x] Represent follow-up avatar refresh as either:
   - [ ] an explicit effect consumed by the page, or
-  - [ ] an internal Cubit step if it is not a UI command.
-- [ ] Keep `loadAvatar()` cache/load failures state-driven unless the UI needs a snackbar.
-- [ ] Remove `resetStatus()` if no longer needed for mutation commands.
-- [ ] Update `AccountPage` effect consumption.
-- [ ] Update profile image tests for effect order and no duplicate emissions.
-- [ ] Run targeted profile tests.
+  - [x] an internal Cubit step if it is not a UI command.
+- [x] Keep `loadAvatar()` cache/load failures state-driven unless the UI needs a snackbar.
+- [x] Remove `resetStatus()` if no longer needed for mutation commands.
+- [x] Update `AccountPage` effect consumption.
+- [x] Update profile image tests for effect order and no duplicate emissions.
+- [x] Run targeted profile tests.
 
 ### Phase 4 — Auth forms
 

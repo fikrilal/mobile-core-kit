@@ -13,6 +13,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usec
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
 
 class ProfileImageCubit extends Cubit<ProfileImageState> {
@@ -33,9 +34,12 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
   final RefreshProfileAvatarCacheUseCase _refreshProfileAvatarCache;
   final SaveProfileAvatarCacheUseCase _saveProfileAvatarCache;
   final ClearProfileAvatarCacheUseCase _clearProfileAvatarCache;
+  final _effects = StreamController<ProfileImageEffect>();
 
   Future<void>? _refreshFuture;
   String? _refreshKey;
+
+  Stream<ProfileImageEffect> get effects => _effects.stream;
 
   Future<void> upload({
     required Uint8List bytes,
@@ -65,13 +69,15 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
         if (isClosed) return;
         emit(
           state.copyWith(
-            status: ProfileImageStatus.failure,
-            action: ProfileImageAction.upload,
-            failure: failure,
+            status: ProfileImageStatus.initial,
+            action: ProfileImageAction.none,
+            failure: null,
           ),
         );
+        _effects.add(ShowProfileImageFailure(failure));
       },
       (user) async {
+        var nextCachedFilePath = state.cachedFilePath;
         final fileId = user.profile.profileImageFileId?.trim();
         if (fileId != null && fileId.isNotEmpty) {
           final saved = await _saveProfileAvatarCache(
@@ -84,17 +90,20 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
             final filePath = entry?.filePath;
             if (filePath == null || filePath.isEmpty) return;
             await _evictFileImage(filePath);
+            nextCachedFilePath = filePath;
           });
         }
 
         if (isClosed) return;
         emit(
           state.copyWith(
-            status: ProfileImageStatus.success,
-            action: ProfileImageAction.upload,
+            status: ProfileImageStatus.initial,
+            action: ProfileImageAction.none,
+            cachedFilePath: nextCachedFilePath,
             failure: null,
           ),
         );
+        _effects.add(const ShowProfileImageUpdated());
       },
     );
   }
@@ -116,20 +125,27 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
 
     if (isClosed) return;
     result.match(
-      (failure) => emit(
-        state.copyWith(
-          status: ProfileImageStatus.failure,
-          action: ProfileImageAction.clear,
-          failure: failure,
-        ),
-      ),
-      (_) => emit(
-        state.copyWith(
-          status: ProfileImageStatus.success,
-          action: ProfileImageAction.clear,
-          failure: null,
-        ),
-      ),
+      (failure) {
+        emit(
+          state.copyWith(
+            status: ProfileImageStatus.initial,
+            action: ProfileImageAction.none,
+            failure: null,
+          ),
+        );
+        _effects.add(ShowProfileImageFailure(failure));
+      },
+      (_) {
+        emit(
+          state.copyWith(
+            status: ProfileImageStatus.initial,
+            action: ProfileImageAction.none,
+            cachedFilePath: null,
+            failure: null,
+          ),
+        );
+        _effects.add(const ShowProfileImageRemoved());
+      },
     );
   }
 
@@ -220,18 +236,6 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
           profileImageFileId: profileImageFileId,
         );
       },
-    );
-  }
-
-  void resetStatus() {
-    if (state.status == ProfileImageStatus.initial) return;
-
-    emit(
-      state.copyWith(
-        status: ProfileImageStatus.initial,
-        action: ProfileImageAction.none,
-        failure: null,
-      ),
     );
   }
 
@@ -328,5 +332,11 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
       // Ignore cache eviction failures; worst case the old image stays until
       // the next rebuild or app restart.
     }
+  }
+
+  @override
+  Future<void> close() async {
+    unawaited(_effects.close());
+    return super.close();
   }
 }
