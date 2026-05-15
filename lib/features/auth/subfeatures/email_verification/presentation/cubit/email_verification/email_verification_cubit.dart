@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
@@ -7,6 +9,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_state.dart';
 
 class EmailVerificationCubit extends Cubit<EmailVerificationState> {
@@ -15,6 +18,9 @@ class EmailVerificationCubit extends Cubit<EmailVerificationState> {
 
   final VerifyEmailUseCase _verifyEmail;
   final ResendEmailVerificationUseCase _resendEmailVerification;
+  final _effects = StreamController<EmailVerificationEffect>.broadcast();
+
+  Stream<EmailVerificationEffect> get effects => _effects.stream;
 
   void tokenChanged(String value) {
     final result = EmailVerificationToken.create(value);
@@ -125,8 +131,10 @@ class EmailVerificationCubit extends Cubit<EmailVerificationState> {
             lastAction: action,
           ),
         );
+        _effects.add(EmailVerificationFailureEffect(failure));
       },
       orElse: () {
+        _effects.add(EmailVerificationFailureEffect(failure));
         emit(
           state.copyWith(
             status: EmailVerificationStatus.failure,
@@ -136,5 +144,11 @@ class EmailVerificationCubit extends Cubit<EmailVerificationState> {
         );
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    unawaited(_effects.close());
+    return super.close();
   }
 }

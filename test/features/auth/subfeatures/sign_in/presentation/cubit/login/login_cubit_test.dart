@@ -13,6 +13,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -161,7 +162,9 @@ void main() {
           analytics,
         );
         final emitted = <LoginState>[];
+        final effects = <LoginEffect>[];
         final sub = cubit.stream.listen(emitted.add);
+        final effectSub = cubit.effects.listen(effects.add);
 
         cubit.emailChanged('user@example.com');
         cubit.passwordChanged('password');
@@ -171,6 +174,8 @@ void main() {
         expect(emitted.length, 4);
         expect(emitted[3].status, LoginStatus.failure);
         expect(emitted[3].failure, const AuthFailure.invalidCredentials());
+        expect(effects, hasLength(1));
+        expect(effects.single, isA<LoginFailureEffect>());
 
         cubit.emailChanged('user@example.com');
         await pumpEventQueue();
@@ -182,6 +187,7 @@ void main() {
         verifyNever(() => analytics.trackLogin(method: any(named: 'method')));
 
         await sub.cancel();
+        await effectSub.cancel();
         await cubit.close();
       },
     );

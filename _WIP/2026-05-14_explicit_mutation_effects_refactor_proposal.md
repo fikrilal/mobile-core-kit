@@ -151,6 +151,20 @@ Completed on 2026-05-15.
 - `AccountPage` subscribes once to profile image effects and no longer uses `BlocListener` for profile image snackbars.
 - Updated profile image Cubit tests to assert mutation effects and stream closure.
 
+### Phase 4 Implementation Notes
+
+Completed on 2026-05-15.
+
+- Added auth/profile effect files for login, register, change password, password reset request, password reset confirm, complete profile, and email verification.
+- Login/register failure snackbars now come from Cubit effects. Success remains session/router-driven.
+- Change password success now emits an effect consumed by the page for success snackbar plus pop/home navigation.
+- Password reset request success and non-validation failure commands now emit effects. Validation failures remain state-only because the existing UX intentionally renders field errors without a snackbar.
+- Password reset confirm success remains render-state through `AppAsyncStateView`; non-validation failure snackbars now use effects.
+- Complete profile failure snackbars now use effects. Success remains session/profile state-driven.
+- Email verification failure snackbars now use effects, while success/failure bodies remain render-state.
+- Removed the remaining auth/profile status-driven `BlocListener` snackbar/navigation handlers from Phase 4 pages.
+- Updated Cubit tests to assert representative success/failure effects for the affected slices.
+
 ## Current Candidate Slices
 
 ### High priority
@@ -292,15 +306,15 @@ Reasoning:
 
 ### Phase 4 — Auth forms
 
-- [ ] Add effects to `LoginCubit` for submit failures.
-- [ ] Add effects to `RegisterCubit` for submit success/failure commands.
-- [ ] Add effects to `ChangePasswordCubit`.
-- [ ] Add effects to `PasswordResetRequestCubit`.
-- [ ] Add effects to `PasswordResetConfirmCubit`.
-- [ ] Add effects to `CompleteProfileCubit` if success/failure commands exist.
-- [ ] Review `EmailVerificationCubit` and only add effects for true one-shot commands.
-- [ ] Update pages from status-driven snackbars/navigation to effect consumption.
-- [ ] Update tests per Cubit.
+- [x] Add effects to `LoginCubit` for submit failures.
+- [x] Add effects to `RegisterCubit` for submit success/failure commands.
+- [x] Add effects to `ChangePasswordCubit`.
+- [x] Add effects to `PasswordResetRequestCubit`.
+- [x] Add effects to `PasswordResetConfirmCubit`.
+- [x] Add effects to `CompleteProfileCubit` if success/failure commands exist.
+- [x] Review `EmailVerificationCubit` and only add effects for true one-shot commands.
+- [x] Update pages from status-driven snackbars/navigation to effect consumption.
+- [x] Update tests per Cubit.
 
 ### Phase 5 — Cleanup and safeguards
 

@@ -6,6 +6,7 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error_code
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -32,7 +33,9 @@ void main() {
     test('emits field errors and does not call usecase when invalid', () async {
       final cubit = ChangePasswordCubit(changePassword);
       final emitted = <ChangePasswordState>[];
+      final effects = <ChangePasswordEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       await cubit.submit();
       await pumpEventQueue();
@@ -49,10 +52,12 @@ void main() {
         ValidationErrorCodes.required,
       );
       expect(emitted.single.confirmNewPasswordError, isNull);
+      expect(effects, isEmpty);
 
       verifyNever(() => changePassword(any()));
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
 
@@ -61,7 +66,9 @@ void main() {
 
       final cubit = ChangePasswordCubit(changePassword);
       final emitted = <ChangePasswordState>[];
+      final effects = <ChangePasswordEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       cubit.currentPasswordChanged('oldpassword123');
       cubit.newPasswordChanged('newpassword123');
@@ -74,6 +81,8 @@ void main() {
         true,
       );
       expect(emitted.last.status, ChangePasswordStatus.success);
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<ChangePasswordSuccessEffect>());
 
       final captured = verify(() => changePassword(captureAny())).captured;
       expect(captured.length, 1);
@@ -86,6 +95,7 @@ void main() {
       );
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
 
@@ -127,7 +137,9 @@ void main() {
 
       final cubit = ChangePasswordCubit(changePassword);
       final emitted = <ChangePasswordState>[];
+      final effects = <ChangePasswordEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       cubit.currentPasswordChanged('oldpassword123');
       cubit.newPasswordChanged('newpassword123');
@@ -140,8 +152,11 @@ void main() {
         emitted.last.currentPasswordError?.code,
         ValidationErrorCodes.currentPasswordInvalid,
       );
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<ChangePasswordFailureEffect>());
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
 
@@ -152,7 +167,9 @@ void main() {
 
       final cubit = ChangePasswordCubit(changePassword);
       final emitted = <ChangePasswordState>[];
+      final effects = <ChangePasswordEffect>[];
       final sub = cubit.stream.listen(emitted.add);
+      final effectSub = cubit.effects.listen(effects.add);
 
       cubit.currentPasswordChanged('oldpassword123');
       cubit.newPasswordChanged('newpassword123');
@@ -162,8 +179,11 @@ void main() {
 
       expect(emitted.last.status, ChangePasswordStatus.failure);
       expect(emitted.last.failure, const AuthFailure.passwordNotSet());
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<ChangePasswordFailureEffect>());
 
       await sub.cancel();
+      await effectSub.cancel();
       await cubit.close();
     });
   });

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usec
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -174,6 +176,34 @@ void main() {
       expect(cubit.state.familyNameError, isNull);
       verify(() => getDraft(userId: 'u1')).called(1);
 
+      await cubit.close();
+    });
+
+    test('emits failure effect for submit failure', () async {
+      when(
+        () => patchMeProfile(any()),
+      ).thenAnswer((_) async => left(const AuthFailure.serverError()));
+
+      final cubit = CompleteProfileCubit(
+        getDraft,
+        saveDraft,
+        clearDraft,
+        patchMeProfile,
+        sessionManager,
+      );
+      final effects = <CompleteProfileEffect>[];
+      final effectSub = cubit.effects.listen(effects.add);
+
+      cubit.givenNameChanged('John');
+      await cubit.submit();
+      await pumpEventQueue();
+
+      expect(cubit.state.status, CompleteProfileStatus.failure);
+      expect(cubit.state.failure, const AuthFailure.serverError());
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<CompleteProfileFailureEffect>());
+
+      await effectSub.cancel();
       await cubit.close();
     });
   });

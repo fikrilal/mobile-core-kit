@@ -7,6 +7,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_cubit.dart';
+import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -145,6 +146,30 @@ void main() {
       expect(emitted[2].lastAction, EmailVerificationAction.verify);
 
       await sub.cancel();
+      await cubit.close();
+    });
+
+    test('emits failure effect for resend failure', () async {
+      when(
+        () => resendEmailVerification(),
+      ).thenAnswer((_) async => left(const AuthFailure.tooManyRequests()));
+
+      final cubit = EmailVerificationCubit(
+        verifyEmail,
+        resendEmailVerification,
+      );
+      final effects = <EmailVerificationEffect>[];
+      final effectSub = cubit.effects.listen(effects.add);
+
+      await cubit.resendVerificationEmail();
+      await pumpEventQueue();
+
+      expect(cubit.state.status, EmailVerificationStatus.failure);
+      expect(cubit.state.failure, const AuthFailure.tooManyRequests());
+      expect(effects, hasLength(1));
+      expect(effects.single, isA<EmailVerificationFailureEffect>());
+
+      await effectSub.cancel();
       await cubit.close();
     });
   });
