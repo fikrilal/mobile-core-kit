@@ -46,10 +46,10 @@ For mutation Cubits/Blocs:
 lib/features/<feature>/<slice>/presentation/cubit/<slice>/<slice>_effect.dart
 ```
 
-3. Expose a single-subscription stream:
+3. Expose an effect stream with one page-owned subscription:
 
 ```dart
-final _effects = StreamController<SliceEffect>();
+final _effects = StreamController<SliceEffect>.broadcast();
 Stream<SliceEffect> get effects => _effects.stream;
 ```
 
@@ -164,6 +164,17 @@ Completed on 2026-05-15.
 - Email verification failure snackbars now use effects, while success/failure bodies remain render-state.
 - Removed the remaining auth/profile status-driven `BlocListener` snackbar/navigation handlers from Phase 4 pages.
 - Updated Cubit tests to assert representative success/failure effects for the affected slices.
+
+### Phase 5 Implementation Notes
+
+Completed on 2026-05-15.
+
+- Scanned remaining `BlocListener`, `resetStatus`, `resetRevokeStatus`, `clearFailure`, snackbar, and navigation usages under `lib`, `test`, `docs`, and `_WIP`.
+- Found one remaining mutation command channel: logout failure snackbar was still driven by router-level `BlocListener` watching `LogoutState.failure`.
+- Added `logout_effect.dart`; `LogoutCubit` now emits `LogoutFailureEffect` for failed logout commands and no longer stores logout failure as persistent state.
+- Replaced the router-level logout `BlocListener` with `_AccountRoutePage`, which subscribes once to logout effects and keeps logout loading state in `BlocBuilder`.
+- Updated `docs/engineering/ui_state_architecture.md` examples so mutation snackbar/navigation commands use explicit effects, while `BlocListener` examples are limited to read-flow/dependent-load cases.
+- No reset/re-arm methods remain in the migrated mutation slices.
 
 ## Current Candidate Slices
 
@@ -318,14 +329,16 @@ Reasoning:
 
 ### Phase 5 — Cleanup and safeguards
 
-- [ ] Search for remaining mutation status listeners:
-  - [ ] `BlocListener`
-  - [ ] `resetStatus`
-  - [ ] `resetRevokeStatus`
-  - [ ] status-driven snackbar/navigation
-- [ ] Confirm remaining listeners are read-flow, dependent-load, or legacy exceptions.
-- [ ] Update any docs/examples that still show status-driven mutation commands as default.
-- [ ] Consider adding a custom lint or harness check later if the pattern keeps regressing.
+- [x] Search for remaining mutation status listeners:
+  - [x] `BlocListener`
+  - [x] `resetStatus`
+  - [x] `resetRevokeStatus`
+  - [x] status-driven snackbar/navigation
+- [x] Confirm remaining listeners are read-flow, dependent-load, or legacy exceptions.
+- [x] Update any docs/examples that still show status-driven mutation commands as default.
+- [x] Consider adding a custom lint or harness check later if the pattern keeps regressing.
+
+Decision: defer a lint/harness rule for now. The pattern is now documented and the remaining command channels are searchable; add a guard only if this regresses in future reviews.
 
 ### Phase 6 — Verification
 
@@ -339,7 +352,7 @@ Reasoning:
 
 - [ ] State no longer stores a command just to trigger snackbar/navigation.
 - [ ] Effect names describe user-visible commands clearly.
-- [ ] Effect stream is single-subscription.
+- [ ] Effect stream has one page-owned subscription.
 - [ ] Effect stream is closed in `close()`.
 - [ ] Page subscribes once and cancels the subscription.
 - [ ] No side effects are performed in `build`.

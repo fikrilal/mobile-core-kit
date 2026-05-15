@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LogoutState {
 
- LogoutStatus get status; LogoutFailure? get failure;
+ LogoutStatus get status;
 /// Create a copy of LogoutState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $LogoutStateCopyWith<LogoutState> get copyWith => _$LogoutStateCopyWithImpl<Logo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogoutState&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogoutState&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,failure);
+int get hashCode => Object.hash(runtimeType,status);
 
 @override
 String toString() {
-  return 'LogoutState(status: $status, failure: $failure)';
+  return 'LogoutState(status: $status)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $LogoutStateCopyWith<$Res>  {
   factory $LogoutStateCopyWith(LogoutState value, $Res Function(LogoutState) _then) = _$LogoutStateCopyWithImpl;
 @useResult
 $Res call({
- LogoutStatus status, LogoutFailure? failure
+ LogoutStatus status
 });
 
 
@@ -62,11 +62,10 @@ class _$LogoutStateCopyWithImpl<$Res>
 
 /// Create a copy of LogoutState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as LogoutStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as LogoutFailure?,
+as LogoutStatus,
   ));
 }
 
@@ -151,10 +150,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LogoutStatus status,  LogoutFailure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LogoutStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LogoutState() when $default != null:
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status);case _:
   return orElse();
 
 }
@@ -172,10 +171,10 @@ return $default(_that.status,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LogoutStatus status,  LogoutFailure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LogoutStatus status)  $default,) {final _that = this;
 switch (_that) {
 case _LogoutState():
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +191,10 @@ return $default(_that.status,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LogoutStatus status,  LogoutFailure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LogoutStatus status)?  $default,) {final _that = this;
 switch (_that) {
 case _LogoutState() when $default != null:
-return $default(_that.status,_that.failure);case _:
+return $default(_that.status);case _:
   return null;
 
 }
@@ -207,11 +206,10 @@ return $default(_that.status,_that.failure);case _:
 
 
 class _LogoutState extends LogoutState {
-  const _LogoutState({this.status = LogoutStatus.initial, this.failure}): super._();
+  const _LogoutState({this.status = LogoutStatus.initial}): super._();
   
 
 @override@JsonKey() final  LogoutStatus status;
-@override final  LogoutFailure? failure;
 
 /// Create a copy of LogoutState
 /// with the given fields replaced by the non-null parameter values.
@@ -223,16 +221,16 @@ _$LogoutStateCopyWith<_LogoutState> get copyWith => __$LogoutStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogoutState&&(identical(other.status, status) || other.status == status)&&(identical(other.failure, failure) || other.failure == failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogoutState&&(identical(other.status, status) || other.status == status));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,failure);
+int get hashCode => Object.hash(runtimeType,status);
 
 @override
 String toString() {
-  return 'LogoutState(status: $status, failure: $failure)';
+  return 'LogoutState(status: $status)';
 }
 
 
@@ -243,7 +241,7 @@ abstract mixin class _$LogoutStateCopyWith<$Res> implements $LogoutStateCopyWith
   factory _$LogoutStateCopyWith(_LogoutState value, $Res Function(_LogoutState) _then) = __$LogoutStateCopyWithImpl;
 @override @useResult
 $Res call({
- LogoutStatus status, LogoutFailure? failure
+ LogoutStatus status
 });
 
 
@@ -260,11 +258,10 @@ class __$LogoutStateCopyWithImpl<$Res>
 
 /// Create a copy of LogoutState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,}) {
   return _then(_LogoutState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as LogoutStatus,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
-as LogoutFailure?,
+as LogoutStatus,
   ));
 }
 

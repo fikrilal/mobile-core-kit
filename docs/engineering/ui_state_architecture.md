@@ -227,7 +227,7 @@ Default policy:
 - Mutation flows (`POST`, `PATCH`, `PUT`, `DELETE`) should expose explicit one-shot effects for completion/failure commands such as snackbars, dialogs, navigation, pop-with-result, copy/share/open, and parent-refresh commands.
 - Do not produce side effects inside `build`.
 - Do not store one-shot commands as persistent state.
-- If a slice emits effects, keep the stream single-subscription, close it in `close()`, and test “emit once” semantics.
+- If a slice emits effects, keep one page-owned subscription, close the stream in `close()`, and test “emit once” semantics.
 
 State-transition listeners are still acceptable for simple read-flow side effects, dependent loads, or legacy slices, but avoid using persistent status as the command channel for mutation flows. Repeated `resetStatus()` calls just to re-arm snackbars are a signal that the slice wants explicit effects.
 
@@ -255,14 +255,14 @@ class NavigateBackWithResult extends FormEffect {
 }
 ```
 
-Expose a single-subscription stream from the Cubit/Bloc:
+Expose an effect stream from the Cubit/Bloc:
 
 ```dart
 class FormCubit extends Cubit<FormState> {
   FormCubit(this._submit) : super(const FormState());
 
   final SubmitFormUseCase _submit;
-  final _effects = StreamController<FormEffect>();
+  final _effects = StreamController<FormEffect>.broadcast();
   Stream<FormEffect> get effects => _effects.stream;
 
   Future<void> submit() async {
@@ -286,7 +286,7 @@ class FormCubit extends Cubit<FormState> {
 
   @override
   Future<void> close() async {
-    await _effects.close();
+    unawaited(_effects.close());
     return super.close();
   }
 }
@@ -295,13 +295,12 @@ class FormCubit extends Cubit<FormState> {
 Consume effects once from a coordinating widget:
 
 ```dart
-late final StreamSubscription<FormEffect> _effectSub;
+StreamSubscription<FormEffect>? _effectSub;
 
 @override
-void initState() {
-  super.initState();
-  final cubit = context.read<FormCubit>();
-  _effectSub = cubit.effects.listen((effect) {
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  _effectSub ??= context.read<FormCubit>().effects.listen((effect) {
     switch (effect) {
       case ShowSaveSuccess(:final message):
         AppSnackBar.showSuccess(context, message: message);
@@ -315,25 +314,21 @@ void initState() {
 
 @override
 void dispose() {
-  _effectSub.cancel();
+  unawaited(_effectSub?.cancel());
   super.dispose();
 }
 ```
 
 ### 7.2) Listener-Only Effects (allowed for simple read flows and legacy slices)
 
-Drive effects from state transitions using `BlocListener` and `listenWhen` when the effect is tightly tied to a render-state transition and repeat semantics are not a concern.
+Drive effects from state transitions using `BlocListener` and `listenWhen` only when the effect is tightly tied to a read-flow render-state transition, dependent-load trigger, or legacy slice where repeat semantics are not a concern. Do not use this pattern for new mutation snackbar/navigation commands.
 
 ```dart
-BlocListener<FormBloc, FormState>(
+BlocListener<ConnectivityCubit, ConnectivityState>(
   listenWhen: (prev, curr) => prev.status != curr.status,
   listener: (context, state) {
-    if (state.status == FormStatus.success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved')));
-      context.pop();
-    }
-    if (state.status == FormStatus.failure && state.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+    if (state.status == ConnectivityStatus.restored) {
+      context.read<FeedCubit>().refresh();
     }
   },
   child: ...,
@@ -342,31 +337,23 @@ BlocListener<FormBloc, FormState>(
 
 ## 7.3) `AppAsyncStateView` Usage Pattern
 
-Use `AppAsyncStateView` for render-only status shells. Keep side effects in explicit effect listeners for mutation slices, or in `BlocListener` for simple read-flow side effects.
+Use `AppAsyncStateView` for render-only status shells. Keep mutation side effects in explicit effect listeners. For read flows, prefer rendering failure/retry UI from state instead of adding snackbars by default.
 
 ```dart
-BlocListener<SliceCubit, SliceState>(
-  listenWhen: (prev, curr) => prev.status != curr.status,
-  listener: (context, state) {
-    if (state.status == SliceStatus.failure && state.failure != null) {
-      AppSnackBar.showError(context, message: state.failure!.message);
-    }
+BlocBuilder<SliceCubit, SliceState>(
+  builder: (context, state) {
+    return AppAsyncStateView<SliceState>(
+      status: _mapStatus(state),
+      failure: state,
+      loadingBuilder: (_) => const SliceSkeleton(),
+      emptyBuilder: (_) => const SliceEmptyView(),
+      successBuilder: (_) => SliceContent(data: state.items),
+      failureBuilder: (_, failedState) => SliceErrorView(
+        onRetry: () => context.read<SliceCubit>().refresh(),
+        failure: failedState?.failure,
+      ),
+    );
   },
-  child: BlocBuilder<SliceCubit, SliceState>(
-    builder: (context, state) {
-      return AppAsyncStateView<SliceState>(
-        status: _mapStatus(state),
-        failure: state,
-        loadingBuilder: (_) => const SliceSkeleton(),
-        emptyBuilder: (_) => const SliceEmptyView(),
-        successBuilder: (_) => SliceContent(data: state.items),
-        failureBuilder: (_, failedState) => SliceErrorView(
-          onRetry: () => context.read<SliceCubit>().refresh(),
-          failure: failedState?.failure,
-        ),
-      );
-    },
-  ),
 );
 ```
 
