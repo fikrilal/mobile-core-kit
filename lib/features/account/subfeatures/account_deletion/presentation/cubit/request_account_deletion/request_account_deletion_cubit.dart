@@ -109,7 +109,7 @@ class RequestAccountDeletionCubit extends Cubit<RequestAccountDeletionState> {
 
   @override
   Future<void> close() async {
-    await _effects.close();
+    unawaited(_effects.close());
     return super.close();
   }
 }

@@ -98,8 +98,8 @@ Completed on 2026-05-15.
 
 - `RequestAccountDeletionCubit.resetStatus()` - removed in Phase 1 after request/cancel effects.
 - `ProfileImageCubit.resetStatus()` - likely removable after upload/clear effects, unless still needed for avatar load state.
-- `MeSessionsCubit.resetRevokeStatus()` - likely removable after revoke effects.
-- `MeSessionsCubit.clearFailure()` - tied to list/load failure snackbar behavior; review separately because list failures may stay state-driven.
+- `MeSessionsCubit.resetRevokeStatus()` - removed in Phase 2 after revoke effects.
+- `MeSessionsCubit.clearFailure()` - removed in Phase 2 after load-more failure snackbar moved to effects.
 
 ### Existing test baseline
 
@@ -120,6 +120,23 @@ Completed on 2026-05-15.
 - `RequestAccountDeletionPage` subscribes once to `effects` and no longer uses `BlocListener` for mutation snackbars.
 - Removed `RequestAccountDeletionCubit.resetStatus()`.
 - Updated account deletion Cubit tests to assert emitted effects and stream closure.
+
+Implementation note: effect stream controllers are closed with `unawaited(_effects.close())` from Cubit `close()`. Awaiting a single-subscription controller close can hang when no listener was attached.
+
+### Phase 2 Implementation Notes
+
+Completed on 2026-05-15.
+
+- Added `me_sessions_effect.dart`.
+- `MeSessionsCubit` now exposes a single-subscription `effects` stream and closes it in `close()`.
+- Session revoke success/failure commands now emit explicit effects.
+- Revoke completion no longer stores success/failure command payloads in state.
+- `MeSessionsPage` subscribes once to `effects` for revoke snackbars.
+- Load-more failure snackbar handling also emits an explicit effect, while initial-load failure remains render-state.
+- Removed the remaining `BlocListener` from `MeSessionsPage`.
+- Removed `MeSessionsCubit.resetRevokeStatus()`.
+- Removed `MeSessionsCubit.clearFailure()`.
+- Updated session Cubit tests to assert emitted revoke effects and stream closure.
 
 ## Current Candidate Slices
 
@@ -237,14 +254,14 @@ Reasoning:
 
 ### Phase 2 — Session revoke
 
-- [ ] Add `me_sessions_effect.dart`.
-- [ ] Emit revoke success/failure effects from `MeSessionsCubit`.
-- [ ] Keep list loading/failure rendering in state.
-- [ ] Remove `resetRevokeStatus()` if no longer needed.
-- [ ] Keep load failure handling as state-only unless it needs a snackbar command.
-- [ ] Update `MeSessionsPage` to subscribe to `effects`.
-- [ ] Update cubit tests to assert revoke effects.
-- [ ] Run targeted tests for security/session presentation.
+- [x] Add `me_sessions_effect.dart`.
+- [x] Emit revoke success/failure effects from `MeSessionsCubit`.
+- [x] Keep list loading/failure rendering in state.
+- [x] Remove `resetRevokeStatus()` if no longer needed.
+- [x] Keep initial-load failure handling as state-only; move load-more snackbar command to effects.
+- [x] Update `MeSessionsPage` to subscribe to `effects`.
+- [x] Update cubit tests to assert revoke effects.
+- [x] Run targeted tests for security/session presentation.
 
 ### Phase 3 — Profile image
 
