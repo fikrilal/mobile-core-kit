@@ -10,7 +10,7 @@ Battle-tested guardrails for the Clean Architecture Flutter template. The goal i
 |---------------|----------------------------------------|------------------------------------------|------------------------|
 | Unit (≈70%)   | Prove domain + presentation behavior   | `flutter_test`, `mocktail`, `bloc_test`  | Feature teams          |
 | Integration (≈20%) | Verify data boundaries (API/DB)   | Real JSON fixtures, in‑memory DB         | Feature + infra        |
-| E2E/UI (≈10%) | Guard golden flows                     | `integration_test`, device lab/CI        | QA/infra (product repo) |
+| E2E/UI (≈10%) | Guard golden flows                     | `integration_test`, Maestro, device lab/CI | QA/infra (product repo) |
 
 Guidelines:
 - Unit tests run fast (ideally <1s per file) and are expected for new/changed behavior.
@@ -137,6 +137,22 @@ Use the repo-pinned SDK for integration tests:
 Notes:
 - `--flavor dev` is required because this project uses Android product flavors (`app-dev-debug.apk`, etc.).
 - If installs fail with “insufficient storage”, wipe/create a larger emulator image or uninstall other apps from the emulator to free `/data` space.
+
+### Compiled-App Journeys With Maestro
+
+Use Maestro only for critical user-observable journeys that cross screens or
+platform boundaries and are not adequately proven by lower test layers. Run
+the deterministic evidence entry point rather than invoking Maestro directly:
+
+```bash
+tool/agent/maestro_evidence_check.sh \
+  --device emulator-5554 \
+  --flavor dev \
+  --include-tags smoke
+```
+
+See `docs/engineering/maestro_testing.md` for selector, flow, and artifact
+requirements.
 
 ## 6. Test Utilities & Fixtures
 

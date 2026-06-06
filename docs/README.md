@@ -9,6 +9,7 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   - `docs/engineering/testing_strategy.md`
   - `docs/engineering/agent_pr_loop.md`
   - `docs/engineering/parallel_agent_workflow.md`
+  - compiled-app journey testing and evidence: `docs/engineering/maestro_testing.md`
   - duplication harness overview, profiles, and commands: `docs/engineering/duplication_harness.md`
 - `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, etc.).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).

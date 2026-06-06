@@ -100,21 +100,21 @@ proof journey, then add deterministic local execution and evidence artifacts.
 
 ### Phase 2: deterministic local evidence
 
-- [ ] Add `tool/agent/maestro_version.txt` with `2.6.0`.
-- [ ] Add `tool/agent/maestro_evidence_check.sh`.
-- [ ] Validate Java, Maestro, FVM Flutter, ADB, device, flavor, env config,
+- [x] Add `tool/agent/maestro_version.txt` with `2.6.0`.
+- [x] Add `tool/agent/maestro_evidence_check.sh`.
+- [x] Validate Java, Maestro, FVM Flutter, ADB, device, flavor, env config,
   Firebase config, and selected flows before execution.
-- [ ] Build the flavor-specific debug APK when `--app-file` is not supplied.
-- [ ] Inspect the application ID from the APK and verify the installed package.
-- [ ] Integrate `tool/agent/flutter_log_stream.sh` with cleanup traps.
-- [ ] Generate the complete artifact contract under `_artifacts/mobile/`.
-- [ ] Add shell-level tests or a deterministic test harness for preflight and
+- [x] Build the flavor-specific debug APK when `--app-file` is not supplied.
+- [x] Inspect the application ID from the APK and verify the installed package.
+- [x] Integrate `tool/agent/flutter_log_stream.sh` with cleanup traps.
+- [x] Generate the complete artifact contract under `_artifacts/mobile/`.
+- [x] Add shell-level tests or a deterministic test harness for preflight and
   argument behavior where practical.
-- [ ] Add `docs/engineering/maestro_testing.md`.
-- [ ] Update `docs/engineering/mobile_runtime_harness.md`.
-- [ ] Update `docs/engineering/testing_strategy.md`.
-- [ ] Update `docs/README.md`.
-- [ ] Run repeated success and intentional-failure verification.
+- [x] Add `docs/engineering/maestro_testing.md`.
+- [x] Update `docs/engineering/mobile_runtime_harness.md`.
+- [x] Update `docs/engineering/testing_strategy.md`.
+- [x] Update `docs/README.md`.
+- [x] Run repeated success and intentional-failure verification.
 
 ## Agent Authoring Workflow
 
@@ -209,6 +209,16 @@ Phase 1 outcome:
 - flow scan: no coordinates, fixed sleeps, loops, or retries.
 - visual review: sign-in screenshot rendered correctly without overlap.
 - Phase 2 reliability requirements remain open.
+
+Phase 2 outcome:
+
+- shell syntax and runner argument-contract tests passed.
+- standalone API 34 smoke evidence passed at
+  `_artifacts/mobile/20260606_maestro_phase2_verified/`.
+- intentional assertion failure returned non-zero while retaining JUnit,
+  screenshot, command JSON, Maestro logs, device logs, status, and summary at
+  `_artifacts/mobile/20260606_maestro_phase2_failure/`.
+- log-stream cleanup removed PID files after both runs.
 
 ## Runtime Evidence
 

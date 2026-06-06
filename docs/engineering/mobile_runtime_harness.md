@@ -115,6 +115,24 @@ Typical artifacts:
 - `_artifacts/runtime_logs/<session>/stream.log`
 - `_artifacts/runtime_logs/<session>/metadata.env`
 
+## Compiled-App Maestro Evidence
+
+Use Maestro for critical cross-screen journeys that lower test layers do not
+prove against the compiled application:
+
+```bash
+tool/agent/maestro_evidence_check.sh \
+  --device emulator-5554 \
+  --flavor dev \
+  --include-tags smoke
+```
+
+The standalone runner builds or accepts an APK, inspects its application ID,
+installs and verifies the package, captures device logs, and retains JUnit plus
+Maestro diagnostic artifacts under `_artifacts/mobile/`.
+
+See `docs/engineering/maestro_testing.md` for flow authoring and evidence rules.
+
 ## Minimum Evidence To Attach
 
 For runtime-sensitive PRs, attach at least:
@@ -138,3 +156,4 @@ Typical upgrades:
 
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/guardrails.md`
+- `docs/engineering/maestro_testing.md`
