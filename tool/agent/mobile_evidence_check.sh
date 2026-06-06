@@ -4,296 +4,192 @@ set -euo pipefail
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  tool/agent/mobile_evidence_check.sh --device <device-id> [--flavor <dev|staging|prod>] [--target <integration_test/..._test.dart>] [--artifacts-dir <path>] [--no-example-env-fallback] [--google-services-json <path>]
+  tool/agent/mobile_evidence_check.sh --device <id> [options]
 
-Description:
-  Runs integration_test targets on a real/emulated device and writes runtime
-  evidence artifacts (logs + summary) under _artifacts/mobile/.
+Common options:
+  --lane <flutter|maestro|all>  Evidence lane (default: flutter).
+  --flavor <dev|staging|prod>   App flavor (default: dev).
+  --artifacts-dir <path>        Evidence directory.
+  --no-example-env-fallback     Require the flavor env file to exist.
+  --google-services-json <path> Copy Firebase config before validation.
 
-Defaults:
-  --flavor dev
-  --artifacts-dir _artifacts/mobile/<timestamp>
-  --target all integration_test/*_test.dart files (sorted)
-  --example-env-fallback enabled for dev/staging
+Flutter lane:
+  --target <integration_test>   Integration target; repeatable.
 
-Examples:
-  tool/agent/mobile_evidence_check.sh --device emulator-5554
-  tool/agent/mobile_evidence_check.sh --device emulator-5554 --target integration_test/auth_happy_path_test.dart
-  tool/agent/mobile_evidence_check.sh --device emulator-5554 --flavor dev --artifacts-dir _artifacts/mobile/manual-run
-  tool/agent/mobile_evidence_check.sh --device emulator-5554 --google-services-json /secure/path/google-services.json
+Maestro lane:
+  --flow <path>                 Flow file or directory; repeatable.
+  --include-tags <csv>          Run only flows with these tags.
+  --exclude-tags <csv>          Exclude flows with these tags.
+  --app-file <apk>              Use an existing APK.
+  --skip-build                  Do not build; requires --app-file.
+  --allow-prod                  Explicitly permit Maestro against prod.
 EOF
 }
 
+require_value() {
+  local option="$1"
+  local count="$2"
+  [[ "$count" -ge 2 ]] || { echo "ERROR: $option requires a value." >&2; usage; exit 2; }
+}
+
+lane="flutter"
 device_id=""
 flavor="dev"
 artifacts_dir=""
+google_services_json=""
+no_example_env_fallback=0
 targets=()
-allow_example_env_fallback=1
-google_services_input_path=""
+flows=()
+include_tags=""
+exclude_tags=""
+app_file=""
+skip_build=0
+allow_prod=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --device)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --device requires a value." >&2
-        usage
-        exit 2
-      fi
-      device_id="$2"
-      shift 2
-      ;;
-    --flavor)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --flavor requires a value." >&2
-        usage
-        exit 2
-      fi
-      flavor="$2"
-      shift 2
-      ;;
-    --target)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --target requires a value." >&2
-        usage
-        exit 2
-      fi
-      targets+=( "$2" )
-      shift 2
-      ;;
-    --artifacts-dir)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --artifacts-dir requires a value." >&2
-        usage
-        exit 2
-      fi
-      artifacts_dir="$2"
-      shift 2
-      ;;
-    --no-example-env-fallback)
-      allow_example_env_fallback=0
-      shift
-      ;;
-    --google-services-json)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --google-services-json requires a value." >&2
-        usage
-        exit 2
-      fi
-      google_services_input_path="$2"
-      shift 2
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "ERROR: Unknown argument '$1'." >&2
-      usage
-      exit 2
-      ;;
+    --lane) require_value "$1" "$#"; lane="$2"; shift 2 ;;
+    --device) require_value "$1" "$#"; device_id="$2"; shift 2 ;;
+    --flavor) require_value "$1" "$#"; flavor="$2"; shift 2 ;;
+    --artifacts-dir) require_value "$1" "$#"; artifacts_dir="$2"; shift 2 ;;
+    --google-services-json) require_value "$1" "$#"; google_services_json="$2"; shift 2 ;;
+    --no-example-env-fallback) no_example_env_fallback=1; shift ;;
+    --target) require_value "$1" "$#"; targets+=( "$2" ); shift 2 ;;
+    --flow) require_value "$1" "$#"; flows+=( "$2" ); shift 2 ;;
+    --include-tags) require_value "$1" "$#"; include_tags="$2"; shift 2 ;;
+    --exclude-tags) require_value "$1" "$#"; exclude_tags="$2"; shift 2 ;;
+    --app-file) require_value "$1" "$#"; app_file="$2"; shift 2 ;;
+    --skip-build) skip_build=1; shift ;;
+    --allow-prod) allow_prod=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "ERROR: Unknown argument '$1'." >&2; usage; exit 2 ;;
   esac
 done
 
-if [[ -z "$device_id" ]]; then
-  echo "ERROR: --device is required." >&2
-  usage
+[[ -n "$device_id" ]] || { echo "ERROR: --device is required." >&2; usage; exit 2; }
+case "$lane" in
+  flutter|maestro|all) ;;
+  *) echo "ERROR: Invalid --lane '$lane'. Expected one of: flutter, maestro, all." >&2; exit 2 ;;
+esac
+case "$flavor" in
+  dev|staging|prod) ;;
+  *) echo "ERROR: Invalid --flavor '$flavor'. Expected one of: dev, staging, prod." >&2; exit 2 ;;
+esac
+
+if [[ "$lane" == "flutter" && ( "${#flows[@]}" -gt 0 || -n "$include_tags" || -n "$exclude_tags" || -n "$app_file" || "$skip_build" -eq 1 || "$allow_prod" -eq 1 ) ]]; then
+  echo "ERROR: Maestro options require --lane maestro or --lane all." >&2
+  exit 2
+fi
+if [[ "$lane" == "maestro" && "${#targets[@]}" -gt 0 ]]; then
+  echo "ERROR: --target requires --lane flutter or --lane all." >&2
+  exit 2
+fi
+if [[ "$lane" != "flutter" && "$skip_build" -eq 1 && -z "$app_file" ]]; then
+  echo "ERROR: --skip-build requires --app-file." >&2
   exit 2
 fi
 
-case "$flavor" in
-  dev|staging|prod) ;;
-  *)
-    echo "ERROR: Invalid --flavor '$flavor'. Expected one of: dev, staging, prod." >&2
-    exit 2
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)"
+[[ -n "$repo_root" ]] || repo_root="$(cd "$script_dir/../.." && pwd)"
+cd "$repo_root"
+
+flutter_runner="${MOBILE_EVIDENCE_FLUTTER_RUNNER:-$script_dir/flutter_evidence_check.sh}"
+maestro_runner="${MOBILE_EVIDENCE_MAESTRO_RUNNER:-$script_dir/maestro_evidence_check.sh}"
+[[ -x "$flutter_runner" ]] || { echo "ERROR: Flutter evidence runner is not executable: $flutter_runner" >&2; exit 1; }
+[[ -x "$maestro_runner" ]] || { echo "ERROR: Maestro evidence runner is not executable: $maestro_runner" >&2; exit 1; }
+
+common_args=( --device "$device_id" --flavor "$flavor" )
+[[ "$no_example_env_fallback" -eq 0 ]] || common_args+=( --no-example-env-fallback )
+[[ -z "$google_services_json" ]] || common_args+=( --google-services-json "$google_services_json" )
+
+flutter_args=( "${common_args[@]}" )
+for target in "${targets[@]}"; do flutter_args+=( --target "$target" ); done
+
+maestro_args=( "${common_args[@]}" )
+for flow in "${flows[@]}"; do maestro_args+=( --flow "$flow" ); done
+[[ -z "$include_tags" ]] || maestro_args+=( --include-tags "$include_tags" )
+[[ -z "$exclude_tags" ]] || maestro_args+=( --exclude-tags "$exclude_tags" )
+[[ -z "$app_file" ]] || maestro_args+=( --app-file "$app_file" )
+[[ "$skip_build" -eq 0 ]] || maestro_args+=( --skip-build )
+[[ "$allow_prod" -eq 0 ]] || maestro_args+=( --allow-prod )
+
+case "$lane" in
+  flutter)
+    [[ -z "$artifacts_dir" ]] || flutter_args+=( --artifacts-dir "$artifacts_dir" )
+    exec "$flutter_runner" "${flutter_args[@]}"
+    ;;
+  maestro)
+    [[ -z "$artifacts_dir" ]] || maestro_args+=( --artifacts-dir "$artifacts_dir" )
+    exec "$maestro_runner" "${maestro_args[@]}"
     ;;
 esac
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)"
-if [[ -z "$repo_root" ]]; then
-  repo_root="$(cd "$script_dir/../.." && pwd)"
-fi
-cd "$repo_root"
-
-if [[ "${#targets[@]}" -eq 0 ]]; then
-  mapfile -t discovered_targets < <(find integration_test -type f -name '*_test.dart' | sort)
-  if [[ "${#discovered_targets[@]}" -eq 0 ]]; then
-    echo "ERROR: No integration_test targets found." >&2
-    exit 1
-  fi
-  targets=( "${discovered_targets[@]}" )
-fi
-
 if [[ -z "$artifacts_dir" ]]; then
-  timestamp="$(date '+%Y%m%d_%H%M%S')"
-  artifacts_dir="_artifacts/mobile/$timestamp"
+  artifacts_dir="_artifacts/mobile/$(date '+%Y%m%d_%H%M%S')"
 fi
-mkdir -p "$artifacts_dir/logs"
-
-if ! command -v flutter >/dev/null 2>&1; then
-  echo "ERROR: flutter command not found in PATH." >&2
-  exit 1
-fi
-run_cmd=( flutter )
-
-if ! command -v dart >/dev/null 2>&1; then
-  echo "ERROR: dart command not found in PATH." >&2
-  exit 1
-fi
-dart_cmd=( dart run )
-
-env_file=".env/$flavor.yaml"
-env_example_file=".env/$flavor.example.yaml"
-env_source="existing"
-if [[ ! -s "$env_file" ]]; then
-  if [[ "$allow_example_env_fallback" -eq 1 && "$flavor" != "prod" && -s "$env_example_file" ]]; then
-    cp "$env_example_file" "$env_file"
-    env_source="copied-from-example"
-  else
-    echo "ERROR: Missing or empty env file: $env_file" >&2
-    if [[ -f "$env_example_file" ]]; then
-      echo "Hint: copy $env_example_file -> $env_file or re-run with fallback enabled." >&2
+mkdir -p "$artifacts_dir"
+flutter_dir="$artifacts_dir/flutter"
+maestro_dir="$artifacts_dir/maestro"
+flutter_args+=( --artifacts-dir "$flutter_dir" )
+maestro_args+=( --artifacts-dir "$maestro_dir" )
+if [[ -n "$app_file" ]]; then
+  [[ -s "$app_file" ]] || { echo "ERROR: APK is missing or empty: $app_file" >&2; exit 1; }
+  maestro_app_snapshot="$artifacts_dir/maestro-input.apk"
+  cp "$app_file" "$maestro_app_snapshot"
+  for index in "${!maestro_args[@]}"; do
+    if [[ "${maestro_args[$index]}" == "$app_file" ]]; then
+      maestro_args[$index]="$maestro_app_snapshot"
     fi
-    exit 1
-  fi
+  done
 fi
 
-google_services_source="existing"
-if [[ -n "$google_services_input_path" ]]; then
-  if [[ ! -s "$google_services_input_path" ]]; then
-    echo "ERROR: --google-services-json path is missing or empty: $google_services_input_path" >&2
-    exit 1
-  fi
-  google_services_dest="android/app/google-services.json"
-  if [[ "$google_services_input_path" != "$google_services_dest" ]]; then
-    cp "$google_services_input_path" "$google_services_dest"
-  fi
-  google_services_source="copied-from-flag"
-fi
+started_at="$(date -Iseconds)"
+start_epoch="$(date +%s)"
+echo "==> Running Flutter evidence lane"
+set +e
+"$flutter_runner" "${flutter_args[@]}" 2>&1 | tee "$artifacts_dir/flutter.log"
+flutter_status="${PIPESTATUS[0]}"
+echo "==> Running Maestro evidence lane"
+"$maestro_runner" "${maestro_args[@]}" 2>&1 | tee "$artifacts_dir/maestro.log"
+maestro_status="${PIPESTATUS[0]}"
+set -e
 
-metadata_file="$artifacts_dir/metadata.txt"
-{
-  echo "timestamp=$(date -Iseconds)"
-  echo "device=$device_id"
-  echo "flavor=$flavor"
-  echo "env_file=$env_file"
-  echo "env_source=$env_source"
-  echo "google_services_source=$google_services_source"
-  echo "repo=$repo_root"
-  echo "targets=${targets[*]}"
-} > "$metadata_file"
+aggregate_status=0
+[[ "$flutter_status" -eq 0 && "$maestro_status" -eq 0 ]] || aggregate_status=1
+ended_at="$(date -Iseconds)"
+duration_seconds=$(( $(date +%s) - start_epoch ))
+result="passed"
+[[ "$aggregate_status" -eq 0 ]] || result="failed"
 
-summary_file="$artifacts_dir/summary.md"
 {
   echo "# Mobile Runtime Evidence Summary"
   echo
+  echo "- Lane: \`all\`"
   echo "- Device: \`$device_id\`"
   echo "- Flavor: \`$flavor\`"
-  echo "- Env file: \`$env_file\` (\`$env_source\`)"
-  echo "- Google services source: \`$google_services_source\`"
-  echo "- Timestamp: \`$(date -Iseconds)\`"
-  echo "- Artifacts dir: \`$artifacts_dir\`"
+  echo "- Started: \`$started_at\`"
+  echo "- Ended: \`$ended_at\`"
+  echo "- Duration: \`${duration_seconds}s\`"
+  echo "- Aggregate result: \`$result\`"
   echo
-  echo "## Preflight"
-} > "$summary_file"
-
-fail_count=0
-
-preflight_log="$artifacts_dir/logs/preflight.log"
-{
-  echo "==> Generating build config for env=$flavor"
-} | tee "$preflight_log"
-
-set +e
-"${dart_cmd[@]}" tool/gen_config.dart --env "$flavor" 2>&1 | tee -a "$preflight_log"
-preflight_exit="${PIPESTATUS[0]}"
-set -e
-
-if [[ "$preflight_exit" -eq 0 ]]; then
-  echo "- ✅ build config generated (\`tool/gen_config.dart --env $flavor\`)" >> "$summary_file"
-else
-  echo "- ❌ build config generation failed (exit=$preflight_exit)" >> "$summary_file"
+  echo "## Lane Results"
   echo
-  echo "Mobile evidence preflight failed. See: $summary_file"
-  exit 1
-fi
-
-google_services_candidates=(
-  "android/app/src/$flavor/debug/google-services.json"
-  "android/app/src/debug/$flavor/google-services.json"
-  "android/app/src/$flavor/google-services.json"
-  "android/app/src/debug/google-services.json"
-  "android/app/src/${flavor}Debug/google-services.json"
-  "android/app/google-services.json"
-)
-google_services_file=""
-for candidate in "${google_services_candidates[@]}"; do
-  if [[ -s "$candidate" ]]; then
-    google_services_file="$candidate"
-    break
-  fi
-done
-
-if [[ -n "$google_services_file" ]]; then
-  echo "google_services_file=$google_services_file" >> "$metadata_file"
-  echo "- ✅ google-services present (\`$google_services_file\`)" >> "$summary_file"
-else
-  echo "- ❌ google-services missing for flavor \`$flavor\`" >> "$summary_file"
-  echo >> "$summary_file"
-  echo "Expected one of:" >> "$summary_file"
-  for candidate in "${google_services_candidates[@]}"; do
-    echo "- \`$candidate\`" >> "$summary_file"
-  done
-  echo
-  echo "ERROR: google-services.json not found for flavor '$flavor'." >&2
-  echo "See setup guide: docs/engineering/firebase_setup.md" >&2
-  echo "Mobile evidence preflight failed. See: $summary_file"
-  exit 1
-fi
-
-echo >> "$summary_file"
-echo "## Results" >> "$summary_file"
-
-for target in "${targets[@]}"; do
-  if [[ ! -f "$target" ]]; then
-    echo "ERROR: Target not found: $target" >&2
-    exit 1
-  fi
-
-  safe_name="${target//\//_}"
-  log_file="$artifacts_dir/logs/${safe_name}.log"
-
-  echo "==> Running $target on $device_id (flavor=$flavor)"
-
-  set +e
-  "${run_cmd[@]}" test -d "$device_id" --flavor "$flavor" "$target" 2>&1 | tee "$log_file"
-  test_exit="${PIPESTATUS[0]}"
-  set -e
-
-  if [[ "$test_exit" -eq 0 ]]; then
-    echo "- ✅ \`$target\`" >> "$summary_file"
-  else
-    echo "- ❌ \`$target\` (exit=$test_exit)" >> "$summary_file"
-    fail_count=$((fail_count + 1))
-  fi
-done
+  echo "- Flutter: \`$([[ "$flutter_status" -eq 0 ]] && echo passed || echo failed)\` (exit \`$flutter_status\`)"
+  echo "  Summary: \`$flutter_dir/summary.md\`"
+  echo "- Maestro: \`$([[ "$maestro_status" -eq 0 ]] && echo passed || echo failed)\` (exit \`$maestro_status\`)"
+  echo "  Summary: \`$maestro_dir/summary.md\`"
+} > "$artifacts_dir/summary.md"
 
 {
-  echo
-  echo "## Signal Extracts"
-  echo
-  echo "### Startup Metrics"
-  grep -h "Startup metrics" "$artifacts_dir"/logs/*.log 2>/dev/null || echo "_No startup metric lines found._"
-  echo
-  echo "### Trace IDs"
-  grep -h "traceId" "$artifacts_dir"/logs/*.log 2>/dev/null || echo "_No traceId lines found._"
-} >> "$summary_file"
+  echo "result=$result"
+  echo "exit_status=$aggregate_status"
+  echo "flutter_exit_status=$flutter_status"
+  echo "maestro_exit_status=$maestro_status"
+  echo "started_at=$started_at"
+  echo "ended_at=$ended_at"
+  echo "duration_seconds=$duration_seconds"
+} > "$artifacts_dir/status.env"
 
-if [[ "$fail_count" -ne 0 ]]; then
-  echo
-  echo "Mobile evidence run completed with failures. See: $summary_file"
-  exit 1
-fi
-
-echo
-echo "Mobile evidence run completed successfully. See: $summary_file"
+echo "Mobile evidence lanes completed with result=$result. See: $artifacts_dir/summary.md"
+exit "$aggregate_status"

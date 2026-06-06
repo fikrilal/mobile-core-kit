@@ -145,7 +145,8 @@ platform boundaries and are not adequately proven by lower test layers. Run
 the deterministic evidence entry point rather than invoking Maestro directly:
 
 ```bash
-tool/agent/maestro_evidence_check.sh \
+tool/agent/mobile_evidence_check.sh \
+  --lane maestro \
   --device emulator-5554 \
   --flavor dev \
   --include-tags smoke

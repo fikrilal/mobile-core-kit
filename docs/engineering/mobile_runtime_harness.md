@@ -33,17 +33,45 @@ Collect runtime evidence for changes such as:
 
 If Firebase or similar platform configuration is missing, fail early with an actionable message instead of continuing blindly.
 
-## Two Evidence Lanes
+## Runtime Evidence Entry Point
 
-### Lane A: Deterministic CLI evidence
+Use `--lane` to select the required proof:
 
-Use this as the default runtime-evidence path.
+- `flutter`: Flutter `integration_test` evidence. This remains the default.
+- `maestro`: compiled-app Maestro journeys without Flutter integration tests.
+- `all`: both lanes, with one aggregate summary and exit status.
 
-Primary helper:
+Default Flutter behavior:
 
 ```bash
 tool/agent/mobile_evidence_check.sh --device <device-id> --flavor dev
 ```
+
+Maestro only:
+
+```bash
+tool/agent/mobile_evidence_check.sh \
+  --lane maestro \
+  --device <device-id> \
+  --flavor dev \
+  --include-tags smoke
+```
+
+Both deterministic lanes:
+
+```bash
+tool/agent/mobile_evidence_check.sh \
+  --lane all \
+  --device <device-id> \
+  --flavor dev \
+  --include-tags smoke
+```
+
+For `--lane all`, both lanes run even when the first fails. The command returns
+non-zero if either lane fails and writes lane-specific summaries plus an
+aggregate `summary.md` and `status.env`. An explicit `--app-file` is copied into
+the evidence directory before Flutter integration tests run so their build
+cannot overwrite the APK later inspected by Maestro.
 
 Example with explicit platform config:
 
@@ -62,11 +90,11 @@ tool/agent/mobile_evidence_check.sh \
   --target integration_test/auth_happy_path_test.dart
 ```
 
-Expected artifacts typically include:
+Flutter-only artifacts typically include:
 - `_artifacts/mobile/<timestamp>/summary.md`
 - `_artifacts/mobile/<timestamp>/logs/*.log`
 
-### Lane B: Interactive validation
+## Interactive Validation
 
 Use this when deterministic tests are not enough and the agent needs to inspect or drive the UI interactively.
 
@@ -121,13 +149,14 @@ Use Maestro for critical cross-screen journeys that lower test layers do not
 prove against the compiled application:
 
 ```bash
-tool/agent/maestro_evidence_check.sh \
+tool/agent/mobile_evidence_check.sh \
+  --lane maestro \
   --device emulator-5554 \
   --flavor dev \
   --include-tags smoke
 ```
 
-The standalone runner builds or accepts an APK, inspects its application ID,
+The Maestro lane builds or accepts an APK, inspects its application ID,
 installs and verifies the package, captures device logs, and retains JUnit plus
 Maestro diagnostic artifacts under `_artifacts/mobile/`.
 

@@ -18,7 +18,8 @@ execution never downloads or upgrades the CLI.
 With a connected emulator or device:
 
 ```bash
-tool/agent/maestro_evidence_check.sh \
+tool/agent/mobile_evidence_check.sh \
+  --lane maestro \
   --device emulator-5554 \
   --flavor dev \
   --include-tags smoke
@@ -27,14 +28,15 @@ tool/agent/maestro_evidence_check.sh \
 Reuse an existing APK when build evidence is not required:
 
 ```bash
-tool/agent/maestro_evidence_check.sh \
+tool/agent/mobile_evidence_check.sh \
+  --lane maestro \
   --device emulator-5554 \
   --flavor dev \
   --app-file build/app/outputs/flutter-apk/app-dev-debug.apk \
   --skip-build
 ```
 
-The runner validates Java, Maestro, FVM, ADB, the selected device, environment
+The Maestro lane validates Java, Maestro, FVM, ADB, the selected device, environment
 configuration, Firebase configuration, and selected flows. It inspects the APK
 manifest for the application ID, installs that APK, verifies the installed
 package, captures device logs, and passes the inspected ID to Maestro.
@@ -78,6 +80,7 @@ screenshots and logs for credentials or personal data before sharing them.
 ```bash
 bash -n tool/agent/maestro_evidence_check.sh
 tool/agent/test_maestro_evidence_check.sh
+tool/agent/test_mobile_evidence_check.sh
 ```
 
 A runtime-sensitive change is not proven until the evidence runner succeeds on
