@@ -86,17 +86,17 @@ proof journey, then add deterministic local execution and evidence artifacts.
 
 ### Phase 1: semantics and proof flow
 
-- [ ] Install Maestro CLI `2.6.0` in the local development environment.
-- [ ] Create or verify the Pixel 8 / API 34 / Google APIs / x86_64 emulator.
-- [ ] Inspect the startup, onboarding, and sign-in accessibility trees.
-- [ ] Identify the minimum design-system semantic identifier API required.
-- [ ] Add identifier support to only the required primitives.
-- [ ] Add focused semantics widget tests.
-- [ ] Add `.maestro/config.yaml`.
-- [ ] Add `.maestro/subflows/launch_clean.yaml`.
-- [ ] Add the minimum onboarding subflow only if it removes real duplication.
-- [ ] Add `.maestro/flows/smoke/startup_to_sign_in.yaml`.
-- [ ] Verify the flow from a clean dev app install.
+- [x] Install Maestro CLI `2.6.0` in the local development environment.
+- [x] Create or verify the Pixel 8 / API 34 / Google APIs / x86_64 emulator.
+- [x] Inspect the startup, onboarding, and sign-in accessibility trees.
+- [x] Identify the minimum design-system semantic identifier API required.
+- [x] Add identifier support to only the required primitives.
+- [x] Add focused semantics widget tests.
+- [x] Add `.maestro/config.yaml`.
+- [x] Add `.maestro/subflows/launch_clean.yaml`.
+- [x] Add the onboarding journey subflow required by the approved pilot design.
+- [x] Add `.maestro/flows/smoke/startup_to_sign_in.yaml`.
+- [x] Verify the flow from a clean dev app install.
 
 ### Phase 2: deterministic local evidence
 
@@ -153,6 +153,15 @@ test layers do not prove adequately.
 - 2026-06-06: Keep `mobile_evidence_check.sh` integration out of this plan ->
   the standalone lane must prove stability before changing the existing entry
   point.
+- 2026-06-06: Extend only `AppButton` for the pilot -> onboarding can be tapped
+  through `onboarding_continue`, and arrival at sign-in can be proven through
+  the disabled `auth_sign_in_submit` button without adding field or page APIs.
+- 2026-06-06: Preserve localized labels alongside identifiers -> the API 34
+  hierarchy exposed `Continue onboarding` and `Sign in to your account` while
+  also exposing the stable identifiers used by Maestro.
+- 2026-06-06: Increase the pilot AVD data capacity after an initial
+  `INSTALL_FAILED_INSUFFICIENT_STORAGE` failure -> device storage is a harness
+  preflight concern and will be handled in Phase 2.
 
 ## Verification
 
@@ -191,6 +200,16 @@ Additional required evidence:
 - targeted preflight failure checks;
 - artifact review for secrets and personal data.
 
+Phase 1 outcome:
+
+- `dart run tool/verify.dart --env dev`: passed (554 tests).
+- `maestro check-syntax .maestro/flows/smoke/startup_to_sign_in.yaml`: passed.
+- clean-state API 34 Maestro runs: four passed, including three after an APK
+  uninstall/reinstall.
+- flow scan: no coordinates, fixed sleeps, loops, or retries.
+- visual review: sign-in screenshot rendered correctly without overlap.
+- Phase 2 reliability requirements remain open.
+
 ## Runtime Evidence
 
 Required because this is high-risk runtime harness and accessibility work.
@@ -199,8 +218,13 @@ Required because this is high-risk runtime harness and accessibility work.
 - Secondary device: Xiaomi `2312DRA50G`, Android API 36, arm64-v8a
 - Flavor: dev
 - Executed target: `.maestro/flows/smoke/startup_to_sign_in.yaml`
-- Artifact paths: `_artifacts/mobile/<timestamp>/`
-- Notes: record CLI, Java, Flutter, APK checksum, app ID, and device metadata.
+- Phase 1 artifact path: `_artifacts/mobile/20260606_maestro_phase1/`
+- Onboarding hierarchy: `resource-id=onboarding_continue`,
+  `accessibilityText=Continue onboarding`.
+- Sign-in hierarchy: `resource-id=auth_sign_in_submit`,
+  `accessibilityText=Sign in to your account`.
+- Notes: Phase 2 will add automatic version, checksum, app ID, and device
+  metadata collection.
 
 ## Risks And Mitigations
 
@@ -222,8 +246,8 @@ Required because this is high-risk runtime harness and accessibility work.
 
 ## Completion Notes
 
-Not complete. Phase 0 architecture and planning are accepted. Implementation
-starts with Phase 1 after this plan is reviewed against the ADR.
+Not complete. Phase 1 is implemented and verified on the API 34 baseline.
+Phase 2 deterministic runner and evidence automation remain open.
 
 ## Follow-ups
 
