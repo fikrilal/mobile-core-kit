@@ -44,6 +44,28 @@ package, captures device logs, and passes the inspected ID to Maestro.
 Production execution requires `--allow-prod`. The runner always excludes flows
 tagged `destructive` or `requires_backend` for production.
 
+## Authenticated Local Journey
+
+The login/logout journey uses a generated backend identity and must run through
+its fixture-aware wrapper:
+
+```bash
+tool/agent/login_logout_evidence_check.sh \
+  --device <medium-phone-device> \
+  --flavor dev \
+  --app-file build/app/outputs/flutter-apk/app-dev-debug.apk \
+  --skip-build
+```
+
+The wrapper registers a unique synthetic account, completes its profile,
+passes disposable credentials through `MAESTRO_` shell variables, and revokes
+all active sessions after success, assertion failure, or interruption. Setup
+and cleanup failures are hard failures. Generated secrets are removed from
+retained text artifacts before the command returns.
+
+This journey currently uses the Medium Phone API 35 emulator as secondary
+authenticated evidence. It does not replace the API 34 baseline above.
+
 ## Artifacts
 
 Evidence is written under `_artifacts/mobile/<timestamp>/`:
