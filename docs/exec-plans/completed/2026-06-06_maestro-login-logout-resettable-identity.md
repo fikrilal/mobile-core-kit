@@ -79,7 +79,8 @@ authenticated navigation, remote logout, and local session clearing together.
 
 ```bash
 dart run tool/verify.dart --env dev
-tool/agent/login_logout_evidence_check.sh \
+tool/agent/auth_fixture_evidence_check.sh \
+  --flow .maestro/flows/auth/login_logout.yaml \
   --device <medium-phone-device> \
   --flavor dev \
   --app-file build/app/outputs/flutter-apk/app-dev-debug.apk \
@@ -92,6 +93,7 @@ The post-run backend query reported zero active `maestro-login-*` sessions.
 
 ## Handoff Notes
 
-Reuse `tool/agent/login_logout_evidence_check.sh` as the fixture owner for later
-authenticated flows only after extracting a narrow flow-selection interface.
-Do not duplicate registration, cleanup, or secret-redaction logic per flow.
+Reuse `tool/agent/auth_fixture_evidence_check.sh` as the fixture owner for later
+authenticated flows. `tool/agent/login_logout_evidence_check.sh` remains a thin
+compatibility wrapper over the generic fixture command. Do not duplicate
+registration, cleanup, or secret-redaction logic per flow.

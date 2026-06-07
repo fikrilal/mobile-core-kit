@@ -50,7 +50,8 @@ The login/logout journey uses a generated backend identity and must run through
 its fixture-aware wrapper:
 
 ```bash
-tool/agent/login_logout_evidence_check.sh \
+tool/agent/auth_fixture_evidence_check.sh \
+  --flow .maestro/flows/auth/login_logout.yaml \
   --device <medium-phone-device> \
   --flavor dev \
   --app-file build/app/outputs/flutter-apk/app-dev-debug.apk \
@@ -62,6 +63,9 @@ passes disposable credentials through `MAESTRO_` shell variables, and revokes
 all active sessions after success, assertion failure, or interruption. Setup
 and cleanup failures are hard failures. Generated secrets are removed from
 retained text artifacts before the command returns.
+
+`tool/agent/login_logout_evidence_check.sh` is a convenience wrapper for the
+same command with the login/logout flow preselected.
 
 This journey currently uses the Medium Phone API 35 emulator as secondary
 authenticated evidence. It does not replace the API 34 baseline above.
