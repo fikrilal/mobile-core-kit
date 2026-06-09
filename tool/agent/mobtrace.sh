@@ -6,12 +6,14 @@ usage() {
 Usage:
   ./mobtrace doctor
   ./mobtrace report [latest|_artifacts/mobile/<run>] [--summary]
+  ./mobtrace show [latest|_artifacts/mobile/<run>]
   ./mobtrace verify login-logout --device <id> [evidence options]
   ./mobtrace verify --flow <path> --device <id> [evidence options]
 
 Examples:
   ./mobtrace report latest
   ./mobtrace report latest --summary
+  ./mobtrace show latest
   ./mobtrace verify login-logout --device emulator-5554
   ./mobtrace verify --flow .maestro/flows/auth/login_logout.yaml --device emulator-5554
 
@@ -43,12 +45,59 @@ reporter="${MOBTRACE_REPORTER:-$script_dir/mobile_failure_report.sh}"
 login_logout_runner="${MOBTRACE_LOGIN_LOGOUT_RUNNER:-$script_dir/login_logout_evidence_check.sh}"
 maestro_runner="${MOBTRACE_MAESTRO_RUNNER:-$script_dir/maestro_evidence_check.sh}"
 artifacts_root="${MOBTRACE_ARTIFACTS_ROOT:-_artifacts/mobile}"
+signatures_file="${MOBTRACE_SIGNATURES_FILE:-$script_dir/mobtrace_signatures.json}"
 
 latest_run_dir() {
   [[ -d "$artifacts_root" ]] || return 0
   find "$artifacts_root" -path '*/maestro/junit.xml' -type f -printf '%T@ %h\n' 2>/dev/null |
     sort -nr |
     awk 'NR == 1 { sub(/\/maestro$/, "", $2); print $2 }'
+}
+
+resolve_run_dir() {
+  local run_dir="${1:-latest}"
+  if [[ "$run_dir" == "latest" ]]; then
+    run_dir="$(latest_run_dir)"
+    [[ -n "$run_dir" ]] || fail "No mobile evidence run found under $artifacts_root."
+  fi
+  [[ -d "$run_dir" ]] || fail "Evidence directory not found: $run_dir"
+  printf '%s\n' "$run_dir"
+}
+
+report_is_stale() {
+  local run_dir="$1"
+  local report_md="$run_dir/failure_report.md"
+  local report_json="$run_dir/failure_report.json"
+  local changed_file
+
+  [[ -s "$report_md" && -s "$report_json" ]] || return 0
+  [[ "$reporter" -nt "$report_md" ]] && return 0
+  if [[ -e "$signatures_file" && "$signatures_file" -nt "$report_md" ]]; then
+    return 0
+  fi
+  if find "$run_dir" -type f \
+    ! -name 'failure_report.md' \
+    ! -name 'failure_report.json' \
+    -newer "$report_md" -print -quit 2>/dev/null | grep -q .; then
+    return 0
+  fi
+
+  if [[ -n "${MOBTRACE_CHANGED_FILES_FILE:-}" ]]; then
+    while IFS= read -r changed_file; do
+      [[ -e "$changed_file" && "$changed_file" -nt "$report_md" ]] && return 0
+    done < "$MOBTRACE_CHANGED_FILES_FILE"
+  else
+    while IFS= read -r changed_file; do
+      [[ -e "$changed_file" && "$changed_file" -nt "$report_md" ]] && return 0
+    done < <(
+      {
+        git diff --name-only
+        git ls-files --others --exclude-standard
+      } | awk '!seen[$0]++'
+    )
+  fi
+
+  return 1
 }
 
 print_diagnosis() {
@@ -117,18 +166,50 @@ print_summary() {
 }
 
 run_report() {
-  local run_dir="${1:-latest}"
+  local run_dir
   local output_mode="${2:-diagnosis}"
-  if [[ "$run_dir" == "latest" ]]; then
-    run_dir="$(latest_run_dir)"
-    [[ -n "$run_dir" ]] || fail "No mobile evidence run found under $artifacts_root."
-  fi
+  run_dir="$(resolve_run_dir "${1:-latest}")"
 
   "$reporter" "$run_dir" >/dev/null
   case "$output_mode" in
     diagnosis) print_diagnosis "$run_dir" ;;
     summary) print_summary "$run_dir" ;;
     *) fail "Unsupported report output mode: $output_mode" ;;
+  esac
+}
+
+run_show() {
+  local run_dir
+  run_dir="$(resolve_run_dir "${1:-latest}")"
+
+  if report_is_stale "$run_dir"; then
+    "$reporter" "$run_dir" >/dev/null
+  fi
+
+  [[ -s "$run_dir/failure_report.md" ]] ||
+    fail "Missing MobTrace report: $run_dir/failure_report.md"
+  cat "$run_dir/failure_report.md"
+}
+
+run_show_command() {
+  case "$#" in
+    0) run_show latest ;;
+    1)
+      if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        usage
+      elif [[ "$1" == -* ]]; then
+        echo "ERROR: Unknown show option '$1'." >&2
+        usage
+        exit 2
+      else
+        run_show "$1"
+      fi
+      ;;
+    *)
+      echo "ERROR: Show accepts at most one evidence directory." >&2
+      usage
+      exit 2
+      ;;
   esac
 }
 
@@ -267,6 +348,10 @@ case "${1:-}" in
   report|explain)
     shift
     run_report_command "$@"
+    ;;
+  show)
+    shift
+    run_show_command "$@"
     ;;
   verify)
     shift

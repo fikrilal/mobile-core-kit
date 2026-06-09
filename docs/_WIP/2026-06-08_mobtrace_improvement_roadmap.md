@@ -255,6 +255,8 @@ Exit criteria:
 
 ## Phase 7: Report Viewing Ergonomics
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 Agents often need stdout, not file paths.
@@ -275,8 +277,8 @@ Behavior:
 
 Exit criteria:
 
-- agents can inspect the full report without remembering artifact paths.
-- `show` does not accidentally rerun mobile evidence.
+- [x] agents can inspect the full report without remembering artifact paths.
+- [x] `show` does not accidentally rerun mobile evidence.
 
 ## Non-Goals
 

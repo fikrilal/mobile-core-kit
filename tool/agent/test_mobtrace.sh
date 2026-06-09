@@ -6,6 +6,13 @@ runner="$script_dir/../../mobtrace"
 temp_dir="$(mktemp -d)"
 trap 'rm -rf "$temp_dir"' EXIT
 
+reporter_invocations="$temp_dir/reporter-invocations"
+runner_invocations="$temp_dir/runner-invocations"
+changed_files_fixture="$temp_dir/changed-files"
+: > "$reporter_invocations"
+: > "$runner_invocations"
+: > "$changed_files_fixture"
+
 fake_reporter="$temp_dir/fake_reporter"
 cat > "$fake_reporter" <<'EOF'
 #!/usr/bin/env bash
@@ -13,6 +20,8 @@ set -euo pipefail
 
 run_dir="$1"
 mkdir -p "$run_dir"
+echo "$run_dir" >> "${MOBTRACE_REPORTER_INVOCATIONS:?}"
+[[ "${FAKE_REPORTER_STATUS:-0}" -eq 0 ]] || exit "$FAKE_REPORTER_STATUS"
 
 if [[ "${FAKE_RUN_RESULT:-failed}" == "passed" ]]; then
   cat > "$run_dir/failure_report.json" <<JSON
@@ -67,6 +76,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+echo "$artifacts_dir" >> "${MOBTRACE_RUNNER_INVOCATIONS:?}"
 mkdir -p "$artifacts_dir/maestro"
 echo '<testsuite><testcase name="fake"/></testsuite>' > "$artifacts_dir/maestro/junit.xml"
 exit "${FAKE_RUNNER_STATUS:-0}"
@@ -77,6 +87,9 @@ export MOBTRACE_REPORTER="$fake_reporter"
 export MOBTRACE_LOGIN_LOGOUT_RUNNER="$fake_runner"
 export MOBTRACE_MAESTRO_RUNNER="$fake_runner"
 export MOBTRACE_ARTIFACTS_ROOT="$temp_dir/artifacts"
+export MOBTRACE_REPORTER_INVOCATIONS="$reporter_invocations"
+export MOBTRACE_RUNNER_INVOCATIONS="$runner_invocations"
+export MOBTRACE_CHANGED_FILES_FILE="$changed_files_fixture"
 
 failed_run="$MOBTRACE_ARTIFACTS_ROOT/failed"
 mkdir -p "$failed_run/maestro"
@@ -121,6 +134,45 @@ jq -e \
 [[ -s "$failed_run/failure_report.md" ]]
 [[ -s "$failed_run/failure_report.json" ]]
 
+report_count_before_show="$(wc -l < "$reporter_invocations")"
+set +e
+show_output="$("$runner" show latest)"
+show_status=$?
+set -e
+[[ "$show_status" -eq 0 ]]
+[[ "$show_output" == "# Fake MobTrace report" ]]
+[[ "$(wc -l < "$reporter_invocations")" -eq "$report_count_before_show" ]]
+[[ ! -s "$runner_invocations" ]]
+
+missing_report_run="$MOBTRACE_ARTIFACTS_ROOT/missing-report"
+mkdir -p "$missing_report_run/maestro"
+echo '<testsuite><testcase name="missing"/></testsuite>' > "$missing_report_run/maestro/junit.xml"
+missing_output="$("$runner" show "$missing_report_run")"
+[[ "$missing_output" == "# Fake MobTrace report" ]]
+[[ "$(tail -n 1 "$reporter_invocations")" == "$missing_report_run" ]]
+[[ ! -s "$runner_invocations" ]]
+
+report_mtime="$(stat -c %Y "$failed_run/failure_report.md")"
+touch -d "@$(( report_mtime + 1 ))" "$failed_run/maestro/junit.xml"
+stale_count_before="$(wc -l < "$reporter_invocations")"
+stale_output="$("$runner" show "$failed_run")"
+[[ "$stale_output" == "# Fake MobTrace report" ]]
+[[ "$(wc -l < "$reporter_invocations")" -eq $(( stale_count_before + 1 )) ]]
+[[ "$(tail -n 1 "$reporter_invocations")" == "$failed_run" ]]
+[[ ! -s "$runner_invocations" ]]
+
+report_failure_run="$MOBTRACE_ARTIFACTS_ROOT/report-failure"
+mkdir -p "$report_failure_run/maestro"
+echo '<testsuite><testcase name="failure"/></testsuite>' > "$report_failure_run/maestro/junit.xml"
+export FAKE_REPORTER_STATUS=9
+set +e
+"$runner" show "$report_failure_run" >/dev/null 2>&1
+report_failure_status=$?
+set -e
+unset FAKE_REPORTER_STATUS
+[[ "$report_failure_status" -eq 9 ]]
+[[ ! -s "$runner_invocations" ]]
+
 passed_run="$MOBTRACE_ARTIFACTS_ROOT/passed"
 mkdir -p "$passed_run/maestro"
 echo '<testsuite><testcase name="passed"/></testsuite>' > "$passed_run/maestro/junit.xml"
@@ -159,5 +211,6 @@ set -e
 [[ "$verify_status" -eq 7 ]]
 grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$verify_output"
 grep -Fq "Report: $verify_run/failure_report.md" <<<"$verify_output"
+[[ "$(wc -l < "$runner_invocations")" -eq 1 ]]
 
 echo "MobTrace CLI contract tests passed."
