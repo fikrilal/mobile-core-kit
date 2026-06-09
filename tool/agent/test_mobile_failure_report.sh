@@ -6,6 +6,13 @@ reporter="$script_dir/mobile_failure_report.sh"
 temp_dir="$(mktemp -d)"
 trap 'rm -rf "$temp_dir"' EXIT
 
+changed_files_fixture="$temp_dir/changed-files.txt"
+git_diff_fixture="$temp_dir/git-diff.patch"
+: > "$changed_files_fixture"
+: > "$git_diff_fixture"
+export MOBTRACE_CHANGED_FILES_FILE="$changed_files_fixture"
+export MOBTRACE_GIT_DIFF_FILE="$git_diff_fixture"
+
 create_run() {
   local name="$1"
   local status="$2"
@@ -93,5 +100,140 @@ assert_classification "$navigation_run" app_did_not_navigate app
 unknown_run="$(create_run unknown ERROR failed "Unexpected failure")"
 echo "Fixture cleanup completed" > "$unknown_run/maestro/runner.log"
 assert_classification "$unknown_run" unknown unknown
+
+cat > "$changed_files_fixture" <<'EOF'
+lib/features/auth/presentation/login_page.dart
+.maestro/flows/auth/login_logout.yaml
+EOF
+cat > "$git_diff_fixture" <<'EOF'
+diff --git a/lib/features/auth/presentation/login_page.dart b/lib/features/auth/presentation/login_page.dart
+index 1111111..2222222 100644
+--- a/lib/features/auth/presentation/login_page.dart
++++ b/lib/features/auth/presentation/login_page.dart
+@@ -1 +1 @@
+-const title = 'Login';
++const title = 'Sign in';
+diff --git a/.maestro/flows/auth/login_logout.yaml b/.maestro/flows/auth/login_logout.yaml
+index 3333333..4444444 100644
+--- a/.maestro/flows/auth/login_logout.yaml
++++ b/.maestro/flows/auth/login_logout.yaml
+@@ -1 +1 @@
+-    id: old_login_button
++    id: auth_login_button
+EOF
+selector_diff_run="$(create_run selector-diff ERROR failed "Assertion is false: id: auth_login_button is visible")"
+"$reporter" "$selector_diff_run" >/dev/null
+jq -e '.suspiciousFiles[0] == ".maestro/flows/auth/login_logout.yaml"' \
+  "$selector_diff_run/failure_report.json" >/dev/null
+
+cat > "$changed_files_fixture" <<'EOF'
+lib/features/auth/presentation/login_controller.dart
+lib/features/auth/presentation/login_page.dart
+EOF
+cat > "$git_diff_fixture" <<'EOF'
+diff --git a/lib/features/auth/presentation/login_controller.dart b/lib/features/auth/presentation/login_controller.dart
+index 1111111..2222222 100644
+--- a/lib/features/auth/presentation/login_controller.dart
++++ b/lib/features/auth/presentation/login_controller.dart
+@@ -1 +1 @@
+-const state = 'idle';
++const state = 'ready';
+diff --git a/lib/features/auth/presentation/login_page.dart b/lib/features/auth/presentation/login_page.dart
+index 3333333..4444444 100644
+--- a/lib/features/auth/presentation/login_page.dart
++++ b/lib/features/auth/presentation/login_page.dart
+@@ -1 +1 @@
+-  key: const ValueKey('old_login_button'),
++  key: const ValueKey('auth_login_button'),
+EOF
+semantics_diff_run="$(create_run semantics-diff ERROR failed "Assertion is false: id: auth_login_button is visible")"
+"$reporter" "$semantics_diff_run" >/dev/null
+jq -e '.suspiciousFiles[0] == "lib/features/auth/presentation/login_page.dart"' \
+  "$semantics_diff_run/failure_report.json" >/dev/null
+
+cat > "$changed_files_fixture" <<'EOF'
+tool/agent/maestro_evidence_check.sh
+lib/features/auth/data/model/remote/login_request_model.g.dart
+lib/features/auth/data/datasource/remote/auth_remote_datasource.dart
+EOF
+cat > "$git_diff_fixture" <<'EOF'
+diff --git a/tool/agent/maestro_evidence_check.sh b/tool/agent/maestro_evidence_check.sh
+index 1111111..2222222 100755
+--- a/tool/agent/maestro_evidence_check.sh
++++ b/tool/agent/maestro_evidence_check.sh
+@@ -1 +1 @@
+-echo old
++echo new
+diff --git a/lib/features/auth/data/model/remote/login_request_model.g.dart b/lib/features/auth/data/model/remote/login_request_model.g.dart
+index 5555555..6666666 100644
+--- a/lib/features/auth/data/model/remote/login_request_model.g.dart
++++ b/lib/features/auth/data/model/remote/login_request_model.g.dart
+@@ -1 +1 @@
+-Map<String, dynamic> toJson() => {'email': email};
++Map<String, dynamic> toJson() => {'username': email};
+diff --git a/lib/features/auth/data/datasource/remote/auth_remote_datasource.dart b/lib/features/auth/data/datasource/remote/auth_remote_datasource.dart
+index 3333333..4444444 100644
+--- a/lib/features/auth/data/datasource/remote/auth_remote_datasource.dart
++++ b/lib/features/auth/data/datasource/remote/auth_remote_datasource.dart
+@@ -1 +1 @@
+-  AuthEndpoint.login,
++  '/v1/auth/password/login',
+EOF
+backend_diff_run="$(create_run backend-diff ERROR failed "Request failed")"
+echo "HTTP 401" > "$backend_diff_run/maestro/runner.log"
+"$reporter" "$backend_diff_run" >/dev/null
+jq -e '.suspiciousFiles[0] == "lib/features/auth/data/datasource/remote/auth_remote_datasource.dart"' \
+  "$backend_diff_run/failure_report.json" >/dev/null
+
+cat > "$changed_files_fixture" <<'EOF'
+lib/features/auth/presentation/login_page.dart
+lib/navigation/app_redirect.dart
+EOF
+cat > "$git_diff_fixture" <<'EOF'
+diff --git a/lib/features/auth/presentation/login_page.dart b/lib/features/auth/presentation/login_page.dart
+index 1111111..2222222 100644
+--- a/lib/features/auth/presentation/login_page.dart
++++ b/lib/features/auth/presentation/login_page.dart
+@@ -1 +1 @@
+-const title = 'Login';
++const title = 'Sign in';
+diff --git a/lib/navigation/app_redirect.dart b/lib/navigation/app_redirect.dart
+index 3333333..4444444 100644
+--- a/lib/navigation/app_redirect.dart
++++ b/lib/navigation/app_redirect.dart
+@@ -1 +1 @@
+-  return AuthRoutes.signIn;
++  return AppRoutes.home;
+EOF
+navigation_diff_run="$(create_run navigation-diff ERROR failed "App did not navigate to expected screen")"
+"$reporter" "$navigation_diff_run" >/dev/null
+jq -e '.suspiciousFiles[0] == "lib/navigation/app_redirect.dart"' \
+  "$navigation_diff_run/failure_report.json" >/dev/null
+
+cat > "$changed_files_fixture" <<'EOF'
+lib/features/auth/data/repository/auth_repository_impl.dart
+tool/agent/auth_fixture_evidence_check.sh
+EOF
+cat > "$git_diff_fixture" <<'EOF'
+diff --git a/lib/features/auth/data/repository/auth_repository_impl.dart b/lib/features/auth/data/repository/auth_repository_impl.dart
+index 1111111..2222222 100644
+--- a/lib/features/auth/data/repository/auth_repository_impl.dart
++++ b/lib/features/auth/data/repository/auth_repository_impl.dart
+@@ -1 +1 @@
+-const message = 'old';
++const message = 'new';
+diff --git a/tool/agent/auth_fixture_evidence_check.sh b/tool/agent/auth_fixture_evidence_check.sh
+index 3333333..4444444 100755
+--- a/tool/agent/auth_fixture_evidence_check.sh
++++ b/tool/agent/auth_fixture_evidence_check.sh
+@@ -1 +1 @@
+-cleanup_identity
++revoke_fixture_sessions
+EOF
+fixture_diff_run="$(create_run fixture-diff ERROR failed "Cleanup failed")"
+echo "Session revocation failed" > "$fixture_diff_run/maestro/runner.log"
+"$reporter" "$fixture_diff_run" >/dev/null
+jq -e '.suspiciousFiles[0] == "tool/agent/auth_fixture_evidence_check.sh"' \
+  "$fixture_diff_run/failure_report.json" >/dev/null
 
 echo "Mobile failure report contract tests passed."

@@ -41,6 +41,36 @@ first_match() {
   fi
 }
 
+diff_files_matching() {
+  local diff_file="$1"
+  local path_pattern="$2"
+  local line_pattern="$3"
+
+  awk \
+    -v path_pattern="$path_pattern" \
+    -v line_pattern="$line_pattern" '
+      function emit() {
+        if (file != "" && path_matches && line_matches) print file
+      }
+      /^diff --git a\// {
+        emit()
+        file = $4
+        sub(/^b\//, "", file)
+        path_matches = file ~ path_pattern
+        if (file ~ /(\.g|\.freezed)\.dart$/) path_matches = 0
+        line_matches = 0
+        next
+      }
+      path_matches && /^[+-][^+-]/ {
+        line = tolower(substr($0, 2))
+        if (line ~ line_pattern) line_matches = 1
+      }
+      END {
+        emit()
+      }
+    ' "$diff_file"
+}
+
 require_command jq
 require_command rg
 require_command git
@@ -103,7 +133,8 @@ failed_selector=""
 failed_command_message=""
 hierarchy_text_file="$(mktemp)"
 changed_files_file="$(mktemp)"
-trap 'rm -f "$hierarchy_text_file" "$changed_files_file"' EXIT
+diff_file="$(mktemp)"
+trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file"' EXIT
 
 if [[ -n "$commands_file" && -s "$commands_file" ]]; then
   failed_command_json="$(
@@ -159,7 +190,7 @@ if [[ -z "$failure_screenshot" ]]; then
 fi
 
 combined_logs_file="$(mktemp)"
-trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$combined_logs_file"' EXIT
+trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file" "$combined_logs_file"' EXIT
 for log_file in "$runner_log" "$maestro_log" "$device_log"; do
   [[ -s "$log_file" ]] && cat "$log_file" >> "$combined_logs_file"
 done
@@ -180,10 +211,20 @@ device_signal="$(
     "$combined_logs_file" 2>/dev/null || true
 )"
 
-{
-  git diff --name-only
-  git ls-files --others --exclude-standard
-} | awk '!seen[$0]++' > "$changed_files_file"
+if [[ -n "${MOBTRACE_CHANGED_FILES_FILE:-}" ]]; then
+  cp "$MOBTRACE_CHANGED_FILES_FILE" "$changed_files_file"
+else
+  {
+    git diff --name-only
+    git ls-files --others --exclude-standard
+  } | awk '!seen[$0]++' > "$changed_files_file"
+fi
+
+if [[ -n "${MOBTRACE_GIT_DIFF_FILE:-}" ]]; then
+  cp "$MOBTRACE_GIT_DIFF_FILE" "$diff_file"
+else
+  git diff --no-ext-diff --unified=80 > "$diff_file"
+fi
 
 failure_class="unknown"
 failure_domain="unknown"
@@ -230,13 +271,40 @@ suspicious_files="$(
   elif [[ -s "$changed_files_file" ]]; then
     case "$failure_class" in
       selector_mismatch|input_not_applied)
+        diff_files_matching \
+          "$diff_file" \
+          '^\.maestro/.*\.ya?ml$' \
+          '(^|[[:space:]-])(id|text|idregex|textregex|assertvisible|assertnotvisible|tapon|inputtext|visible)[[:space:]:=(]'
+        diff_files_matching \
+          "$diff_file" \
+          '^lib/.*\.dart$' \
+          '(semantics|semanticlabel|semanticslabel|valuekey|key[[:space:]]*:|testid|test_id)'
         rg '^\.maestro/|^tool/agent/' "$changed_files_file" || true
         rg '^lib/features/auth/|^lib/features/account/|^lib/navigation/' "$changed_files_file" || true
         ;;
-      backend_http_error|fixture_cleanup_failed|device_not_ready)
+      backend_http_error)
+        diff_files_matching \
+          "$diff_file" \
+          '^lib/(features/.*/data/|core/infra/network/).*\.dart$' \
+          '(endpoint|payload|request|response|tojson|fromjson|body|dio|/v[0-9]+/|[.](get|post|put|patch|delete)[(])'
+        rg '^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
+        rg '^tool/agent/' "$changed_files_file" || true
+        ;;
+      fixture_cleanup_failed)
+        diff_files_matching \
+          "$diff_file" \
+          '^tool/agent/.*\.sh$' \
+          '(fixture|cleanup|revoke|revocation|session|logout|api_request|curl)'
+        rg '^tool/agent/|^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
+        ;;
+      device_not_ready)
         rg '^tool/agent/|^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
         ;;
       app_did_not_navigate)
+        diff_files_matching \
+          "$diff_file" \
+          '^lib/(navigation/|core/runtime/session/|features/auth/).*\.dart$' \
+          '(route|router|redirect|navigator|navigation|session|refreshtoken|accesstoken|logout|authenticated)'
         rg '^lib/navigation/|^lib/core/runtime/session/|^lib/features/auth/|^lib/features/account/' "$changed_files_file" || true
         ;;
     esac

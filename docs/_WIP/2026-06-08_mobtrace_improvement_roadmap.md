@@ -166,6 +166,8 @@ Exit criteria:
 
 ## Phase 4: Diff Hunk Inspection
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 Current suspicious-file ranking uses file paths only. This is useful but too
@@ -184,10 +186,10 @@ Do not add AI summarization in this phase.
 
 Exit criteria:
 
-- changed selector lines rank Maestro flow files higher for selector failures.
-- changed API payload/endpoint lines rank data/repository files higher for
+- [x] changed selector lines rank Maestro flow files higher for selector failures.
+- [x] changed API payload/endpoint lines rank data/repository files higher for
   backend HTTP failures.
-- changed navigation/session lines rank app code higher for navigation failures.
+- [x] changed navigation/session lines rank app code higher for navigation failures.
 
 ## Phase 5: Flow Metadata Correlation
 
