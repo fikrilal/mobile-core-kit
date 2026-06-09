@@ -57,6 +57,10 @@ assert_classification "$passed_run" none none
 device_run="$(create_run device ERROR failed "Device setup failed")"
 echo "device emulator-5554 is not connected" > "$device_run/maestro/device.log"
 assert_classification "$device_run" device_not_ready infrastructure
+jq -e '
+  .signature.id == "device_offline_before_run" and
+  .suggestedAction == "Restore the emulator or device connection and rerun the same flow before changing app code."
+' "$device_run/failure_report.json" >/dev/null
 
 cleanup_backend_run="$(create_run cleanup-backend ERROR failed "Cleanup failed")"
 cat > "$cleanup_backend_run/maestro/runner.log" <<'EOF'
@@ -69,9 +73,45 @@ cleanup_harness_run="$(create_run cleanup-harness ERROR failed "Cleanup failed")
 echo "Session revocation failed" > "$cleanup_harness_run/maestro/runner.log"
 assert_classification "$cleanup_harness_run" fixture_cleanup_failed test_harness
 
+cleanup_empty_body_run="$(create_run cleanup-empty-body ERROR failed "Cleanup failed")"
+cat > "$cleanup_empty_body_run/maestro/runner.log" <<'EOF'
+Fixture cleanup failed
+HTTP 400
+Body cannot be empty when content-type is set to application/json
+EOF
+assert_classification "$cleanup_empty_body_run" fixture_cleanup_failed backend
+jq -e '
+  .signature.id == "fixture_cleanup_empty_json_body" and
+  .suggestedAction == "Fix the fixture cleanup request so it either sends a valid JSON body or omits the JSON content type."
+' "$cleanup_empty_body_run/failure_report.json" >/dev/null
+grep -Fq -- "- Signature: \`fixture_cleanup_empty_json_body\`" \
+  "$cleanup_empty_body_run/failure_report.md"
+grep -Fq '## Known Failure Signature' "$cleanup_empty_body_run/failure_report.md"
+
 backend_run="$(create_run backend ERROR failed "Request failed")"
 echo "HTTP 401" > "$backend_run/maestro/runner.log"
 assert_classification "$backend_run" backend_http_error backend
+
+backend_commands='[
+  {
+    "command": {
+      "assertConditionCommand": {
+        "condition": {"visible": {"textRegex": "Home"}}
+      }
+    },
+    "metadata": {
+      "status": "FAILED",
+      "error": {"message": "Home is visible"}
+    }
+  }
+]'
+backend_unauthorized_run="$(create_run backend-unauthorized ERROR failed "Home is visible" "$backend_commands")"
+echo "HTTP 401 UNAUTHORIZED" > "$backend_unauthorized_run/maestro/runner.log"
+assert_classification "$backend_unauthorized_run" backend_http_error backend
+jq -e '
+  .signature.id == "backend_unauthorized_after_login_submit" and
+  .suggestedAction == "Inspect the login request payload and fixture credentials against the backend authentication contract."
+' "$backend_unauthorized_run/failure_report.json" >/dev/null
 
 input_commands='[
   {
@@ -90,9 +130,35 @@ input_commands='[
 ]'
 input_run="$(create_run input ERROR failed "Home is visible" "$input_commands")"
 assert_classification "$input_run" input_not_applied test_harness
+jq -e '
+  .signature.id == "input_stayed_on_login_screen" and
+  .suggestedAction == "Inspect the editable-field selectors and confirm input reached both email and password fields before submission."
+' "$input_run/failure_report.json" >/dev/null
 
 selector_run="$(create_run selector ERROR failed "Assertion is false: id: login_button is visible")"
 assert_classification "$selector_run" selector_mismatch test_harness
+
+missing_id_commands='[
+  {
+    "command": {
+      "assertConditionCommand": {
+        "condition": {"visible": {"idRegex": "missing_login_button"}}
+      }
+    },
+    "metadata": {
+      "status": "FAILED",
+      "error": {
+        "message": "Assertion is false: id: missing_login_button is visible"
+      }
+    }
+  }
+]'
+missing_id_run="$(create_run missing-id ERROR failed "Assertion is false: id: missing_login_button is visible" "$missing_id_commands")"
+assert_classification "$missing_id_run" selector_mismatch test_harness
+jq -e '
+  .signature.id == "assertion_false_missing_id" and
+  .suggestedAction == "Compare the asserted ID with the app semantics/key definition and the changed Maestro selector before editing navigation or business logic."
+' "$missing_id_run/failure_report.json" >/dev/null
 
 navigation_run="$(create_run navigation ERROR failed "App did not navigate to expected screen")"
 assert_classification "$navigation_run" app_did_not_navigate app
@@ -100,6 +166,10 @@ assert_classification "$navigation_run" app_did_not_navigate app
 unknown_run="$(create_run unknown ERROR failed "Unexpected failure")"
 echo "Fixture cleanup completed" > "$unknown_run/maestro/runner.log"
 assert_classification "$unknown_run" unknown unknown
+jq -e '
+  .signature == null and
+  .suggestedAction == "Inspect the failed command, final screenshot, hierarchy text, and changed files."
+' "$unknown_run/failure_report.json" >/dev/null
 
 cat > "$changed_files_fixture" <<'EOF'
 lib/features/auth/presentation/login_page.dart
@@ -124,6 +194,8 @@ EOF
 selector_diff_run="$(create_run selector-diff ERROR failed "Assertion is false: id: auth_login_button is visible")"
 "$reporter" "$selector_diff_run" >/dev/null
 jq -e '.suspiciousFiles[0] == ".maestro/flows/auth/login_logout.yaml"' \
+  "$selector_diff_run/failure_report.json" >/dev/null
+jq -e '.signature.id == "changed_maestro_selector_assertion"' \
   "$selector_diff_run/failure_report.json" >/dev/null
 
 cat > "$changed_files_fixture" <<'EOF'

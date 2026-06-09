@@ -225,6 +225,8 @@ Exit criteria:
 
 ## Phase 6: Known Failure Signatures
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 Useful debugging patterns should be captured in the harness instead of agent
@@ -247,9 +249,9 @@ Example signatures:
 
 Exit criteria:
 
-- at least three real historical failures are encoded.
-- signatures produce concrete next actions.
-- unmatched failures still produce the generic classification.
+- [x] at least three real historical failures are encoded.
+- [x] signatures produce concrete next actions.
+- [x] unmatched failures still produce the generic classification.
 
 ## Phase 7: Report Viewing Ergonomics
 

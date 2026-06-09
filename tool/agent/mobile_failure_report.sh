@@ -171,6 +171,56 @@ metadata_owned_files() {
   ' "$owns_file" "$changed_files_file"
 }
 
+match_failure_signature() {
+  local signatures_file="$1"
+  local failure_class="$2"
+  local failure_message="$3"
+  local failed_command="$4"
+  local failed_selector="$5"
+  local hierarchy_file="$6"
+  local logs_file="$7"
+  local changed_files_file="$8"
+
+  jq -c \
+    --arg failureClass "$failure_class" \
+    --arg failure "$failure_message" \
+    --arg failedCommand "$failed_command" \
+    --arg failedSelector "$failed_selector" \
+    --rawfile hierarchy "$hierarchy_file" \
+    --rawfile logs "$logs_file" \
+    --rawfile changedFiles "$changed_files_file" \
+    '
+      def regex_matches($value; $pattern):
+        ($pattern == null) or ($value | test($pattern; "im"));
+
+      [
+        .signatures[] |
+        . as $signature |
+        ($signature.match // {}) as $match |
+        select(
+          (($match.failureClass // null) == null or $match.failureClass == $failureClass) and
+          regex_matches($failure; $match.failureRegex // null) and
+          regex_matches($failedCommand; $match.failedCommandRegex // null) and
+          regex_matches($hierarchy; $match.hierarchyRegex // null) and
+          regex_matches($logs; $match.logsRegex // null) and
+          regex_matches($changedFiles; $match.changedFilesRegex // null) and
+          (
+            (($match.selectorMissingFromHierarchy // false) | not) or
+            (
+              ($failedSelector | length) > 0 and
+              (($hierarchy | ascii_downcase | contains($failedSelector | ascii_downcase)) | not)
+            )
+          )
+        ) |
+        {
+          id: $signature.id,
+          description: $signature.description,
+          action: $signature.action
+        }
+      ] | first // null
+    ' "$signatures_file"
+}
+
 require_command jq
 require_command rg
 require_command git
@@ -181,6 +231,39 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 fi
 
 [[ $# -eq 1 ]] || { usage; exit 2; }
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+signatures_file="${MOBTRACE_SIGNATURES_FILE:-$script_dir/mobtrace_signatures.json}"
+[[ -s "$signatures_file" ]] || fail "Missing MobTrace signatures: $signatures_file"
+jq -e '
+  .version == 1 and
+  (.signatures | type == "array") and
+  (
+    [.signatures[].id] as $ids |
+    ($ids | length) == ($ids | unique | length)
+  ) and
+  all(
+    .signatures[];
+    (.id | type == "string" and length > 0) and
+    (.description | type == "string" and length > 0) and
+    (.action | type == "string" and length > 0) and
+    (.match | type == "object") and
+    (
+      .match |
+      keys - [
+        "changedFilesRegex",
+        "failedCommandRegex",
+        "failureClass",
+        "failureRegex",
+        "hierarchyRegex",
+        "logsRegex",
+        "selectorMissingFromHierarchy"
+      ] |
+      length == 0
+    )
+  )
+' "$signatures_file" >/dev/null ||
+  fail "Invalid MobTrace signatures file: $signatures_file"
 
 run_dir="${1%/}"
 [[ -d "$run_dir" ]] || fail "Evidence directory not found: $run_dir"
@@ -372,6 +455,25 @@ elif [[ "$failure_message $failed_command_message" =~ visible|navigate|screen ]]
   suggested_action="Inspect navigation/session state and the preceding successful commands."
 fi
 
+failed_command_context="$failed_command_type $failed_selector $failed_command_message"
+signature_json="$(
+  match_failure_signature \
+    "$signatures_file" \
+    "$failure_class" \
+    "$failure_message" \
+    "$failed_command_context" \
+    "$failed_selector" \
+    "$hierarchy_text_file" \
+    "$combined_logs_file" \
+    "$changed_files_file"
+)"
+signature_id="$(jq -r '.id // ""' <<<"$signature_json")"
+signature_description="$(jq -r '.description // ""' <<<"$signature_json")"
+signature_action="$(jq -r '.action // ""' <<<"$signature_json")"
+if [[ -n "$signature_action" ]]; then
+  suggested_action="$signature_action"
+fi
+
 suspicious_files="$(
   if [[ "$failure_class" == "none" ]]; then
     printf '_No failure detected._\n'
@@ -481,6 +583,7 @@ jq -n \
   --arg cleanupSignal "$cleanup_signal" \
   --arg deviceSignal "$device_signal" \
   --arg suggestedAction "$suggested_action" \
+  --argjson signature "$signature_json" \
   --argjson changedFiles "$changed_files_json" \
   --argjson flowOwns "$flow_owns_json" \
   --argjson suspiciousFiles "$suspicious_files_json" \
@@ -510,6 +613,7 @@ jq -n \
     screenshot: $screenshot,
     changedFiles: $changedFiles,
     suspiciousFiles: $suspiciousFiles,
+    signature: $signature,
     suggestedAction: $suggestedAction
   }' > "$report_json"
 
@@ -522,6 +626,9 @@ jq -n \
   echo "- Run result: \`$run_result\`"
   echo "- Failure class: \`$failure_class\`"
   echo "- Failure domain: \`$failure_domain\`"
+  if [[ -n "$signature_id" ]]; then
+    echo "- Signature: \`$signature_id\`"
+  fi
   if [[ -n "$flow_area" || -s "$flow_owns_file" ]]; then
     echo "- Flow metadata: \`${flow_file}\` (area: \`${flow_area:-unknown}\`)"
   fi
@@ -565,6 +672,13 @@ jq -n \
   echo "- HTTP/backend: \`${http_signal:-none}\`"
   echo "- Fixture cleanup: \`${cleanup_signal:-none}\`"
   echo "- Device: \`${device_signal:-none}\`"
+  if [[ -n "$signature_id" ]]; then
+    echo
+    echo "## Known Failure Signature"
+    echo
+    echo "- ID: \`$signature_id\`"
+    echo "- Description: $signature_description"
+  fi
   echo
   echo "## Most Suspicious Changed Files"
   echo
