@@ -90,6 +90,34 @@ grep -Fq 'Next action:' <<<"$failed_output"
 grep -Fq "Report: $failed_run/failure_report.md" <<<"$failed_output"
 grep -Fq "JSON: $failed_run/failure_report.json" <<<"$failed_output"
 
+failed_summary="$("$runner" report latest --summary)"
+[[ "$(wc -l <<<"$failed_summary")" -eq 1 ]]
+jq -e \
+  --arg report "$failed_run/failure_report.md" \
+  --arg json "$failed_run/failure_report.json" \
+  '
+    keys == [
+      "failedSelector",
+      "failureClass",
+      "failureDomain",
+      "json",
+      "report",
+      "runResult",
+      "status",
+      "suggestedAction"
+    ] and
+    .status == "ERROR" and
+    .runResult == "failed" and
+    .failureClass == "selector_mismatch" and
+    .failedSelector == "auth_sign_in_pending_deep_link" and
+    .failureDomain == "unknown" and
+    .report == $report and
+    .json == $json and
+    .suggestedAction == "Compare the expected selector with the final hierarchy text."
+  ' <<<"$failed_summary" >/dev/null
+[[ -s "$failed_run/failure_report.md" ]]
+[[ -s "$failed_run/failure_report.json" ]]
+
 passed_run="$MOBTRACE_ARTIFACTS_ROOT/passed"
 mkdir -p "$passed_run/maestro"
 echo '<testsuite><testcase name="passed"/></testsuite>' > "$passed_run/maestro/junit.xml"
@@ -106,6 +134,15 @@ if grep -Fq 'Most suspicious:' <<<"$passed_output"; then
   echo "Unexpected suspicious files in passed diagnosis." >&2
   exit 1
 fi
+
+passed_summary="$("$runner" report "$passed_run" --summary)"
+jq -e '
+  .status == "SUCCESS" and
+  .runResult == "passed" and
+  .failureClass == "none" and
+  .failedSelector == "" and
+  .failureDomain == "unknown"
+' <<<"$passed_summary" >/dev/null
 
 export FAKE_RUN_RESULT=failed
 export FAKE_RUNNER_STATUS=7

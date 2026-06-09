@@ -5,12 +5,13 @@ usage() {
   cat >&2 <<'EOF'
 Usage:
   ./mobtrace doctor
-  ./mobtrace report [latest|_artifacts/mobile/<run>]
+  ./mobtrace report [latest|_artifacts/mobile/<run>] [--summary]
   ./mobtrace verify login-logout --device <id> [evidence options]
   ./mobtrace verify --flow <path> --device <id> [evidence options]
 
 Examples:
   ./mobtrace report latest
+  ./mobtrace report latest --summary
   ./mobtrace verify login-logout --device emulator-5554
   ./mobtrace verify --flow .maestro/flows/auth/login_logout.yaml --device emulator-5554
 
@@ -92,15 +93,76 @@ print_diagnosis() {
   echo "JSON: $result_json"
 }
 
+print_summary() {
+  local run_dir="$1"
+  local result_json="$run_dir/failure_report.json"
+  [[ -s "$result_json" ]] || fail "Missing MobTrace result: $result_json"
+
+  jq -c \
+    --arg report "$run_dir/failure_report.md" \
+    --arg json "$result_json" \
+    '{
+      status: (.status // "unknown"),
+      runResult: (.runResult // "unknown"),
+      failureClass: (.failureClass // "unknown"),
+      failedSelector: (.failedCommand.selector // ""),
+      failureDomain: (.failureDomain // "unknown"),
+      report: $report,
+      json: $json,
+      suggestedAction: (.suggestedAction // "Inspect the full MobTrace report.")
+    }' "$result_json"
+}
+
 run_report() {
   local run_dir="${1:-latest}"
+  local output_mode="${2:-diagnosis}"
   if [[ "$run_dir" == "latest" ]]; then
     run_dir="$(latest_run_dir)"
     [[ -n "$run_dir" ]] || fail "No mobile evidence run found under $artifacts_root."
   fi
 
   "$reporter" "$run_dir" >/dev/null
-  print_diagnosis "$run_dir"
+  case "$output_mode" in
+    diagnosis) print_diagnosis "$run_dir" ;;
+    summary) print_summary "$run_dir" ;;
+    *) fail "Unsupported report output mode: $output_mode" ;;
+  esac
+}
+
+run_report_command() {
+  local run_dir="latest"
+  local run_dir_set=0
+  local output_mode="diagnosis"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --summary)
+        output_mode="summary"
+        shift
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      -*)
+        echo "ERROR: Unknown report option '$1'." >&2
+        usage
+        exit 2
+        ;;
+      *)
+        if [[ "$run_dir_set" -eq 1 ]]; then
+          echo "ERROR: Report accepts at most one evidence directory." >&2
+          usage
+          exit 2
+        fi
+        run_dir="$1"
+        run_dir_set=1
+        shift
+        ;;
+    esac
+  done
+
+  run_report "$run_dir" "$output_mode"
 }
 
 run_doctor() {
@@ -201,8 +263,7 @@ case "${1:-}" in
     ;;
   report|explain)
     shift
-    [[ $# -le 1 ]] || { usage; exit 2; }
-    run_report "${1:-latest}"
+    run_report_command "$@"
     ;;
   verify)
     shift

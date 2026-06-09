@@ -93,6 +93,8 @@ Exit criteria:
 
 ## Phase 2: Machine-Friendly Summary
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 Agents should be able to consume MobTrace output without parsing markdown.
@@ -121,9 +123,9 @@ Example:
 
 Exit criteria:
 
-- summary JSON is valid and stable enough for agents to parse.
-- summary mode does not print prose.
-- normal report mode remains human-readable.
+- [x] summary JSON is valid and stable enough for agents to parse.
+- [x] summary mode does not print prose.
+- [x] normal report mode remains human-readable.
 
 ## Phase 3: Failure Domain Classification
 
