@@ -71,6 +71,106 @@ diff_files_matching() {
     ' "$diff_file"
 }
 
+resolve_flow_file() {
+  local metadata_file="$1"
+  local expected_flow_name="$2"
+  local candidate
+  local candidate_name
+
+  if [[ -n "${MOBTRACE_FLOW_FILE:-}" ]]; then
+    [[ -f "$MOBTRACE_FLOW_FILE" ]] && printf '%s\n' "$MOBTRACE_FLOW_FILE"
+    return 0
+  fi
+
+  [[ -s "$metadata_file" ]] || return 0
+  while IFS= read -r candidate; do
+    [[ -f "$candidate" ]] || continue
+    candidate_name="$(
+      sed -n -E 's/^name:[[:space:]]*(.*)$/\1/p' "$candidate" | head -n 1
+    )"
+    if [[ "$candidate_name" == "$expected_flow_name" ]]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+  done < <(
+    awk '
+      /^flows=/ {
+        sub(/^flows=/, "")
+        count = split($0, paths, /[[:space:]]+/)
+        for (i = 1; i <= count; i++) {
+          if (paths[i] != "") print paths[i]
+        }
+      }
+    ' "$metadata_file"
+  )
+  return 0
+}
+
+parse_flow_metadata() {
+  local flow_file="$1"
+  local area_file="$2"
+  local owns_file="$3"
+
+  : > "$area_file"
+  : > "$owns_file"
+  [[ -s "$flow_file" ]] || return 0
+
+  awk -v area_file="$area_file" -v owns_file="$owns_file" '
+    BEGIN {
+      in_mobtrace = 0
+      in_owns = 0
+    }
+    /^#[[:space:]]*mobtrace:[[:space:]]*$/ {
+      in_mobtrace = 1
+      next
+    }
+    in_mobtrace && !/^#/ {
+      exit
+    }
+    in_mobtrace {
+      line = $0
+      sub(/^#[[:space:]]*/, "", line)
+      sub(/^[[:space:]]+/, "", line)
+      if (line ~ /^area:[[:space:]]*/) {
+        sub(/^area:[[:space:]]*/, "", line)
+        print line > area_file
+        next
+      }
+      if (line ~ /^owns:[[:space:]]*$/) {
+        in_owns = 1
+        next
+      }
+      if (in_owns && line ~ /^-[[:space:]]+/) {
+        sub(/^-[[:space:]]+/, "", line)
+        if (line != "") print line > owns_file
+        next
+      }
+      if (line !~ /^[[:space:]]*$/) in_owns = 0
+    }
+  ' "$flow_file"
+}
+
+metadata_owned_files() {
+  local changed_files_file="$1"
+  local owns_file="$2"
+
+  [[ -s "$owns_file" ]] || return 0
+  awk '
+    NR == FNR {
+      owns[++count] = $0
+      next
+    }
+    {
+      for (i = 1; i <= count; i++) {
+        if (index($0, owns[i]) == 1) {
+          print
+          next
+        }
+      }
+    }
+  ' "$owns_file" "$changed_files_file"
+}
+
 require_command jq
 require_command rg
 require_command git
@@ -87,6 +187,7 @@ run_dir="${1%/}"
 
 junit_file="$run_dir/maestro/junit.xml"
 status_file="$run_dir/status.env"
+metadata_file="$run_dir/metadata.txt"
 maestro_log="$run_dir/maestro/maestro.log"
 device_log="$run_dir/maestro/device.log"
 runner_log="$run_dir/maestro/runner.log"
@@ -134,7 +235,9 @@ failed_command_message=""
 hierarchy_text_file="$(mktemp)"
 changed_files_file="$(mktemp)"
 diff_file="$(mktemp)"
-trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file"' EXIT
+flow_area_file="$(mktemp)"
+flow_owns_file="$(mktemp)"
+trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file" "$flow_area_file" "$flow_owns_file"' EXIT
 
 if [[ -n "$commands_file" && -s "$commands_file" ]]; then
   failed_command_json="$(
@@ -190,7 +293,7 @@ if [[ -z "$failure_screenshot" ]]; then
 fi
 
 combined_logs_file="$(mktemp)"
-trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file" "$combined_logs_file"' EXIT
+trap 'rm -f "$hierarchy_text_file" "$changed_files_file" "$diff_file" "$flow_area_file" "$flow_owns_file" "$combined_logs_file"' EXIT
 for log_file in "$runner_log" "$maestro_log" "$device_log"; do
   [[ -s "$log_file" ]] && cat "$log_file" >> "$combined_logs_file"
 done
@@ -225,6 +328,10 @@ if [[ -n "${MOBTRACE_GIT_DIFF_FILE:-}" ]]; then
 else
   git diff --no-ext-diff --unified=80 > "$diff_file"
 fi
+
+flow_file="$(resolve_flow_file "$metadata_file" "$flow_name")"
+parse_flow_metadata "$flow_file" "$flow_area_file" "$flow_owns_file"
+flow_area="$(head -n 1 "$flow_area_file")"
 
 failure_class="unknown"
 failure_domain="unknown"
@@ -280,6 +387,7 @@ suspicious_files="$(
           '^lib/.*\.dart$' \
           '(semantics|semanticlabel|semanticslabel|valuekey|key[[:space:]]*:|testid|test_id)'
         rg '^\.maestro/|^tool/agent/' "$changed_files_file" || true
+        metadata_owned_files "$changed_files_file" "$flow_owns_file"
         rg '^lib/features/auth/|^lib/features/account/|^lib/navigation/' "$changed_files_file" || true
         ;;
       backend_http_error)
@@ -288,6 +396,7 @@ suspicious_files="$(
           '^lib/(features/.*/data/|core/infra/network/).*\.dart$' \
           '(endpoint|payload|request|response|tojson|fromjson|body|dio|/v[0-9]+/|[.](get|post|put|patch|delete)[(])'
         rg '^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
+        metadata_owned_files "$changed_files_file" "$flow_owns_file"
         rg '^tool/agent/' "$changed_files_file" || true
         ;;
       fixture_cleanup_failed)
@@ -296,6 +405,7 @@ suspicious_files="$(
           '^tool/agent/.*\.sh$' \
           '(fixture|cleanup|revoke|revocation|session|logout|api_request|curl)'
         rg '^tool/agent/|^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
+        metadata_owned_files "$changed_files_file" "$flow_owns_file"
         ;;
       device_not_ready)
         rg '^tool/agent/|^lib/features/.*/data/|^lib/core/infra/network/' "$changed_files_file" || true
@@ -305,6 +415,7 @@ suspicious_files="$(
           "$diff_file" \
           '^lib/(navigation/|core/runtime/session/|features/auth/).*\.dart$' \
           '(route|router|redirect|navigator|navigation|session|refreshtoken|accesstoken|logout|authenticated)'
+        metadata_owned_files "$changed_files_file" "$flow_owns_file"
         rg '^lib/navigation/|^lib/core/runtime/session/|^lib/features/auth/|^lib/features/account/' "$changed_files_file" || true
         ;;
     esac
@@ -334,6 +445,14 @@ changed_files_json="$(
   fi
 )"
 
+flow_owns_json="$(
+  if [[ -s "$flow_owns_file" ]]; then
+    jq -R -s 'split("\n") | map(select(length > 0))' "$flow_owns_file"
+  else
+    printf '[]'
+  fi
+)"
+
 suspicious_files_json="$(
   printf '%s\n' "$suspicious_files" |
     jq -R -s '
@@ -347,6 +466,8 @@ suspicious_files_json="$(
 jq -n \
   --arg runDir "$run_dir" \
   --arg flow "$flow_name" \
+  --arg flowFile "$flow_file" \
+  --arg flowArea "$flow_area" \
   --arg status "$junit_status" \
   --arg runResult "$run_result" \
   --arg failureClass "$failure_class" \
@@ -361,10 +482,16 @@ jq -n \
   --arg deviceSignal "$device_signal" \
   --arg suggestedAction "$suggested_action" \
   --argjson changedFiles "$changed_files_json" \
+  --argjson flowOwns "$flow_owns_json" \
   --argjson suspiciousFiles "$suspicious_files_json" \
   '{
     runDir: $runDir,
     flow: $flow,
+    flowMetadata: {
+      file: $flowFile,
+      area: $flowArea,
+      owns: $flowOwns
+    },
     status: $status,
     runResult: $runResult,
     failureClass: $failureClass,
@@ -395,6 +522,9 @@ jq -n \
   echo "- Run result: \`$run_result\`"
   echo "- Failure class: \`$failure_class\`"
   echo "- Failure domain: \`$failure_domain\`"
+  if [[ -n "$flow_area" || -s "$flow_owns_file" ]]; then
+    echo "- Flow metadata: \`${flow_file}\` (area: \`${flow_area:-unknown}\`)"
+  fi
   echo
   echo "## Failure"
   echo

@@ -193,6 +193,8 @@ Exit criteria:
 
 ## Phase 5: Flow Metadata Correlation
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 MobTrace should correlate flows to code ownership without guessing from file
@@ -218,8 +220,8 @@ Parser requirements:
 
 Exit criteria:
 
-- login/logout flow can rank auth/session/navigation files higher when changed.
-- metadata absence keeps current deterministic fallback behavior.
+- [x] login/logout flow can rank auth/session/navigation files higher when changed.
+- [x] metadata absence keeps current deterministic fallback behavior.
 
 ## Phase 6: Known Failure Signatures
 

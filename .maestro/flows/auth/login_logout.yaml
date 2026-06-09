@@ -1,3 +1,9 @@
+# mobtrace:
+#   area: auth
+#   owns:
+#     - lib/features/auth/
+#     - lib/core/runtime/session/
+#     - lib/navigation/
 appId: ${APP_ID}
 name: Login and logout with run-scoped identity
 tags:

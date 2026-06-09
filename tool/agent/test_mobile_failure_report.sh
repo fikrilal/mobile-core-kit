@@ -236,4 +236,63 @@ echo "Session revocation failed" > "$fixture_diff_run/maestro/runner.log"
 jq -e '.suspiciousFiles[0] == "tool/agent/auth_fixture_evidence_check.sh"' \
   "$fixture_diff_run/failure_report.json" >/dev/null
 
+cat > "$changed_files_fixture" <<'EOF'
+lib/features/account/presentation/account_page.dart
+lib/core/runtime/session/session_manager.dart
+lib/navigation/app_redirect.dart
+EOF
+: > "$git_diff_fixture"
+
+metadata_flow="$temp_dir/metadata_flow.yaml"
+cat > "$metadata_flow" <<'EOF'
+# mobtrace:
+#   area: auth
+#   owns:
+#     - lib/features/auth/
+#     - lib/core/runtime/session/
+#     - lib/navigation/
+appId: ${APP_ID}
+name: metadata-correlation
+---
+- assertVisible: Home
+EOF
+metadata_run="$(create_run metadata-correlation ERROR failed "Assertion is false: id: home is visible")"
+printf 'flows=%s\n' "$metadata_flow" > "$metadata_run/metadata.txt"
+"$reporter" "$metadata_run" >/dev/null
+jq -e \
+  --arg flow_file "$metadata_flow" \
+  '
+    .flowMetadata.file == $flow_file and
+    .flowMetadata.area == "auth" and
+    .flowMetadata.owns == [
+      "lib/features/auth/",
+      "lib/core/runtime/session/",
+      "lib/navigation/"
+    ] and
+    .suspiciousFiles[0] == "lib/core/runtime/session/session_manager.dart" and
+    .suspiciousFiles[1] == "lib/navigation/app_redirect.dart"
+  ' "$metadata_run/failure_report.json" >/dev/null
+grep -Fq -- "- Flow metadata: \`$metadata_flow\` (area: \`auth\`)" \
+  "$metadata_run/failure_report.md"
+
+plain_flow="$temp_dir/plain_flow.yaml"
+cat > "$plain_flow" <<'EOF'
+appId: ${APP_ID}
+name: metadata-absent
+---
+- assertVisible: Home
+EOF
+metadata_absent_run="$(create_run metadata-absent ERROR failed "Assertion is false: id: home is visible")"
+printf 'flows=%s\n' "$plain_flow" > "$metadata_absent_run/metadata.txt"
+"$reporter" "$metadata_absent_run" >/dev/null
+jq -e \
+  --arg plain_flow "$plain_flow" \
+  '.flowMetadata.file == $plain_flow' \
+  "$metadata_absent_run/failure_report.json" >/dev/null
+jq -e '
+  .flowMetadata.area == "" and
+  .flowMetadata.owns == [] and
+  .suspiciousFiles[0] == "lib/features/account/presentation/account_page.dart"
+' "$metadata_absent_run/failure_report.json" >/dev/null
+
 echo "Mobile failure report contract tests passed."
