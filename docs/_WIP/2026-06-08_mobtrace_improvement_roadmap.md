@@ -129,6 +129,8 @@ Exit criteria:
 
 ## Phase 3: Failure Domain Classification
 
+Status: implemented on 2026-06-09
+
 Problem:
 
 Agents need to know whether to edit app code, test code, fixture code, backend
@@ -158,9 +160,9 @@ Initial mapping:
 
 Exit criteria:
 
-- app failures are distinguishable from infrastructure failures.
-- selector/test flow failures do not push agents toward app code by default.
-- pass reports use `failureDomain: none`.
+- [x] app failures are distinguishable from infrastructure failures.
+- [x] selector/test flow failures do not push agents toward app code by default.
+- [x] pass reports use `failureDomain: none`.
 
 ## Phase 4: Diff Hunk Inspection
 

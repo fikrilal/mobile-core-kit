@@ -21,6 +21,7 @@ if [[ "${FAKE_RUN_RESULT:-failed}" == "passed" ]]; then
   "status": "SUCCESS",
   "runResult": "passed",
   "failureClass": "none",
+  "failureDomain": "none",
   "failedCommand": {"selector": ""},
   "suspiciousFiles": [],
   "suggestedAction": "No failure detected."
@@ -33,6 +34,7 @@ else
   "status": "ERROR",
   "runResult": "failed",
   "failureClass": "selector_mismatch",
+  "failureDomain": "test_harness",
   "failedCommand": {"selector": "auth_sign_in_pending_deep_link"},
   "suspiciousFiles": [
     ".maestro/flows/auth/login_logout.yaml",
@@ -83,6 +85,7 @@ echo '<testsuite><testcase name="failed"/></testsuite>' > "$failed_run/maestro/j
 failed_output="$("$runner" report latest)"
 grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$failed_output"
 grep -Fq 'Class: selector_mismatch' <<<"$failed_output"
+grep -Fq 'Domain: test_harness' <<<"$failed_output"
 grep -Fq 'Failed selector: auth_sign_in_pending_deep_link' <<<"$failed_output"
 grep -Fq '1. .maestro/flows/auth/login_logout.yaml' <<<"$failed_output"
 grep -Fq '2. lib/features/auth/presentation/login_page.dart' <<<"$failed_output"
@@ -110,7 +113,7 @@ jq -e \
     .runResult == "failed" and
     .failureClass == "selector_mismatch" and
     .failedSelector == "auth_sign_in_pending_deep_link" and
-    .failureDomain == "unknown" and
+    .failureDomain == "test_harness" and
     .report == $report and
     .json == $json and
     .suggestedAction == "Compare the expected selector with the final hierarchy text."
@@ -126,6 +129,7 @@ export FAKE_RUN_RESULT=passed
 passed_output="$("$runner" report "$passed_run")"
 grep -Fq 'PASSED Login and logout with run-scoped identity' <<<"$passed_output"
 grep -Fq 'Class: none' <<<"$passed_output"
+grep -Fq 'Domain: none' <<<"$passed_output"
 if grep -Fq 'Failed selector:' <<<"$passed_output"; then
   echo "Unexpected failed selector in passed diagnosis." >&2
   exit 1
@@ -141,7 +145,7 @@ jq -e '
   .runResult == "passed" and
   .failureClass == "none" and
   .failedSelector == "" and
-  .failureDomain == "unknown"
+  .failureDomain == "none"
 ' <<<"$passed_summary" >/dev/null
 
 export FAKE_RUN_RESULT=failed

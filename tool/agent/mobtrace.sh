@@ -59,6 +59,7 @@ print_diagnosis() {
   local flow
   local result
   local failure_class
+  local failure_domain
   local failed_selector
   local suggested_action
 
@@ -70,11 +71,13 @@ print_diagnosis() {
     end
   ' "$result_json")"
   failure_class="$(jq -r '.failureClass // "unknown"' "$result_json")"
+  failure_domain="$(jq -r '.failureDomain // "unknown"' "$result_json")"
   failed_selector="$(jq -r '.failedCommand.selector // ""' "$result_json")"
   suggested_action="$(jq -r '.suggestedAction // "Inspect the full MobTrace report."' "$result_json")"
 
   echo "$result $flow"
   echo "Class: $failure_class"
+  echo "Domain: $failure_domain"
   if [[ -n "$failed_selector" ]]; then
     echo "Failed selector: $failed_selector"
   fi

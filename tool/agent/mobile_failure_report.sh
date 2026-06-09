@@ -171,7 +171,7 @@ http_signal="$(
 )"
 
 cleanup_signal="$(
-  rg -i -m 1 'Fixture cleanup|cleanup .*failed|Session revocation failed|Active sessions remain' \
+  rg -i -m 1 'Fixture cleanup.*(failed|error)|cleanup .*failed|Session revocation failed|Active sessions remain' \
     "$combined_logs_file" 2>/dev/null || true
 )"
 
@@ -186,29 +186,41 @@ device_signal="$(
 } | awk '!seen[$0]++' > "$changed_files_file"
 
 failure_class="unknown"
+failure_domain="unknown"
 suggested_action="Inspect the failed command, final screenshot, hierarchy text, and changed files."
 
 if [[ "$junit_status" == "SUCCESS" || "$run_result" == "passed" ]]; then
   failure_class="none"
+  failure_domain="none"
   suggested_action="No failure detected. Keep this report as the baseline evidence for future diff-aware comparisons."
 elif [[ -n "$device_signal" ]]; then
   failure_class="device_not_ready"
+  failure_domain="infrastructure"
   suggested_action="Fix emulator/device readiness before provisioning fixtures or rerunning the flow."
 elif [[ -n "$cleanup_signal" ]]; then
   failure_class="fixture_cleanup_failed"
+  if [[ -n "$http_signal" ]]; then
+    failure_domain="backend"
+  else
+    failure_domain="test_harness"
+  fi
   suggested_action="Inspect the fixture wrapper cleanup path and backend response before rerunning dependent flows."
 elif [[ -n "$http_signal" ]]; then
   failure_class="backend_http_error"
+  failure_domain="backend"
   suggested_action="Inspect the API request/response contract near the failing step and compare it with changed data/repository code."
 elif [[ "$failure_message $failed_command_message" =~ Home.*visible ]] &&
   rg -q '^Email$|^Password$' "$hierarchy_text_file"; then
   failure_class="input_not_applied"
+  failure_domain="test_harness"
   suggested_action="Check whether the flow tapped labels instead of editable fields. Inspect the hierarchy for EditText nodes and use a more specific selector."
 elif [[ "$failure_message $failed_command_message" =~ Element\ not\ found|No\ visible\ element|Assertion\ is\ false ]]; then
   failure_class="selector_mismatch"
+  failure_domain="test_harness"
   suggested_action="Compare the expected selector with the final hierarchy text. Maestro text selectors are full regular expressions."
 elif [[ "$failure_message $failed_command_message" =~ visible|navigate|screen ]]; then
   failure_class="app_did_not_navigate"
+  failure_domain="app"
   suggested_action="Inspect navigation/session state and the preceding successful commands."
 fi
 
@@ -270,6 +282,7 @@ jq -n \
   --arg status "$junit_status" \
   --arg runResult "$run_result" \
   --arg failureClass "$failure_class" \
+  --arg failureDomain "$failure_domain" \
   --arg failure "$failure_message" \
   --arg failedCommandType "$failed_command_type" \
   --arg failedSelector "$failed_selector" \
@@ -287,6 +300,7 @@ jq -n \
     status: $status,
     runResult: $runResult,
     failureClass: $failureClass,
+    failureDomain: $failureDomain,
     failure: $failure,
     failedCommand: {
       type: $failedCommandType,
@@ -312,6 +326,7 @@ jq -n \
   echo "- Status: \`$junit_status\`"
   echo "- Run result: \`$run_result\`"
   echo "- Failure class: \`$failure_class\`"
+  echo "- Failure domain: \`$failure_domain\`"
   echo
   echo "## Failure"
   echo
