@@ -53,6 +53,8 @@ Current analysis inputs:
 
 ## Phase 1: Inline Agent Diagnosis
 
+Status: implemented on 2026-06-08
+
 Problem:
 
 `./mobtrace verify ...` currently prints report paths, but agents should not
@@ -85,9 +87,9 @@ JSON: _artifacts/mobile/.../failure_report.json
 
 Exit criteria:
 
-- `./mobtrace report latest` prints the compact diagnosis.
-- `./mobtrace verify ...` prints the compact diagnosis after the run.
-- command exit status still reflects the evidence runner result.
+- [x] `./mobtrace report latest` prints the compact diagnosis.
+- [x] `./mobtrace verify ...` prints the compact diagnosis after the run.
+- [x] command exit status still reflects the evidence runner result.
 
 ## Phase 2: Machine-Friendly Summary
 

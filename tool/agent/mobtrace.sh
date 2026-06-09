@@ -38,27 +38,69 @@ repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)
 [[ -n "$repo_root" ]] || repo_root="$(cd "$script_dir/../.." && pwd)"
 cd "$repo_root"
 
-reporter="$script_dir/mobile_failure_report.sh"
-login_logout_runner="$script_dir/login_logout_evidence_check.sh"
-maestro_runner="$script_dir/maestro_evidence_check.sh"
+reporter="${MOBTRACE_REPORTER:-$script_dir/mobile_failure_report.sh}"
+login_logout_runner="${MOBTRACE_LOGIN_LOGOUT_RUNNER:-$script_dir/login_logout_evidence_check.sh}"
+maestro_runner="${MOBTRACE_MAESTRO_RUNNER:-$script_dir/maestro_evidence_check.sh}"
+artifacts_root="${MOBTRACE_ARTIFACTS_ROOT:-_artifacts/mobile}"
 
 latest_run_dir() {
-  [[ -d _artifacts/mobile ]] || return 0
-  find _artifacts/mobile -path '*/maestro/junit.xml' -type f -printf '%T@ %h\n' 2>/dev/null |
+  [[ -d "$artifacts_root" ]] || return 0
+  find "$artifacts_root" -path '*/maestro/junit.xml' -type f -printf '%T@ %h\n' 2>/dev/null |
     sort -nr |
     awk 'NR == 1 { sub(/\/maestro$/, "", $2); print $2 }'
+}
+
+print_diagnosis() {
+  local run_dir="$1"
+  local result_json="$run_dir/failure_report.json"
+  [[ -s "$result_json" ]] || fail "Missing MobTrace result: $result_json"
+
+  local flow
+  local result
+  local failure_class
+  local failed_selector
+  local suggested_action
+
+  flow="$(jq -r '.flow // "unknown"' "$result_json")"
+  result="$(jq -r '
+    if .runResult == "passed" then "PASSED"
+    elif .runResult == "failed" then "FAILED"
+    else (.status // "UNKNOWN" | ascii_upcase)
+    end
+  ' "$result_json")"
+  failure_class="$(jq -r '.failureClass // "unknown"' "$result_json")"
+  failed_selector="$(jq -r '.failedCommand.selector // ""' "$result_json")"
+  suggested_action="$(jq -r '.suggestedAction // "Inspect the full MobTrace report."' "$result_json")"
+
+  echo "$result $flow"
+  echo "Class: $failure_class"
+  if [[ -n "$failed_selector" ]]; then
+    echo "Failed selector: $failed_selector"
+  fi
+
+  if jq -e '.suspiciousFiles | length > 0' "$result_json" >/dev/null; then
+    echo
+    echo "Most suspicious:"
+    jq -r '.suspiciousFiles[]' "$result_json" | nl -w1 -s'. '
+  fi
+
+  echo
+  echo "Next action:"
+  echo "$suggested_action"
+  echo
+  echo "Report: $run_dir/failure_report.md"
+  echo "JSON: $result_json"
 }
 
 run_report() {
   local run_dir="${1:-latest}"
   if [[ "$run_dir" == "latest" ]]; then
     run_dir="$(latest_run_dir)"
-    [[ -n "$run_dir" ]] || fail "No mobile evidence run found under _artifacts/mobile."
+    [[ -n "$run_dir" ]] || fail "No mobile evidence run found under $artifacts_root."
   fi
 
   "$reporter" "$run_dir" >/dev/null
-  echo "MobTrace report: $run_dir/failure_report.md"
-  echo "MobTrace result: $run_dir/failure_report.json"
+  print_diagnosis "$run_dir"
 }
 
 run_doctor() {
@@ -121,8 +163,8 @@ run_verify() {
 
   if [[ -z "$artifacts_dir" ]]; then
     case "$target" in
-      login-logout) artifacts_dir="_artifacts/mobile/mobtrace-login-logout-$(date '+%Y%m%d_%H%M%S')" ;;
-      --flow) artifacts_dir="_artifacts/mobile/mobtrace-flow-$(date '+%Y%m%d_%H%M%S')" ;;
+      login-logout) artifacts_dir="$artifacts_root/mobtrace-login-logout-$(date '+%Y%m%d_%H%M%S')" ;;
+      --flow) artifacts_dir="$artifacts_root/mobtrace-flow-$(date '+%Y%m%d_%H%M%S')" ;;
     esac
     args+=( --artifacts-dir "$artifacts_dir" )
   fi
@@ -137,7 +179,13 @@ run_verify() {
   set -e
 
   if [[ -s "$artifacts_dir/maestro/junit.xml" ]]; then
+    set +e
     run_report "$artifacts_dir"
+    report_status=$?
+    set -e
+    if [[ "$report_status" -ne 0 ]]; then
+      echo "MobTrace report generation failed with exit status $report_status." >&2
+    fi
   else
     echo "MobTrace report skipped: missing $artifacts_dir/maestro/junit.xml" >&2
   fi
