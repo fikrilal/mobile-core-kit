@@ -223,6 +223,14 @@
   "@commonProfile": {
     "description": "Navigation label for the profile tab/screen."
   },
+  "profileEditTitle": "Edit profile",
+  "@profileEditTitle": {
+    "description": "Title and settings action for editing profile details."
+  },
+  "profileSaveChanges": "Save changes",
+  "@profileSaveChanges": {
+    "description": "Button label for saving edited profile details."
+  },
   "commonSettings": "Settings",
   "@commonSettings": {
     "description": "Section heading for settings."

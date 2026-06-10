@@ -6,24 +6,25 @@ import 'package:mobile_core_kit/core/design_system/theme/typography/components/t
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dart';
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/edit_profile/edit_profile_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_effect.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_state.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/widgets/profile_form.dart';
 
-class CompleteProfilePage extends StatefulWidget {
-  const CompleteProfilePage({super.key});
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  State<CompleteProfilePage> createState() => _CompleteProfilePageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _CompleteProfilePageState extends State<CompleteProfilePage> {
+class _EditProfilePageState extends State<EditProfilePage> {
   StreamSubscription<ProfileFormEffect>? _effectSubscription;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _effectSubscription ??= context.read<CompleteProfileCubit>().effects.listen(
+    _effectSubscription ??= context.read<EditProfileCubit>().effects.listen(
       _handleEffect,
     );
   }
@@ -48,13 +49,19 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: AppText.titleMedium(context.l10n.profileCompleteTitle),
-      ),
-      body: ProfileForm<CompleteProfileCubit>(
-        submitText: context.l10n.commonContinue,
-        body: AppText.bodyMedium(context.l10n.profileCompleteBody),
+    return BlocListener<EditProfileCubit, ProfileFormState>(
+      listenWhen: (previous, current) =>
+          previous.status != current.status &&
+          current.status == ProfileFormStatus.success,
+      listener: (context, state) => Navigator.of(context).pop(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppText.titleMedium(context.l10n.profileEditTitle),
+        ),
+        body: ProfileForm<EditProfileCubit>(
+          submitText: context.l10n.profileSaveChanges,
+          submitSemanticIdentifier: 'profile_edit_submit',
+        ),
       ),
     );
   }

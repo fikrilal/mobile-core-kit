@@ -33,6 +33,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usec
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/edit_profile/edit_profile_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
 
 class AccountProfileModule {
@@ -199,6 +200,15 @@ class AccountProfileModule {
           getIt<GetProfileDraftUseCase>(),
           getIt<SaveProfileDraftUseCase>(),
           getIt<ClearProfileDraftUseCase>(),
+          getIt<PatchMeProfileUseCase>(),
+          getIt<SessionManager>(),
+        ),
+      );
+    }
+
+    if (!getIt.isRegistered<EditProfileCubit>()) {
+      getIt.registerFactory<EditProfileCubit>(
+        () => EditProfileCubit(
           getIt<PatchMeProfileUseCase>(),
           getIt<SessionManager>(),
         ),
