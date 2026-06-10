@@ -139,6 +139,17 @@ tool/agent/flutter_log_stream.sh status --session emulator
 tool/agent/flutter_log_stream.sh stop --session emulator
 ```
 
+Session refresh/replay evidence uses a run-scoped local fault proxy:
+
+```bash
+./mobtrace verify session-refresh --device emulator-5554 --flavor dev
+```
+
+The proxy rejects one `GET /v1/me/sessions`, forwards the real refresh request,
+and requires a successful replay with a different access token. It is available
+only to the dev APK built for that evidence run and does not modify secure
+storage or backend auth behavior.
+
 Typical artifacts:
 - `_artifacts/runtime_logs/<session>/stream.log`
 - `_artifacts/runtime_logs/<session>/metadata.env`

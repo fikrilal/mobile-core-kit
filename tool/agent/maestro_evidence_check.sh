@@ -223,9 +223,21 @@ done
 echo "==> Generating build config for env=$flavor"
 "$fvm_bin" dart run tool/gen_config.dart --env "$flavor"
 
+flutter_build_args=(
+  --debug
+  --flavor "$flavor"
+  -t "$entrypoint"
+  "--dart-define=ENV=$flavor"
+)
+if [[ -n "${MOBILE_EVIDENCE_DEV_API_BASE_URL:-}" ]]; then
+  [[ "$flavor" == "dev" ]] ||
+    fail "MOBILE_EVIDENCE_DEV_API_BASE_URL is supported only for the dev flavor."
+  flutter_build_args+=( "--dart-define=DEV_API_BASE_URL=$MOBILE_EVIDENCE_DEV_API_BASE_URL" )
+fi
+
 if [[ "$skip_build" -ne 1 && -z "$app_file" ]]; then
   echo "==> Building debug APK for flavor=$flavor"
-  "$fvm_bin" flutter build apk --debug --flavor "$flavor" -t "$entrypoint" "--dart-define=ENV=$flavor"
+  "$fvm_bin" flutter build apk "${flutter_build_args[@]}"
   app_file="build/app/outputs/flutter-apk/app-${flavor}-debug.apk"
 fi
 [[ -s "$app_file" ]] || fail "APK is missing or empty: $app_file"
@@ -262,6 +274,7 @@ git_dirty="false"
   echo "app_sha256=$app_checksum"
   echo "env_file=$env_file"
   echo "env_source=$env_source"
+  echo "dev_api_base_url_override=${MOBILE_EVIDENCE_DEV_API_BASE_URL:-}"
   echo "google_services_file=$google_services_file"
   echo "maestro_version=$installed_maestro_version"
   echo "java_version=$java_version"
