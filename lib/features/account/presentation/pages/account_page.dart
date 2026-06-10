@@ -262,6 +262,7 @@ class _AccountContent extends StatelessWidget {
                 showDevTools: showDevTools,
                 themeModeController: themeModeController,
                 localeController: localeController,
+                onEditProfileTap: () => context.push(AccountRoutes.editProfile),
                 onSecurityPrivacyTap: () =>
                     context.push(AccountRoutes.securityPrivacy),
                 onNotificationsTap: () {},

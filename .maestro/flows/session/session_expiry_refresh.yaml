@@ -1,0 +1,40 @@
+# mobtrace:
+#   area: auth
+#   owns:
+#     - lib/core/runtime/session/
+#     - lib/core/infra/network/interceptors/
+#     - lib/features/auth/
+appId: ${APP_ID}
+name: Session access rejection refresh and request replay
+tags:
+  - requires_backend
+---
+- runFlow:
+    file: ../../subflows/launch_clean.yaml
+- runFlow:
+    file: ../../subflows/complete_onboarding.yaml
+- tapOn:
+    text: Email
+    index: 1
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: Password
+    index: 1
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- tapOn:
+    id: auth_sign_in_submit
+- assertVisible: Home
+- tapOn: "Profile\nTab 2 of 2"
+- scrollUntilVisible:
+    element:
+      text: "(?s)Security and privacy.*"
+    direction: DOWN
+    visibilityPercentage: 50
+- tapOn:
+    text: "(?s)Security and privacy.*"
+- tapOn:
+    text: "(?s)Active sessions.*"
+- assertVisible:
+    text: "(?s).*This device.*"
+- assertNotVisible: Sign in
+- takeScreenshot: session_refresh_complete

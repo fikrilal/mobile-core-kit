@@ -77,6 +77,8 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
         _effects.add(ShowProfileImageFailure(failure));
       },
       (user) async {
+        await _userContext.updateUser(user);
+
         var nextCachedFilePath = state.cachedFilePath;
         final fileId = user.profile.profileImageFileId?.trim();
         if (fileId != null && fileId.isNotEmpty) {
@@ -124,8 +126,8 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     );
 
     if (isClosed) return;
-    result.match(
-      (failure) {
+    await result.match(
+      (failure) async {
         emit(
           state.copyWith(
             status: ProfileImageStatus.initial,
@@ -135,7 +137,9 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
         );
         _effects.add(ShowProfileImageFailure(failure));
       },
-      (_) {
+      (user) async {
+        await _userContext.updateUser(user);
+        if (isClosed) return;
         emit(
           state.copyWith(
             status: ProfileImageStatus.initial,

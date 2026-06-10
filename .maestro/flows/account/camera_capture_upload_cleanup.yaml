@@ -1,0 +1,54 @@
+# mobtrace:
+#   area: account
+#   owns:
+#     - lib/features/account/
+#     - lib/core/platform/media/
+#     - android/app/src/main/AndroidManifest.xml
+appId: ${APP_ID}
+name: Camera capture, upload, and cleanup
+tags:
+  - requires_backend
+---
+- runFlow:
+    file: ../../subflows/launch_clean.yaml
+- runFlow:
+    file: ../../subflows/complete_onboarding.yaml
+- tapOn:
+    text: Email
+    index: 1
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: Password
+    index: 1
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- tapOn:
+    id: auth_sign_in_submit
+- assertVisible: Home
+- tapOn: "Profile\nTab 2 of 2"
+- scrollUntilVisible:
+    element:
+      text: Change profile photo
+    direction: DOWN
+    visibilityPercentage: 50
+- tapOn: Change profile photo
+- tapOn:
+    text: "(?s).*Take photo.*"
+- assertVisible:
+    id: com.android.camera2:id/shutter_button
+- tapOn:
+    id: com.android.camera2:id/shutter_button
+- assertVisible:
+    id: com.android.camera2:id/retake_button
+- assertVisible:
+    id: com.android.camera2:id/done_button
+- tapOn:
+    id: com.android.camera2:id/done_button
+- assertVisible: Profile photo updated
+- tapOn: Change profile photo
+- tapOn:
+    text: "(?s).*Remove photo.*"
+- assertVisible: Profile photo removed
+- assertVisible:
+    text: "(?s).*Change profile photo.*"
+- assertNotVisible: Uploading profile photo...
+- takeScreenshot: camera_capture_upload_cleanup_complete

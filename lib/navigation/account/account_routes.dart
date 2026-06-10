@@ -2,6 +2,7 @@ class AccountRoutes {
   AccountRoutes._();
 
   static const String completeProfile = '/user/complete-profile';
+  static const String editProfile = '/user/edit-profile';
   static const String changePassword = '/user/change-password';
   static const String securityPrivacy = '/user/security-privacy';
   static const String meSessions = '/user/sessions';

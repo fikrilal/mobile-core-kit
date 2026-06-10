@@ -34,6 +34,7 @@ class AppButton extends StatelessWidget {
 
   // Accessibility
   final String? semanticLabel;
+  final String? semanticIdentifier;
   final String? tooltip;
   final bool excludeFromSemantics;
 
@@ -75,6 +76,7 @@ class AppButton extends StatelessWidget {
     this.margin,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     // Focus & interaction
@@ -115,6 +117,7 @@ class AppButton extends StatelessWidget {
     this.margin,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     // Focus & interaction
@@ -154,6 +157,7 @@ class AppButton extends StatelessWidget {
     this.margin,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     // Focus & interaction
@@ -193,6 +197,7 @@ class AppButton extends StatelessWidget {
     this.margin,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     // Focus & interaction
@@ -232,6 +237,7 @@ class AppButton extends StatelessWidget {
     this.margin,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     // Focus & interaction
@@ -440,6 +446,7 @@ class AppButton extends StatelessWidget {
     }
 
     return Semantics(
+      identifier: semanticIdentifier,
       label: semanticLabel ?? text,
       button: true,
       enabled: !isDisabled && !isLoading,

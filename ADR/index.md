@@ -12,6 +12,7 @@ Baseline ADRs (apply to `mobile-core-kit` adopters):
 - `records/0008-seed-driven-role-based-color-system.md` — Seed-driven, role-based color system (neutral elevation + contrast gates) (accepted, 2026‑01‑16)
 - `records/0009-graduated-feature-decomposition.md` — Use graduated feature decomposition instead of uniform folder shapes (accepted, 2026‑03‑07)
 - `records/0010-modular-database-schema-registration.md` — Modular database schema registration via the composition root (accepted, 2026‑05‑14)
+- `records/0011-maestro-black-box-runtime-evidence.md` - Maestro CLI for black-box mobile runtime evidence (accepted, 2026-06-06)
 
 Examples (downstream reference only):
 
