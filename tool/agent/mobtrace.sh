@@ -8,6 +8,8 @@ Usage:
   ./mobtrace report [latest|_artifacts/mobile/<run>] [--summary]
   ./mobtrace show [latest|_artifacts/mobile/<run>]
   ./mobtrace verify login-logout --device <id> [evidence options]
+  ./mobtrace verify security-sessions --device <id> [evidence options]
+  ./mobtrace verify camera-launch --device <id> [evidence options]
   ./mobtrace verify --flow <path> --device <id> [evidence options]
 
 Examples:
@@ -15,6 +17,8 @@ Examples:
   ./mobtrace report latest --summary
   ./mobtrace show latest
   ./mobtrace verify login-logout --device emulator-5554
+  ./mobtrace verify security-sessions --device emulator-5554
+  ./mobtrace verify camera-launch --device emulator-5554
   ./mobtrace verify --flow .maestro/flows/auth/login_logout.yaml --device emulator-5554
 
 Evidence options are passed through to the underlying mobile evidence scripts.
@@ -43,6 +47,8 @@ cd "$repo_root"
 
 reporter="${MOBTRACE_REPORTER:-$script_dir/mobile_failure_report.sh}"
 login_logout_runner="${MOBTRACE_LOGIN_LOGOUT_RUNNER:-$script_dir/login_logout_evidence_check.sh}"
+security_sessions_runner="${MOBTRACE_SECURITY_SESSIONS_RUNNER:-$script_dir/security_sessions_evidence_check.sh}"
+camera_launch_runner="${MOBTRACE_CAMERA_LAUNCH_RUNNER:-$script_dir/camera_launch_evidence_check.sh}"
 maestro_runner="${MOBTRACE_MAESTRO_RUNNER:-$script_dir/maestro_evidence_check.sh}"
 artifacts_root="${MOBTRACE_ARTIFACTS_ROOT:-_artifacts/mobile}"
 signatures_file="${MOBTRACE_SIGNATURES_FILE:-$script_dir/mobtrace_signatures.json}"
@@ -256,6 +262,8 @@ run_doctor() {
   require_command perl
   [[ -x "$reporter" ]] || fail "Reporter is not executable: $reporter"
   [[ -x "$login_logout_runner" ]] || fail "Login/logout runner is not executable: $login_logout_runner"
+  [[ -x "$security_sessions_runner" ]] || fail "Security sessions runner is not executable: $security_sessions_runner"
+  [[ -x "$camera_launch_runner" ]] || fail "Camera launch runner is not executable: $camera_launch_runner"
   [[ -x "$maestro_runner" ]] || fail "Maestro runner is not executable: $maestro_runner"
   echo "MobTrace doctor passed."
 }
@@ -274,7 +282,7 @@ run_verify() {
   local args=()
 
   case "$target" in
-    login-logout)
+    login-logout|security-sessions|camera-launch)
       ;;
     --flow)
       require_value "$target" "$(( $# + 1 ))"
@@ -310,6 +318,8 @@ run_verify() {
   if [[ -z "$artifacts_dir" ]]; then
     case "$target" in
       login-logout) artifacts_dir="$artifacts_root/mobtrace-login-logout-$(date '+%Y%m%d_%H%M%S')" ;;
+      security-sessions) artifacts_dir="$artifacts_root/mobtrace-security-sessions-$(date '+%Y%m%d_%H%M%S')" ;;
+      camera-launch) artifacts_dir="$artifacts_root/mobtrace-camera-launch-$(date '+%Y%m%d_%H%M%S')" ;;
       --flow) artifacts_dir="$artifacts_root/mobtrace-flow-$(date '+%Y%m%d_%H%M%S')" ;;
     esac
     args+=( --artifacts-dir "$artifacts_dir" )
@@ -318,6 +328,10 @@ run_verify() {
   set +e
   if [[ "$target" == "login-logout" ]]; then
     "$login_logout_runner" "${args[@]}"
+  elif [[ "$target" == "security-sessions" ]]; then
+    "$security_sessions_runner" "${args[@]}"
+  elif [[ "$target" == "camera-launch" ]]; then
+    "$camera_launch_runner" "${args[@]}"
   else
     "$maestro_runner" --flow "$flow" "${args[@]}"
   fi

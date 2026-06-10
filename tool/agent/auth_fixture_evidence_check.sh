@@ -8,9 +8,12 @@ Usage:
 
 Environment:
   FIXTURE_API_BASE_URL  Backend API root (default: http://localhost:4000/v1).
+  AUTH_FIXTURE_CLEAR_PROFILE_IMAGE
+                        Set to 1 to clear and verify profile-image cleanup.
 
 The wrapper provisions a run-scoped account, runs the selected Maestro flow,
-revokes all sessions, and removes generated credentials from text artifacts.
+cleans requested fixture state, revokes all sessions, and removes generated
+credentials from text artifacts.
 EOF
 }
 
@@ -88,6 +91,24 @@ cleanup_identity() {
     return 1
   }
   secrets+=( "$access_token" "$refresh_token" )
+
+  if [[ "$clear_profile_image" -eq 1 ]]; then
+    local clear_image_status image_url_status
+    clear_image_status="$(
+      api_request DELETE /me/profile-image '' "$access_token" "$response_file"
+    )"
+    if [[ "$clear_image_status" != 204 ]]; then
+      echo "ERROR: Profile image cleanup failed with HTTP $clear_image_status." >&2
+      return 1
+    fi
+    image_url_status="$(
+      api_request GET /me/profile-image/url '' "$access_token" "$response_file"
+    )"
+    if [[ "$image_url_status" != 204 ]]; then
+      echo "ERROR: Profile image remains after cleanup (HTTP $image_url_status)." >&2
+      return 1
+    fi
+  fi
 
   local sessions_status
   sessions_status="$(api_request GET /me/sessions '' "$access_token" "$response_file")"
@@ -240,6 +261,11 @@ fi
 
 fixture_api_base_url="${FIXTURE_API_BASE_URL:-http://localhost:4000/v1}"
 fixture_api_base_url="${fixture_api_base_url%/}"
+clear_profile_image="${AUTH_FIXTURE_CLEAR_PROFILE_IMAGE:-0}"
+case "$clear_profile_image" in
+  0|1) ;;
+  *) fail 'AUTH_FIXTURE_CLEAR_PROFILE_IMAGE must be 0 or 1.' ;;
+esac
 fixture_email="maestro-auth-$(date +%s)-$RANDOM@example.test"
 fixture_password="Mck!$(date +%s)${RANDOM}Aa9z"
 identity_provisioned=0

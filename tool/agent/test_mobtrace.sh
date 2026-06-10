@@ -85,6 +85,8 @@ chmod +x "$fake_runner"
 
 export MOBTRACE_REPORTER="$fake_reporter"
 export MOBTRACE_LOGIN_LOGOUT_RUNNER="$fake_runner"
+export MOBTRACE_SECURITY_SESSIONS_RUNNER="$fake_runner"
+export MOBTRACE_CAMERA_LAUNCH_RUNNER="$fake_runner"
 export MOBTRACE_MAESTRO_RUNNER="$fake_runner"
 export MOBTRACE_ARTIFACTS_ROOT="$temp_dir/artifacts"
 export MOBTRACE_REPORTER_INVOCATIONS="$reporter_invocations"
@@ -212,5 +214,26 @@ set -e
 grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$verify_output"
 grep -Fq "Report: $verify_run/failure_report.md" <<<"$verify_output"
 [[ "$(wc -l < "$runner_invocations")" -eq 1 ]]
+
+export FAKE_RUNNER_STATUS=0
+security_verify_run="$MOBTRACE_ARTIFACTS_ROOT/security-verify"
+security_output="$(
+  "$runner" verify security-sessions \
+    --device test-device \
+    --artifacts-dir "$security_verify_run"
+)"
+grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$security_output"
+grep -Fq "$security_verify_run" <<<"$(tail -n 1 "$runner_invocations")"
+[[ "$(wc -l < "$runner_invocations")" -eq 2 ]]
+
+camera_verify_run="$MOBTRACE_ARTIFACTS_ROOT/camera-verify"
+camera_output="$(
+  "$runner" verify camera-launch \
+    --device test-device \
+    --artifacts-dir "$camera_verify_run"
+)"
+grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$camera_output"
+grep -Fq "$camera_verify_run" <<<"$(tail -n 1 "$runner_invocations")"
+[[ "$(wc -l < "$runner_invocations")" -eq 3 ]]
 
 echo "MobTrace CLI contract tests passed."

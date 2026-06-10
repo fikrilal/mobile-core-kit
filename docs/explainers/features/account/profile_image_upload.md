@@ -146,6 +146,11 @@ lib/core/platform/media/
 └─ picked_image.dart
 ```
 
+On Android, `image_picker` delegates camera capture to the system camera
+activity. The app does not declare or request CAMERA permission. On iOS,
+`NSCameraUsageDescription` remains required and native camera permission errors
+are mapped to the user-facing media error.
+
 Tests:
 
 ```

@@ -67,6 +67,30 @@ retained text artifacts before the command returns.
 `tool/agent/login_logout_evidence_check.sh` is a convenience wrapper for the
 same command with the login/logout flow preselected.
 
+The security and active-sessions journey uses the same fixture lifecycle to
+prove authenticated account navigation and API-backed session rendering:
+
+```bash
+./mobtrace verify security-sessions \
+  --device <medium-phone-device> \
+  --flavor dev
+```
+
+The Android camera journey captures a frame, accepts it, verifies the complete
+profile-image upload, then removes the image:
+
+```bash
+./mobtrace verify camera-launch \
+  --device <medium-phone-device> \
+  --flavor dev
+```
+
+Android `image_picker` delegates capture to the system camera intent and does
+not require this app to declare CAMERA permission. iOS still requires
+`NSCameraUsageDescription` and retains its native permission-denial handling.
+The fixture trap also clears and verifies profile-image state if the flow fails
+after upload but before UI cleanup.
+
 This journey currently uses the Medium Phone API 35 emulator as secondary
 authenticated evidence. It does not replace the API 34 baseline above.
 
