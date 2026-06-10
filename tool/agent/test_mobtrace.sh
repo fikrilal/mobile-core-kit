@@ -87,6 +87,8 @@ export MOBTRACE_REPORTER="$fake_reporter"
 export MOBTRACE_LOGIN_LOGOUT_RUNNER="$fake_runner"
 export MOBTRACE_SECURITY_SESSIONS_RUNNER="$fake_runner"
 export MOBTRACE_CAMERA_LAUNCH_RUNNER="$fake_runner"
+export MOBTRACE_SESSION_REFRESH_RUNNER="$fake_runner"
+export MOBTRACE_PROFILE_UPDATE_RUNNER="$fake_runner"
 export MOBTRACE_MAESTRO_RUNNER="$fake_runner"
 export MOBTRACE_ARTIFACTS_ROOT="$temp_dir/artifacts"
 export MOBTRACE_REPORTER_INVOCATIONS="$reporter_invocations"
@@ -235,5 +237,15 @@ camera_output="$(
 grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$camera_output"
 grep -Fq "$camera_verify_run" <<<"$(tail -n 1 "$runner_invocations")"
 [[ "$(wc -l < "$runner_invocations")" -eq 3 ]]
+
+profile_verify_run="$MOBTRACE_ARTIFACTS_ROOT/profile-verify"
+profile_output="$(
+  "$runner" verify profile-update \
+    --device test-device \
+    --artifacts-dir "$profile_verify_run"
+)"
+grep -Fq 'FAILED Login and logout with run-scoped identity' <<<"$profile_output"
+grep -Fq "$profile_verify_run" <<<"$(tail -n 1 "$runner_invocations")"
+[[ "$(wc -l < "$runner_invocations")" -eq 4 ]]
 
 echo "MobTrace CLI contract tests passed."

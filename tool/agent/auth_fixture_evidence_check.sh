@@ -10,6 +10,8 @@ Environment:
   FIXTURE_API_BASE_URL  Backend API root (default: http://localhost:4000/v1).
   AUTH_FIXTURE_CLEAR_PROFILE_IMAGE
                         Set to 1 to clear and verify profile-image cleanup.
+  AUTH_FIXTURE_RESTORE_PROFILE
+                        Set to 1 to restore and verify the baseline profile.
 
 The wrapper provisions a run-scoped account, runs the selected Maestro flow,
 cleans requested fixture state, revokes all sessions, and removes generated
@@ -91,6 +93,35 @@ cleanup_identity() {
     return 1
   }
   secrets+=( "$access_token" "$refresh_token" )
+
+  if [[ "$restore_profile" -eq 1 ]]; then
+    local restore_profile_status get_me_status
+    restore_profile_status="$(
+      api_request \
+        PATCH \
+        /me \
+        '{"profile":{"displayName":"Maestro Fixture","givenName":"Maestro","familyName":"Fixture"}}' \
+        "$access_token" \
+        "$response_file"
+    )"
+    if [[ "$restore_profile_status" != 200 ]]; then
+      echo "ERROR: Profile restoration failed with HTTP $restore_profile_status." >&2
+      return 1
+    fi
+    get_me_status="$(api_request GET /me '' "$access_token" "$response_file")"
+    if [[ "$get_me_status" != 200 ]]; then
+      echo "ERROR: Profile restoration verification failed with HTTP $get_me_status." >&2
+      return 1
+    fi
+    if ! jq -e '
+      .data.profile.displayName == "Maestro Fixture"
+      and .data.profile.givenName == "Maestro"
+      and .data.profile.familyName == "Fixture"
+    ' "$response_file" >/dev/null; then
+      echo 'ERROR: Profile restoration verification returned unexpected values.' >&2
+      return 1
+    fi
+  fi
 
   if [[ "$clear_profile_image" -eq 1 ]]; then
     local clear_image_status image_url_status
@@ -262,9 +293,14 @@ fi
 fixture_api_base_url="${FIXTURE_API_BASE_URL:-http://localhost:4000/v1}"
 fixture_api_base_url="${fixture_api_base_url%/}"
 clear_profile_image="${AUTH_FIXTURE_CLEAR_PROFILE_IMAGE:-0}"
+restore_profile="${AUTH_FIXTURE_RESTORE_PROFILE:-0}"
 case "$clear_profile_image" in
   0|1) ;;
   *) fail 'AUTH_FIXTURE_CLEAR_PROFILE_IMAGE must be 0 or 1.' ;;
+esac
+case "$restore_profile" in
+  0|1) ;;
+  *) fail 'AUTH_FIXTURE_RESTORE_PROFILE must be 0 or 1.' ;;
 esac
 fixture_email="maestro-auth-$(date +%s)-$RANDOM@example.test"
 fixture_password="Mck!$(date +%s)${RANDOM}Aa9z"

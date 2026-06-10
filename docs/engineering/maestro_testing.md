@@ -91,6 +91,16 @@ not require this app to declare CAMERA permission. iOS still requires
 The fixture trap also clears and verifies profile-image state if the flow fails
 after upload but before UI cleanup.
 
+The profile-update journey edits the synthetic account through the installed
+app, verifies the rendered name after a navigation round trip, then restores
+and verifies the baseline profile through the fixture trap:
+
+```bash
+./mobtrace verify profile-update \
+  --device <medium-phone-device> \
+  --flavor dev
+```
+
 This journey currently uses the Medium Phone API 35 emulator as secondary
 authenticated evidence. It does not replace the API 34 baseline above.
 
