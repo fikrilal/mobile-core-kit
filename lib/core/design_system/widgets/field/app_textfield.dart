@@ -68,6 +68,7 @@ class AppTextField extends StatefulWidget {
 
   // Accessibility
   final String? semanticLabel;
+  final String? semanticIdentifier;
   final String? tooltip;
   final bool excludeFromSemantics;
   final String? restorationId;
@@ -131,6 +132,7 @@ class AppTextField extends StatefulWidget {
     this.contentPadding,
     // Accessibility
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     this.restorationId,
@@ -174,6 +176,7 @@ class AppTextField extends StatefulWidget {
     this.cursorColor,
     this.contentPadding,
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     this.restorationId,
@@ -230,6 +233,7 @@ class AppTextField extends StatefulWidget {
     this.cursorColor,
     this.contentPadding,
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     this.restorationId,
@@ -288,6 +292,7 @@ class AppTextField extends StatefulWidget {
     this.cursorColor,
     this.contentPadding,
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     this.restorationId,
@@ -340,6 +345,7 @@ class AppTextField extends StatefulWidget {
     this.cursorColor,
     this.contentPadding,
     this.semanticLabel,
+    this.semanticIdentifier,
     this.tooltip,
     this.excludeFromSemantics = false,
     this.restorationId,
@@ -639,6 +645,7 @@ class _AppTextFieldState extends State<AppTextField> {
       textField = ExcludeSemantics(child: textField);
     } else {
       textField = Semantics(
+        identifier: widget.semanticIdentifier,
         label: widget.semanticLabel ?? widget.labelText,
         textField: true,
         enabled: widget.enabled,
