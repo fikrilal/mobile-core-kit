@@ -1,0 +1,30 @@
+version: 1
+
+artifacts:
+  root: .mobtrace/runs
+
+defaults:
+  baseline: HEAD
+  device: emulator-5554
+  timeout: 5m
+
+maestro:
+  executable: maestro
+
+flows:
+  login-logout:
+    path: .maestro/flows/auth/login_logout.yaml
+    owns:
+      - .maestro/flows/auth/
+      - lib/features/auth/
+      - lib/core/runtime/session/
+      - lib/navigation/
+    hooks:
+      prepare:
+        command:
+          - ./tool/agent/mobtrace_prepare_auth_fixture.sh
+        timeout: 90s
+      cleanup:
+        command:
+          - ./tool/agent/mobtrace_cleanup_auth_fixture.sh
+        timeout: 90s
