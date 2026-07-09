@@ -79,9 +79,6 @@ class UserContextService {
 
   String? get initials => NameUtils.initialsFrom(displayName ?? email);
 
-  /// Publishes a canonical user returned by an authenticated mutation.
-  Future<void> updateUser(UserEntity user) => _sessionManager.setUser(user);
-
   Future<Either<SessionFailure, UserEntity>> ensureUserFresh({
     String reason = 'ensure_user_fresh',
   }) async {

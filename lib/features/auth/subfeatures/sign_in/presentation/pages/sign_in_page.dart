@@ -122,7 +122,6 @@ class _SignInForm extends StatelessWidget {
                     isLoading: state.isSubmittingEmailPassword,
                     isDisabled: !state.canSubmit,
                     semanticLabel: context.l10n.authSemanticSignIn,
-                    semanticIdentifier: 'auth_sign_in_submit',
                     onPressed: state.canSubmit
                         ? () => context.read<LoginCubit>().submit()
                         : null,
