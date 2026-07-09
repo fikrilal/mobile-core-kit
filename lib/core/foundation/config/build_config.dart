@@ -4,19 +4,14 @@ part 'build_config_values.dart';
 enum BuildEnv { dev, stage, prod }
 
 class BuildConfig {
-  // Compile-time environment selector and optional dev-only harness override.
+  // Compile‑time selector; one flag only.
   static const _env = String.fromEnvironment('ENV', defaultValue: 'dev');
-  static const _devApiBaseUrlOverride = String.fromEnvironment(
-    'DEV_API_BASE_URL',
-  );
   static final env = BuildEnv.values.firstWhere((e) => e.name == _env);
 
   // ---------------- public API ----------------
 
   /// Returns the full base URL for the requested host in the *current* build.
   static String apiUrl(ApiHost host) => switch (env) {
-    BuildEnv.dev when _devApiBaseUrlOverride.isNotEmpty =>
-      _devApiBaseUrlOverride,
     BuildEnv.dev => _devHosts[host]!,
     BuildEnv.stage => _stagingHosts[host]!,
     BuildEnv.prod => _prodHosts[host]!,
