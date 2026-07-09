@@ -46,7 +46,6 @@ class AppTappable extends StatelessWidget {
     this.hapticFeedback,
     this.enabled = true,
     this.semanticLabel,
-    this.semanticIdentifier,
     this.excludeSemantics = false,
   });
 
@@ -94,9 +93,6 @@ class AppTappable extends StatelessWidget {
 
   /// Semantic label for accessibility.
   final String? semanticLabel;
-
-  /// Stable automation identifier that does not replace the accessible label.
-  final String? semanticIdentifier;
 
   /// Whether to exclude from semantics tree.
   final bool excludeSemantics;
@@ -195,7 +191,6 @@ class AppTappable extends StatelessWidget {
     // Wrap with semantics
     if (!excludeSemantics) {
       tappable = Semantics(
-        identifier: semanticIdentifier,
         label: semanticLabel,
         button: onTap != null,
         enabled: enabled,

@@ -33,7 +33,6 @@ class OnboardingPage extends StatelessWidget {
                 text: context.l10n.commonContinue,
                 isExpanded: true,
                 semanticLabel: context.l10n.onboardingSemanticContinue,
-                semanticIdentifier: 'onboarding_continue',
                 onPressed: () async {
                   await startup.completeOnboarding();
                   if (!context.mounted) return;

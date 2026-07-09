@@ -43,7 +43,6 @@ class AppListTile extends StatelessWidget {
     this.titleMaxLines = 1,
     this.subtitleMaxLines = 2,
     this.semanticLabel,
-    this.semanticIdentifier,
   });
 
   /// The primary text of the tile.
@@ -98,9 +97,6 @@ class AppListTile extends StatelessWidget {
   /// Semantic label for accessibility.
   final String? semanticLabel;
 
-  /// Stable automation identifier that does not replace the accessible label.
-  final String? semanticIdentifier;
-
   @override
   Widget build(BuildContext context) {
     final effectivePadding =
@@ -134,7 +130,6 @@ class AppListTile extends StatelessWidget {
       hapticFeedback: hapticFeedback,
       enabled: enabled,
       semanticLabel: semanticLabel ?? title,
-      semanticIdentifier: semanticIdentifier,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

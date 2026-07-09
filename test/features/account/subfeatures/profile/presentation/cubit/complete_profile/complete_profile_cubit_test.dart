@@ -14,8 +14,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usec
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_effect.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_state.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockPatchMeProfileUseCase extends Mock
@@ -93,14 +93,14 @@ void main() {
         patchMeProfile,
         sessionManager,
       );
-      final emitted = <ProfileFormState>[];
+      final emitted = <CompleteProfileState>[];
       final sub = cubit.stream.listen(emitted.add);
 
       await cubit.submit();
       await pumpEventQueue();
 
       expect(emitted.length, 1);
-      expect(emitted.single.status, ProfileFormStatus.initial);
+      expect(emitted.single.status, CompleteProfileStatus.initial);
       expect(emitted.single.failure, isNull);
       expect(
         emitted.single.givenNameError?.code,
@@ -125,7 +125,7 @@ void main() {
         patchMeProfile,
         sessionManager,
       );
-      final emitted = <ProfileFormState>[];
+      final emitted = <CompleteProfileState>[];
       final sub = cubit.stream.listen(emitted.add);
 
       cubit.givenNameChanged('John');
@@ -134,15 +134,14 @@ void main() {
       await pumpEventQueue();
 
       expect(emitted.length, 4);
-      expect(emitted[2].status, ProfileFormStatus.submitting);
-      expect(emitted[3].status, ProfileFormStatus.success);
+      expect(emitted[2].status, CompleteProfileStatus.submitting);
+      expect(emitted[3].status, CompleteProfileStatus.success);
 
       final captured = verify(() => patchMeProfile(captureAny())).captured;
       expect(captured.length, 1);
       final request = captured.single as PatchMeProfileRequestEntity;
       expect(request.givenName, 'John');
       expect(request.familyName, 'Doe');
-      expect(request.displayName, 'John Doe');
 
       verify(() => sessionManager.setUser(user)).called(1);
 
@@ -192,17 +191,17 @@ void main() {
         patchMeProfile,
         sessionManager,
       );
-      final effects = <ProfileFormEffect>[];
+      final effects = <CompleteProfileEffect>[];
       final effectSub = cubit.effects.listen(effects.add);
 
       cubit.givenNameChanged('John');
       await cubit.submit();
       await pumpEventQueue();
 
-      expect(cubit.state.status, ProfileFormStatus.failure);
+      expect(cubit.state.status, CompleteProfileStatus.failure);
       expect(cubit.state.failure, const AuthFailure.serverError());
       expect(effects, hasLength(1));
-      expect(effects.single, isA<ProfileFormFailureEffect>());
+      expect(effects.single, isA<CompleteProfileFailureEffect>());
 
       await effectSub.cancel();
       await cubit.close();

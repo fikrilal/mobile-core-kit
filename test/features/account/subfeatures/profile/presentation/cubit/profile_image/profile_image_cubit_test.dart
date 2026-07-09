@@ -51,9 +51,6 @@ void main() {
       ),
     );
     registerFallbackValue(const ClearProfileImageRequestEntity());
-    registerFallbackValue(
-      const UserEntity(id: 'fallback', email: 'fallback@example.com'),
-    );
   });
 
   late _MockUploadProfileImageUseCase uploadProfileImage;
@@ -74,7 +71,6 @@ void main() {
     refreshProfileAvatarCache = _MockRefreshProfileAvatarCacheUseCase();
     saveProfileAvatarCache = _MockSaveProfileAvatarCacheUseCase();
     clearProfileAvatarCache = _MockClearProfileAvatarCacheUseCase();
-    when(() => userContext.updateUser(any())).thenAnswer((_) async {});
     effects = [];
   });
 
@@ -115,7 +111,6 @@ void main() {
     verify: (_) async {
       await Future<void>.delayed(Duration.zero);
       expect(effects, [isA<ShowProfileImageUpdated>()]);
-      verify(() => userContext.updateUser(user)).called(1);
       await effectSubscription.cancel();
     },
   );
@@ -193,7 +188,6 @@ void main() {
     verify: (_) async {
       await Future<void>.delayed(Duration.zero);
       expect(effects, [isA<ShowProfileImageRemoved>()]);
-      verify(() => userContext.updateUser(user)).called(1);
       await effectSubscription.cancel();
     },
   );

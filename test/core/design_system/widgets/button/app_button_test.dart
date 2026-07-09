@@ -1,5 +1,3 @@
-import 'dart:ui' show Tristate;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -80,30 +78,6 @@ void main() {
     expect(matching, isNotEmpty);
     expect(matching.first.properties.button, isTrue);
     expect(matching.first.properties.enabled, isTrue);
-  });
-
-  testWidgets('AppButton exposes identifier without replacing its label', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      wrap(
-        AppButton(
-          text: 'Save',
-          semanticLabel: 'Save document',
-          semanticIdentifier: 'document_save',
-          onPressed: () {},
-        ),
-      ),
-    );
-
-    final semantics = tester.getSemantics(
-      find.bySemanticsIdentifier('document_save'),
-    );
-
-    expect(semantics.identifier, 'document_save');
-    expect(semantics.label, 'Save document');
-    expect(semantics.flagsCollection.isButton, isTrue);
-    expect(semantics.flagsCollection.isEnabled, Tristate.isTrue);
   });
 
   testWidgets('AppButton label inherits the button foreground color', (

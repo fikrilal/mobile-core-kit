@@ -1,85 +1,225 @@
 import 'dart:async';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/design_system/theme/system/motion_durations.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
+import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_draft_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/get_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_form/profile_form_state.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/family_name.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/given_name.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 
-class CompleteProfileCubit extends ProfileFormCubit {
+class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   CompleteProfileCubit(
     this._getDraft,
     this._saveDraft,
     this._clearDraft,
-    PatchMeProfileUseCase patchMeProfile,
-    SessionManager sessionManager,
-  ) : super(patchMeProfile, sessionManager);
+    this._patchMeProfile,
+    this._sessionManager,
+  ) : super(CompleteProfileState.initial());
 
   final GetProfileDraftUseCase _getDraft;
   final SaveProfileDraftUseCase _saveDraft;
   final ClearProfileDraftUseCase _clearDraft;
+  final PatchMeProfileUseCase _patchMeProfile;
+  final SessionManager _sessionManager;
+  final _effects = StreamController<CompleteProfileEffect>.broadcast();
 
   Timer? _draftSaveTimer;
   static const Duration _draftSaveDebounce = MotionDurations.long;
 
+  Stream<CompleteProfileEffect> get effects => _effects.stream;
+
+  String? get _currentUserId =>
+      _sessionManager.sessionNotifier.value?.user?.id.trim();
+
   Future<void> loadDraft() async {
-    final userId = currentUserId;
+    final userId = _currentUserId;
     if (userId == null || userId.isEmpty) return;
 
     final draft = await _getDraft(userId: userId);
-    if (currentUserId != userId || draft == null) return;
 
+    // Guard against applying stale drafts after logout/login.
+    if (_currentUserId != userId) return;
+    if (draft == null) return;
+
+    // Avoid overriding what the user has already typed if they start typing
+    // before the async draft load completes.
     final givenName = state.givenName.trim().isEmpty
         ? draft.givenName
         : state.givenName;
     final familyName = state.familyName.trim().isEmpty
         ? (draft.familyName ?? '')
         : state.familyName;
-    setInitialValues(givenName: givenName, familyName: familyName);
+
+    emit(
+      state.copyWith(
+        givenName: givenName,
+        familyName: familyName,
+        givenNameError: _validateGivenName(givenName),
+        familyNameError: _validateFamilyName(familyName),
+        failure: null,
+        status: state.status == CompleteProfileStatus.failure
+            ? CompleteProfileStatus.initial
+            : state.status,
+      ),
+    );
   }
 
-  @override
-  void onFieldChanged() {
-    if (state.status == ProfileFormStatus.success || state.isSubmitting) return;
+  void givenNameChanged(String value) {
+    final error = _validateGivenName(value);
+    emit(
+      state.copyWith(
+        givenName: value,
+        givenNameError: error,
+        failure: null,
+        status: state.status == CompleteProfileStatus.failure
+            ? CompleteProfileStatus.initial
+            : state.status,
+      ),
+    );
+    _scheduleDraftSave();
+  }
 
-    final userId = currentUserId;
+  void familyNameChanged(String value) {
+    final error = _validateFamilyName(value);
+    emit(
+      state.copyWith(
+        familyName: value,
+        familyNameError: error,
+        failure: null,
+        status: state.status == CompleteProfileStatus.failure
+            ? CompleteProfileStatus.initial
+            : state.status,
+      ),
+    );
+    _scheduleDraftSave();
+  }
+
+  Future<void> submit() async {
+    if (state.isSubmitting) return;
+    if (state.status == CompleteProfileStatus.success) return;
+
+    final givenError = _validateGivenName(state.givenName);
+    final familyError = _validateFamilyName(state.familyName);
+
+    if (givenError != null || familyError != null) {
+      emit(
+        state.copyWith(
+          givenNameError: givenError,
+          familyNameError: familyError,
+          failure: null,
+          status: CompleteProfileStatus.initial,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(status: CompleteProfileStatus.submitting, failure: null),
+    );
+
+    final userId = _currentUserId;
+
+    final result = await _patchMeProfile(
+      PatchMeProfileRequestEntity(
+        givenName: state.givenName,
+        familyName: state.familyName,
+      ),
+    );
+
+    await result.match(
+      (failure) async {
+        failure.maybeWhen(
+          validation: (errors) {
+            emit(
+              state.copyWith(
+                givenNameError: findFirstValidationErrorForFields(errors, [
+                  'givenName',
+                  'profile.givenName',
+                ]),
+                familyNameError: findFirstValidationErrorForFields(errors, [
+                  'familyName',
+                  'profile.familyName',
+                ]),
+                status: CompleteProfileStatus.failure,
+                failure: failure,
+              ),
+            );
+            _effects.add(CompleteProfileFailureEffect(failure));
+          },
+          orElse: () {
+            _effects.add(CompleteProfileFailureEffect(failure));
+            emit(
+              state.copyWith(
+                status: CompleteProfileStatus.failure,
+                failure: failure,
+              ),
+            );
+          },
+        );
+      },
+      (user) async {
+        await _sessionManager.setUser(user);
+        if (userId != null && userId.isNotEmpty) {
+          await _clearDraft(userId: userId);
+        }
+        emit(state.copyWith(status: CompleteProfileStatus.success));
+      },
+    );
+  }
+
+  ValidationError? _validateGivenName(String input) {
+    final result = GivenName.create(input);
+    return result.fold(
+      (f) => ValidationError(field: 'givenName', message: '', code: f.code),
+      (_) => null,
+    );
+  }
+
+  ValidationError? _validateFamilyName(String input) {
+    final result = FamilyName.createOptional(input);
+    return result.fold(
+      (f) => ValidationError(field: 'familyName', message: '', code: f.code),
+      (_) => null,
+    );
+  }
+
+  void _scheduleDraftSave() {
+    if (state.status == CompleteProfileStatus.success) return;
+    if (state.isSubmitting) return;
+
+    final userId = _currentUserId;
     if (userId == null || userId.isEmpty) return;
 
     _draftSaveTimer?.cancel();
     _draftSaveTimer = Timer(_draftSaveDebounce, () {
-      if (currentUserId != userId) return;
+      if (_currentUserId != userId) return;
 
-      unawaited(
-        _saveDraft(
-          userId: userId,
-          draft: ProfileDraftEntity(
-            givenName: state.givenName,
-            familyName: state.familyName.trim().isEmpty
-                ? null
-                : state.familyName,
-            displayName: null,
-            updatedAt: DateTime.now(),
-          ),
-        ),
+      final draft = ProfileDraftEntity(
+        givenName: state.givenName,
+        familyName: state.familyName.trim().isEmpty ? null : state.familyName,
+        displayName: null,
+        updatedAt: DateTime.now(),
       );
+      unawaited(_saveDraft(userId: userId, draft: draft));
     });
-  }
-
-  @override
-  Future<void> onSubmitSuccess(String? userId) async {
-    if (userId != null && userId.isNotEmpty) {
-      await _clearDraft(userId: userId);
-    }
   }
 
   @override
   Future<void> close() async {
     _draftSaveTimer?.cancel();
     _draftSaveTimer = null;
+    unawaited(_effects.close());
     await super.close();
   }
 }

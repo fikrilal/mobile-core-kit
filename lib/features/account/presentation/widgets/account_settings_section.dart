@@ -17,7 +17,6 @@ class AccountSettingsSection extends StatelessWidget {
     required this.showDevTools,
     required this.themeModeController,
     required this.localeController,
-    required this.onEditProfileTap,
     required this.onSecurityPrivacyTap,
     required this.onNotificationsTap,
     required this.onChangeProfilePhotoTap,
@@ -27,7 +26,6 @@ class AccountSettingsSection extends StatelessWidget {
   final bool showDevTools;
   final ThemeModeController themeModeController;
   final LocaleController localeController;
-  final VoidCallback onEditProfileTap;
   final VoidCallback onSecurityPrivacyTap;
   final VoidCallback onNotificationsTap;
   final Future<void> Function() onChangeProfilePhotoTap;
@@ -40,17 +38,6 @@ class AccountSettingsSection extends StatelessWidget {
       children: [
         AppText.titleLarge(context.l10n.commonSettings),
         const SizedBox(height: AppSpacing.space8),
-        AppListTile(
-          leading: AppIconBadge(
-            icon: PhosphorIcon(
-              PhosphorIconsRegular.user,
-              size: AppSizing.iconSizeMedium,
-            ),
-          ),
-          title: context.l10n.profileEditTitle,
-          semanticIdentifier: 'profile_edit_open',
-          onTap: onEditProfileTap,
-        ),
         AppListTile(
           leading: AppIconBadge(
             icon: PhosphorIcon(
