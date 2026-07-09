@@ -1,6 +1,0 @@
-appId: ${APP_ID}
----
-- assertVisible:
-    id: onboarding_continue
-- tapOn:
-    id: onboarding_continue
