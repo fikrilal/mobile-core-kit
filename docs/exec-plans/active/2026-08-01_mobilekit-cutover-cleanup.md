@@ -6,7 +6,7 @@ Status: active
 Risk class: medium
 Related issue/PR: N/A
 Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
-Depends on: `docs/exec-plans/active/2026-08-01_mobilekit-scaffold-duplication.md`
+Depends on: `docs/exec-plans/completed/2026-08-01_mobilekit-scaffold-duplication.md`
 
 ## Objective
 

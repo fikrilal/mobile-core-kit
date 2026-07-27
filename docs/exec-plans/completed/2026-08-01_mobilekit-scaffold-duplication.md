@@ -1,8 +1,8 @@
 # Mobilekit Scaffolding And Duplication Harness
 
 Date: 2026-08-01
-Owner: Unassigned
-Status: active
+Owner: Codex
+Status: completed
 Risk class: medium
 Related issue/PR: N/A
 Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
@@ -44,21 +44,22 @@ This plan converts the public shell-based duplication command surface into Dart 
 
 ## Implementation Checklist
 
-- [ ] Implement `mobilekit scaffold feature`.
-- [ ] Implement duplication profile routing.
-- [ ] Implement Dart orchestration for the core duplication profile.
-- [ ] Implement Dart orchestration for the small-helper duplication profile.
-- [ ] Implement Dart orchestration for the presentation duplication profile.
-- [ ] Preserve current `npx --yes jscpd` invocation semantics.
-- [ ] Preserve current `tool/filter_duplication_report.dart` filtering behavior.
-- [ ] Keep current shell scripts working as compatibility wrappers.
-- [ ] Add tests for argument parsing and profile-to-command mapping.
-- [ ] Add parity notes for duplication output equivalence.
+- [x] Implement `mobilekit scaffold feature`.
+- [x] Implement duplication profile routing.
+- [x] Implement Dart orchestration for the core duplication profile.
+- [x] Implement Dart orchestration for the small-helper duplication profile.
+- [x] Implement Dart orchestration for the presentation duplication profile.
+- [x] Preserve current `npx --yes jscpd` invocation semantics.
+- [x] Preserve current `tool/filter_duplication_report.dart` filtering behavior.
+- [x] Keep current shell scripts working as compatibility wrappers.
+- [x] Add tests for argument parsing and profile-to-command mapping.
+- [x] Add parity notes for duplication output equivalence.
 
 ## Decision Log
 
 - 2026-08-01: Duplication rules/config stay repo-local -> the CLI executes policy; it does not own policy.
 - 2026-08-01: Shell wrappers remain during this plan -> final deletion belongs to cutover after parity is proven.
+- 2026-08-01: Default duplication check runs core and small-helpers only -> presentation remains an explicit profile as it is in the existing harness.
 
 ## Verification
 
@@ -84,6 +85,15 @@ dart run mobile_core_kit_cli:mobilekit scaffold feature --help
 
 If a real scaffold smoke test is performed, record the feature name and cleanup method.
 
+Outcome: all listed profile commands and their shell-wrapper counterparts
+passed. Core produced 21 raw clones with no actionable groups, small-helpers
+produced 346 raw clones with no actionable groups, and presentation produced
+28 raw clones with no actionable groups. The default profile ran core followed
+by small-helpers. Scaffold dry-run output for `mobilekit_exec3_probe` with
+slice `list` matched `tool/scaffold_feature.dart` exactly and created no files.
+The package test suite, package analysis, and repository verification also
+passed.
+
 ## Runtime Evidence
 
 - Device/emulator: N/A
@@ -105,7 +115,14 @@ If a real scaffold smoke test is performed, record the feature name and cleanup 
 
 ## Completion Notes
 
-Fill in after implementation.
+Added `mobilekit scaffold feature <name>` as a positional wrapper around the
+existing feature scaffolder, preserving `--slice` and `--dry-run` behavior.
+
+Added Dart duplication orchestration for the core, small-helpers, and
+presentation profiles. The CLI invokes the same `npx --yes jscpd` paths,
+configs, reports, allowlists, and existing filter script as the shell wrappers.
+The shell wrappers remain unchanged for compatibility, and no duplication
+policy or allowlist data moved into the CLI package.
 
 ## Follow-ups
 
