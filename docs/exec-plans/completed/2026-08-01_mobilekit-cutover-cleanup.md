@@ -1,8 +1,8 @@
 # Mobilekit Cutover And Cleanup
 
 Date: 2026-08-01
-Owner: Unassigned
-Status: active
+Owner: Codex
+Status: completed
 Risk class: medium
 Related issue/PR: N/A
 Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
@@ -40,45 +40,52 @@ This plan updates docs and CI to use the pinned CLI command, removes old public 
 
 ## Implementation Checklist
 
-- [ ] Update `AGENTS.md` canonical commands.
-- [ ] Update `README.md`.
-- [ ] Update `.github/pull_request_template.md`.
-- [ ] Update `.github/workflows/android.yml`.
-- [ ] Update `.github/actions/flutter-bootstrap/action.yml` where relevant.
-- [ ] Update `docs/engineering/guardrails.md`.
-- [ ] Update `docs/engineering/agent_pr_loop.md`.
-- [ ] Update `docs/engineering/duplication_harness.md`.
-- [ ] Update any additional references found by searching old `tool/` public command strings.
-- [ ] Delete old public `tool/` wrappers after confirming equivalent `mobilekit` commands exist.
-- [ ] Keep internal files required by lints, config generation, duplication profiles, or report filtering.
-- [ ] Run final pinned CLI verification.
-- [ ] Run installed-mode smoke verification.
+- [x] Update `AGENTS.md` canonical commands.
+- [x] Update `README.md`.
+- [x] Update `.github/pull_request_template.md`.
+- [x] Update `.github/workflows/android.yml`.
+- [x] Update `.github/actions/flutter-bootstrap/action.yml` where relevant.
+- [x] Update `docs/engineering/guardrails.md`.
+- [x] Update `docs/engineering/agent_pr_loop.md`.
+- [x] Update `docs/engineering/duplication_harness.md`.
+- [x] Update any additional references found by searching old `tool/` public command strings.
+- [x] Delete old public `tool/` wrappers after confirming equivalent `mobilekit` commands exist.
+- [x] Keep internal files required by lints, config generation, duplication profiles, or report filtering.
+- [x] Run final pinned CLI verification.
+- [x] Run installed-mode smoke verification.
 
 ## Decision Log
 
 - 2026-08-01: Old public `tool/` wrappers will be deleted after migration -> `mobilekit` becomes the supported public command surface.
 - 2026-08-01: CI uses pinned CLI execution -> avoids global activation drift.
 - 2026-08-01: Internal policy/config files stay repo-local -> CLI executes them but does not own their policy.
+- 2026-08-01: Retain the Dart files under `tool/` that still implement delegated workflows -> they are internal behavior owners, not public command entrypoints.
+- 2026-08-01: Keep explicit Windows `cmd.exe` handling for CLI-launched `npx` commands -> preserve the existing jscpd invocation across supported host platforms.
 
 ## Verification
 
 Run exact commands and record outcomes before completing this plan.
 
 ```bash
-rg -n "dart run tool/|./tool/check_|tool/verify\\.dart|tool/fix\\.dart|tool/scaffold_feature\\.dart" AGENTS.md README.md docs .github
+rg -n "dart run tool/|\\./tool/check_|tool/verify\\.dart|tool/fix\\.dart|tool/scaffold_feature\\.dart" AGENTS.md README.md docs/engineering docs/template docs/core .github tool/agent
 dart run mobile_core_kit_cli:mobilekit doctor
 dart run mobile_core_kit_cli:mobilekit verify --env dev
 dart pub global activate --source path packages/mobile_core_kit_cli
 mobilekit doctor
 mobilekit verify --env dev --skip-tests
+dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
+dart analyze packages/mobile_core_kit_cli
+dart run test packages/mobile_core_kit_cli
+git diff --check
 ```
 
-If the full verify command is too expensive for the handoff agent's environment, record why and run the strongest targeted substitute:
-
-```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests
-dart run mobile_core_kit_cli:mobilekit duplication check
-```
+Outcome: the public-scope audit returned no old command references. The pinned
+doctor and full `mobilekit verify --env dev` passed, including env/config
+generation, localization, Flutter analyze, custom lints, core and
+small-helper duplication, modal/color guardrails, 553 Flutter tests, and the
+format check. The installed `mobilekit doctor` and
+`mobilekit verify --env dev --skip-tests` also passed. The presentation profile,
+CLI package analysis, 21 CLI tests, and `git diff --check` passed.
 
 ## Runtime Evidence
 
@@ -101,8 +108,17 @@ dart run mobile_core_kit_cli:mobilekit duplication check
 
 ## Completion Notes
 
-Fill in after implementation.
+Migrated repository docs, PR guidance, CI workflows, bootstrap actions, agent
+helpers, and engineering references to the pinned `mobilekit` interface.
+
+Deleted the three superseded public shell wrappers:
+`tool/check_duplication.sh`, `tool/check_small_helper_duplication.sh`, and
+`tool/check_presentation_duplication.sh`. The equivalent CLI profiles were
+verified, while policy/config/allowlist/filter files and delegated Dart
+implementation helpers remain repo-local.
+
+No Flutter application runtime behavior changed.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to `docs/exec-plans/tech_debt_tracker.md` if any wrapper or old command reference intentionally remains.
+- [x] No unresolved public wrapper debt remains; historical exec plans and ADRs retain original commands as audit history.

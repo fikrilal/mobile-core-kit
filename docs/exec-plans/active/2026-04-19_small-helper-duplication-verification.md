@@ -54,7 +54,7 @@ Out of scope:
 - keep grouping and reviewed-acceptable behavior consistent with the existing harness
 
 3. Integrate the small-helper check into agent verification
-- add it to `tool/verify.dart`
+- add it to the internal verifier used by `mobilekit verify`
 - keep it as a surfaced signal, not a hard fail for existing duplication debt
 - preserve a way to skip duplication checks if needed for exceptional cases
 
@@ -67,15 +67,15 @@ Out of scope:
 
 - a dedicated small-helper duplication command exists
 - the new profile surfaces real helper duplication already present in the repo
-- `tool/verify.dart` runs the small-helper check during normal verification
+- `mobilekit verify` runs the small-helper check during normal verification
 - docs explain when to run it and how to interpret the result
 
 ## Verification
 
 Planned verification:
-- `./tool/check_duplication.sh`
-- `./tool/check_presentation_duplication.sh`
-- `./tool/check_small_helper_duplication.sh`
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation`
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helper`
 - `fvm flutter analyze`
 - `dart run custom_lint`
-- `dart run tool/verify.dart --env dev --skip-tests`
+- `dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests`

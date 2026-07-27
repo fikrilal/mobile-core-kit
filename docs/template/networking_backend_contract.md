@@ -118,7 +118,7 @@ Where it’s implemented:
 
 Edit `.env/dev.yaml`, `.env/staging.yaml`, `.env/prod.yaml` and regenerate:
 
-`dart run tool/gen_config.dart --env dev`
+`dart run mobile_core_kit_cli:mobilekit config generate --env dev`
 
 Then use:
 - `BuildConfig.apiUrl(ApiHost.core|auth|profile)` from `lib/core/foundation/config/build_config.dart`.
@@ -184,7 +184,7 @@ If your backend uses offset/page pagination instead of cursor:
 
 ## 4) Verification checklist (after customizing)
 
-- Generate env config: `dart run tool/gen_config.dart --env dev`
+- Generate env config: `dart run mobile_core_kit_cli:mobilekit config generate --env dev`
 - Analyze: `fvm flutter analyze`
 - Tests: `fvm flutter test`
 
@@ -203,5 +203,5 @@ Backend (from `/mnt/c/Development/_CORE/backend-core-kit`):
 Mobile (this repo):
 
 1) Ensure `.env/dev.yaml` points to the reachable base URL (see section 2.1).
-2) Regenerate build config: `dart run tool/gen_config.dart --env dev`
+2) Regenerate build config: `dart run mobile_core_kit_cli:mobilekit config generate --env dev`
 3) Run: `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`

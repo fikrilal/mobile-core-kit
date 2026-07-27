@@ -26,13 +26,13 @@ Do not add a new guardrail unless it solves repeated real pain.
 Safe auto-fix:
 
 ```bash
-dart run tool/fix.dart --apply
+dart run mobile_core_kit_cli:mobilekit fix --apply
 ```
 
 Canonical quality gate:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Targeted checks:
@@ -41,8 +41,8 @@ Targeted checks:
 fvm flutter analyze
 dart run custom_lint
 fvm flutter test
-dart run tool/verify_codegen.dart
-dart run tool/verify_project_map_drift.dart
+dart run mobile_core_kit_cli:mobilekit codegen verify
+dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
 ## Where Guardrails Live
@@ -53,12 +53,11 @@ dart run tool/verify_project_map_drift.dart
 - `packages/mobile_core_kit_lints/`
 
 ### Verification pipeline
-- `tool/verify.dart`
-- `tool/verify_*.dart`
-- `tool/fix.dart`
+- `packages/mobile_core_kit_cli/`
+- internal `tool/verify_*.dart` helpers
 
 ### Scaffolding
-- `tool/scaffold_feature.dart`
+- `mobilekit scaffold feature`
 
 ### CI
 - `.github/workflows/android.yml`
@@ -131,14 +130,14 @@ Use when the rule is repository-wide and better expressed as a command.
 
 Typical path:
 - add or update `tool/verify_*.dart`
-- call it from `tool/verify.dart` if it belongs in the canonical gate
+- call it from the internal verifier used by `mobilekit verify` if it belongs in the canonical gate
 - ensure local and CI usage stay aligned
 
 ### Scaffold/template path
 Use when the problem is caused by bad starting structure rather than bad edits.
 
 Typical path:
-- update `tool/scaffold_feature.dart`
+- update the implementation behind `mobilekit scaffold feature`
 - update relevant templates/docs
 
 ## Suppressions

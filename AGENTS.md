@@ -77,25 +77,25 @@ Minimum checks (pick what’s relevant to what you changed):
 - Custom lints: `dart run custom_lint`
 - Tests: `fvm flutter test`
 - Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
-- Core duplication harness (for non-trivial Dart/code changes): `./tool/check_duplication.sh`
-- Small-helper duplication harness (for non-trivial Dart/code changes): `./tool/check_small_helper_duplication.sh`
-- Presentation duplication harness (targeted, not default): `./tool/check_presentation_duplication.sh`
-- AGENTS project-map drift: `dart run tool/verify_project_map_drift.dart`
+- Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
+- Small-helper duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers`
+- Presentation duplication harness (targeted, not default): `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation`
+- AGENTS project-map drift: `dart run mobile_core_kit_cli:mobilekit project-map verify`
 
 Full pipeline (preferred for non-trivial changes):
 
-- `dart run tool/verify.dart --env dev`
+- `dart run mobile_core_kit_cli:mobilekit verify --env dev`
 
 Notes:
 
 - For non-trivial Dart/code changes, duplication checks are expected as part of verification.
-- `dart run tool/verify.dart --env dev` is the preferred way to satisfy that requirement.
+- `dart run mobile_core_kit_cli:mobilekit verify --env dev` is the preferred way to satisfy that requirement.
 - Docs-only changes can skip duplication checks.
-- `./tool/check_presentation_duplication.sh` remains a targeted self-review tool for presentation-heavy work, not a default per-change check.
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation` remains a targeted self-review tool for presentation-heavy work, not a default per-change check.
 
 Auto-fix (format + import/directive ordering):
 
-- `dart run tool/fix.dart --apply`
+- `dart run mobile_core_kit_cli:mobilekit fix --apply`
 
 Risk-based evidence expectations:
 

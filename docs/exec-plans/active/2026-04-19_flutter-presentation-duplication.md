@@ -62,11 +62,11 @@ This phase must:
 List exact commands and outcomes.
 
 ```bash
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 # Passed
 # Result: 0 actionable core duplicate groups, 1 reviewed acceptable core group
 
-./tool/check_presentation_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
 # Passed
 # Result: 7 actionable presentation duplicate groups, 8 reviewed acceptable groups
 # Reviewed acceptable: form_page_section pairs
@@ -99,7 +99,7 @@ dart run custom_lint
 
 Shipped a separate Flutter-presentation duplication profile:
 - added `.jscpd.presentation.json`
-- added `./tool/check_presentation_duplication.sh`
+- added the CLI presentation duplication profile in `packages/mobile_core_kit_cli/`
 - extended `tool/filter_duplication_report.dart` with a `presentation` profile
 - added `tool/presentation_duplication_allowlist.json`
 - documented usage in the PR/self-review workflow

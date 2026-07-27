@@ -5,7 +5,7 @@ This system has “looks fine in the happy path” traps. The template includes 
 Run everything:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 ---

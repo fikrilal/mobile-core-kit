@@ -34,10 +34,10 @@ High‑level steps in `android.yml`:
    - `pull_request`: missing secret falls back to committed file (warning).
    - non-PR lanes (`push` to `main`, `workflow_dispatch`): missing secret fails the job.
 3. Restore `android/app/google-services.json` from secret (or fail if missing).
-4. Run environment schema validation (`tool/verify_env_schema.dart`) as part of canonical verify.
+4. Run environment schema validation (`mobilekit env verify`) as part of canonical verify.
 5. Setup Flutter + Java (Temurin 21) and cache pub/Gradle.
 6. Run `flutter pub get`.
-7. Generate `build_config_values.dart` for `prod` via `dart run tool/gen_config.dart --env prod`.
+7. Generate `build_config_values.dart` for `prod` via `dart run mobile_core_kit_cli:mobilekit config generate --env prod`.
 8. Run `flutter test`.
 9. Optionally materialize the upload keystore and Play service-account credentials.
 10. Build the prod app bundle:
@@ -150,16 +150,16 @@ plutil -lint ios/Runner/GoogleService-Info.plist
 Canonical verification now runs:
 
 ```bash
-dart run tool/verify_env_schema.dart --all
+dart run mobile_core_kit_cli:mobilekit env verify --all
 ```
 
-When running production verification (`tool/verify.dart --env prod`), strict production invariants are enforced:
+When running production verification (`mobilekit verify --env prod`), strict production invariants are enforced:
 
 ```bash
-dart run tool/verify_env_schema.dart --all --strict
+dart run mobile_core_kit_cli:mobilekit env verify --all --strict
 ```
 
-Validator location: `tool/verify_env_schema.dart`.
+The validator remains an internal implementation under `tool/`; use `mobilekit env verify`.
 
 Required keys validated for each environment:
 
@@ -181,7 +181,7 @@ Strict production invariants (`--strict`, prod):
 
 `ENV_DEV_YAML` must contain the **raw multi-line YAML payload** for `.env/dev.yaml` (not base64).
 
-Minimum required keys are validated by `tool/verify_env_schema.dart`:
+Minimum required keys are validated by `mobilekit env verify`:
 
 - URLs: `core`, `auth`, `profile` (absolute `http/https`)
 - Booleans: `enableLogging`, `reminderExperiment`, `analyticsEnabledDefault`, `analyticsDebugLoggingEnabled`, `netLogRedact`
@@ -219,7 +219,7 @@ Recommended sourcing flow:
 2. Replace placeholders/endpoints with your dev stack values.
 3. Validate locally:
    ```bash
-   dart run tool/verify_env_schema.dart --env dev
+   dart run mobile_core_kit_cli:mobilekit env verify --env dev
    ```
 4. Save to GitHub secret:
    - UI: **Settings → Secrets and variables → Actions → New repository secret**

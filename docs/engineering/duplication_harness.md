@@ -30,7 +30,7 @@ self-review instead of relying on reviewer memory.
 The duplication harness is a two-layer setup:
 
 1. `jscpd` finds raw duplicate code blocks
-2. `tool/filter_duplication_report.dart` turns raw clone output into a
+2. the internal `tool/filter_duplication_report.dart` helper turns raw clone output into a
    repository-specific review signal
 
 This repository intentionally does **not** use raw clone output directly.
@@ -51,7 +51,7 @@ Note:
 Command:
 
 ```bash
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 ```
 
 Purpose:
@@ -91,7 +91,7 @@ Typical examples:
 Command:
 
 ```bash
-./tool/check_small_helper_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers
 ```
 
 Purpose:
@@ -122,7 +122,7 @@ Typical examples:
 Command:
 
 ```bash
-./tool/check_presentation_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
 ```
 
 Purpose:
@@ -301,7 +301,7 @@ Recommended use:
 - run the harness during self-review when the change touches shared or repeated
   patterns
 - expect the core profile and small-helper profile to run during
-  `dart run tool/verify.dart --env dev`
+  `dart run mobile_core_kit_cli:mobilekit verify --env dev`
 - review the output before opening/updating the PR
 - if a duplicate is acceptable, record it explicitly
 - if it is debt, either fix it now or call it out as follow-up debt
@@ -325,9 +325,7 @@ Scripts and config:
 - `.jscpd.json`
 - `.jscpd.small_helpers.json`
 - `.jscpd.presentation.json`
-- `tool/check_duplication.sh`
-- `tool/check_small_helper_duplication.sh`
-- `tool/check_presentation_duplication.sh`
+- `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart`
 - `tool/filter_duplication_report.dart`
 - `tool/duplication_allowlist.json`
 - `tool/small_helper_duplication_allowlist.json`

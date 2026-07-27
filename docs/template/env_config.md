@@ -20,7 +20,7 @@ Examples live next to them:
 
 2) You run:
 
-`dart run tool/gen_config.dart --env <env>`
+`dart run mobile_core_kit_cli:mobilekit config generate --env <env>`
 
 3) The script writes:
 
@@ -75,8 +75,8 @@ Typical template defaults:
 
 ## Verification
 
-Use the verify script:
+Use the canonical mobilekit verification command:
 
-`dart run tool/verify.dart --env dev`
+`dart run mobile_core_kit_cli:mobilekit verify --env dev`
 
 This runs config generation + analyze + tests, and will fail if `.env/<env>.yaml` is missing/empty.

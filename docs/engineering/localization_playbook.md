@@ -39,7 +39,7 @@ If you need generic network error copy, use the core localizer:
    - `lib/l10n/app_ar_XB.arb` (RTL pseudo)
    - `lib/l10n/app_ar.arb` (internal fallback for `ar-XB`, keep it aligned)
 3. Add metadata (`@<key>`) — required by `required-resource-attributes: true`.
-4. Run `flutter gen-l10n` (CI and `tool/verify.dart` do this too).
+4. Run `flutter gen-l10n` (CI and `mobilekit verify` do this too).
 5. Use it from `context.l10n`.
 
 Commands:

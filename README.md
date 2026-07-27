@@ -32,7 +32,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 2. **Generate build config from `.env`**
    ```bash
-   dart run tool/gen_config.dart --env dev
+   dart run mobile_core_kit_cli:mobilekit config generate --env dev
    ```
    or `staging` / `prod` as needed. This writes `lib/core/foundation/config/build_config_values.dart`.
 
@@ -62,7 +62,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
 
 - Rules config: `tool/lints/architecture_lints.yaml`
-- Run locally: `dart run custom_lint` (also included in `dart run tool/verify.dart --env dev`)
+- Run locally: `dart run custom_lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --env dev`)
 - Guardrails index: `docs/engineering/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`
@@ -73,7 +73,7 @@ This repo uses `custom_lint` to enforce architecture import boundaries in both I
 Run all checks (config generation + analyze + custom lint + tests + format check):
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 See `docs/engineering/guardrails.md` for the full list of guardrails (lints + verify scripts + scaffolding).
@@ -95,7 +95,7 @@ See `docs/engineering/guardrails.md` for the full list of guardrails (lints + ve
   - Each future feature follows the same vertical slice layout.
 - `lib/navigation/` – GoRouter setup and route lists per feature.
 - `.env/` – YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
-- `tool/` – scripts like `gen_config.dart` for generating `BuildConfig`.
+- `tool/` – internal policy, config, and report helpers used by `mobilekit`.
 - `docs/engineering/` – core architecture and implementation guides.
 - `docs/template/` – template customization guides (what to change when cloning).
 - `docs/contracts/` – cross-team/backend contracts (API/auth semantics, error codes).
@@ -106,7 +106,7 @@ Docs index: `docs/README.md`.
 ## Configuration & Flavors
 
 - `.env/<env>.yaml` holds environment-specific values like API hosts, logging, and analytics flags.
-- `tool/gen_config.dart` reads these files and generates `lib/core/foundation/config/build_config_values.dart` used by `BuildConfig`.
+- `mobilekit config generate` reads these files and generates `lib/core/foundation/config/build_config_values.dart` used by `BuildConfig`.
 - Entry points:
   - `lib/main_dev.dart`
   - `lib/main_staging.dart`

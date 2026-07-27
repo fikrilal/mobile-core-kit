@@ -39,7 +39,7 @@ Configured via:
   - `use-named-parameters: true`
 
 Determinism:
-- `tool/verify.dart` runs `flutter gen-l10n` before `flutter analyze`.
+- `mobilekit verify` runs `flutter gen-l10n` before `flutter analyze`.
 - CI runs `flutter gen-l10n` before `flutter analyze`.
 
 ---

@@ -23,7 +23,7 @@ Risk notes:
 List exact commands and outcomes.
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Additional checks:
@@ -33,8 +33,8 @@ Additional checks:
 # fvm flutter analyze
 # dart run custom_lint
 # fvm flutter test
-# dart run tool/verify_codegen.dart
-# dart run tool/verify_project_map_drift.dart
+# dart run mobile_core_kit_cli:mobilekit codegen verify
+# dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
 ## Evidence

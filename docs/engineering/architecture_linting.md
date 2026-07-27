@@ -32,7 +32,7 @@ dart run custom_lint
 The canonical gate also runs them:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 ## What Is Enforced

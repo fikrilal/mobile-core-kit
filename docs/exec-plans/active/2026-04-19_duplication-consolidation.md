@@ -89,7 +89,7 @@ fvm flutter analyze
 dart run custom_lint
 # Passed
 
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 # Passed; actionable duplicate groups reduced from 6 to 1.
 # Remaining group is the intentionally out-of-scope auth_response_model/auth_result_model pair.
 ```
