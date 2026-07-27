@@ -1,8 +1,8 @@
 # Mobilekit Core Workflows
 
 Date: 2026-08-01
-Owner: Unassigned
-Status: active
+Owner: Codex
+Status: completed
 Risk class: medium
 Related issue/PR: N/A
 Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
@@ -42,22 +42,23 @@ This plan covers verification, fixing, config generation, environment validation
 
 ## Implementation Checklist
 
-- [ ] Implement `mobilekit verify`.
-- [ ] Implement `mobilekit fix`.
-- [ ] Implement `mobilekit config generate`.
-- [ ] Implement `mobilekit env verify`.
-- [ ] Implement `mobilekit codegen verify`.
-- [ ] Implement `mobilekit l10n verify`.
-- [ ] Implement `mobilekit project-map verify`.
-- [ ] Reuse or move shared runner logic from existing scripts without changing behavior.
-- [ ] Keep current `tool/` entry points working, either unchanged or as compatibility wrappers.
-- [ ] Add focused tests for command argument parsing and command-to-step mapping.
-- [ ] Add parity notes for behavior that cannot be unit-tested cheaply.
+- [x] Implement `mobilekit verify`.
+- [x] Implement `mobilekit fix`.
+- [x] Implement `mobilekit config generate`.
+- [x] Implement `mobilekit env verify`.
+- [x] Implement `mobilekit codegen verify`.
+- [x] Implement `mobilekit l10n verify`.
+- [x] Implement `mobilekit project-map verify`.
+- [x] Reuse or move shared runner logic from existing scripts without changing behavior.
+- [x] Keep current `tool/` entry points working, either unchanged or as compatibility wrappers.
+- [x] Add focused tests for command argument parsing and command-to-step mapping.
+- [x] Add parity notes for behavior that cannot be unit-tested cheaply.
 
 ## Decision Log
 
 - 2026-08-01: Port by delegation first where practical -> reduces risk of accidental verification behavior changes.
 - 2026-08-01: Existing public `tool/` commands remain during this plan -> deletion belongs to final cutover.
+- 2026-08-01: Keep workflow flags owned by the existing scripts -> the CLI forwards arguments unchanged and avoids duplicating repository policy.
 
 ## Verification
 
@@ -88,6 +89,13 @@ dart pub global activate --source path packages/mobile_core_kit_cli
 mobilekit verify --env dev --skip-tests --skip-duplication
 ```
 
+Outcome: all listed pinned and legacy commands passed. The generated config
+hash was identical after the new and legacy config commands:
+`1a848f5f47609075320372a8954ccf9cece249375a58dc55e8cb07fa20299e20`.
+Package analysis, the 14 focused tests, and installed-mode `mobilekit verify`
+also passed. The installed executable required refreshing the prior
+same-version Pub snapshot cache before the new command set was visible.
+
 ## Runtime Evidence
 
 - Device/emulator: N/A
@@ -109,7 +117,17 @@ mobilekit verify --env dev --skip-tests --skip-duplication
 
 ## Completion Notes
 
-Fill in after implementation.
+Added delegation routes for the core workflow surface:
+
+- direct routes for `verify` and `fix`;
+- grouped routes for `config generate`, `env verify`, `codegen verify`,
+  `l10n verify`, and `project-map verify`;
+- pass-through of existing tool arguments and exit codes;
+- command help and repository-root errors at the CLI boundary;
+- injectable command execution and focused command-to-script parity tests.
+
+The existing `tool/*.dart` entry points remain unchanged and continue to be
+the behavior owners during migration. No app runtime behavior changed.
 
 ## Follow-ups
 
