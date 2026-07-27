@@ -205,12 +205,12 @@ preflight_log="$artifacts_dir/logs/preflight.log"
 } | tee "$preflight_log"
 
 set +e
-"${dart_cmd[@]}" tool/gen_config.dart --env "$flavor" 2>&1 | tee -a "$preflight_log"
+"${dart_cmd[@]}" mobile_core_kit_cli:mobilekit config generate --env "$flavor" 2>&1 | tee -a "$preflight_log"
 preflight_exit="${PIPESTATUS[0]}"
 set -e
 
 if [[ "$preflight_exit" -eq 0 ]]; then
-  echo "- ✅ build config generated (\`tool/gen_config.dart --env $flavor\`)" >> "$summary_file"
+  echo "- ✅ build config generated (\`mobilekit config generate --env $flavor\`)" >> "$summary_file"
 else
   echo "- ❌ build config generation failed (exit=$preflight_exit)" >> "$summary_file"
   echo

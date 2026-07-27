@@ -108,26 +108,27 @@ Future<int> _run(List<String> argv) async {
   if (exitCode != 0) return exitCode;
 
   if (!skipDuplication) {
-    if (Platform.isWindows) {
-      stdout.writeln(
-        '\n==> Duplication harness\nSkipping duplication harness on Windows. '
-        'Run the shell-based duplication checks from a POSIX shell instead:',
-      );
-      stdout.writeln('./tool/check_duplication.sh');
-      stdout.writeln('./tool/check_small_helper_duplication.sh');
-    } else {
-      exitCode = await step('Verify duplication (core)', [
-        'bash',
-        'tool/check_duplication.sh',
-      ]);
-      if (exitCode != 0) return exitCode;
+    exitCode = await step('Verify duplication (core)', [
+      'dart',
+      'run',
+      'mobile_core_kit_cli:mobilekit',
+      'duplication',
+      'check',
+      '--profile',
+      'core',
+    ]);
+    if (exitCode != 0) return exitCode;
 
-      exitCode = await step('Verify duplication (small helpers)', [
-        'bash',
-        'tool/check_small_helper_duplication.sh',
-      ]);
-      if (exitCode != 0) return exitCode;
-    }
+    exitCode = await step('Verify duplication (small helpers)', [
+      'dart',
+      'run',
+      'mobile_core_kit_cli:mobilekit',
+      'duplication',
+      'check',
+      '--profile',
+      'small-helpers',
+    ]);
+    if (exitCode != 0) return exitCode;
   }
 
   exitCode = await step('Verify modal entrypoints', [

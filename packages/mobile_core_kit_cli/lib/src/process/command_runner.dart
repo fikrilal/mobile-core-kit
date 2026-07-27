@@ -39,9 +39,17 @@ class CommandRunner {
     if (command.isEmpty) return 0;
 
     final resolved = resolve(command.first);
+    final executable =
+        platform == CommandPlatform.windows && command.first == 'npx'
+        ? 'cmd.exe'
+        : resolved.executable;
+    final arguments =
+        platform == CommandPlatform.windows && command.first == 'npx'
+        ? ['/d', '/c', 'npx', ...command.sublist(1)]
+        : command.sublist(1);
     final process = await Process.start(
-      resolved.executable,
-      command.sublist(1),
+      executable,
+      arguments,
       workingDirectory: rootDirectory.path,
       mode: ProcessStartMode.inheritStdio,
     );

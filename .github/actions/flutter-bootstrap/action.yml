@@ -15,11 +15,11 @@ inputs:
     required: false
     default: "true"
   validate-env-schema:
-    description: Run tool/verify_env_schema.dart
+    description: Run mobilekit env verify
     required: false
     default: "true"
   strict-env-schema:
-    description: Pass --strict to tool/verify_env_schema.dart
+    description: Pass --strict to mobilekit env verify
     required: false
     default: "false"
 
@@ -62,15 +62,15 @@ runs:
       if: ${{ inputs.validate-env-schema == 'true' }}
       shell: bash
       run: |
-        args=(tool/verify_env_schema.dart --env "${{ inputs.env }}")
+        args=(env verify --env "${{ inputs.env }}")
         if [[ "${{ inputs.strict-env-schema }}" == "true" ]]; then
           args+=(--strict)
         fi
-        dart run "${args[@]}"
+        dart run mobile_core_kit_cli:mobilekit "${args[@]}"
 
     - name: Generate build config
       shell: bash
-      run: dart run tool/gen_config.dart --env "${{ inputs.env }}"
+      run: dart run mobile_core_kit_cli:mobilekit config generate --env "${{ inputs.env }}"
 
     - name: Assert generated build config
       shell: bash

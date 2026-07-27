@@ -20,7 +20,7 @@ Future<int> _run(List<String> argv) async {
         'Fails if disallowed modal entrypoints are used outside the allowlist.',
         '',
         'Usage:',
-        '  dart run tool/verify_modal_entrypoints.dart',
+        '  dart run mobile_core_kit_cli:mobilekit verify --env dev',
         '',
         'Options:',
         parser.usage,

@@ -108,7 +108,7 @@ jobs:
           dart test
 
       - name: Verify (canonical)
-        run: dart run tool/verify.dart --env prod --check-codegen
+        run: dart run mobile_core_kit_cli:mobilekit verify --env prod --check-codegen
 
       - name: Prepare upload keystore
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
@@ -239,7 +239,7 @@ jobs:
           dart test
 
       - name: Verify (canonical)
-        run: dart run tool/verify.dart --env prod --check-codegen
+        run: dart run mobile_core_kit_cli:mobilekit verify --env prod --check-codegen
 
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign -t lib/main_prod.dart --dart-define=ENV=prod

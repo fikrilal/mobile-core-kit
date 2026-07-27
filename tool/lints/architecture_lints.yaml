@@ -2,7 +2,7 @@
 #
 # This file is the single source of truth for architecture import rules:
 # - IDE linting via `custom_lint`
-# - CLI/CI checks via `dart run custom_lint` (wired into tool/verify.dart)
+# - CLI/CI checks via `dart run custom_lint` (wired into `mobilekit verify`)
 #
 # Patterns are POSIX globs, relative to the repository root (use `/`).
 version: 1

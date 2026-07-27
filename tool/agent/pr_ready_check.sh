@@ -8,8 +8,8 @@ Usage:
 
 Description:
   Runs the default "PR-ready" local quality loop:
-    1) dart run tool/fix.dart --apply   (unless --no-fix)
-    2) dart run tool/verify.dart --env <env> [--skip-tests] [--check-codegen]
+    1) dart run mobile_core_kit_cli:mobilekit fix --apply   (unless --no-fix)
+    2) dart run mobile_core_kit_cli:mobilekit verify --env <env> [--skip-tests] [--check-codegen]
 
 Examples:
   tool/agent/pr_ready_check.sh
@@ -77,14 +77,14 @@ if ! command -v dart >/dev/null 2>&1; then
   echo "ERROR: dart command not found in PATH." >&2
   exit 1
 fi
-run_cmd=( dart run )
+run_cmd=( dart run mobile_core_kit_cli:mobilekit )
 
 if [[ $run_fix -eq 1 ]]; then
   echo "==> Running safe auto-fix"
-  "${run_cmd[@]}" tool/fix.dart --apply
+  "${run_cmd[@]}" fix --apply
 fi
 
-verify_args=( tool/verify.dart --env "$env_name" )
+verify_args=( verify --env "$env_name" )
 if [[ $skip_tests -eq 1 ]]; then
   verify_args+=( --skip-tests )
 fi

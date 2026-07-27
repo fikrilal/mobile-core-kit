@@ -28,7 +28,7 @@ Future<int> _run(List<String> argv) async {
         '- Line: // ignore: hardcoded_ui_colors',
         '',
         'Usage:',
-        '  dart run tool/verify_hardcoded_ui_colors.dart',
+        '  dart run mobile_core_kit_cli:mobilekit verify --env dev',
         '',
         'Options:',
         parser.usage,

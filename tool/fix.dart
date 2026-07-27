@@ -58,7 +58,7 @@ Future<int> _run(List<String> argv) async {
     if (exitCode != 0) return exitCode;
   } else {
     // Note: `dart fix --dry-run` does not fail when changes are suggested.
-    // This step is informational; `flutter analyze` in tool/verify.dart is the
+    // This step is informational; `flutter analyze` in `mobilekit verify` is the
     // gate that enforces directives ordering.
     exitCode = await step('Dart fix (dry-run: directives_ordering)', [
       'dart',

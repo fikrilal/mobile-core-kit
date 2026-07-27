@@ -37,8 +37,8 @@ Future<int> _run(List<String> argv) async {
         'lib/navigation/<feature>/ with a Cubit-first slice scaffold.',
         '',
         'Usage:',
-        '  dart run tool/scaffold_feature.dart --feature review',
-        '  dart run tool/scaffold_feature.dart --feature review --slice list',
+        '  dart run mobile_core_kit_cli:mobilekit scaffold feature review',
+        '  dart run mobile_core_kit_cli:mobilekit scaffold feature review --slice list',
         '',
         'Options:',
         parser.usage,
@@ -55,7 +55,7 @@ Future<int> _run(List<String> argv) async {
     stderr.writeln('Missing required option: --feature');
     stderr.writeln('');
     stderr.writeln(
-      'Example: dart run tool/scaffold_feature.dart --feature review',
+      'Example: dart run mobile_core_kit_cli:mobilekit scaffold feature review',
     );
     return 2;
   }
@@ -308,7 +308,9 @@ Future<int> _run(List<String> argv) async {
   stdout.writeln(
     '- Add routes: include `${feature}Routes` from `$navDir/${feature}_routes_list.dart` in `lib/navigation/app_router.dart`.',
   );
-  stdout.writeln('- Run verify: `dart run tool/verify.dart --env dev`.');
+  stdout.writeln(
+    '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify --env dev`.',
+  );
   stdout.writeln('');
   final l10nPrefix = _toCamelCase(baseSnake);
   stdout.writeln(
