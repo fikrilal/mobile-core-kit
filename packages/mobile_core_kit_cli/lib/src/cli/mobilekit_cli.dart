@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
+import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 
@@ -88,6 +89,8 @@ class MobilekitCli {
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit project-map verify',
       ),
+      'scaffold' => _runScaffold(arguments.skip(1).toList()),
+      'duplication' => _runDuplication(arguments.skip(1).toList()),
       _ => _unknownCommand(arguments.first),
     };
   }
@@ -103,25 +106,161 @@ class MobilekitCli {
       return 0;
     }
 
-    final root = _rootLocator.find(startDirectory: _currentDirectory);
-    if (root == null) {
-      _errorOutput.writeln(
-        'ERROR: Repository root not found. '
-        'Run this command from inside the repository.',
-      );
-      return 1;
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    return _runRepositoryCommand(
+      command: command,
+      root: root,
+      invocation: ['dart', 'run', script, ...arguments],
+    );
+  }
+
+  Future<int> _runScaffold(List<String> arguments) async {
+    if (arguments.isEmpty || _isHelp(arguments.first)) {
+      _writeScaffoldUsage(_output);
+      return arguments.isEmpty ? 2 : 0;
     }
+    if (arguments.first != 'feature') {
+      _errorOutput.writeln(
+        "ERROR: Unknown scaffold command '${arguments.first}'.",
+      );
+      _writeScaffoldUsage(_errorOutput);
+      return 2;
+    }
+
+    final parser = ArgParser()
+      ..addFlag('help', abbr: 'h', negatable: false)
+      ..addFlag('dry-run', negatable: false)
+      ..addOption('slice', abbr: 's');
+
+    ArgResults parsed;
+    try {
+      parsed = parser.parse(arguments.skip(1).toList());
+    } on FormatException catch (error) {
+      _errorOutput.writeln('ERROR: ${error.message}');
+      _writeScaffoldUsage(_errorOutput);
+      return 2;
+    }
+
+    if (parsed.flag('help')) {
+      _writeScaffoldUsage(_output);
+      return 0;
+    }
+    if (parsed.rest.length != 1) {
+      _errorOutput.writeln(
+        'ERROR: Expected exactly one feature name in snake_case.',
+      );
+      _writeScaffoldUsage(_errorOutput);
+      return 2;
+    }
+
+    final invocation = <String>[
+      'dart',
+      'run',
+      'tool/scaffold_feature.dart',
+      '--feature',
+      parsed.rest.single,
+    ];
+    final slice = parsed.option('slice');
+    if (slice != null) {
+      invocation.addAll(['--slice', slice]);
+    }
+    if (parsed.flag('dry-run')) {
+      invocation.add('--dry-run');
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    return _runRepositoryCommand(
+      command: 'scaffold feature',
+      root: root,
+      invocation: invocation,
+    );
+  }
+
+  Future<int> _runDuplication(List<String> arguments) async {
+    final parser = ArgParser()
+      ..addFlag('help', abbr: 'h', negatable: false)
+      ..addOption(
+        'profile',
+        allowed: DuplicationProfile.values.map((profile) => profile.label),
+      );
+
+    ArgResults parsed;
+    try {
+      parsed = parser.parse(arguments);
+    } on FormatException catch (error) {
+      _errorOutput.writeln('ERROR: ${error.message}');
+      _writeDuplicationUsage(_errorOutput);
+      return 2;
+    }
+
+    if (parsed.flag('help')) {
+      _writeDuplicationUsage(_output);
+      return 0;
+    }
+    if (parsed.rest.length != 1 || parsed.rest.single != 'check') {
+      _errorOutput.writeln('ERROR: Expected `mobilekit duplication check`.');
+      _writeDuplicationUsage(_errorOutput);
+      return 2;
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
 
     final execute =
         _commandExecutor ??
         CommandRunner(rootDirectory: root, platform: _platform).run;
+    final runner = DuplicationRunner(
+      rootDirectory: root,
+      execute: execute,
+      output: _output,
+      errorOutput: _errorOutput,
+    );
+
     try {
-      return await execute(['dart', 'run', script, ...arguments]);
+      final profile = parsed.option('profile');
+      if (profile == null) return runner.runDefault();
+      return runner.run(
+        DuplicationProfile.values.firstWhere(
+          (candidate) => candidate.label == profile,
+        ),
+      );
+    } on ProcessException catch (error) {
+      _errorOutput.writeln('ERROR: Failed to run mobilekit duplication check.');
+      _errorOutput.writeln(error.message);
+      return 1;
+    }
+  }
+
+  Future<int> _runRepositoryCommand({
+    required String command,
+    required Directory root,
+    required List<String> invocation,
+  }) async {
+    final execute =
+        _commandExecutor ??
+        CommandRunner(rootDirectory: root, platform: _platform).run;
+    try {
+      return await execute(invocation);
     } on ProcessException catch (error) {
       _errorOutput.writeln('ERROR: Failed to run mobilekit $command.');
       _errorOutput.writeln(error.message);
       return 1;
     }
+  }
+
+  Directory? _findRepositoryRoot() {
+    final root = _rootLocator.find(startDirectory: _currentDirectory);
+    if (root != null) return root;
+
+    _errorOutput.writeln(
+      'ERROR: Repository root not found. '
+      'Run this command from inside the repository.',
+    );
+    return null;
   }
 
   Future<int> _runGroupedTool({
@@ -211,6 +350,8 @@ class MobilekitCli {
     output.writeln('  codegen   Verify generated-code freshness.');
     output.writeln('  l10n      Verify untranslated localization messages.');
     output.writeln('  project-map  Verify AGENTS project-map drift.');
+    output.writeln('  scaffold  Generate feature scaffolding.');
+    output.writeln('  duplication  Run duplication profiles.');
     output.writeln();
     output.writeln('Run `mobilekit <command> --help` for command usage.');
   }
@@ -219,6 +360,29 @@ class MobilekitCli {
     output.writeln(usage);
     output.writeln();
     output.writeln('Existing tool options are passed through unchanged.');
+  }
+
+  void _writeScaffoldUsage(StringSink output) {
+    output.writeln('Usage: mobilekit scaffold feature <name> [options]');
+    output.writeln();
+    output.writeln('Options:');
+    output.writeln('  --slice, -s <name>  Optional slice name.');
+    output.writeln(
+      '  --dry-run           Print outputs without writing files.',
+    );
+  }
+
+  void _writeDuplicationUsage(StringSink output) {
+    output.writeln('Usage: mobilekit duplication check [--profile <profile>]');
+    output.writeln();
+    output.writeln('Profiles:');
+    output.writeln('  core          Main maintainability duplication profile.');
+    output.writeln('  small-helpers Small helper duplication profile.');
+    output.writeln('  presentation  Flutter presentation duplication profile.');
+    output.writeln();
+    output.writeln(
+      'Without --profile, core and small-helpers run sequentially.',
+    );
   }
 
   void _writeDoctorUsage(StringSink output) {
