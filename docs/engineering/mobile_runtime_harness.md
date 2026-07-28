@@ -39,16 +39,17 @@ If Firebase or similar platform configuration is missing, fail early with an act
 
 Use this as the default runtime-evidence path.
 
-Primary helper:
+Primary command:
 
 ```bash
-tool/agent/mobile_evidence_check.sh --device <device-id> --flavor dev
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --device <device-id> --flavor dev
 ```
 
 Example with explicit platform config:
 
 ```bash
-tool/agent/mobile_evidence_check.sh \
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --device <device-id> \
   --flavor dev \
   --google-services-json /secure/path/google-services.json
@@ -57,7 +58,7 @@ tool/agent/mobile_evidence_check.sh \
 Optional single-target run:
 
 ```bash
-tool/agent/mobile_evidence_check.sh \
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --device <device-id> \
   --target integration_test/auth_happy_path_test.dart
 ```

@@ -6,6 +6,7 @@ import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
@@ -116,23 +117,23 @@ class MobilekitCli {
 
   Future<int> _runRuntime(List<String> arguments) async {
     if (arguments.isEmpty || _isHelp(arguments.first)) {
+      _writeRuntimeUsage(_output);
+      return arguments.isEmpty ? 2 : 0;
+    }
+    return switch (arguments.first) {
+      'logs' => _runRuntimeLogs(arguments.skip(1).toList()),
+      'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
+      _ => _unknownRuntimeCommand(arguments.first),
+    };
+  }
+
+  Future<int> _runRuntimeLogs(List<String> arguments) async {
+    if (arguments.isEmpty || _isHelp(arguments.first)) {
       RuntimeLogWorkflow.writeUsage(_output);
       return arguments.isEmpty ? 2 : 0;
     }
-    if (arguments.first != 'logs') {
-      _errorOutput.writeln(
-        "ERROR: Unknown runtime command '${arguments.first}'.",
-      );
-      RuntimeLogWorkflow.writeUsage(_errorOutput);
-      return 2;
-    }
 
-    final logArguments = arguments.skip(1).toList();
-    if (logArguments.isEmpty || _isHelp(logArguments.first)) {
-      RuntimeLogWorkflow.writeUsage(_output);
-      return logArguments.isEmpty ? 2 : 0;
-    }
-    if (_containsCommandHelp(logArguments)) {
+    if (_containsCommandHelp(arguments)) {
       RuntimeLogWorkflow.writeUsage(_output);
       return 0;
     }
@@ -150,7 +151,42 @@ class MobilekitCli {
       sessionManager: sessionManager,
       output: _output,
       errorOutput: _errorOutput,
-    ).run(logArguments);
+    ).run(arguments);
+  }
+
+  Future<int> _runRuntimeEvidence(List<String> arguments) async {
+    if (arguments.isEmpty || arguments.any(_isHelp)) {
+      RuntimeEvidenceWorkflow.writeUsage(_output);
+      return arguments.isEmpty ? 2 : 0;
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    return RuntimeEvidenceWorkflow(
+      rootDirectory: root,
+      platform: _platform,
+      output: _output,
+      errorOutput: _errorOutput,
+    ).run(arguments);
+  }
+
+  int _unknownRuntimeCommand(String command) {
+    _errorOutput.writeln("ERROR: Unknown runtime command '$command'.");
+    _writeRuntimeUsage(_errorOutput);
+    return 2;
+  }
+
+  void _writeRuntimeUsage(StringSink output) {
+    output.writeln('Usage: mobilekit runtime <command> [options]');
+    output.writeln();
+    output.writeln('Commands:');
+    output.writeln('  logs      Manage live Flutter log sessions.');
+    output.writeln(
+      '  evidence  Run device integration tests and collect evidence.',
+    );
+    output.writeln();
+    output.writeln('Run `mobilekit runtime <command> --help` for usage.');
   }
 
   Future<int> _runWorkflow({
@@ -421,7 +457,7 @@ class MobilekitCli {
     output.writeln('  project-map  Verify AGENTS project-map drift.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
-    output.writeln('  runtime   Manage runtime log sessions.');
+    output.writeln('  runtime   Manage runtime evidence and log sessions.');
     output.writeln();
     output.writeln('Run `mobilekit <command> --help` for command usage.');
   }

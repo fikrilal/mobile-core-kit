@@ -113,6 +113,7 @@ The first version should expose workflows, not every internal script.
 | `mobilekit l10n verify` | Verify untranslated messages | `tool/verify_untranslated_messages.dart` |
 | `mobilekit project-map verify` | Verify AGENTS project-map drift | `tool/verify_project_map_drift.dart` |
 | `mobilekit doctor` | Diagnose local toolchain requirements for this repo | New CLI command |
+| `mobilekit runtime evidence --device <id>` | Run device integration tests and collect runtime evidence | `tool/agent/mobile_evidence_check.sh` |
 
 Commands that are implementation details should remain internal. For example, `filter_duplication_report.dart` should stay behind `mobilekit duplication check`.
 
