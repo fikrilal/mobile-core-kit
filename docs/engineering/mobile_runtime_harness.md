@@ -85,16 +85,18 @@ Use this lane for:
 
 ## Live Log Capture
 
-Use the log bridge when continuous runtime logs help debug or prove behavior.
+Use the CLI log bridge when continuous runtime logs help debug or prove
+behavior.
 
 Examples:
 
 ```bash
-tool/agent/flutter_log_stream.sh start --session emulator --mode logs --device emulator-5554
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
+  --session emulator --mode logs --device emulator-5554
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh start \
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
   --session dev-run \
   --mode run \
   --device emulator-5554 \
@@ -103,12 +105,15 @@ tool/agent/flutter_log_stream.sh start \
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh tail --session emulator --lines 200
+dart run mobile_core_kit_cli:mobilekit runtime logs tail \
+  --session emulator --lines 200
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh status --session emulator
-tool/agent/flutter_log_stream.sh stop --session emulator
+dart run mobile_core_kit_cli:mobilekit runtime logs status \
+  --session emulator
+dart run mobile_core_kit_cli:mobilekit runtime logs stop \
+  --session emulator
 ```
 
 Typical artifacts:

@@ -6,6 +6,8 @@ import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
@@ -107,8 +109,48 @@ class MobilekitCli {
       ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
+      'runtime' => _runRuntime(arguments.skip(1).toList()),
       _ => _unknownCommand(arguments.first),
     };
+  }
+
+  Future<int> _runRuntime(List<String> arguments) async {
+    if (arguments.isEmpty || _isHelp(arguments.first)) {
+      RuntimeLogWorkflow.writeUsage(_output);
+      return arguments.isEmpty ? 2 : 0;
+    }
+    if (arguments.first != 'logs') {
+      _errorOutput.writeln(
+        "ERROR: Unknown runtime command '${arguments.first}'.",
+      );
+      RuntimeLogWorkflow.writeUsage(_errorOutput);
+      return 2;
+    }
+
+    final logArguments = arguments.skip(1).toList();
+    if (logArguments.isEmpty || _isHelp(logArguments.first)) {
+      RuntimeLogWorkflow.writeUsage(_output);
+      return logArguments.isEmpty ? 2 : 0;
+    }
+    if (_containsCommandHelp(logArguments)) {
+      RuntimeLogWorkflow.writeUsage(_output);
+      return 0;
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    final sessionManager = RuntimeLogSessionManager(
+      rootDirectory: root,
+      platform: _platform,
+      output: _output,
+      errorOutput: _errorOutput,
+    );
+    return RuntimeLogWorkflow(
+      sessionManager: sessionManager,
+      output: _output,
+      errorOutput: _errorOutput,
+    ).run(logArguments);
   }
 
   Future<int> _runWorkflow({
@@ -379,6 +421,7 @@ class MobilekitCli {
     output.writeln('  project-map  Verify AGENTS project-map drift.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
+    output.writeln('  runtime   Manage runtime log sessions.');
     output.writeln();
     output.writeln('Run `mobilekit <command> --help` for command usage.');
   }
@@ -424,4 +467,12 @@ class MobilekitCli {
   bool _isHelp(String argument) => argument == '-h' || argument == '--help';
 
   bool _containsHelp(List<String> arguments) => arguments.any(_isHelp);
+
+  bool _containsCommandHelp(List<String> arguments) {
+    final separatorIndex = arguments.indexOf('--');
+    final commandArguments = separatorIndex == -1
+        ? arguments
+        : arguments.take(separatorIndex);
+    return commandArguments.any(_isHelp);
+  }
 }

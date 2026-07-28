@@ -20,8 +20,27 @@ void main() {
       contains('mobilekit - mobile-core-kit repository tooling'),
     );
     expect(output.toString(), contains('doctor'));
+    expect(output.toString(), contains('runtime'));
     expect(errors, isEmpty);
   });
+
+  test(
+    'prints runtime log command help without finding a repository',
+    () async {
+      final output = StringBuffer();
+      final errors = StringBuffer();
+
+      final result = await MobilekitCli(
+        currentDirectory: Directory.systemTemp,
+        output: output,
+        errorOutput: errors,
+      ).run(['runtime', 'logs', '--help']);
+
+      expect(result, 0);
+      expect(output.toString(), contains('Usage: mobilekit runtime logs'));
+      expect(errors, isEmpty);
+    },
+  );
 
   test('returns usage error for an unknown command', () async {
     final output = StringBuffer();
