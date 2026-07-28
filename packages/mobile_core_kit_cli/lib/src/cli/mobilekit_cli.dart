@@ -6,6 +6,15 @@ import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
+import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/fix_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 
 typedef CommandExecutor = Future<int> Function(List<String> command);
 
@@ -42,52 +51,59 @@ class MobilekitCli {
 
     return switch (arguments.first) {
       'doctor' => _runDoctor(arguments.skip(1).toList()),
-      'verify' => _runTool(
+      'verify' => _runWorkflow(
         command: 'verify',
-        script: 'tool/verify.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit verify [options]',
+        workflow: (context) =>
+            VerifyWorkflow(context).run(arguments.skip(1).toList()),
       ),
-      'fix' => _runTool(
+      'fix' => _runWorkflow(
         command: 'fix',
-        script: 'tool/fix.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit fix [--dry-run|--apply]',
+        workflow: (context) =>
+            FixWorkflow(context).run(arguments.skip(1).toList()),
       ),
-      'config' => _runGroupedTool(
+      'config' => _runGroupedWorkflow(
         group: 'config',
         subcommand: 'generate',
-        script: 'tool/gen_config.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit config generate [--env <env>]',
+        workflow: (context, workflowArguments) =>
+            BuildConfigWorkflow(context).run(workflowArguments),
       ),
-      'env' => _runGroupedTool(
+      'env' => _runGroupedWorkflow(
         group: 'env',
         subcommand: 'verify',
-        script: 'tool/verify_env_schema.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit env verify [options]',
+        workflow: (context, workflowArguments) =>
+            EnvironmentSchemaWorkflow(context).run(workflowArguments),
       ),
-      'codegen' => _runGroupedTool(
+      'codegen' => _runGroupedWorkflow(
         group: 'codegen',
         subcommand: 'verify',
-        script: 'tool/verify_codegen.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit codegen verify',
+        workflow: (context, workflowArguments) =>
+            CodegenWorkflow(context).run(workflowArguments),
       ),
-      'l10n' => _runGroupedTool(
+      'l10n' => _runGroupedWorkflow(
         group: 'l10n',
         subcommand: 'verify',
-        script: 'tool/verify_untranslated_messages.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit l10n verify [path]',
+        workflow: (context, workflowArguments) =>
+            L10nWorkflow(context).run(workflowArguments),
       ),
-      'project-map' => _runGroupedTool(
+      'project-map' => _runGroupedWorkflow(
         group: 'project-map',
         subcommand: 'verify',
-        script: 'tool/verify_project_map_drift.dart',
         arguments: arguments.skip(1).toList(),
         usage: 'Usage: mobilekit project-map verify',
+        workflow: (context, workflowArguments) =>
+            ProjectMapWorkflow(context).run(workflowArguments),
       ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
@@ -95,11 +111,11 @@ class MobilekitCli {
     };
   }
 
-  Future<int> _runTool({
+  Future<int> _runWorkflow({
     required String command,
-    required String script,
     required List<String> arguments,
     required String usage,
+    required Future<int> Function(WorkflowContext context) workflow,
   }) async {
     if (_containsHelp(arguments)) {
       _writeCommandUsage(_output, usage);
@@ -109,10 +125,11 @@ class MobilekitCli {
     final root = _findRepositoryRoot();
     if (root == null) return 1;
 
-    return _runRepositoryCommand(
+    return _runRepositoryWorkflow(
       command: command,
       root: root,
-      invocation: ['dart', 'run', script, ...arguments],
+      usage: usage,
+      workflow: workflow,
     );
   }
 
@@ -155,28 +172,23 @@ class MobilekitCli {
       return 2;
     }
 
-    final invocation = <String>[
-      'dart',
-      'run',
-      'tool/scaffold_feature.dart',
-      '--feature',
-      parsed.rest.single,
-    ];
+    final workflowArguments = <String>['--feature', parsed.rest.single];
     final slice = parsed.option('slice');
     if (slice != null) {
-      invocation.addAll(['--slice', slice]);
+      workflowArguments.addAll(['--slice', slice]);
     }
     if (parsed.flag('dry-run')) {
-      invocation.add('--dry-run');
+      workflowArguments.add('--dry-run');
     }
 
     final root = _findRepositoryRoot();
     if (root == null) return 1;
 
-    return _runRepositoryCommand(
+    return _runRepositoryWorkflow(
       command: 'scaffold feature',
       root: root,
-      invocation: invocation,
+      usage: 'Usage: mobilekit scaffold feature <name> [options]',
+      workflow: (context) => ScaffoldWorkflow(context).run(workflowArguments),
     );
   }
 
@@ -235,16 +247,27 @@ class MobilekitCli {
     }
   }
 
-  Future<int> _runRepositoryCommand({
+  Future<int> _runRepositoryWorkflow({
     required String command,
     required Directory root,
-    required List<String> invocation,
+    required String usage,
+    required Future<int> Function(WorkflowContext context) workflow,
   }) async {
     final execute =
         _commandExecutor ??
         CommandRunner(rootDirectory: root, platform: _platform).run;
+    final context = WorkflowContext(
+      rootDirectory: root,
+      execute: execute,
+      output: _output,
+      errorOutput: _errorOutput,
+    );
     try {
-      return await execute(invocation);
+      return await workflow(context);
+    } on FormatException catch (error) {
+      _errorOutput.writeln('ERROR: ${error.message}');
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
     } on ProcessException catch (error) {
       _errorOutput.writeln('ERROR: Failed to run mobilekit $command.');
       _errorOutput.writeln(error.message);
@@ -263,12 +286,16 @@ class MobilekitCli {
     return null;
   }
 
-  Future<int> _runGroupedTool({
+  Future<int> _runGroupedWorkflow({
     required String group,
     required String subcommand,
-    required String script,
     required List<String> arguments,
     required String usage,
+    required Future<int> Function(
+      WorkflowContext context,
+      List<String> arguments,
+    )
+    workflow,
   }) async {
     if (arguments.isEmpty) {
       _writeCommandUsage(_errorOutput, usage);
@@ -286,11 +313,11 @@ class MobilekitCli {
       return 2;
     }
 
-    return _runTool(
+    return _runWorkflow(
       command: '$group $subcommand',
-      script: script,
       arguments: arguments.skip(1).toList(),
       usage: usage,
+      workflow: (context) => workflow(context, arguments.skip(1).toList()),
     );
   }
 

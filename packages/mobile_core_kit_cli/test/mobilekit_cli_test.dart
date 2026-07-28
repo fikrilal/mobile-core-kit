@@ -37,68 +37,46 @@ void main() {
     expect(output, isEmpty);
   });
 
-  test('maps workflow commands to existing tool scripts', () async {
-    final tempDirectory = await Directory.systemTemp.createTemp(
-      'mobile_core_kit_cli_workflow_test_',
-    );
-    addTearDown(() => tempDirectory.delete(recursive: true));
-    File(
-      p.join(tempDirectory.path, 'pubspec.yaml'),
-    ).writeAsStringSync('name: test_repository\n');
-    Directory(p.join(tempDirectory.path, 'tool')).createSync();
+  test(
+    'runs CLI-owned workflow commands through the shared executor',
+    () async {
+      final tempDirectory = await Directory.systemTemp.createTemp(
+        'mobile_core_kit_cli_workflow_test_',
+      );
+      addTearDown(() => tempDirectory.delete(recursive: true));
+      File(
+        p.join(tempDirectory.path, 'pubspec.yaml'),
+      ).writeAsStringSync('name: test_repository\n');
+      Directory(p.join(tempDirectory.path, 'tool')).createSync();
 
-    final cases = <List<List<String>>>[
-      [
-        ['verify', '--env', 'dev', '--skip-tests'],
-        ['dart', 'run', 'tool/verify.dart', '--env', 'dev', '--skip-tests'],
-      ],
-      [
-        ['fix', '--dry-run'],
-        ['dart', 'run', 'tool/fix.dart', '--dry-run'],
-      ],
-      [
-        ['config', 'generate', '--env', 'dev'],
-        ['dart', 'run', 'tool/gen_config.dart', '--env', 'dev'],
-      ],
-      [
-        ['env', 'verify', '--all', '--strict'],
-        ['dart', 'run', 'tool/verify_env_schema.dart', '--all', '--strict'],
-      ],
-      [
-        ['codegen', 'verify'],
-        ['dart', 'run', 'tool/verify_codegen.dart'],
-      ],
-      [
-        ['l10n', 'verify', 'tool/untranslated_messages.json'],
+      final cases = <List<List<String>>>[
         [
-          'dart',
-          'run',
-          'tool/verify_untranslated_messages.dart',
-          'tool/untranslated_messages.json',
+          ['verify', '--env', 'dev', '--skip-tests'],
+          ['flutter', 'pub', 'get'],
         ],
-      ],
-      [
-        ['project-map', 'verify'],
-        ['dart', 'run', 'tool/verify_project_map_drift.dart'],
-      ],
-    ];
+        [
+          ['fix', '--dry-run'],
+          ['dart', 'fix', '--dry-run', '--code', 'directives_ordering'],
+        ],
+      ];
 
-    for (final testCase in cases) {
-      final invocations = <List<String>>[];
-      final result = await MobilekitCli(
-        currentDirectory: tempDirectory,
-        commandExecutor: (command) async {
-          invocations.add(List<String>.from(command));
-          return 17;
-        },
-      ).run(testCase.first);
+      for (final testCase in cases) {
+        final invocations = <List<String>>[];
+        final result = await MobilekitCli(
+          currentDirectory: tempDirectory,
+          commandExecutor: (command) async {
+            invocations.add(List<String>.from(command));
+            return 17;
+          },
+        ).run(testCase.first);
 
-      expect(result, 17, reason: 'Arguments: ${testCase.first}');
-      expect(invocations, [testCase.last]);
-    }
-  });
+        expect(result, 17, reason: 'Arguments: ${testCase.first}');
+        expect(invocations, [testCase.last]);
+      }
+    },
+  );
 
-  test('prints command help without invoking a tool script', () async {
+  test('prints command help without invoking a legacy entrypoint', () async {
     final output = StringBuffer();
     var invoked = false;
 

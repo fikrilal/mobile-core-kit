@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 const _supportedEnvs = <String>['dev', 'staging', 'prod'];
@@ -19,63 +21,74 @@ const _requiredIntKeys = <String>[
 ];
 const _allowedNetLogModes = <String>{'off', 'summary', 'smallBodies', 'full'};
 
-void main(List<String> argv) {
-  final parser = ArgParser()
-    ..addMultiOption(
-      'env',
-      abbr: 'e',
-      allowed: _supportedEnvs,
-      help: 'Environment(s) to validate. Defaults to all environments.',
-    )
-    ..addFlag(
-      'all',
-      defaultsTo: false,
-      help: 'Validate all environments (dev, staging, prod).',
-    )
-    ..addFlag(
-      'strict',
-      defaultsTo: false,
-      help: 'Enforce production invariants in addition to schema checks.',
-    );
+class EnvironmentSchemaWorkflow {
+  const EnvironmentSchemaWorkflow(this.context);
 
-  final args = parser.parse(argv);
-  final strict = args.flag('strict');
-  final selected = args.flag('all')
-      ? List<String>.from(_supportedEnvs)
-      : args.multiOption('env');
-  final envs = selected.isEmpty
-      ? List<String>.from(_supportedEnvs)
-      : _supportedEnvs.where(selected.contains).toList();
+  final WorkflowContext context;
 
-  final errors = <String>[];
-  for (final env in envs) {
-    errors.addAll(
-      _validateEnvFile(env, enforceProdInvariants: strict && env == 'prod'),
-    );
-  }
+  Future<int> run(List<String> argv) async {
+    final parser = ArgParser()
+      ..addMultiOption(
+        'env',
+        abbr: 'e',
+        allowed: _supportedEnvs,
+        help: 'Environment(s) to validate. Defaults to all environments.',
+      )
+      ..addFlag(
+        'all',
+        defaultsTo: false,
+        help: 'Validate all environments (dev, staging, prod).',
+      )
+      ..addFlag(
+        'strict',
+        defaultsTo: false,
+        help: 'Enforce production invariants in addition to schema checks.',
+      );
 
-  if (errors.isNotEmpty) {
-    stderr.writeln('Environment schema validation failed:');
-    for (final error in errors) {
-      stderr.writeln('- $error');
+    final args = parser.parse(argv);
+    final strict = args.flag('strict');
+    final selected = args.flag('all')
+        ? List<String>.from(_supportedEnvs)
+        : args.multiOption('env');
+    final envs = selected.isEmpty
+        ? List<String>.from(_supportedEnvs)
+        : _supportedEnvs.where(selected.contains).toList();
+
+    final errors = <String>[];
+    for (final env in envs) {
+      errors.addAll(
+        _validateEnvFile(
+          context.rootDirectory,
+          env,
+          enforceProdInvariants: strict && env == 'prod',
+        ),
+      );
     }
-    exitCode = 1;
-    return;
-  }
 
-  final strictSuffix = strict ? ' (strict prod checks enabled)' : '';
-  stdout.writeln(
-    'OK: env schema validated for ${envs.join(', ')}$strictSuffix.',
-  );
+    if (errors.isNotEmpty) {
+      context.errorOutput.writeln('Environment schema validation failed:');
+      for (final error in errors) {
+        context.errorOutput.writeln('- $error');
+      }
+      return 1;
+    }
+
+    final strictSuffix = strict ? ' (strict prod checks enabled)' : '';
+    context.output.writeln(
+      'OK: env schema validated for ${envs.join(', ')}$strictSuffix.',
+    );
+    return 0;
+  }
 }
 
 List<String> _validateEnvFile(
+  Directory rootDirectory,
   String env, {
   required bool enforceProdInvariants,
 }) {
   final errors = <String>[];
   final path = '.env/$env.yaml';
-  final file = File(path);
+  final file = File(p.join(rootDirectory.path, path));
 
   if (!file.existsSync()) {
     return ['[$env] Missing file: $path'];

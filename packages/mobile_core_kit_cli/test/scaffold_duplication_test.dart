@@ -5,35 +5,30 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
-  test('maps scaffold feature arguments to the existing tool script', () async {
-    final repository = await _createRepository();
-    addTearDown(() => repository.delete(recursive: true));
-    final invocations = <List<String>>[];
+  test(
+    'scaffolds a feature directly under the discovered repository root',
+    () async {
+      final repository = await _createRepository();
+      addTearDown(() => repository.delete(recursive: true));
+      final output = StringBuffer();
 
-    final result = await MobilekitCli(
-      currentDirectory: repository,
-      commandExecutor: (command) async {
-        invocations.add(List<String>.from(command));
-        return 17;
-      },
-    ).run(['scaffold', 'feature', 'review', '--slice', 'list', '--dry-run']);
+      final result = await MobilekitCli(
+        currentDirectory: repository,
+        output: output,
+      ).run(['scaffold', 'feature', 'review', '--slice', 'list', '--dry-run']);
 
-    expect(result, 17);
-    expect(invocations, [
-      [
-        'dart',
-        'run',
-        'tool/scaffold_feature.dart',
-        '--feature',
-        'review',
-        '--slice',
-        'list',
-        '--dry-run',
-      ],
-    ]);
-  });
+      expect(result, 0);
+      expect(output.toString(), contains('Dry run: would scaffold feature'));
+      expect(
+        Directory(
+          p.join(repository.path, 'lib', 'features', 'review'),
+        ).existsSync(),
+        isFalse,
+      );
+    },
+  );
 
-  test('prints scaffold help without invoking the tool script', () async {
+  test('prints scaffold help without invoking a legacy entrypoint', () async {
     final output = StringBuffer();
     var invoked = false;
 
