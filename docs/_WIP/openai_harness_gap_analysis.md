@@ -11,8 +11,8 @@ Capture current-state gaps between this repo and the workflow model described in
 ## Current Strengths (Already in Place)
 
 1. Strong mechanical guardrails and canonical verification.
-   - `tool/verify.dart`
-   - `tool/fix.dart`
+   - `mobilekit verify`
+   - `mobilekit fix`
    - `analysis_options.yaml`
    - `packages/mobile_core_kit_lints/lib/*`
 2. CI enforces quality/security signals.

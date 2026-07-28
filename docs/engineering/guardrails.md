@@ -45,6 +45,15 @@ dart run mobile_core_kit_cli:mobilekit codegen verify
 dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
+When using a globally activated checkout-local CLI, refresh the activation if
+the command reports a removed legacy `tool/*.dart` entrypoint or otherwise
+appears to run stale code:
+
+```bash
+dart pub global deactivate mobile_core_kit_cli
+dart pub global activate --source path packages/mobile_core_kit_cli
+```
+
 ## Where Guardrails Live
 
 ### Analyzer and lint policy
