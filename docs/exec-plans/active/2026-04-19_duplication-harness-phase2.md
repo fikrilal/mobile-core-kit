@@ -42,7 +42,7 @@ Phase 2 must:
 
 - [x] Review `lib/features/auth/data/model/remote/auth_response_model.dart` and `lib/features/auth/data/model/remote/auth_result_model.dart` and record the decision.
 - [x] Add a repository-local allowlist file for reviewed acceptable duplicates.
-- [x] Extend `tool/filter_duplication_report.dart` to:
+- [x] Extend the CLI duplication report filter to:
   - [x] load the allowlist
   - [x] suppress allowlisted duplicates from actionable groups
   - [x] report reviewed acceptable groups separately
@@ -102,7 +102,7 @@ dart run custom_lint
 
 Phase 2 shipped the reviewed-signal layer for duplication detection:
 - added `tool/duplication_allowlist.json` for reviewed acceptable duplicates with rationale
-- extended `tool/filter_duplication_report.dart` to separate actionable vs reviewed acceptable groups
+- extended the CLI duplication report filter to separate actionable vs reviewed acceptable groups
 - tightened duplicate categories so the report no longer misclassifies value objects or auth use cases
 - documented duplication-check usage in the self-review / PR loop
 

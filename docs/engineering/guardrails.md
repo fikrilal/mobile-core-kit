@@ -63,7 +63,7 @@ dart pub global activate --source path packages/mobile_core_kit_cli
 
 ### Verification pipeline
 - `packages/mobile_core_kit_cli/`
-- internal `tool/verify_*.dart` helpers
+- repository-local policy/configuration data under `tool/`
 
 ### Scaffolding
 - `mobilekit scaffold feature`
@@ -134,12 +134,13 @@ Typical path:
 - update tests for the lint plugin when needed
 - document stable policy in `docs/engineering/architecture_linting.md`
 
-### Verify-script path
+### Verify-workflow path
 Use when the rule is repository-wide and better expressed as a command.
 
 Typical path:
-- add or update `tool/verify_*.dart`
-- call it from the internal verifier used by `mobilekit verify` if it belongs in the canonical gate
+- add or update the implementation under `packages/mobile_core_kit_cli/`
+- keep policy/configuration data under `tool/`
+- call it from `mobilekit verify` if it belongs in the canonical gate
 - ensure local and CI usage stay aligned
 
 ### Scaffold/template path

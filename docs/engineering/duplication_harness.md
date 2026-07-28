@@ -30,8 +30,8 @@ self-review instead of relying on reviewer memory.
 The duplication harness is a two-layer setup:
 
 1. `jscpd` finds raw duplicate code blocks
-2. the internal `tool/filter_duplication_report.dart` helper turns raw clone output into a
-   repository-specific review signal
+2. the internal CLI filter turns raw clone output into a repository-specific
+   review signal
 
 This repository intentionally does **not** use raw clone output directly.
 The filter narrows the output to the duplicate classes that matter here.
@@ -326,7 +326,7 @@ Scripts and config:
 - `.jscpd.small_helpers.json`
 - `.jscpd.presentation.json`
 - `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart`
-- `tool/filter_duplication_report.dart`
+- `packages/mobile_core_kit_cli/lib/src/duplication/duplication_report_filter.dart`
 - `tool/duplication_allowlist.json`
 - `tool/small_helper_duplication_allowlist.json`
 - `tool/presentation_duplication_allowlist.json`

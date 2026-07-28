@@ -34,7 +34,8 @@ The goal is to keep UX consistent across phone + tablet, avoid duplicated heuris
 
 ## Where the rule is enforced
 
-The repo includes an internal guardrail helper, `tool/verify_modal_entrypoints.dart`.
+The CLI package includes an internal modal-entrypoint guardrail check,
+`packages/mobile_core_kit_cli/lib/src/guardrails/modal_entrypoints_check.dart`.
 
 It fails the build if disallowed modal APIs are used outside the allowlist (currently only `lib/core/design_system/adaptive/widgets/`).
 

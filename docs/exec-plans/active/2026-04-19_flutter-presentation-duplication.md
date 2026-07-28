@@ -100,7 +100,7 @@ dart run custom_lint
 Shipped a separate Flutter-presentation duplication profile:
 - added `.jscpd.presentation.json`
 - added the CLI presentation duplication profile in `packages/mobile_core_kit_cli/`
-- extended `tool/filter_duplication_report.dart` with a `presentation` profile
+- extended the CLI duplication report filter with a `presentation` profile
 - added `tool/presentation_duplication_allowlist.json`
 - documented usage in the PR/self-review workflow
 

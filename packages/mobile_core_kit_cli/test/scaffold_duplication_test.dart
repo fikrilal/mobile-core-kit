@@ -49,7 +49,7 @@ void main() {
   });
 
   test(
-    'maps each duplication profile to the shell-equivalent commands',
+    'maps each duplication profile to jscpd and direct report filtering',
     () async {
       final cases = <List<Object>>[
         [
@@ -68,14 +68,6 @@ void main() {
               '.jscpd.json',
               '--silent',
             ],
-            [
-              'dart',
-              'tool/filter_duplication_report.dart',
-              '--report',
-              '.tmp/jscpd-phase1/jscpd-report.json',
-              '--allowlist',
-              'tool/duplication_allowlist.json',
-            ],
           ],
         ],
         [
@@ -93,16 +85,6 @@ void main() {
               '.jscpd.small_helpers.json',
               '--silent',
             ],
-            [
-              'dart',
-              'tool/filter_duplication_report.dart',
-              '--profile',
-              'small_helpers',
-              '--report',
-              '.tmp/jscpd-small-helpers/jscpd-report.json',
-              '--allowlist',
-              'tool/small_helper_duplication_allowlist.json',
-            ],
           ],
         ],
         [
@@ -117,16 +99,6 @@ void main() {
               '--config',
               '.jscpd.presentation.json',
               '--silent',
-            ],
-            [
-              'dart',
-              'tool/filter_duplication_report.dart',
-              '--profile',
-              'presentation',
-              '--report',
-              '.tmp/jscpd-presentation/jscpd-report.json',
-              '--allowlist',
-              'tool/presentation_duplication_allowlist.json',
             ],
           ],
         ],
@@ -143,6 +115,7 @@ void main() {
         Directory(
           p.join(repository.path, 'lib', 'features', 'auth', 'presentation'),
         ).createSync(recursive: true);
+        _writeReport(repository, profile);
         final invocations = <List<String>>[];
 
         final result = await MobilekitCli(
@@ -164,6 +137,8 @@ void main() {
     () async {
       final repository = await _createRepository();
       addTearDown(() => repository.delete(recursive: true));
+      _writeReport(repository, 'core');
+      _writeReport(repository, 'small-helpers');
       final invocations = <List<String>>[];
 
       final result = await MobilekitCli(
@@ -175,11 +150,9 @@ void main() {
       ).run(['duplication', 'check']);
 
       expect(result, 0);
-      expect(invocations.length, 4);
+      expect(invocations.length, 2);
       expect(invocations[0].first, 'npx');
-      expect(invocations[1].first, 'dart');
-      expect(invocations[2].first, 'npx');
-      expect(invocations[3].first, 'dart');
+      expect(invocations[1].first, 'npx');
     },
   );
 
@@ -230,4 +203,16 @@ Future<Directory> _createRepository() async {
   ).writeAsStringSync('name: test_repository\n');
   Directory(p.join(directory.path, 'tool')).createSync();
   return directory;
+}
+
+void _writeReport(Directory repository, String profile) {
+  final reportPath = switch (profile) {
+    'core' => '.tmp/jscpd-phase1/jscpd-report.json',
+    'small-helpers' => '.tmp/jscpd-small-helpers/jscpd-report.json',
+    'presentation' => '.tmp/jscpd-presentation/jscpd-report.json',
+    _ => throw ArgumentError.value(profile, 'profile'),
+  };
+  final reportFile = File(p.join(repository.path, reportPath))
+    ..createSync(recursive: true);
+  reportFile.writeAsStringSync('{"duplicates": []}');
 }

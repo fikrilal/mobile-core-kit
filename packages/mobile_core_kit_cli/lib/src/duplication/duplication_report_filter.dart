@@ -1,191 +1,164 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 
-Future<void> main(List<String> argv) async {
-  exitCode = await _run(argv);
-}
+class DuplicationReportFilter {
+  const DuplicationReportFilter({
+    required this.rootDirectory,
+    required this.output,
+    required this.errorOutput,
+  });
 
-Future<int> _run(List<String> argv) async {
-  final parser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false)
-    ..addOption(
-      'profile',
-      defaultsTo: _Profile.core.label,
-      allowed: _Profile.values.map((profile) => profile.label),
-      help: 'Duplication filter profile to use.',
-    )
-    ..addOption(
-      'report',
-      defaultsTo: '.tmp/jscpd-phase1/jscpd-report.json',
-      help: 'Path to the jscpd JSON report.',
-    )
-    ..addOption(
-      'allowlist',
-      defaultsTo: 'tool/duplication_allowlist.json',
-      help: 'Path to the reviewed-acceptable duplication allowlist JSON.',
-    )
-    ..addFlag(
-      'fatal-found',
-      negatable: false,
-      help: 'Exit non-zero when actionable duplicate groups are found.',
-    );
+  final Directory rootDirectory;
+  final StringSink output;
+  final StringSink errorOutput;
 
-  final args = parser.parse(argv);
-  if (args.flag('help')) {
-    stdout.writeln(
-      [
-        'filter_duplication_report.dart',
-        '',
-        'Filters raw jscpd output into a repository-specific duplication',
-        'summary.',
-        '',
-        'Profiles:',
-        '- core: non-presentation maintainability duplication',
-        '- presentation: narrow Flutter presentation duplication',
-        '- small_helpers: tiny helper duplication across feature/core code',
-        '',
-        'Reviewed acceptable duplicates can be recorded in the allowlist so',
-        'they remain visible but stop showing up as actionable debt.',
-        '',
-        'Usage:',
-        '  dart run mobile_core_kit_cli:mobilekit duplication check --profile core',
-        '  dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation',
-        '  dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helper',
-        '',
-        'Options:',
-        parser.usage,
-      ].join('\n'),
-    );
-    return 0;
-  }
-
-  final profile = _Profile.values.firstWhere(
-    (candidate) => candidate.label == args.option('profile')!,
-  );
-  final reportPath = args.option('report')!;
-  final reportFile = File(reportPath);
-  if (!reportFile.existsSync()) {
-    stderr.writeln("Report file '$reportPath' does not exist.");
-    return 2;
-  }
-
-  final decoded = jsonDecode(reportFile.readAsStringSync());
-  if (decoded is! Map<String, dynamic>) {
-    stderr.writeln("Report file '$reportPath' is not a valid JSON object.");
-    return 2;
-  }
-
-  final rawDuplicates = decoded['duplicates'];
-  if (rawDuplicates is! List) {
-    stderr.writeln("Report file '$reportPath' does not contain duplicates.");
-    return 2;
-  }
-
-  final allowlist = _loadAllowlist(args.option('allowlist')!);
-
-  final duplicates = rawDuplicates
-      .whereType<Map>()
-      .map((raw) => _Duplicate.fromJson(raw.cast<String, dynamic>()))
-      .toList(growable: false);
-
-  final selfFileCount = duplicates.where((dup) => dup.isSelfFile).length;
-  final crossFile = duplicates.where((dup) => !dup.isSelfFile).toList();
-
-  final categorized = crossFile
-      .map((dup) => _CategorizedDuplicate(dup, _categorize(profile, dup)))
-      .toList(growable: false);
-
-  final reviewed = <_ReviewedDuplicate>[];
-  final actionable = <_CategorizedDuplicate>[];
-  var uncategorizedCount = 0;
-
-  for (final entry in categorized) {
-    final category = entry.category;
-    if (category == null) {
-      uncategorizedCount += 1;
-      continue;
+  int run({
+    required String profileName,
+    required String reportPath,
+    required String allowlistPath,
+    bool fatalFound = false,
+  }) {
+    final profile = _Profile.fromLabel(profileName);
+    if (profile == null) {
+      errorOutput.writeln("Unknown duplication profile '$profileName'.");
+      return 2;
     }
 
-    final match = allowlist.match(entry.duplicate, category);
-    if (match != null) {
-      reviewed.add(_ReviewedDuplicate(entry.duplicate, category, match));
-      continue;
+    final reportFile = File(_resolvePath(reportPath));
+    if (!reportFile.existsSync()) {
+      errorOutput.writeln("Report file '$reportPath' does not exist.");
+      return 2;
     }
 
-    actionable.add(entry);
-  }
+    final decoded = jsonDecode(reportFile.readAsStringSync());
+    if (decoded is! Map<String, dynamic>) {
+      errorOutput.writeln(
+        "Report file '$reportPath' is not a valid JSON object.",
+      );
+      return 2;
+    }
 
-  final actionableGroups = _groupActionable(actionable);
-  final reviewedGroups = _groupReviewed(reviewed);
+    final rawDuplicates = decoded['duplicates'];
+    if (rawDuplicates is! List) {
+      errorOutput.writeln(
+        "Report file '$reportPath' does not contain duplicates.",
+      );
+      return 2;
+    }
 
-  stdout.writeln('Duplication summary (${profile.label})');
-  stdout.writeln('Report: $reportPath');
-  stdout.writeln('- Raw duplicates: ${duplicates.length}');
-  stdout.writeln('- Self-file filtered out: $selfFileCount');
-  stdout.writeln('- Cross-file duplicates: ${crossFile.length}');
-  stdout.writeln('- Uncategorized filtered out: $uncategorizedCount');
-  stdout.writeln('- Reviewed acceptable groups: ${reviewedGroups.length}');
-  stdout.writeln('- Actionable duplicate groups: ${actionableGroups.length}');
+    final allowlist = _loadAllowlist(allowlistPath, rootDirectory);
 
-  if (reviewedGroups.isNotEmpty) {
-    stdout.writeln('\nReviewed acceptable groups:');
-    for (final group in reviewedGroups) {
-      stdout.writeln(
+    final duplicates = rawDuplicates
+        .whereType<Map>()
+        .map((raw) => _Duplicate.fromJson(raw.cast<String, dynamic>()))
+        .toList(growable: false);
+
+    final selfFileCount = duplicates.where((dup) => dup.isSelfFile).length;
+    final crossFile = duplicates.where((dup) => !dup.isSelfFile).toList();
+
+    final categorized = crossFile
+        .map((dup) => _CategorizedDuplicate(dup, _categorize(profile, dup)))
+        .toList(growable: false);
+
+    final reviewed = <_ReviewedDuplicate>[];
+    final actionable = <_CategorizedDuplicate>[];
+    var uncategorizedCount = 0;
+
+    for (final entry in categorized) {
+      final category = entry.category;
+      if (category == null) {
+        uncategorizedCount += 1;
+        continue;
+      }
+
+      final match = allowlist.match(entry.duplicate, category);
+      if (match != null) {
+        reviewed.add(_ReviewedDuplicate(entry.duplicate, category, match));
+        continue;
+      }
+
+      actionable.add(entry);
+    }
+
+    final actionableGroups = _groupActionable(actionable);
+    final reviewedGroups = _groupReviewed(reviewed);
+
+    output.writeln('Duplication summary (${profile.label})');
+    output.writeln('Report: $reportPath');
+    output.writeln('- Raw duplicates: ${duplicates.length}');
+    output.writeln('- Self-file filtered out: $selfFileCount');
+    output.writeln('- Cross-file duplicates: ${crossFile.length}');
+    output.writeln('- Uncategorized filtered out: $uncategorizedCount');
+    output.writeln('- Reviewed acceptable groups: ${reviewedGroups.length}');
+    output.writeln('- Actionable duplicate groups: ${actionableGroups.length}');
+
+    if (reviewedGroups.isNotEmpty) {
+      output.writeln('\nReviewed acceptable groups:');
+      for (final group in reviewedGroups) {
+        output.writeln(
+          '- [${group.category.label}] ${group.firstPath} <> ${group.secondPath}',
+        );
+        output.writeln(
+          '  reviewedOn=${group.entry.reviewedOn ?? 'n/a'}, '
+          'occurrences=${group.occurrences}, '
+          'maxLines=${group.maxLines}, '
+          'maxTokens=${group.maxTokens}',
+        );
+        output.writeln('  reason=${group.entry.reason}');
+      }
+    }
+
+    if (actionableGroups.isEmpty) {
+      output.writeln('\nOK: no actionable duplication groups found.');
+      return 0;
+    }
+
+    final categoryCounts = <_Category, int>{};
+    for (final group in actionableGroups) {
+      categoryCounts.update(
+        group.category,
+        (count) => count + 1,
+        ifAbsent: () => 1,
+      );
+    }
+
+    output.writeln('\nActionable category breakdown:');
+    final categories = categoryCounts.keys.toList()
+      ..sort((a, b) => a.label.compareTo(b.label));
+    for (final category in categories) {
+      output.writeln('- ${category.label}: ${categoryCounts[category]}');
+    }
+
+    output.writeln('\nActionable groups:');
+    for (final group in actionableGroups) {
+      output.writeln(
         '- [${group.category.label}] ${group.firstPath} <> ${group.secondPath}',
       );
-      stdout.writeln(
-        '  reviewedOn=${group.entry.reviewedOn ?? 'n/a'}, '
-        'occurrences=${group.occurrences}, '
-        'maxLines=${group.maxLines}, '
-        'maxTokens=${group.maxTokens}',
+      output.writeln(
+        '  occurrences=${group.occurrences}, '
+        'maxLines=${group.maxLines}, maxTokens=${group.maxTokens}',
       );
-      stdout.writeln('  reason=${group.entry.reason}');
     }
-  }
 
-  if (actionableGroups.isEmpty) {
-    stdout.writeln('\nOK: no actionable duplication groups found.');
+    if (fatalFound) {
+      return 1;
+    }
+
     return 0;
   }
 
-  final categoryCounts = <_Category, int>{};
-  for (final group in actionableGroups) {
-    categoryCounts.update(
-      group.category,
-      (count) => count + 1,
-      ifAbsent: () => 1,
-    );
+  String _resolvePath(String path) {
+    return p.isAbsolute(path) ? path : p.join(rootDirectory.path, path);
   }
-
-  stdout.writeln('\nActionable category breakdown:');
-  final categories = categoryCounts.keys.toList()
-    ..sort((a, b) => a.label.compareTo(b.label));
-  for (final category in categories) {
-    stdout.writeln('- ${category.label}: ${categoryCounts[category]}');
-  }
-
-  stdout.writeln('\nActionable groups:');
-  for (final group in actionableGroups) {
-    stdout.writeln(
-      '- [${group.category.label}] ${group.firstPath} <> ${group.secondPath}',
-    );
-    stdout.writeln(
-      '  occurrences=${group.occurrences}, '
-      'maxLines=${group.maxLines}, maxTokens=${group.maxTokens}',
-    );
-  }
-
-  if (args.flag('fatal-found')) {
-    return 1;
-  }
-
-  return 0;
 }
 
-_Allowlist _loadAllowlist(String allowlistPath) {
-  final file = File(allowlistPath);
+_Allowlist _loadAllowlist(String allowlistPath, Directory rootDirectory) {
+  final filePath = p.isAbsolute(allowlistPath)
+      ? allowlistPath
+      : p.join(rootDirectory.path, allowlistPath);
+  final file = File(filePath);
   if (!file.existsSync()) {
     return const _Allowlist([]);
   }
@@ -534,6 +507,13 @@ enum _Profile {
   const _Profile(this.label);
 
   final String label;
+
+  static _Profile? fromLabel(String value) {
+    for (final profile in values) {
+      if (profile.label == value) return profile;
+    }
+    return null;
+  }
 }
 
 enum _Category {

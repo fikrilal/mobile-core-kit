@@ -162,7 +162,7 @@ If you truly must use a hardcoded value, add a suppression with a justification:
 ### 2) CI verify tool
 
 CI also runs:
-- `tool/verify_hardcoded_ui_colors.dart`
+- `packages/mobile_core_kit_cli/lib/src/guardrails/hardcoded_ui_colors_check.dart`
 
 ### 3) QA helper
 
