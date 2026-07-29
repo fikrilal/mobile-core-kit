@@ -27,8 +27,9 @@
     //   - USE FOR: Final QA testing, production builds
     //
     // ============================================================================
-    // NOTE: Each launch runs `dart run tool/gen_config.dart -e <env>` before
-    //       starting the app. This generates lib/core/configs/build_config_values.dart
+    // NOTE: Each launch runs `dart run mobile_core_kit_cli:mobilekit config
+    //       generate --env <env>` before starting the app. This generates
+    //       lib/core/foundation/config/build_config_values.dart
     // ============================================================================
 
     "configurations": [

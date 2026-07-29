@@ -1,7 +1,7 @@
 # Engineering Proposal: Consolidate Repository Tools Into A Local Installable `mobilekit` CLI
 
 Date: 2026-08-01
-Status: Draft proposal
+Status: Implemented
 
 ## Decision Summary
 
@@ -46,29 +46,24 @@ mobilekit verify --env dev
 
 ## Context And Problem
 
-The repository already has a mature tooling harness, but its command surface is scattered across `tool/`:
+The repository had a mature tooling harness whose public command surface was
+previously scattered across legacy scripts. The current public surface is the
+repo-local `mobilekit` CLI:
 
-- `tool/verify.dart`
-- `tool/fix.dart`
-- `tool/gen_config.dart`
-- `tool/scaffold_feature.dart`
-- `tool/verify_*.dart`
-- `tool/check_duplication.sh`
-- `tool/filter_duplication_report.dart`
+- `packages/mobile_core_kit_cli/` owns command routing and workflow orchestration;
+- `packages/mobile_core_kit_lints/` owns executable custom lint rules;
+- `lint/` and `duplication/` contain repository-owned policy;
+- `.jscpd*.json` contains duplication profile configuration.
 
-The current docs treat these as first-class workflows. Examples:
-
-- `docs/engineering/guardrails.md` defines `dart run tool/verify.dart --env dev` as the canonical quality gate.
-- `docs/engineering/agent_pr_loop.md` expects agents to run `dart run tool/verify.dart --env dev` for non-trivial work.
-- `docs/engineering/duplication_harness.md` documents separate shell commands for duplication profiles.
-- `.github/workflows/android.yml` calls `dart run tool/verify.dart --env prod --check-codegen`.
+The current docs and CI use pinned CLI commands, with the complete reference in
+`docs/engineering/mobilekit_cli_reference.md`.
 
 This works, but it has avoidable costs:
 
-- Developers need to remember implementation paths instead of workflow commands.
+- Developers should use stable workflow commands instead of implementation paths.
 - Some scripts duplicate process-running logic, including FVM-aware Dart/Flutter resolution.
-- The duplication harness still depends on POSIX shell wrappers, which makes Windows behavior uneven.
-- `tool/` does not clearly separate public commands from internal implementation files and config.
+- The duplication harness previously depended on POSIX shell wrappers, which made Windows behavior uneven.
+- The old script layout did not clearly separate public commands from internal implementation files and config.
 - Documentation must repeat low-level script paths across engineering guides, CI notes, and PR templates.
 
 The goal is not to invent a new harness. The goal is to make the existing harness easier to run, easier to document, and less likely to drift.
@@ -90,7 +85,6 @@ The goal is not to invent a new harness. The goal is to make the existing harnes
 - Do not combine the CLI package with `packages/mobile_core_kit_lints`.
 - Do not move architecture policy such as `lint/architecture_lints.yaml` into the CLI package.
 - Do not change verification behavior while creating the CLI.
-- Do not remove existing `tool/` entry points until docs and CI have migrated.
 - Do not add new checks just because a CLI now exists.
 
 ## Proposed Command Surface
@@ -99,24 +93,25 @@ The first version should expose workflows, not every internal script.
 
 | Command | Purpose | Current source |
 | --- | --- | --- |
-| `mobilekit verify --env dev` | Canonical local quality gate | `tool/verify.dart` |
-| `mobilekit lint` | Run Flutter analyzer and custom lint rules | `fvm flutter analyze`, `dart run custom_lint` |
-| `mobilekit fix --apply` | Safe formatting/import fix workflow | `tool/fix.dart` |
-| `mobilekit config generate --env dev` | Generate build config from `.env/<env>.yaml` | `tool/gen_config.dart` |
-| `mobilekit scaffold feature <name>` | Generate feature scaffolding | `tool/scaffold_feature.dart` |
-| `mobilekit duplication check` | Run default duplication checks | `tool/check_duplication.sh`, `tool/check_small_helper_duplication.sh` |
-| `mobilekit duplication check --profile core` | Run core duplication profile | `tool/check_duplication.sh` |
-| `mobilekit duplication check --profile small-helpers` | Run small-helper duplication profile | `tool/check_small_helper_duplication.sh` |
-| `mobilekit duplication check --profile presentation` | Run presentation duplication profile | `tool/check_presentation_duplication.sh` |
-| `mobilekit env verify --env dev` | Validate one environment file | `tool/verify_env_schema.dart` |
-| `mobilekit env verify --all --strict` | Validate all env files with production invariants | `tool/verify_env_schema.dart` |
-| `mobilekit codegen verify` | Verify generated code freshness | `tool/verify_codegen.dart` |
-| `mobilekit l10n verify` | Verify untranslated messages | `tool/verify_untranslated_messages.dart` |
-| `mobilekit project-map verify` | Verify AGENTS project-map drift | `tool/verify_project_map_drift.dart` |
-| `mobilekit doctor` | Diagnose local toolchain requirements for this repo | New CLI command |
-| `mobilekit runtime evidence --device <id>` | Run device integration tests and collect runtime evidence | `tool/agent/mobile_evidence_check.sh` |
+| `mobilekit verify --env dev` | Canonical local quality gate | `packages/mobile_core_kit_cli/lib/src/workflows/verify_workflow.dart` |
+| `mobilekit lint` | Run Flutter analyzer and custom lint rules | `packages/mobile_core_kit_cli/lib/src/workflows/lint_workflow.dart` |
+| `mobilekit fix --apply` | Safe formatting/import fix workflow | `packages/mobile_core_kit_cli/lib/src/workflows/fix_workflow.dart` |
+| `mobilekit config generate --env dev` | Generate build config from `.env/<env>.yaml` | `packages/mobile_core_kit_cli/lib/src/workflows/build_config_workflow.dart` |
+| `mobilekit scaffold feature <name>` | Generate feature scaffolding | `packages/mobile_core_kit_cli/lib/src/workflows/scaffold_workflow.dart` |
+| `mobilekit duplication check` | Run default duplication checks | `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart` |
+| `mobilekit duplication check --profile core` | Run core duplication profile | `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart` |
+| `mobilekit duplication check --profile small-helpers` | Run small-helper duplication profile | `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart` |
+| `mobilekit duplication check --profile presentation` | Run presentation duplication profile | `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart` |
+| `mobilekit env verify --env dev` | Validate one environment file | `packages/mobile_core_kit_cli/lib/src/workflows/environment_schema_workflow.dart` |
+| `mobilekit env verify --all --strict` | Validate all env files with production invariants | `packages/mobile_core_kit_cli/lib/src/workflows/environment_schema_workflow.dart` |
+| `mobilekit codegen verify` | Verify generated code freshness | `packages/mobile_core_kit_cli/lib/src/workflows/codegen_workflow.dart` |
+| `mobilekit l10n verify` | Verify untranslated messages | `packages/mobile_core_kit_cli/lib/src/workflows/l10n_workflow.dart` |
+| `mobilekit project-map verify` | Verify AGENTS project-map drift | `packages/mobile_core_kit_cli/lib/src/workflows/project_map_workflow.dart` |
+| `mobilekit doctor` | Diagnose local toolchain requirements for this repo | `packages/mobile_core_kit_cli/lib/src/doctor/doctor.dart` |
+| `mobilekit runtime evidence --device <id>` | Run device integration tests and collect runtime evidence | `packages/mobile_core_kit_cli/lib/src/runtime/runtime_evidence_workflow.dart` |
 
-Commands that are implementation details should remain internal. For example, `filter_duplication_report.dart` should stay behind `mobilekit duplication check`.
+Commands that are implementation details should remain internal. For example,
+`duplication_report_filter.dart` stays behind `mobilekit duplication check`.
 
 ## Package And Installation Model
 
@@ -183,36 +178,33 @@ This separation matters because policy should be reviewed as repo data. The CLI 
 
 ## Proposed Migration
 
-### Phase 1: Add The CLI Package Without Behavior Changes
+### Phase 1: Add The CLI Package Without Behavior Changes (complete)
 
-Create `packages/mobile_core_kit_cli` with:
+The repository now contains `packages/mobile_core_kit_cli` with:
 
 - `bin/mobilekit.dart`;
 - command routing using `package:args`;
 - a shared process runner with current FVM-aware behavior;
 - `mobilekit doctor` diagnostics for required local tools;
-- command implementations that call existing scripts where possible.
+- command implementations that own the public workflows.
 
-Keep all existing `tool/` commands working.
+### Phase 2: Move Shared Dart Logic Behind Commands (complete)
 
-### Phase 2: Move Shared Dart Logic Behind Commands
+The duplicated runner logic from verification, fixing, config generation,
+codegen, and related workflows now lives in the CLI package.
 
-Move duplicated runner logic from `tool/verify.dart`, `tool/fix.dart`, and `tool/verify_codegen.dart` into the CLI package.
-
-Compatibility wrappers under `tool/` may delegate to the CLI during this phase.
-
-### Phase 3: Convert Shell Public Surface To Dart Commands
+### Phase 3: Convert Shell Public Surface To Dart Commands (complete)
 
 Implement duplication profiles directly as Dart orchestration around:
 
 - `npx --yes jscpd`;
-- `tool/filter_duplication_report.dart`;
+- `packages/mobile_core_kit_cli/lib/src/duplication/duplication_report_filter.dart`;
 - existing `.jscpd*.json`;
 - existing allowlist files.
 
-Keep the shell scripts as compatibility wrappers until documentation and CI no longer depend on them.
+The CLI duplication profiles are now the supported public surface.
 
-### Phase 4: Update Documentation And CI
+### Phase 4: Update Documentation And CI (complete)
 
 Update canonical commands in:
 
@@ -237,22 +229,19 @@ Developer docs can show installed local usage:
 mobilekit verify --env dev
 ```
 
-### Phase 5: Remove Old Public Entry Points
+### Phase 5: Remove Old Public Entry Points (complete)
 
-After one transition window:
-
-- remove compatibility wrappers for public `tool/` commands;
-- make `mobilekit` the only supported public command surface;
-- keep internal config/data files under `tool/` where they remain the right ownership boundary.
+The retired script entry points and wrappers have been removed. `mobilekit` is
+the supported public command surface, while repository policy remains in
+`lint/`, `duplication/`, and the root `.jscpd*.json` files.
 
 ## Compatibility And Rollback
 
-Compatibility during migration should be explicit:
+Compatibility is now explicit through pinned and installed CLI modes:
 
-- Existing `dart run tool/*.dart` commands continue to work during the first phases.
-- Existing `./tool/check_*.sh` commands continue to work until the Dart duplication command is proven.
-- CI switches only after local parity is verified.
-- The rollback path is to restore CI/docs to the old script paths; no app runtime behavior is involved.
+- CI uses `dart run mobile_core_kit_cli:mobilekit ...`.
+- Developers may activate the checkout-local package and use `mobilekit ...`.
+- No application runtime behavior is involved in the tooling migration.
 
 The main compatibility risk is developer global activation drift. A globally activated `mobilekit` may point at stale local package code.
 
@@ -268,10 +257,10 @@ Do not add self-updating or automatic reactivation machinery in the first pass. 
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| CLI becomes a dumping ground | The command surface becomes as scattered as `tool/` | Expose workflow commands only; keep internal helpers private |
+| CLI becomes a dumping ground | The command surface becomes as scattered as the legacy scripts | Expose workflow commands only; keep internal helpers private |
 | Global activation drift | Developers may run stale command code | Keep CI pinned; document reactivation |
 | Behavior changes during migration | Existing verification guarantees weaken accidentally | Port by delegation first, then refactor internals |
-| Shell-to-Dart duplication conversion changes results | Duplication findings may differ | Keep old shell scripts until parity is verified |
+| Shell-to-Dart duplication conversion changes results | Duplication findings may differ | Compare profile output during migration and keep the CLI profile behavior stable |
 | More package structure than today | Slightly more files and indirection | Justified because verification and scaffolding are public repo workflows |
 | Doctor command scope creeps into environment management | CLI starts mutating developer machines unexpectedly | Keep `doctor` read-only by default; provide explicit commands for remediation |
 
@@ -279,14 +268,13 @@ Do not add self-updating or automatic reactivation machinery in the first pass. 
 
 The proposal should be considered implemented when:
 
-- `mobilekit verify --env dev` runs the same canonical gate currently represented by `dart run tool/verify.dart --env dev`.
+- `mobilekit verify --env dev` runs the canonical repository quality gate.
 - `dart run mobile_core_kit_cli:mobilekit verify --env dev` works without global activation.
 - `dart pub global activate --source path packages/mobile_core_kit_cli` exposes `mobilekit`.
-- Existing `tool/` entry points still work during migration.
-- Existing public `tool/` wrappers are removed after migration.
-- CI uses pinned CLI execution after parity is established.
+- The retired script entry points are removed after parity is established.
+- CI uses pinned CLI execution.
 - Documentation points developers to `mobilekit` for normal workflows.
-- Duplication profiles remain available through both old wrappers and `mobilekit duplication check` during the transition.
+- Duplication profiles remain available through `mobilekit duplication check`.
 - `mobilekit doctor` reports required local tooling status without modifying the machine by default.
 - No architecture lint policy, duplication allowlist data, or jscpd profile config is hidden inside CLI code.
 
@@ -298,7 +286,6 @@ Required mechanical checks after implementation:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests
-dart run tool/verify.dart --env dev --skip-tests
 dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers
 dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
@@ -308,7 +295,7 @@ mobilekit verify --env dev --skip-tests
 mobilekit doctor
 ```
 
-Before CI migration, run the full gate once through the new pinned command:
+For final verification, run the full gate through the pinned command:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit verify --env dev
@@ -318,7 +305,7 @@ Command output and evidence belong in the execution plan or PR, not in this prop
 
 ## Settled Decisions
 
-1. Old public `tool/` wrappers will be deleted after migration.
+1. Old public script wrappers are deleted after migration.
 
    Compatibility wrappers are temporary migration aids, not permanent aliases.
 

@@ -1,6 +1,6 @@
 # Environment Config (`.env/*.yaml`)
 
-This template uses YAML files under `.env/` to configure environment-specific settings (dev/staging/prod). A small generator script converts these YAML files into a typed `BuildConfig` API used by the app at runtime.
+This template uses YAML files under `.env/` to configure environment-specific settings (dev/staging/prod). The `mobilekit` CLI converts these YAML files into a typed `BuildConfig` API used by the app at runtime.
 
 ## Files
 
@@ -22,7 +22,7 @@ Examples live next to them:
 
 `dart run mobile_core_kit_cli:mobilekit config generate --env <env>`
 
-3) The script writes:
+3) The CLI writes:
 
 `lib/core/foundation/config/build_config_values.dart` (generated; do not edit)
 

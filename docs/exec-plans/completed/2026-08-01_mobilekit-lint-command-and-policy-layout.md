@@ -10,17 +10,17 @@ Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
 ## Objective
 
 Expose the repository's lint checks as `mobilekit lint` and move the lint
-configuration out of `tool/lints/` into a root-level `lint/` directory. Keep
+configuration out of the legacy lint directory into a root-level `lint/` directory. Keep
 the custom lint implementation in `packages/mobile_core_kit_lints/` and keep
 the analyzer/IDE wiring working through `analysis_options.yaml`.
 
 ## Constraints
 
-- preserve the behavior of `flutter analyze` and `dart run custom_lint`;
+- preserve the analyzer and custom lint behavior behind `mobilekit lint`;
 - keep `mobilekit verify` as the full verification gate and reuse the lint
   workflow instead of duplicating its steps;
 - keep repository policy/configuration separate from CLI implementation;
-- move all four existing files under `tool/lints/` together:
+- move all four existing lint configuration files together:
   `architecture_lints.yaml`, `flutter_lints.yaml`, `lints_core.yaml`, and
   `lints_recommended.yaml`;
 - update custom-lint fallback paths, diagnostics, docs, tests, and proposal
@@ -36,7 +36,8 @@ the analyzer/IDE wiring working through `analysis_options.yaml`.
    sequence.
 4. The analyzer resolves `lint/flutter_lints.yaml`, and the architecture lint
    resolves `lint/architecture_lints.yaml` by default.
-5. No active source or documentation reference still points at `tool/lints/`.
+5. No active source or documentation reference still points at the legacy lint
+   location.
 6. Focused CLI/workflow tests and the full repository verification pass.
 
 ## Implementation Checklist
@@ -50,9 +51,9 @@ the analyzer/IDE wiring working through `analysis_options.yaml`.
 
 ## Decision Log
 
-- 2026-08-01: Use root-level `lint/` for repository lint policy. `tool/` is
-  reserved for executable harness implementation and data tightly coupled to
-  those tools; lint policy is consumed directly by the analyzer and IDE.
+- 2026-08-01: Use root-level `lint/` for repository lint policy. Lint policy is
+  consumed directly by the analyzer and IDE and should be separate from CLI
+  implementation.
 - 2026-08-01: Keep `packages/mobile_core_kit_lints/` separate. It contains
   executable AST-based lint rules; `lint/` contains their configuration and
   the vendored standard Dart/Flutter rule sets.
@@ -65,7 +66,7 @@ Planned commands:
 dart format packages/mobile_core_kit_cli packages/mobile_core_kit_lints
 dart analyze packages/mobile_core_kit_cli packages/mobile_core_kit_lints
 dart run test packages/mobile_core_kit_cli
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 dart run mobile_core_kit_cli:mobilekit lint --help
 dart run mobile_core_kit_cli:mobilekit verify --env dev
 git diff --check
@@ -76,16 +77,16 @@ git diff --check
 - Added `mobilekit lint` for Flutter analyzer plus custom lint checks.
 - Reused the same workflow from `mobilekit verify` so the canonical gate keeps
   its existing command sequence.
-- Moved repository lint policy from `tool/lints/` to root `lint/` and updated
+- Moved repository lint policy from the legacy lint location to root `lint/` and updated
   analyzer wiring, custom-lint fallback paths, docs, and proposal references.
-- Kept executable harness implementation under `tool/` and executable custom
+- Kept executable harness implementation in the CLI package and executable custom
   lint rules under `packages/mobile_core_kit_lints/`.
 
 Verification completed on 2026-08-01:
 
 - `dart format packages/mobile_core_kit_cli packages/mobile_core_kit_lints`
 - `dart analyze packages/mobile_core_kit_cli packages/mobile_core_kit_lints`
-- `dart run custom_lint`
+- `dart run mobile_core_kit_cli:mobilekit lint`
 - `dart run mobile_core_kit_cli:mobilekit lint --help`
 - `dart run mobile_core_kit_cli:mobilekit lint`
 - `dart run test packages/mobile_core_kit_cli`

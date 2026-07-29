@@ -159,7 +159,8 @@ When running production verification (`mobilekit verify --env prod`), strict pro
 dart run mobile_core_kit_cli:mobilekit env verify --all --strict
 ```
 
-The validator remains an internal implementation under `tool/`; use `mobilekit env verify`.
+The validator remains an internal implementation under
+`packages/mobile_core_kit_cli/`; use `mobilekit env verify`.
 
 Required keys validated for each environment:
 

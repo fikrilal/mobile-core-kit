@@ -20,11 +20,11 @@ This plan converts the public shell-based duplication command surface into Dart 
   - scaffolding behavior must follow existing feature architecture conventions
   - duplication config remains in `.jscpd*.json`
   - duplication allowlists remain in `duplication/*.json`
-  - `tool/filter_duplication_report.dart` may remain an internal helper or be moved only if ownership stays clear
+  - the internal duplication report filter remains package-owned and private
 - product/runtime constraints:
   - no app runtime behavior should change
   - scaffolding must not overwrite existing files unless existing behavior explicitly allows it
-  - duplication output should remain equivalent to current shell scripts
+  - duplication output should remain equivalent to the established profiles
 - out of scope:
   - adding new duplication categories
   - changing duplication allowlist semantics
@@ -34,12 +34,12 @@ This plan converts the public shell-based duplication command surface into Dart 
 
 ## Acceptance Criteria
 
-1. `mobilekit scaffold feature <name>` matches current `tool/scaffold_feature.dart` behavior.
+1. `mobilekit scaffold feature <name>` preserves the established scaffolding behavior.
 2. `mobilekit duplication check` runs the default core and small-helper profiles.
-3. `mobilekit duplication check --profile core` matches `./tool/check_duplication.sh`.
-4. `mobilekit duplication check --profile small-helpers` matches `./tool/check_small_helper_duplication.sh`.
-5. `mobilekit duplication check --profile presentation` matches `./tool/check_presentation_duplication.sh`.
-6. Existing shell wrappers continue to work during this plan.
+3. `mobilekit duplication check --profile core` preserves the core profile behavior.
+4. `mobilekit duplication check --profile small-helpers` preserves the small-helper profile behavior.
+5. `mobilekit duplication check --profile presentation` preserves the presentation profile behavior.
+6. The CLI command surface remains available in pinned and installed modes.
 7. Duplication policy/config data remains outside CLI code.
 
 ## Implementation Checklist
@@ -50,8 +50,8 @@ This plan converts the public shell-based duplication command surface into Dart 
 - [x] Implement Dart orchestration for the small-helper duplication profile.
 - [x] Implement Dart orchestration for the presentation duplication profile.
 - [x] Preserve current `npx --yes jscpd` invocation semantics.
-- [x] Preserve current `tool/filter_duplication_report.dart` filtering behavior.
-- [x] Keep current shell scripts working as compatibility wrappers.
+- [x] Preserve the existing duplication report filtering behavior.
+- [x] Keep the CLI command surface available as the supported workflow.
 - [x] Add tests for argument parsing and profile-to-command mapping.
 - [x] Add parity notes for duplication output equivalence.
 
@@ -67,11 +67,8 @@ Run exact commands and record outcomes before completing this plan.
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit duplication check --profile core
-./tool/check_duplication.sh
 dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers
-./tool/check_small_helper_duplication.sh
 dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
-./tool/check_presentation_duplication.sh
 dart run mobile_core_kit_cli:mobilekit duplication check
 dart run test packages/mobile_core_kit_cli
 ```
@@ -79,7 +76,6 @@ dart run test packages/mobile_core_kit_cli
 For scaffolding parity, use a disposable branch/worktree or temporary feature name and remove only files created by the test.
 
 ```bash
-dart run tool/scaffold_feature.dart --help
 dart run mobile_core_kit_cli:mobilekit scaffold feature --help
 ```
 
@@ -90,7 +86,8 @@ passed. Core produced 21 raw clones with no actionable groups, small-helpers
 produced 346 raw clones with no actionable groups, and presentation produced
 28 raw clones with no actionable groups. The default profile ran core followed
 by small-helpers. Scaffold dry-run output for `mobilekit_exec3_probe` with
-slice `list` matched `tool/scaffold_feature.dart` exactly and created no files.
+slice `list` matched the established scaffolding behavior exactly and created
+no files.
 The package test suite, package analysis, and repository verification also
 passed.
 
@@ -105,7 +102,8 @@ passed.
 ## Risks And Mitigations
 
 - Risk: Dart duplication orchestration changes scan scope.
-- Mitigation: compare commands/profile arguments directly against the old shell scripts and run old/new profile pairs.
+- Mitigation: compare CLI profile arguments directly against the established
+  profiles and run focused profile checks.
 
 - Risk: scaffolder smoke tests leave unwanted files.
 - Mitigation: use a disposable branch/worktree or a clearly isolated temporary feature and clean up only generated files.

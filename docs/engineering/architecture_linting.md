@@ -169,7 +169,8 @@ Typical path:
 
 ## Troubleshooting
 
-- `flutter analyze` does not run custom lints by itself. Use `dart run mobile_core_kit_cli:mobilekit lint` or the full verify gate.
+- The analyzer step does not run custom lints by itself. Use
+  `dart run mobile_core_kit_cli:mobilekit lint` or the full verify gate.
 - If the IDE is not showing custom-lint diagnostics:
   - confirm `custom_lint` is in `dev_dependencies`
   - confirm `analysis_options.yaml` enables the plugin
@@ -180,4 +181,5 @@ Typical path:
 
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/guardrails.md`
+- `docs/engineering/mobilekit_cli_reference.md`
 - `docs/engineering/data_domain_guide.md`

@@ -276,8 +276,7 @@ See:
 
 Fast checks:
 
-- `fvm flutter analyze`
-- `dart run custom_lint`
+- `dart run mobile_core_kit_cli:mobilekit lint`
 - `fvm flutter test`
 
 Subsystem tests:

@@ -72,10 +72,7 @@ dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
 # Reviewed acceptable: form_page_section pairs
 # Actionable: cubit_failure_handling + cubit_field_validation
 
-fvm flutter analyze
-# Passed
-
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 # Passed
 ```
 

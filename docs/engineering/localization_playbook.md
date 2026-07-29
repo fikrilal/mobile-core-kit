@@ -44,7 +44,7 @@ If you need generic network error copy, use the core localizer:
 
 Commands:
 - `flutter gen-l10n`
-- `fvm flutter analyze`
+- `dart run mobile_core_kit_cli:mobilekit lint`
 - `fvm flutter test`
 
 ---

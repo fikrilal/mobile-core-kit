@@ -22,6 +22,7 @@ Use these documents together, not interchangeably:
 - architecture rules: `docs/engineering/project_architecture.md`
 - mechanical enforcement: `docs/engineering/guardrails.md`
 - runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+- CLI commands: `docs/engineering/mobilekit_cli_reference.md`
 - multi-agent coordination: `docs/engineering/parallel_agent_workflow.md`
 
 ## Loop Contract
@@ -142,7 +143,7 @@ For substantive follow-up changes:
 If the same class of failure appears 2+ times, do not rely on repeated manual fixes.
 Promote it into one of:
 - lint rule
-- verify script
+- CLI workflow
 - scaffolder/template update
 - engineering doc update
 - source-local `README.md`

@@ -66,7 +66,7 @@ Compliance is validated by:
    - `test/core/theme/color_builder_policy_test.dart`
 3) Guardrails against hardcoded UI colors:
    - Lint: `hardcoded_ui_colors` (configured in `analysis_options.yaml`)
-   - CI tool: `tool/verify_hardcoded_ui_colors.dart` (wired into `tool/verify.dart`)
+   - CI guardrail: `dart run mobile_core_kit_cli:mobilekit verify --env dev`
 4) Visual QA:
    - Dev-only screen: `lib/core/dev_tools/theme/theme_roles_showcase_screen.dart`
 
@@ -99,4 +99,3 @@ Implementation entry points:
 - Status roles: `lib/core/theme/extensions/semantic_colors.dart`
 - Usage rules: `docs/explainers/core/theme/color_usage_guide.md`
 - Under the hood: `docs/explainers/core/theme/color_system_under_the_hood.md`
-

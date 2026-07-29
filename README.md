@@ -76,7 +76,8 @@ Run all checks (config generation + analyze + custom lint + tests + format check
 dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
-See `docs/engineering/guardrails.md` for the full list of guardrails (lints + verify scripts + scaffolding).
+See `docs/engineering/guardrails.md` for the full list of guardrails (lints +
+CLI verification workflows + scaffolding).
 
 ## Project Structure
 
@@ -95,7 +96,8 @@ See `docs/engineering/guardrails.md` for the full list of guardrails (lints + ve
   - Each future feature follows the same vertical slice layout.
 - `lib/navigation/` – GoRouter setup and route lists per feature.
 - `.env/` – YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
-- `tool/` – internal harness scripts and utilities.
+- `packages/mobile_core_kit_cli/` – internal `mobilekit` CLI implementation.
+- `packages/mobile_core_kit_lints/` – custom analyzer lint implementation.
 - `duplication/` – reviewed duplication-policy allowlists.
 - `docs/engineering/` – core architecture and implementation guides.
 - `docs/template/` – template customization guides (what to change when cloning).
@@ -140,6 +142,7 @@ See `docs/engineering/analytics_documentation.md` for patterns and examples.
 For deeper details on the architecture and patterns used in this template:
 
 - `docs/engineering/architecture_linting.md`
+- `docs/engineering/mobilekit_cli_reference.md`
 - `docs/engineering/guardrails.md`
 - `docs/engineering/ai_agent_workflow.md`
 - `docs/engineering/project_architecture.md`

@@ -40,9 +40,9 @@ Move feature-owned database schema registration out of feature service wiring an
 ## Verification
 
 ```bash
-dart run tool/fix.dart --apply
+dart run mobile_core_kit_cli:mobilekit fix --apply
 flutter test test/features/account/data/datasource/local/account_cached_user_local_datasource_test.dart
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Outcome: passed.

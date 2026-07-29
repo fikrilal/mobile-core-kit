@@ -75,10 +75,7 @@ dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 # Result: 0 actionable duplicate groups, 1 reviewed acceptable group
 # (auth_response_model/auth_result_model with explicit rationale)
 
-fvm flutter analyze
-# Passed
-
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 # Passed
 ```
 

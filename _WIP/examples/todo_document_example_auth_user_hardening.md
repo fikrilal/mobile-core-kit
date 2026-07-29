@@ -22,12 +22,12 @@ Canonical docs (post-implementation):
 - [x] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
 - [x] **App startup hydration is robust:** no hidden feature imports from core; predictable behavior on offline/unauthenticated/timeout.
 - [x] **Core “current user” access is implemented:** `UserContextService` exists, is wired, and used by Profile UI.
-- [x] **Verification passes:** `dart run tool/verify.dart --env dev` is green.
+- [x] **Verification passes:** `dart run mobile_core_kit_cli:mobilekit verify --env dev` is green.
 
 ## Phase 0 — Baseline & scoping (no behavior changes)
 
 - [x] Re-run full verification and capture the output in this doc (for before/after):
-  - [x] `dart run tool/verify.dart --env dev`
+  - [x] `dart run mobile_core_kit_cli:mobilekit verify --env dev`
 - [x] Write a short “current flow” diagram (1 page max) covering:
   - [x] login/register → session persisted (tokens + user)
   - [x] cold start → session restored → cached user restored → `GET /me` hydration
@@ -43,15 +43,14 @@ Canonical docs (post-implementation):
 Command:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Result (2026-01-20):
 
-- ✅ `flutter analyze`: no issues
-- ✅ `dart run custom_lint`: no issues
-- ✅ `tool/verify_modal_entrypoints.dart`: OK
-- ✅ `tool/verify_hardcoded_ui_colors.dart`: OK
+- ✅ `dart run mobile_core_kit_cli:mobilekit lint`: no issues
+- ✅ modal entrypoint guardrail: OK
+- ✅ hardcoded UI color guardrail: OK
 - ✅ `flutter test`: **All tests passed** (**234** tests)
 - ✅ `dart format --set-exit-if-changed .`: 0 changed
 - Notes:

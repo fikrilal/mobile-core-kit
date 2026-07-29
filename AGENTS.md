@@ -53,7 +53,7 @@
   - `docs/exec-plans/active/`
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
-  - verify script
+  - CLI verification workflow
   - template/scaffold update
   - engineering doc update
   - source-local `README.md`
@@ -144,6 +144,7 @@ Runtime evidence guidance:
   - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
   - Parallel coordination: `docs/engineering/parallel_agent_workflow.md`
   - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+  - CLI command reference: `docs/engineering/mobilekit_cli_reference.md`
   - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.
 - For non-trivial changes, default to the repo's harness workflow:

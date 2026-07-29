@@ -11,7 +11,7 @@ Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
 
 Create the repo-local Dart CLI package foundation for `mobilekit` without changing existing tool behavior.
 
-This plan establishes the package, executable, command routing, shared process runner, and read-only `doctor` command. Existing `tool/` commands must continue to work unchanged.
+This plan establishes the package, executable, command routing, shared process runner, and read-only `doctor` command. The pinned and installed `mobilekit` commands must continue to work unchanged.
 
 ## Constraints
 
@@ -27,7 +27,7 @@ This plan establishes the package, executable, command routing, shared process r
 - out of scope:
   - porting `verify`, `fix`, config generation, scaffolding, or duplication behavior
   - changing CI
-  - deleting old `tool/` scripts
+  - deleting old public script entrypoints
   - adding `mobilekit install`
 
 ## Acceptance Criteria
@@ -38,7 +38,7 @@ This plan establishes the package, executable, command routing, shared process r
 4. `dart run mobile_core_kit_cli:mobilekit doctor` reports local toolchain status without mutating the machine.
 5. Local activation works: `dart pub global activate --source path packages/mobile_core_kit_cli`.
 6. After activation, `mobilekit --help` and `mobilekit doctor` work.
-7. Existing `tool/` commands remain untouched and usable.
+7. Existing `mobilekit` commands remain usable.
 
 ## Implementation Checklist
 
@@ -70,13 +70,13 @@ dart pub global activate --source path packages/mobile_core_kit_cli
 mobilekit --help
 mobilekit doctor
 dart run test packages/mobile_core_kit_cli
-dart run tool/verify.dart --env dev --skip-tests --skip-duplication
+dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests --skip-duplication
 ```
 
 Outcome: all commands passed. The targeted repository gate also passed Flutter
 analysis, custom lints, modal/color checks, and format verification. The
 project-map step reported its existing skip because `AGENTS.md` does not define
-the tree format that `tool/verify_project_map_drift.dart` parses.
+the tree format that the project-map workflow parses.
 
 If package-local tests require a different command, record the actual command used.
 
@@ -107,9 +107,8 @@ Added the private `mobile_core_kit_cli` package and root path dependency. The
 Dart/Flutter command resolution on POSIX and Windows, PATH executable probing,
 and focused tests for the new boundaries.
 
-Existing `tool/` commands and CI entrypoints were left unchanged for the later
-workflow-port and cutover plans. The completed plan is retained as the
-foundation record for those dependent phases.
+The initial CLI foundation was retained as the record for the dependent
+workflow-port and cutover phases.
 
 ## Follow-ups
 

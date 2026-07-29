@@ -14,8 +14,7 @@
   - [x] Profile tab creates `ProfileImageCubit` in router (`..loadUrl()` today).
   - [x] Profile UI uses `AppAvatar(imageUrl: ...)`.
 - [x] Ensure verification commands work:
-  - [x] `fvm flutter analyze`
-  - [x] `dart run custom_lint`
+  - [x] `dart run mobile_core_kit_cli:mobilekit lint`
   - [x] `fvm flutter test`
 
 ---
@@ -178,8 +177,7 @@
 ## Phase 9 — Verification + docs
 
 - [x] Run:
-  - [x] `fvm flutter analyze`
-  - [x] `dart run custom_lint`
+  - [x] `dart run mobile_core_kit_cli:mobilekit lint`
   - [x] `fvm flutter test`
 - [x] Update explainer:
   - [x] `docs/explainers/features/user/profile_image_upload.md` add a “Caching” section summarizing TTL + fileId invalidation.

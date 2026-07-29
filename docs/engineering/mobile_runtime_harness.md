@@ -136,7 +136,7 @@ If runtime evidence repeatedly fails for the same reason, improve the harness in
 
 Typical upgrades:
 - add or strengthen integration tests
-- add better assertions to the evidence script
+- add better assertions to the CLI evidence workflow
 - improve logging/metrics exposure
 - update this document with the stable workflow
 
@@ -144,3 +144,4 @@ Typical upgrades:
 
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/guardrails.md`
+- `docs/engineering/mobilekit_cli_reference.md`

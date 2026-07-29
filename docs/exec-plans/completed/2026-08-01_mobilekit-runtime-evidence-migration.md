@@ -9,8 +9,8 @@ Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
 
 ## Objective
 
-Move `tool/agent/mobile_evidence_check.sh` into the internal `mobilekit` CLI
-as `mobilekit runtime evidence`, preserving device integration-test execution,
+Move the legacy device-evidence helper into the internal `mobilekit` CLI as
+`mobilekit runtime evidence`, preserving device integration-test execution,
 preflight behavior, artifact layout, and failure reporting while using the
 CLI's repository and SDK resolution.
 
@@ -54,7 +54,7 @@ CLI's repository and SDK resolution.
 - [x] Route `mobilekit runtime evidence` from the CLI.
 - [x] Add focused workflow and CLI tests.
 - [x] Update runtime-harness documentation and proposal command table.
-- [x] Remove `tool/agent/mobile_evidence_check.sh`.
+- [x] Remove the legacy device-evidence helper.
 - [x] Run required verification and available device/runtime checks.
 
 ## Decision Log

@@ -11,21 +11,21 @@ Depends on: `docs/exec-plans/completed/2026-08-01_mobilekit-implementation-migra
 ## Objective
 
 Move the remaining executable harness implementations behind the internal
-`mobilekit` CLI. Keep repository-owned policy and configuration data under
-`tool/`, while removing private Dart helper entrypoints from the public
-workflow path.
+`mobilekit` CLI. Keep repository-owned policy and configuration data visible
+in repository-owned directories, while removing private helper entrypoints
+from the public workflow path.
 
 ## Scope
 
 - migrate:
-  - `tool/verify_hardcoded_ui_colors.dart`
-  - `tool/verify_modal_entrypoints.dart`
-  - `tool/filter_duplication_report.dart`
+  - CLI-owned hardcoded UI color guardrail
+  - CLI-owned modal entrypoint guardrail
+  - CLI-owned duplication report filter
 - keep repo-local:
   - `lint/`
   - duplication allowlists and `.jscpd*.json`
   - `.tmp/untranslated_messages.json`
-- leave unrelated asset generation (`tool/gen_android12_splash_icon.dart`)
+- leave unrelated asset generation outside the harness CLI
   outside the harness CLI unless a separate command is requested.
 
 ## Constraints
@@ -34,17 +34,17 @@ workflow path.
 - preserve duplication categorization, allowlist matching, grouping, and
   summary output;
 - execute checks directly from CLI-owned classes, without spawning the removed
-  `tool/*.dart` helpers;
+  legacy script helpers;
 - keep policy/configuration visible and editable in the repository;
 - do not change Flutter application runtime behavior or add unrelated commands.
 
 ## Acceptance Criteria
 
 1. `mobilekit verify` calls the two guardrail checks directly.
-2. `mobilekit duplication check` filters reports directly and no longer runs
-   `dart tool/filter_duplication_report.dart`.
-3. The three migrated helper files are removed from `tool/`.
-4. Existing policy/configuration data remains under `tool/`.
+2. `mobilekit duplication check` filters reports directly through its internal
+   package service.
+3. The migrated helper implementations are owned by the CLI package.
+4. Existing policy/configuration data remains in repository-owned directories.
 5. Focused tests cover guardrail violations and duplication report filtering.
 6. Package analysis, package tests, and the repository `mobilekit` gate pass.
 
@@ -107,8 +107,8 @@ git diff --check
   existing workflow context and preserve existing summaries.
 
 - Risk: moving policy scanners hides repository policy in the CLI package.
-- Mitigation: keep allowlists, lint configuration, and profile data in
-  `tool/`; move only executable mechanics.
+- Mitigation: keep allowlists, lint configuration, and profile data visible in
+  repository-owned directories; move only executable mechanics.
 
 ## Completion Notes
 
@@ -118,9 +118,9 @@ git diff --check
   matching into `DuplicationReportFilter` under the CLI package.
 - `VerifyWorkflow` now invokes guardrails directly, and `DuplicationRunner`
   invokes the filter directly after `jscpd` completes.
-- Removed the three executable helper files from `tool/`. The remaining
-  top-level files are repository-local data/configuration plus the unrelated
-  Android 12 asset-generation utility.
+- Removed the three executable helper files from the legacy script surface.
+  Guardrail/report helpers are now CLI-owned, while policy data remains in its
+  repository-owned directories.
 - Updated current engineering documentation and added focused behavior tests.
 
 ## Follow-ups

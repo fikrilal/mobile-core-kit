@@ -45,8 +45,7 @@ dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
 When using a globally activated checkout-local CLI, refresh the activation if
-the command reports a removed legacy `tool/*.dart` entrypoint or otherwise
-appears to run stale code:
+the command appears to run stale code:
 
 ```bash
 dart pub global deactivate mobile_core_kit_cli
@@ -62,7 +61,8 @@ dart pub global activate --source path packages/mobile_core_kit_cli
 
 ### Verification pipeline
 - `packages/mobile_core_kit_cli/`
-- repository-local policy/configuration data under `tool/`
+- repository-local policy/configuration data under `lint/`, `duplication/`, and
+  the root `.jscpd*.json` files
 
 ### Scaffolding
 - `mobilekit scaffold feature`
@@ -118,7 +118,7 @@ Add a guardrail when:
 Choose the lightest mechanism that solves the problem:
 1. config change
 2. lint rule
-3. verify script
+3. CLI workflow
 4. scaffold/template update
 5. doc or source-local README
 
@@ -139,7 +139,7 @@ Use when the rule is repository-wide and better expressed as a command.
 Typical path:
 - add or update the implementation under `packages/mobile_core_kit_cli/`
 - keep repository policy/configuration data under root-owned directories such as
-  `lint/` and `tool/`
+  `lint/` and `duplication/`
 - call it from `mobilekit verify` if it belongs in the canonical gate
 - ensure local and CI usage stay aligned
 
@@ -159,5 +159,6 @@ If suppressions become common, fix the rule or the boundary instead.
 ## Related Docs
 
 - `docs/engineering/agent_pr_loop.md`
+- `docs/engineering/mobilekit_cli_reference.md`
 - `docs/engineering/architecture_linting.md`
 - `docs/engineering/project_architecture.md`

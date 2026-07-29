@@ -32,8 +32,7 @@ Flutter plus `mobilekit l10n verify` to use ignored `.tmp/untranslated_messages.
 2. `l10n.yaml` and `mobilekit l10n verify` use `.tmp/untranslated_messages.json`,
    and the generated report is ignored.
 3. Duplication profiles and localization verification resolve the new paths.
-4. No active source or user-facing documentation points to the old `tool/`
-   data paths.
+4. No active source or user-facing documentation points to the old data paths.
 5. Targeted tests and the full repository verification pass.
 
 ## Implementation Checklist
@@ -86,7 +85,7 @@ Implemented the repository data split:
 - updated the CLI runner, localization configuration, tests, documentation,
   proposal, and execution-plan references;
 - updated the temporary CLI repository fixture to use a Git marker instead of
-  creating a `tool/` directory solely for repository discovery.
+  creating a data directory solely for repository discovery.
 
 Verification completed on 2026-08-01:
 

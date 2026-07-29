@@ -185,7 +185,7 @@ If your backend uses offset/page pagination instead of cursor:
 ## 4) Verification checklist (after customizing)
 
 - Generate env config: `dart run mobile_core_kit_cli:mobilekit config generate --env dev`
-- Analyze: `fvm flutter analyze`
+- Lint: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
 
 ---

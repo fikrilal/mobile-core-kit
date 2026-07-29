@@ -321,7 +321,7 @@ At the time of writing:
 
 ## Related Files
 
-Scripts and config:
+Implementation and config:
 - `.jscpd.json`
 - `.jscpd.small_helpers.json`
 - `.jscpd.presentation.json`

@@ -92,7 +92,7 @@ Notes:
 
 1) Update seeds
 2) Run:
-   - `fvm flutter analyze`
+   - `dart run mobile_core_kit_cli:mobilekit lint`
    - `fvm flutter test test/core/theme/color_contrast_test.dart`
 3) QA:
    - light/dark surfaces and text hierarchy

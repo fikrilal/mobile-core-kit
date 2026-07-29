@@ -76,6 +76,5 @@ Planned verification:
 - `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
 - `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation`
 - `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helper`
-- `fvm flutter analyze`
-- `dart run custom_lint`
+- `dart run mobile_core_kit_cli:mobilekit lint`
 - `dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests`

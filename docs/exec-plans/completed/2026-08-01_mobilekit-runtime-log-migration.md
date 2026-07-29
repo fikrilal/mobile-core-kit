@@ -9,7 +9,7 @@ Proposal: `_WIP/2026-08-01_mobilekit_cli_proposal.md`
 
 ## Objective
 
-Move `tool/agent/flutter_log_stream.sh` into the internal `mobilekit` CLI as
+Move the legacy Flutter log helper into the internal `mobilekit` CLI as
 `mobilekit runtime logs`, preserving its session lifecycle and runtime log
 artifacts while removing the redundant shell entrypoint.
 
@@ -22,7 +22,7 @@ artifacts while removing the redundant shell entrypoint.
 - keep runtime log session state under `_artifacts/runtime_logs/`;
 - keep the implementation internal to `mobile_core_kit_cli` and do not add
   application runtime behavior;
-- keep `tool/agent/mobile_evidence_check.sh` out of scope;
+- keep the separate device-evidence workflow out of scope;
 - avoid changing unrelated existing working-tree changes.
 
 ## Acceptance Criteria
@@ -46,7 +46,7 @@ artifacts while removing the redundant shell entrypoint.
 - [x] Add `mobilekit runtime logs` command routing and usage output.
 - [x] Add focused CLI and session-manager tests.
 - [x] Update runtime-harness documentation.
-- [x] Remove `tool/agent/flutter_log_stream.sh`.
+- [x] Remove the legacy Flutter log helper.
 - [x] Run required verification and record evidence.
 
 ## Decision Log
@@ -113,9 +113,8 @@ session log, and stopped it successfully.
 - Added detached Dart process handling with injectable process controls for
   deterministic tests.
 - Updated `docs/engineering/mobile_runtime_harness.md` to use the CLI and
-  removed `tool/agent/flutter_log_stream.sh`.
-- Kept `tool/agent/mobile_evidence_check.sh` as a separate device-evidence
-  harness.
+  removed the legacy Flutter log helper.
+- Kept device evidence as a separate runtime CLI workflow.
 
 ## Follow-ups
 

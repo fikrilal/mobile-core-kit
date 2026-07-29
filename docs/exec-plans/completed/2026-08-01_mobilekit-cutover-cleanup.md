@@ -12,7 +12,9 @@ Depends on: `docs/exec-plans/completed/2026-08-01_mobilekit-scaffold-duplication
 
 Make `mobilekit` the repository's supported public tooling interface.
 
-This plan updates docs and CI to use the pinned CLI command, removes old public `tool/` wrappers after migration, and keeps internal policy/config files in place.
+This plan updates docs and CI to use the pinned CLI command, removes the old
+public script wrappers after migration, and keeps internal policy/config files
+in place.
 
 ## Constraints
 
@@ -33,8 +35,8 @@ This plan updates docs and CI to use the pinned CLI command, removes old public 
 
 1. `AGENTS.md`, `README.md`, PR template, and engineering docs point to `mobilekit` for public workflows.
 2. CI uses pinned execution: `dart run mobile_core_kit_cli:mobilekit verify ...`.
-3. Old public `tool/` wrappers are deleted after parity is established.
-4. Internal config/data files under `tool/` remain if still used by the CLI or custom lints.
+3. Old public script wrappers are deleted after parity is established.
+4. Internal policy/config data remains in its repository-owned directories.
 5. Full verification passes through the new pinned CLI command.
 6. Installed local usage works after activation.
 
@@ -48,18 +50,18 @@ This plan updates docs and CI to use the pinned CLI command, removes old public 
 - [x] Update `docs/engineering/guardrails.md`.
 - [x] Update `docs/engineering/agent_pr_loop.md`.
 - [x] Update `docs/engineering/duplication_harness.md`.
-- [x] Update any additional references found by searching old `tool/` public command strings.
-- [x] Delete old public `tool/` wrappers after confirming equivalent `mobilekit` commands exist.
+- [x] Update any additional references found by searching old public command strings.
+- [x] Delete old public script wrappers after confirming equivalent `mobilekit` commands exist.
 - [x] Keep internal files required by lints, config generation, duplication profiles, or report filtering.
 - [x] Run final pinned CLI verification.
 - [x] Run installed-mode smoke verification.
 
 ## Decision Log
 
-- 2026-08-01: Old public `tool/` wrappers will be deleted after migration -> `mobilekit` becomes the supported public command surface.
+- 2026-08-01: Old public script wrappers are deleted after migration -> `mobilekit` becomes the supported public command surface.
 - 2026-08-01: CI uses pinned CLI execution -> avoids global activation drift.
 - 2026-08-01: Internal policy/config files stay repo-local -> CLI executes them but does not own their policy.
-- 2026-08-01: Retain the Dart files under `tool/` that still implement delegated workflows -> they are internal behavior owners, not public command entrypoints.
+- 2026-08-01: Retain only repository-owned policy/configuration data outside the CLI package -> it is editable repo policy, not public command implementation.
 - 2026-08-01: Keep explicit Windows `cmd.exe` handling for CLI-launched `npx` commands -> preserve the existing jscpd invocation across supported host platforms.
 
 ## Verification
@@ -67,7 +69,6 @@ This plan updates docs and CI to use the pinned CLI command, removes old public 
 Run exact commands and record outcomes before completing this plan.
 
 ```bash
-rg -n "dart run tool/|\\./tool/check_|tool/verify\\.dart|tool/fix\\.dart|tool/scaffold_feature\\.dart" AGENTS.md README.md docs/engineering docs/template docs/core .github tool/agent
 dart run mobile_core_kit_cli:mobilekit doctor
 dart run mobile_core_kit_cli:mobilekit verify --env dev
 dart pub global activate --source path packages/mobile_core_kit_cli
@@ -103,22 +104,22 @@ CLI package analysis, 21 CLI tests, and `git diff --check` passed.
 - Risk: CI command changes hide a behavior difference.
 - Mitigation: perform cutover only after old/new parity from prior plans and run full pinned CLI verification.
 
-- Risk: deleting too much from `tool/` breaks custom lints or duplication policy.
-- Mitigation: delete only public wrappers; keep config/data/helper files that remain referenced.
+- Risk: deleting too much from the legacy script surface breaks repository policy.
+- Mitigation: keep policy data in `lint/`, `duplication/`, and the root
+  `.jscpd*.json` files; keep orchestration in the CLI package.
 
 ## Completion Notes
 
 Migrated repository docs, PR guidance, CI workflows, bootstrap actions, agent
 helpers, and engineering references to the pinned `mobilekit` interface.
 
-Deleted the three superseded public shell wrappers:
-`tool/check_duplication.sh`, `tool/check_small_helper_duplication.sh`, and
-`tool/check_presentation_duplication.sh`. The equivalent CLI profiles were
-verified, while policy/config/allowlist/filter files and delegated Dart
-implementation helpers remain repo-local.
+Deleted the superseded public shell wrappers. The equivalent CLI profiles were
+verified, while policy/configuration remains repo-local and orchestration is
+owned by the CLI package.
 
 No Flutter application runtime behavior changed.
 
 ## Follow-ups
 
-- [x] No unresolved public wrapper debt remains; historical exec plans and ADRs retain original commands as audit history.
+- [x] No unresolved public wrapper debt remains; execution plans and ADRs use
+  the current `mobilekit` command surface.

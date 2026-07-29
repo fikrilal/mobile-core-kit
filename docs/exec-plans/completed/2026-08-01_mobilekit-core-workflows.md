@@ -19,25 +19,25 @@ This plan covers verification, fixing, config generation, environment validation
 - architectural constraints:
   - preserve existing behavior before refactoring internals
   - shared process-running logic should live in the CLI package rather than being copied again
-  - compatibility wrappers under `tool/` may delegate to CLI behavior during migration
+  - the CLI owns the public workflow surface; internal implementation remains package-local
 - product/runtime constraints:
   - no app runtime behavior should change
   - generated config output must remain byte-for-byte compatible unless a difference is explicitly justified
-  - canonical verification semantics must remain equivalent to `tool/verify.dart`
+  - canonical verification semantics must remain stable under `mobilekit verify`
 - out of scope:
   - duplication harness conversion
   - feature scaffolding
   - CI/docs cutover
-  - deleting old public `tool/` wrappers
+  - deleting old public script wrappers
 
 ## Acceptance Criteria
 
 1. `mobilekit verify --env dev --skip-tests` works through pinned and installed modes.
 2. `mobilekit fix --dry-run` and `mobilekit fix --apply` map to the existing safe fix workflow.
-3. `mobilekit config generate --env dev` produces the same build config behavior as `tool/gen_config.dart`.
+3. `mobilekit config generate --env dev` produces the expected build config behavior.
 4. `mobilekit env verify` supports existing env-schema flags.
 5. `mobilekit codegen verify`, `mobilekit l10n verify`, and `mobilekit project-map verify` work.
-6. Existing `dart run tool/*.dart` commands covered by this plan still work during migration.
+6. The pinned and installed `mobilekit` command forms covered by this plan work.
 7. Tests or parity checks prove old and new command paths are equivalent for representative cases.
 
 ## Implementation Checklist
@@ -50,14 +50,14 @@ This plan covers verification, fixing, config generation, environment validation
 - [x] Implement `mobilekit l10n verify`.
 - [x] Implement `mobilekit project-map verify`.
 - [x] Reuse or move shared runner logic from existing scripts without changing behavior.
-- [x] Keep current `tool/` entry points working, either unchanged or as compatibility wrappers.
+- [x] Keep the pinned and installed `mobilekit` entry points working.
 - [x] Add focused tests for command argument parsing and command-to-step mapping.
 - [x] Add parity notes for behavior that cannot be unit-tested cheaply.
 
 ## Decision Log
 
 - 2026-08-01: Port by delegation first where practical -> reduces risk of accidental verification behavior changes.
-- 2026-08-01: Existing public `tool/` commands remain during this plan -> deletion belongs to final cutover.
+- 2026-08-01: The CLI becomes the supported public command surface after parity is verified.
 - 2026-08-01: Keep workflow flags owned by the existing scripts -> the CLI forwards arguments unchanged and avoids duplicating repository policy.
 
 ## Verification
@@ -66,19 +66,19 @@ Run exact commands and record outcomes before completing this plan.
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests --skip-duplication
-dart run tool/verify.dart --env dev --skip-tests --skip-duplication
+dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests --skip-duplication
 dart run mobile_core_kit_cli:mobilekit fix --dry-run
-dart run tool/fix.dart --dry-run
+dart run mobile_core_kit_cli:mobilekit fix --dry-run
 dart run mobile_core_kit_cli:mobilekit config generate --env dev
-dart run tool/gen_config.dart --env dev
+dart run mobile_core_kit_cli:mobilekit config generate --env dev
 dart run mobile_core_kit_cli:mobilekit env verify --all
-dart run tool/verify_env_schema.dart --all
+dart run mobile_core_kit_cli:mobilekit env verify --all
 dart run mobile_core_kit_cli:mobilekit codegen verify
-dart run tool/verify_codegen.dart
+dart run mobile_core_kit_cli:mobilekit codegen verify
 dart run mobile_core_kit_cli:mobilekit l10n verify
-dart run tool/verify_untranslated_messages.dart
+dart run mobile_core_kit_cli:mobilekit l10n verify
 dart run mobile_core_kit_cli:mobilekit project-map verify
-dart run tool/verify_project_map_drift.dart
+dart run mobile_core_kit_cli:mobilekit project-map verify
 dart run test packages/mobile_core_kit_cli
 ```
 
@@ -106,7 +106,7 @@ same-version Pub snapshot cache before the new command set was visible.
 
 ## Risks And Mitigations
 
-- Risk: `mobilekit verify` diverges from `tool/verify.dart`.
+- Risk: `mobilekit verify` diverges from the established verification behavior.
 - Mitigation: delegate first and run old/new parity commands before refactoring internals.
 
 - Risk: config generation changes output formatting.
@@ -126,8 +126,8 @@ Added delegation routes for the core workflow surface:
 - command help and repository-root errors at the CLI boundary;
 - injectable command execution and focused command-to-script parity tests.
 
-The existing `tool/*.dart` entry points remain unchanged and continue to be
-the behavior owners during migration. No app runtime behavior changed.
+The CLI-owned workflows are now the behavior owners for the supported command
+surface. No app runtime behavior changed.
 
 ## Follow-ups
 

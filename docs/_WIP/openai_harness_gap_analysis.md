@@ -42,7 +42,7 @@ Capture current-state gaps between this repo and the workflow model described in
 ## Evidence Notes
 
 1. No scheduled workflows detected (`.github/workflows/*` has no `schedule:` trigger).
-2. No explicit agent self-review/automerge scripts found in `tool/` or workflow files.
+2. No explicit agent self-review/automerge commands found in the CLI or workflow files.
 3. Docs and architecture guardrails are strong and already operational.
 4. Observability primitives exist (logging, startup metrics, trace IDs), but not a dedicated agent-run verification loop.
 
@@ -53,7 +53,7 @@ Capture current-state gaps between this repo and the workflow model described in
 1. Add a documented PR loop contract for agent runs:
    - Inputs: task, acceptance criteria, risk class.
    - Required outputs: tests/evidence, changelog, unresolved risks.
-2. Add script(s) under `tool/agent/` for repeatable loop steps:
+2. Add or extend `mobilekit` commands for repeatable loop steps:
    - local verify
    - prepare PR body template
    - structured self-review checklist

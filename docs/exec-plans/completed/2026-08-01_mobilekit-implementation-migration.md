@@ -42,7 +42,7 @@ the old public Dart entrypoints after behavior parity is proven.
    implementations with behavior parity.
 3. Existing CLI duplication orchestration remains available and continues to
    use repo-local configs, allowlists, and the internal report filter.
-4. Obsolete public Dart entrypoints are deleted from `tool/`.
+4. Obsolete public Dart entrypoints are deleted from the legacy script surface.
 5. Tests cover command parsing, workflow sequencing, and important file/report
    behavior without requiring a Flutter device.
 6. The pinned and installed `mobilekit` verification paths pass.
@@ -55,7 +55,7 @@ the old public Dart entrypoints after behavior parity is proven.
 - [x] Migrate safe fix and canonical verification workflows.
 - [x] Migrate feature scaffolding.
 - [x] Update CLI tests for direct workflow ownership and parity behavior.
-- [x] Delete obsolete public `tool/*.dart` entrypoints and update references.
+- [x] Delete obsolete public script entrypoints and update references.
 - [x] Confirm policy/config/internal helpers remain intentionally repo-local.
 - [x] Run pinned, installed, package, and repository verification.
 
@@ -64,9 +64,9 @@ the old public Dart entrypoints after behavior parity is proven.
 - 2026-08-01: Public workflow implementations move into CLI-owned modules ->
   delegation to old Dart entrypoints did not satisfy the proposal's Phase 2
   ownership boundary.
-- 2026-08-01: Policy/config and explicitly internal helpers remain under
-  `tool/` -> they are repository-owned data or private implementation details,
-  not public workflow entrypoints.
+- 2026-08-01: Policy/config and explicitly internal helpers remain in
+  repository-owned directories -> they are repository-owned data or private
+  implementation details, not public workflow entrypoints.
 - 2026-08-01: Reuse the existing CLI process runner and pass repository roots
   explicitly -> remove duplicated FVM/platform resolution without changing
   command execution semantics.
@@ -135,9 +135,9 @@ git diff --check
   project-map validation, and feature scaffolding.
 - Added `WorkflowContext` so workflows receive an explicit repository root,
   shared command executor, and output sinks.
-- Removed the old public Dart entrypoints from `tool/`. The remaining top-level
-  files are repository-local policy/configuration data, private guardrail/report
-  helpers, or the unrelated asset-generation utility.
+- Removed the old public Dart entrypoints from the legacy script surface.
+  Repository policy remains in root-owned data files and guardrail/report
+  orchestration is owned by the CLI package.
 - Updated CLI and workflow tests to exercise direct ownership, command
   sequencing, generated config behavior, and temp-repository scaffolding.
 - Updated current-state documentation and documented recovery for stale global
