@@ -175,7 +175,7 @@ The CLI should not own repository policy:
 
 - architecture import boundaries stay in `lint/architecture_lints.yaml`;
 - custom lint AST rules stay in `packages/mobile_core_kit_lints`;
-- duplication allowlists stay in `tool/*.json`;
+- duplication allowlists stay in `duplication/*.json`;
 - jscpd profile config stays in `.jscpd*.json`;
 - engineering workflow expectations stay in `docs/engineering/*`.
 

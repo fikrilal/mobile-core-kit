@@ -19,7 +19,7 @@ This plan converts the public shell-based duplication command surface into Dart 
 - architectural constraints:
   - scaffolding behavior must follow existing feature architecture conventions
   - duplication config remains in `.jscpd*.json`
-  - duplication allowlists remain in `tool/*allowlist.json`
+  - duplication allowlists remain in `duplication/*.json`
   - `tool/filter_duplication_report.dart` may remain an internal helper or be moved only if ownership stays clear
 - product/runtime constraints:
   - no app runtime behavior should change

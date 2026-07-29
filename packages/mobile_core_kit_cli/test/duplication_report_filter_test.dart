@@ -23,7 +23,7 @@ void main() {
         ).run(
           profileName: 'core',
           reportPath: '.tmp/report.json',
-          allowlistPath: 'tool/duplication_allowlist.json',
+          allowlistPath: 'duplication/duplication_allowlist.json',
           fatalFound: true,
         );
 
@@ -40,7 +40,7 @@ void main() {
     addTearDown(() => repository.deleteSync(recursive: true));
     _writeReport(repository);
     final allowlist = File(
-      p.join(repository.path, 'tool', 'duplication_allowlist.json'),
+      p.join(repository.path, 'duplication', 'duplication_allowlist.json'),
     )..createSync(recursive: true);
     allowlist.writeAsStringSync(
       jsonEncode({
@@ -67,7 +67,7 @@ void main() {
         ).run(
           profileName: 'core',
           reportPath: '.tmp/report.json',
-          allowlistPath: 'tool/duplication_allowlist.json',
+          allowlistPath: 'duplication/duplication_allowlist.json',
         );
 
     expect(result, 0);

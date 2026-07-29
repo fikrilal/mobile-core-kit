@@ -34,7 +34,7 @@ Configured via:
 - `pubspec.yaml` → `flutter: generate: true`
 - `l10n.yaml` → `arb-dir`, `output-dir`, and enterprise toggles:
   - `required-resource-attributes: true` (forces `@key.description`)
-  - `untranslated-messages-file: tool/untranslated_messages.json`
+  - `untranslated-messages-file: .tmp/untranslated_messages.json`
   - `preferred-supported-locales: [en, id]`
   - `use-named-parameters: true`
 

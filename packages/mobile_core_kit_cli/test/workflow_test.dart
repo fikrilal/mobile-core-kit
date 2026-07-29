@@ -119,18 +119,19 @@ Future<Directory> _createRepository() async {
   File(
     p.join(repository.path, 'pubspec.yaml'),
   ).writeAsStringSync('name: test_repository\n');
+  File(p.join(repository.path, '.git')).writeAsStringSync('gitdir: test\n');
   Directory(
     p.join(repository.path, 'lib/core/foundation/config'),
   ).createSync(recursive: true);
   Directory(
     p.join(repository.path, 'lib/features'),
   ).createSync(recursive: true);
-  Directory(p.join(repository.path, 'tool')).createSync(recursive: true);
+  Directory(p.join(repository.path, '.tmp')).createSync(recursive: true);
   File(
     p.join(repository.path, 'AGENTS.md'),
   ).writeAsStringSync('Repository test fixture without a core project map.\n');
   File(
-    p.join(repository.path, 'tool/untranslated_messages.json'),
+    p.join(repository.path, '.tmp/untranslated_messages.json'),
   ).writeAsStringSync('{}\n');
 
   for (final environment in ['dev', 'staging', 'prod']) {

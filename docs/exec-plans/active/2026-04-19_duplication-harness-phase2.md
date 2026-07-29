@@ -101,7 +101,7 @@ dart run custom_lint
 ## Completion Notes
 
 Phase 2 shipped the reviewed-signal layer for duplication detection:
-- added `tool/duplication_allowlist.json` for reviewed acceptable duplicates with rationale
+- added `duplication/duplication_allowlist.json` for reviewed acceptable duplicates with rationale
 - extended the CLI duplication report filter to separate actionable vs reviewed acceptable groups
 - tightened duplicate categories so the report no longer misclassifies value objects or auth use cases
 - documented duplication-check usage in the self-review / PR loop

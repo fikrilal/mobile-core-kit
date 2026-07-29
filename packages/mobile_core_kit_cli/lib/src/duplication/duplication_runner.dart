@@ -97,17 +97,17 @@ class DuplicationRunner {
       DuplicationProfile.core => const _FilterSpec(
         profile: 'core',
         report: '.tmp/jscpd-phase1/jscpd-report.json',
-        allowlist: 'tool/duplication_allowlist.json',
+        allowlist: 'duplication/duplication_allowlist.json',
       ),
       DuplicationProfile.smallHelpers => const _FilterSpec(
         profile: 'small_helpers',
         report: '.tmp/jscpd-small-helpers/jscpd-report.json',
-        allowlist: 'tool/small_helper_duplication_allowlist.json',
+        allowlist: 'duplication/small_helper_duplication_allowlist.json',
       ),
       DuplicationProfile.presentation => const _FilterSpec(
         profile: 'presentation',
         report: '.tmp/jscpd-presentation/jscpd-report.json',
-        allowlist: 'tool/presentation_duplication_allowlist.json',
+        allowlist: 'duplication/presentation_duplication_allowlist.json',
       ),
     };
   }

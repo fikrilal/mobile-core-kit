@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 
-const String _defaultPath = 'tool/untranslated_messages.json';
+const String _defaultPath = '.tmp/untranslated_messages.json';
 
 class L10nWorkflow {
   const L10nWorkflow(this.context);

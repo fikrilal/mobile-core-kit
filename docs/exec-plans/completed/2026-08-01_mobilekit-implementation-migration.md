@@ -18,7 +18,7 @@ the old public Dart entrypoints after behavior parity is proven.
 
 - architectural constraints:
   - keep repository policy and configuration data repo-local: `.jscpd*.json`,
-    `tool/*allowlist.json`, `lint/`, and `tool/untranslated_messages.json`
+    `duplication/*.json`, `lint/`, and `.tmp/untranslated_messages.json`
   - keep implementation-detail helpers private to the repository unless they
     are part of a public workflow
   - reuse the existing CLI `CommandRunner` for pinned Dart/Flutter execution

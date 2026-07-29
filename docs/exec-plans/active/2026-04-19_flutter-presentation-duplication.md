@@ -101,7 +101,7 @@ Shipped a separate Flutter-presentation duplication profile:
 - added `.jscpd.presentation.json`
 - added the CLI presentation duplication profile in `packages/mobile_core_kit_cli/`
 - extended the CLI duplication report filter with a `presentation` profile
-- added `tool/presentation_duplication_allowlist.json`
+- added `duplication/presentation_duplication_allowlist.json`
 - documented usage in the PR/self-review workflow
 
 Review outcome for the first presentation detector run:

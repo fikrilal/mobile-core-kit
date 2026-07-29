@@ -95,7 +95,8 @@ See `docs/engineering/guardrails.md` for the full list of guardrails (lints + ve
   - Each future feature follows the same vertical slice layout.
 - `lib/navigation/` – GoRouter setup and route lists per feature.
 - `.env/` – YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
-- `tool/` – repository-local policy/configuration data and unrelated utilities.
+- `tool/` – internal harness scripts and utilities.
+- `duplication/` – reviewed duplication-policy allowlists.
 - `docs/engineering/` – core architecture and implementation guides.
 - `docs/template/` – template customization guides (what to change when cloning).
 - `docs/contracts/` – cross-team/backend contracts (API/auth semantics, error codes).

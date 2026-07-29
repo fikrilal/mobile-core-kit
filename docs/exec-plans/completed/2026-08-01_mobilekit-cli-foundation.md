@@ -18,7 +18,7 @@ This plan establishes the package, executable, command routing, shared process r
 - architectural constraints:
   - CLI orchestration belongs in `packages/mobile_core_kit_cli/`
   - custom analyzer lints remain in `packages/mobile_core_kit_lints/`
-  - repo policy/config remains in existing files such as `lint/architecture_lints.yaml`, `.jscpd*.json`, and `tool/*allowlist.json`
+  - repo policy/config remains in existing files such as `lint/architecture_lints.yaml`, `.jscpd*.json`, and `duplication/*.json`
   - do not hide architecture lint policy, duplication allowlists, or jscpd profile config inside CLI code
 - product/runtime constraints:
   - no Flutter app runtime behavior should change

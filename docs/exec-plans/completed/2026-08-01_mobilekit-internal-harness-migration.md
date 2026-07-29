@@ -24,7 +24,7 @@ workflow path.
 - keep repo-local:
   - `lint/`
   - duplication allowlists and `.jscpd*.json`
-  - `tool/untranslated_messages.json`
+  - `.tmp/untranslated_messages.json`
 - leave unrelated asset generation (`tool/gen_android12_splash_icon.dart`)
   outside the harness CLI unless a separate command is requested.
 

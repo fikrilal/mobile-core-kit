@@ -68,7 +68,7 @@ Current scan scope:
 
 Config:
 - `.jscpd.json`
-- `tool/duplication_allowlist.json`
+- `duplication/duplication_allowlist.json`
 
 Current categories:
 - `failure_mapper`
@@ -101,7 +101,7 @@ Purpose:
 
 Config:
 - `.jscpd.small_helpers.json`
-- `tool/small_helper_duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
 
 Current categories:
 - `field_error_helper`
@@ -132,7 +132,7 @@ Purpose:
 
 Config:
 - `.jscpd.presentation.json`
-- `tool/presentation_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Current categories:
 - `cubit_field_validation`
@@ -234,13 +234,13 @@ Use these heuristics:
 The harness supports reviewed acceptable duplicates through JSON allowlists.
 
 Core profile:
-- `tool/duplication_allowlist.json`
+- `duplication/duplication_allowlist.json`
 
 Small-helper profile:
-- `tool/small_helper_duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
 
 Presentation profile:
-- `tool/presentation_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Each entry records:
 - `firstPath`
@@ -327,9 +327,9 @@ Scripts and config:
 - `.jscpd.presentation.json`
 - `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart`
 - `packages/mobile_core_kit_cli/lib/src/duplication/duplication_report_filter.dart`
-- `tool/duplication_allowlist.json`
-- `tool/small_helper_duplication_allowlist.json`
-- `tool/presentation_duplication_allowlist.json`
+- `duplication/duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Workflow docs:
 - `docs/engineering/agent_pr_loop.md`
