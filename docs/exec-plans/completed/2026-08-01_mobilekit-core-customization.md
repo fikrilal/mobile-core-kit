@@ -2,7 +2,7 @@
 
 Date: 2026-08-01
 Owner: Dante
-Status: active
+Status: completed
 Risk class: medium
 Related issue/PR: [template initialization and customization proposal](../../../_WIP/2026-08-01_mobilekit_template_initialization_customization_proposal.md)
 
@@ -54,22 +54,22 @@ plans.
 
 ## Implementation Checklist
 
-- [ ] Define transformation and file-change interfaces for plan, apply, skip,
+- [x] Define transformation and file-change interfaces for plan, apply, skip,
   conflict, and external follow-up results.
-- [ ] Implement managed-file fingerprints or equivalent conflict detection.
-- [ ] Implement atomic writes/rollback for the planned file set.
-- [ ] Add validators for Dart package names, repository slugs, display names, and
+- [x] Implement managed-file fingerprints or equivalent conflict detection.
+- [x] Implement atomic writes/rollback for the planned file set.
+- [x] Add validators for Dart package names, repository slugs, display names, and
   path collisions.
-- [ ] Implement root pubspec.yaml name/description transformation.
-- [ ] Implement allowlisted Dart import URI transformation without touching CLI
+- [x] Implement root pubspec.yaml name/description transformation.
+- [x] Implement allowlisted Dart import URI transformation without touching CLI
   or lint package imports.
-- [ ] Implement ARB appTitle transformation while preserving pseudo-locale
+- [x] Implement ARB appTitle transformation while preserving pseudo-locale
   prefixes/suffixes.
-- [ ] Update selected current README/template references and test fixtures;
+- [x] Update selected current README/template references and test fixtures;
   leave historical documents for residual reporting.
-- [ ] Add fixture-based tests for dry-run, apply, rollback, conflict, and
+- [x] Add fixture-based tests for dry-run, apply, rollback, conflict, and
   idempotency behavior.
-- [ ] Connect the engine to the init/customize lifecycle from plan 1.
+- [x] Connect the engine to the init/customize lifecycle from plan 1.
 
 ## Decision Log
 
@@ -83,26 +83,37 @@ plans.
 
 ## Verification
 
-Run after implementation:
+Executed after implementation:
 
 ~~~bash
 (cd packages/mobile_core_kit_cli && dart test)
 fvm flutter analyze
 dart run custom_lint
 dart run mobile_core_kit_cli:mobilekit lint
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ~~~
 
-Expected outcome: CLI and fixture tests pass; application imports and generated
-references remain analyzable; custom lints report no new violations.
+Outcome: all listed checks passed. The CLI package suite passed 61 tests;
+Flutter analyze passed; custom lints passed; the CLI lint workflow passed; and
+the canonical verify gate passed all 553 Flutter tests, both duplication
+harnesses, modal/color checks, and formatting. Fixture tests cover dry-run,
+apply, rollback, conflict, idempotency, residual reporting, pseudo-locale
+markers, and harness-package import boundaries.
 
-Additional targeted checks:
+Additional targeted checks, both passed:
 
 ~~~bash
-dart run mobile_core_kit_cli:mobilekit customize --dry-run
 git diff --check
+dart format --output=none --set-exit-if-changed \
+  packages/mobile_core_kit_cli/lib/src/template \
+  packages/mobile_core_kit_cli/test/template_customization_engine_test.dart \
+  packages/mobile_core_kit_cli/test/template_workflow_test.dart
 ~~~
 
-The dry-run check must leave git status --short unchanged.
+The fixture dry-run left its worktree unchanged. The repository diff and
+package format checks also passed. A real repository dry-run requires an
+initialized `.mobilekit/project.yaml` or an explicit `--config` input; no
+current repository files were customized as part of this execution.
 
 ## Runtime Evidence
 
@@ -131,9 +142,14 @@ the Android, iOS, and final end-to-end plans.
 
 ## Completion Notes
 
-Pending implementation.
+Implemented an explicit transformation registry for root metadata, application
+package imports, localized app branding, and the current README heading. The
+engine records non-secret managed-file fingerprints in `.mobilekit/project.yaml`,
+detects edits before reruns, reports residual defaults as external follow-up,
+and applies all writes transactionally with rollback on failure. Native platform
+and integration transformations remain assigned to the later execution plans.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to docs/exec-plans/tech_debt_tracker.md for any
-  intentionally unhandled current documentation references.
+- [x] No new unresolved debt was identified. Residual references in historical
+  or non-allowlisted files are reported by the plan as external follow-up.

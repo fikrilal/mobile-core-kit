@@ -172,9 +172,10 @@ Future<Directory> _createRepository() async {
   final repository = await Directory.systemTemp.createTemp(
     'mobilekit_template_workflow_test_',
   );
-  File(
-    p.join(repository.path, 'pubspec.yaml'),
-  ).writeAsStringSync('name: mobile_core_kit\\n');
+  File(p.join(repository.path, 'pubspec.yaml')).writeAsStringSync('''
+name: mobile_core_kit
+description: 'A new Flutter project.'
+''');
   final marker = File(p.join(repository.path, templateMarkerRelativePath))
     ..parent.createSync(recursive: true);
   marker.writeAsStringSync('''

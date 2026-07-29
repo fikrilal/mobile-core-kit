@@ -75,8 +75,9 @@ mobilekit customize --dry-run
 
 `customize` reads the existing manifest when present and allows the same
 identity and integration-policy values to be reviewed or replaced. It fails
-when no manifest exists unless a config file is supplied. At this foundation
-stage, applying the plan writes the manifest only; platform and source
+when no manifest exists unless a config file is supplied. Applying the plan
+updates the allowlisted application package, localized branding, root metadata,
+and current README identity references. Native platform and integration
 transformations are delivered by the follow-on customization plans.
 
 Both commands reject unsupported schema versions and secret-like or runtime

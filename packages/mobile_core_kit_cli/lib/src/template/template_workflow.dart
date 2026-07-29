@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/template/template_customization_engine.dart';
 import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
 import 'package:mobile_core_kit_cli/src/template/template_plan.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
@@ -87,9 +88,17 @@ class TemplateLifecycleWorkflow {
     final manifest = TemplateManifest.forMarker(
       marker: marker,
       customization: customization,
+      managedFileFingerprints:
+          existingManifest?.managedFileFingerprints ?? const {},
     );
-    final plan = _buildPlan(existingManifest, manifest);
-    _writePlan(command, manifest, plan);
+    final engine = TemplateCustomizationEngine(
+      rootDirectory: context.rootDirectory,
+      existingManifest: existingManifest,
+      nextManifest: manifest,
+    );
+    final customizationPlan = engine.buildPlan();
+    final plan = customizationPlan.summary;
+    _writePlan(command, manifest, customizationPlan);
 
     if (args.flag('dry-run')) {
       context.output.writeln('Dry run: no files were changed.');
@@ -125,11 +134,17 @@ class TemplateLifecycleWorkflow {
       ).exitCode;
     }
 
-    manifest.writeTo(manifestFile);
+    final applyResult = engine.apply(customizationPlan);
+    if (!applyResult.succeeded) {
+      context.errorOutput.writeln(
+        'ERROR: ' + (applyResult.message ?? 'Customization was not applied.'),
+      );
+      return applyResult.exitCode;
+    }
     context.output.writeln('Wrote ' + projectManifestRelativePath + '.');
     context.output.writeln(
-      'Source and platform transformations are registered by later '
-      'customization phases.',
+      'Managed application package, branding, metadata, and documentation '
+      'changes were applied.',
     );
     return TemplateLifecycleResult(
       plan: plan,
@@ -284,34 +299,12 @@ class TemplateLifecycleWorkflow {
     return slug.isEmpty ? 'mobile-app' : slug;
   }
 
-  TemplatePlan _buildPlan(TemplateManifest? existing, TemplateManifest next) {
-    final isUnchanged = existing != null && existing.toYaml() == next.toYaml();
-    return TemplatePlan(
-      items: [
-        TemplatePlanItem(
-          status: isUnchanged
-              ? TemplatePlanStatus.skipped
-              : TemplatePlanStatus.changed,
-          target: projectManifestRelativePath,
-          description: isUnchanged
-              ? 'manifest already matches the normalized inputs'
-              : 'write the normalized project manifest',
-        ),
-        const TemplatePlanItem(
-          status: TemplatePlanStatus.external,
-          target: 'environment and external services',
-          description:
-              'API endpoints, OIDC client IDs, credentials, and external setup remain user-owned',
-        ),
-      ],
-    );
-  }
-
   void _writePlan(
     TemplateLifecycleCommand command,
     TemplateManifest manifest,
-    TemplatePlan plan,
+    TemplateCustomizationPlan customizationPlan,
   ) {
+    final plan = customizationPlan.summary;
     final customization = manifest.customization;
     context.output.writeln('mobilekit ' + command.label + ' plan');
     context.output.writeln(

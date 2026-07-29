@@ -223,6 +223,7 @@ class TemplateCustomization {
       'firebase',
       'environment',
       'managed_surfaces',
+      'managed_files',
     }, 'root');
 
     final schema = _optionalInt(root['schema']);
@@ -462,6 +463,7 @@ class TemplateManifest {
     required this.templateVersion,
     required this.customization,
     required this.managedSurfaces,
+    this.managedFileFingerprints = const {},
   });
 
   final int schema;
@@ -469,10 +471,12 @@ class TemplateManifest {
   final String templateVersion;
   final TemplateCustomization customization;
   final List<String> managedSurfaces;
+  final Map<String, String> managedFileFingerprints;
 
   factory TemplateManifest.forMarker({
     required TemplateMarker marker,
     required TemplateCustomization customization,
+    Map<String, String> managedFileFingerprints = const {},
   }) {
     return TemplateManifest(
       schema: currentTemplateSchema,
@@ -480,6 +484,22 @@ class TemplateManifest {
       templateVersion: marker.version,
       customization: customization,
       managedSurfaces: List<String>.unmodifiable(defaultManagedSurfaces),
+      managedFileFingerprints: Map<String, String>.unmodifiable(
+        managedFileFingerprints,
+      ),
+    );
+  }
+
+  TemplateManifest withManagedFileFingerprints(
+    Map<String, String> fingerprints,
+  ) {
+    return TemplateManifest(
+      schema: schema,
+      template: template,
+      templateVersion: templateVersion,
+      customization: customization,
+      managedSurfaces: managedSurfaces,
+      managedFileFingerprints: Map<String, String>.unmodifiable(fingerprints),
     );
   }
 
@@ -533,6 +553,9 @@ class TemplateManifest {
       templateVersion: version,
       customization: customization,
       managedSurfaces: List<String>.unmodifiable(surfaces),
+      managedFileFingerprints: Map<String, String>.unmodifiable(
+        _stringMap(root['managed_files']) ?? const {},
+      ),
     );
   }
 
@@ -547,6 +570,15 @@ class TemplateManifest {
       ..writeAll(
         managedSurfaces.map((surface) => '  - ' + _quote(surface) + '\n'),
       );
+    if (managedFileFingerprints.isNotEmpty) {
+      buffer.writeln('managed_files:');
+      final paths = managedFileFingerprints.keys.toList()..sort();
+      for (final path in paths) {
+        buffer.writeln(
+          '  ' + _quote(path) + ': ' + _quote(managedFileFingerprints[path]!),
+        );
+      }
+    }
     return buffer.toString();
   }
 
@@ -692,6 +724,19 @@ List<String>? _stringList(dynamic value) {
   for (final item in value) {
     final string = _requiredString(item, 'list item');
     result.add(string);
+  }
+  return result;
+}
+
+Map<String, String>? _stringMap(dynamic value) {
+  if (value == null) return null;
+  final map = _mapValue(value, 'managed_files');
+  final result = <String, String>{};
+  for (final entry in map.entries) {
+    result[entry.key] = _requiredString(
+      entry.value,
+      'managed_files.${entry.key}',
+    );
   }
   return result;
 }
