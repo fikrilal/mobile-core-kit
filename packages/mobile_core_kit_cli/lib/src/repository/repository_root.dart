@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
 import 'package:path/path.dart' as p;
 
 class RepositoryRootLocator {
@@ -28,9 +29,12 @@ class RepositoryRootLocator {
     final hasGitMetadata =
         File(p.join(directory.path, '.git')).existsSync() ||
         Directory(p.join(directory.path, '.git')).existsSync();
-    final hasToolDirectory = Directory(
-      p.join(directory.path, 'tool'),
+    final hasTemplateMarker = File(
+      p.join(directory.path, templateMarkerRelativePath),
     ).existsSync();
-    return hasGitMetadata || hasToolDirectory;
+    final hasProjectManifest = File(
+      p.join(directory.path, projectManifestRelativePath),
+    ).existsSync();
+    return hasGitMetadata || hasTemplateMarker || hasProjectManifest;
   }
 }

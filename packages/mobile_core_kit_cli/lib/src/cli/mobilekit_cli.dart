@@ -9,6 +9,7 @@ import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
+import 'package:mobile_core_kit_cli/src/template/template_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
@@ -29,6 +30,7 @@ class MobilekitCli {
     ExecutableFinder? executableFinder,
     CommandPlatform? platform,
     CommandExecutor? commandExecutor,
+    TemplateInputReader? inputReader,
     StringSink? output,
     StringSink? errorOutput,
   }) : _currentDirectory = currentDirectory ?? Directory.current,
@@ -36,6 +38,7 @@ class MobilekitCli {
        _executableFinder = executableFinder,
        _platform = platform,
        _commandExecutor = commandExecutor,
+       _inputReader = inputReader,
        _output = output ?? stdout,
        _errorOutput = errorOutput ?? stderr;
 
@@ -44,6 +47,7 @@ class MobilekitCli {
   final ExecutableFinder? _executableFinder;
   final CommandPlatform? _platform;
   final CommandExecutor? _commandExecutor;
+  final TemplateInputReader? _inputReader;
   final StringSink _output;
   final StringSink _errorOutput;
 
@@ -54,6 +58,14 @@ class MobilekitCli {
     }
 
     return switch (arguments.first) {
+      'init' => _runTemplateLifecycle(
+        command: TemplateLifecycleCommand.init,
+        arguments: arguments.skip(1).toList(),
+      ),
+      'customize' => _runTemplateLifecycle(
+        command: TemplateLifecycleCommand.customize,
+        arguments: arguments.skip(1).toList(),
+      ),
       'doctor' => _runDoctor(arguments.skip(1).toList()),
       'verify' => _runWorkflow(
         command: 'verify',
@@ -133,6 +145,29 @@ class MobilekitCli {
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
+  }
+
+  Future<int> _runTemplateLifecycle({
+    required TemplateLifecycleCommand command,
+    required List<String> arguments,
+  }) async {
+    if (_containsHelp(arguments)) {
+      TemplateLifecycleWorkflow.writeUsage(_output, command);
+      return 0;
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    return _runRepositoryWorkflow(
+      command: command.label,
+      root: root,
+      usage: 'Usage: mobilekit ${command.label} [options]',
+      workflow: (context) => TemplateLifecycleWorkflow(
+        context,
+        inputReader: _inputReader,
+      ).run(command, arguments),
+    );
   }
 
   Future<int> _runRuntimeLogs(List<String> arguments) async {
@@ -453,6 +488,8 @@ class MobilekitCli {
     output.writeln('  mobilekit <command> [options]');
     output.writeln();
     output.writeln('Commands:');
+    output.writeln('  init      Initialize and customize a template copy.');
+    output.writeln('  customize Re-run template customization.');
     output.writeln('  doctor    Diagnose local repository tooling.');
     output.writeln('  lint      Run Dart and Flutter lint checks.');
     output.writeln(

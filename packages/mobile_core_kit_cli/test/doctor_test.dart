@@ -87,7 +87,11 @@ Future<Directory> _createRepository() async {
   final directory = await Directory.systemTemp.createTemp(
     'mobile_core_kit_cli_doctor_test_',
   );
-  Directory(p.join(directory.path, 'tool')).createSync();
+  File(p.join(directory.path, '.mobilekit', 'template.yaml'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(
+      'schema: 1\ntemplate: mobile_core_kit\nversion: 2026-08-01\n',
+    );
   File(
     p.join(directory.path, 'pubspec.yaml'),
   ).writeAsStringSync('name: test\n');

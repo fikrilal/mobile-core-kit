@@ -20,6 +20,8 @@ void main() {
       contains('mobilekit - mobile-core-kit repository tooling'),
     );
     expect(output.toString(), contains('doctor'));
+    expect(output.toString(), contains('init'));
+    expect(output.toString(), contains('customize'));
     expect(output.toString(), contains('lint'));
     expect(output.toString(), contains('runtime'));
     expect(errors, isEmpty);
@@ -55,6 +57,21 @@ void main() {
 
     expect(result, 0);
     expect(output.toString(), contains('Usage: mobilekit lint'));
+    expect(errors, isEmpty);
+  });
+
+  test('prints init command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['init', '--help']);
+
+    expect(result, 0);
+    expect(output.toString(), contains('Usage: mobilekit init [options]'));
     expect(errors, isEmpty);
   });
 
@@ -100,7 +117,11 @@ void main() {
       File(
         p.join(tempDirectory.path, 'pubspec.yaml'),
       ).writeAsStringSync('name: test_repository\n');
-      Directory(p.join(tempDirectory.path, 'tool')).createSync();
+      File(p.join(tempDirectory.path, '.mobilekit', 'template.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync(
+          'schema: 1\ntemplate: mobile_core_kit\nversion: 2026-08-01\n',
+        );
 
       final cases = <List<List<String>>>[
         [

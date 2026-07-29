@@ -201,7 +201,11 @@ Future<Directory> _createRepository() async {
   File(
     p.join(directory.path, 'pubspec.yaml'),
   ).writeAsStringSync('name: test_repository\n');
-  Directory(p.join(directory.path, 'tool')).createSync();
+  File(p.join(directory.path, '.mobilekit', 'template.yaml'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(
+      'schema: 1\ntemplate: mobile_core_kit\nversion: 2026-08-01\n',
+    );
   return directory;
 }
 

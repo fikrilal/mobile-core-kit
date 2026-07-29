@@ -22,6 +22,8 @@ The CLI is private to this repository and is not published to pub.dev.
 
 | Command | Purpose |
 | --- | --- |
+| `mobilekit init` | Initialize template lifecycle state and enter customization. |
+| `mobilekit customize` | Review or update template lifecycle state. |
 | `mobilekit doctor` | Read-only local tooling and repository diagnostics. |
 | `mobilekit lint` | Run Flutter analyzer and custom lint rules. |
 | `mobilekit verify` | Run the canonical repository quality gate. |
@@ -42,6 +44,45 @@ Show the current top-level or command-specific help with:
 dart run mobile_core_kit_cli:mobilekit --help
 dart run mobile_core_kit_cli:mobilekit <command> --help
 ```
+
+## Template lifecycle
+
+The template lifecycle commands are intended for the first use of a copied
+mobile-core-kit repository. They require the checked-in
+`.mobilekit/template.yaml` marker and write the non-secret customization state
+to `.mobilekit/project.yaml`.
+
+### `init`
+
+```bash
+mobilekit init
+mobilekit init --config path/to/project.yaml --yes
+mobilekit init --dry-run
+```
+
+`init` validates the template marker, collects the customization inputs, and
+enters the same customization workflow as `customize`. Use `--config` for a
+non-interactive input file, `--dry-run` to print the normalized plan without
+writing, and `--yes` to apply without the confirmation prompt.
+
+### `customize`
+
+```bash
+mobilekit customize
+mobilekit customize --config path/to/project.yaml --yes
+mobilekit customize --dry-run
+```
+
+`customize` reads the existing manifest when present and allows the same
+identity and integration-policy values to be reviewed or replaced. It fails
+when no manifest exists unless a config file is supplied. At this foundation
+stage, applying the plan writes the manifest only; platform and source
+transformations are delivered by the follow-on customization plans.
+
+Both commands reject unsupported schema versions and secret-like or runtime
+environment values in tracked configuration. API endpoints, OIDC client IDs,
+Firebase credentials, signing material, Git remotes, and external hosting
+state remain user-owned configuration.
 
 ## Verification and quality commands
 
