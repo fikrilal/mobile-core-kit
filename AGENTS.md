@@ -14,8 +14,8 @@
 ## Coding Style & Naming
 
 - Lints: `flutter_lints` (see `analysis_options.yaml`).
-- Custom lints: run `dart run custom_lint` (note: `flutter analyze` does **not** run custom lints).
-- Architecture import boundaries are enforced via `tool/lints/architecture_lints.yaml`.
+- Lint checks: run `dart run mobile_core_kit_cli:mobilekit lint`.
+- Architecture import boundaries are enforced via `lint/architecture_lints.yaml`.
 - UI token and modal conventions are enforced by custom lints; do not rely on memory where the lint already exists.
 - Indentation: 2 spaces; file names `snake_case.dart`.
 - Widgets/classes: `PascalCase`; methods/fields: `camelCase`.
@@ -73,8 +73,7 @@ Agents must verify changes before claiming completion (when feasible). Use nativ
 
 Minimum checks (pick what’s relevant to what you changed):
 
-- Analyze: `fvm flutter analyze`
-- Custom lints: `dart run custom_lint`
+- Lint checks: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
 - Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
 - Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`

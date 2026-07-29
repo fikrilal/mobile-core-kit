@@ -14,6 +14,7 @@ import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/fix_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
@@ -60,6 +61,13 @@ class MobilekitCli {
         usage: 'Usage: mobilekit verify [options]',
         workflow: (context) =>
             VerifyWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'lint' => _runWorkflow(
+        command: 'lint',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit lint',
+        workflow: (context) =>
+            LintWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'fix' => _runWorkflow(
         command: 'fix',
@@ -446,6 +454,7 @@ class MobilekitCli {
     output.writeln();
     output.writeln('Commands:');
     output.writeln('  doctor    Diagnose local repository tooling.');
+    output.writeln('  lint      Run Dart and Flutter lint checks.');
     output.writeln(
       '  verify    Run the canonical repository verification gate.',
     );

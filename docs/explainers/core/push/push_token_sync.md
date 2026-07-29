@@ -268,7 +268,7 @@ This subsystem is protected by lints so template clones don’t accidentally vio
 See:
 
 - `analysis_options.yaml` (`restricted_imports`)
-- `tool/lints/architecture_lints.yaml` (Clean Architecture boundaries)
+- `lint/architecture_lints.yaml` (Clean Architecture boundaries)
 
 ---
 

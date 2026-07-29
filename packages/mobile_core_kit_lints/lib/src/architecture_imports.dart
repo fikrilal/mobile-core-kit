@@ -19,14 +19,14 @@ class ArchitectureImportsLint extends DartLintRule {
     name: 'architecture_imports',
     problemMessage: 'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
     correctionMessage:
-        'Refactor to comply, or add an explicit exception in tool/lints/architecture_lints.yaml.',
+        'Refactor to comply, or add an explicit exception in lint/architecture_lints.yaml.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 
   static const _configErrorCode = LintCode(
     name: 'architecture_imports_config',
     problemMessage: 'Architecture lint configuration error: {0}',
-    correctionMessage: 'Fix tool/lints/architecture_lints.yaml and rerun.',
+    correctionMessage: 'Fix lint/architecture_lints.yaml and rerun.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 
@@ -115,7 +115,7 @@ String _configPathFromOptions({
   if (value is String && value.trim().isNotEmpty) {
     return p.normalize(p.join(projectRoot, value.trim()));
   }
-  return p.normalize(p.join(projectRoot, 'tool/lints/architecture_lints.yaml'));
+  return p.normalize(p.join(projectRoot, 'lint/architecture_lints.yaml'));
 }
 
 String? _readPackageName(String projectRoot) {
@@ -451,7 +451,7 @@ class _ImportRule {
       ruleId: name ?? '(unnamed)',
       reason:
           reason ??
-          'Update import boundaries (see tool/lints/architecture_lints.yaml).',
+          'Update import boundaries (see lint/architecture_lints.yaml).',
     );
   }
 }

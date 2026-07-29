@@ -16,7 +16,7 @@ Canonical docs (post-implementation):
 
 ## Target outcomes (definition of done)
 
-- [x] **Architecture boundaries are clean:** `tool/lints/architecture_lints.yaml` no longer needs the temporary exceptions under `core_no_features` for `lib/core/session/**` and `lib/core/services/app_startup/**`.
+- [x] **Architecture boundaries are clean:** `lint/architecture_lints.yaml` no longer needs the temporary exceptions under `core_no_features` for `lib/core/session/**` and `lib/core/services/app_startup/**`.
 - [x] **Core is truly core:** `lib/core/**` imports **zero** `lib/features/**` (except `lib/core/di/**` importing `lib/features/*/di/**`).
 - [x] **User feature owns “me” data end-to-end:** remote + local persistence live under `lib/features/user/**` (not `auth`).
 - [x] **Session is stable + deterministic:** token + cached-user persistence is race-safe and fully covered by unit tests.
@@ -158,7 +158,7 @@ Status: ✅ implemented (2026-01-20)
 
 ## Phase 2 — Decouple core from features (remove `core_no_features` exceptions)
 
-Goal: eliminate the known technical debt called out in `tool/lints/architecture_lints.yaml`.
+Goal: eliminate the known technical debt called out in `lint/architecture_lints.yaml`.
 
 ### 2.1 Move shared types out of features (core-owned)
 
@@ -203,7 +203,7 @@ Goal: eliminate the known technical debt called out in `tool/lints/architecture_
   - [x] `lib/core/di/service_locator.dart` no longer imports `lib/features/user/domain/usecase/get_me_usecase.dart`
   - [x] `AppStartupController` gets `CurrentUserFetcher` (core type) instead of `GetMeUseCase` (feature type)
 - [x] Update architecture lint config:
-  - [x] Remove the temporary allowlists in `tool/lints/architecture_lints.yaml` for:
+  - [x] Remove the temporary allowlists in `lint/architecture_lints.yaml` for:
     - [x] `lib/core/session/**` → `lib/features/auth/**`
     - [x] `lib/core/session/**` → `lib/features/user/domain/entity/**`
     - [x] `lib/core/services/app_startup/**` → `lib/features/user/domain/usecase/**`
@@ -314,7 +314,7 @@ Goal: provide the template-standard “read current user safely” API for UI + 
 ## References (current code)
 
 - `_WIP/2026-01-20_current-user-service-proposal.md`
-- `tool/lints/architecture_lints.yaml`
+- `lint/architecture_lints.yaml`
 - `lib/core/session/session_manager.dart`
 - `lib/core/session/session_repository_impl.dart`
 - `lib/core/services/app_startup/app_startup_controller.dart`

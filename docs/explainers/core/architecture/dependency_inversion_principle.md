@@ -71,7 +71,7 @@ Examples:
 This repo enforces the dependency direction via custom lints:
 
 - Architecture import boundaries:
-    - `tool/lints/architecture_lints.yaml`
+    - `lint/architecture_lints.yaml`
     - Notably: `feature_domain_no_infra` blocks feature domain code from importing:
         - `lib/core/infra/**`
         - `lib/core/platform/**`
@@ -222,6 +222,6 @@ This repo uses a pragmatic “core kernel” approach:
 
 - Guardrails / boundaries:
     - `docs/engineering/architecture_linting.md`
-    - `tool/lints/architecture_lints.yaml`
+    - `lint/architecture_lints.yaml`
 - Data/Domain responsibilities:
     - `docs/engineering/data_domain_guide.md`

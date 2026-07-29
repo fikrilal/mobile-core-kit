@@ -58,8 +58,7 @@ dart run mobile_core_kit_cli:mobilekit verify --env dev
 Targeted checks when the full gate is unnecessary or too expensive:
 
 ```bash
-fvm flutter analyze
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 fvm flutter test
 dart run mobile_core_kit_cli:mobilekit project-map verify
 dart run mobile_core_kit_cli:mobilekit duplication check --profile core

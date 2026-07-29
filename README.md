@@ -48,7 +48,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 5. **Analyze & format**
    ```bash
-   fvm flutter analyze
+   dart run mobile_core_kit_cli:mobilekit lint
    fvm dart format .
    ```
 
@@ -61,8 +61,8 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
 
-- Rules config: `tool/lints/architecture_lints.yaml`
-- Run locally: `dart run custom_lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --env dev`)
+- Rules config: `lint/architecture_lints.yaml`
+- Run locally: `dart run mobile_core_kit_cli:mobilekit lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --env dev`)
 - Guardrails index: `docs/engineering/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`

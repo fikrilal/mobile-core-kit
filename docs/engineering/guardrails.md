@@ -38,8 +38,7 @@ dart run mobile_core_kit_cli:mobilekit verify --env dev
 Targeted checks:
 
 ```bash
-fvm flutter analyze
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 fvm flutter test
 dart run mobile_core_kit_cli:mobilekit codegen verify
 dart run mobile_core_kit_cli:mobilekit project-map verify
@@ -58,7 +57,7 @@ dart pub global activate --source path packages/mobile_core_kit_cli
 
 ### Analyzer and lint policy
 - `analysis_options.yaml`
-- `tool/lints/architecture_lints.yaml`
+- `lint/architecture_lints.yaml`
 - `packages/mobile_core_kit_lints/`
 
 ### Verification pipeline
@@ -129,7 +128,7 @@ Choose the lightest mechanism that solves the problem:
 Use when the rule is local, structural, or AST-detectable.
 
 Typical path:
-- update `tool/lints/architecture_lints.yaml`
+- update `lint/architecture_lints.yaml`
 - or add/extend a custom lint in `packages/mobile_core_kit_lints/`
 - update tests for the lint plugin when needed
 - document stable policy in `docs/engineering/architecture_linting.md`
@@ -139,7 +138,8 @@ Use when the rule is repository-wide and better expressed as a command.
 
 Typical path:
 - add or update the implementation under `packages/mobile_core_kit_cli/`
-- keep policy/configuration data under `tool/`
+- keep repository policy/configuration data under root-owned directories such as
+  `lint/` and `tool/`
 - call it from `mobilekit verify` if it belongs in the canonical gate
 - ensure local and CI usage stay aligned
 

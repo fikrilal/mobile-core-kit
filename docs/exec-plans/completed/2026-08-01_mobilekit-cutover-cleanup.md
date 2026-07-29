@@ -17,7 +17,7 @@ This plan updates docs and CI to use the pinned CLI command, removes old public 
 ## Constraints
 
 - architectural constraints:
-  - keep policy/config data where it belongs: `tool/lints/architecture_lints.yaml`, `.jscpd*.json`, `tool/*allowlist.json`
+  - keep policy/config data where it belongs: `lint/architecture_lints.yaml`, `.jscpd*.json`, `tool/*allowlist.json`
   - do not delete internal helper/config files still used by the CLI
   - public command surface should be `mobilekit`
 - product/runtime constraints:

@@ -9,6 +9,7 @@ Create a repo-local Dart CLI package that exposes the existing tool harness thro
 
 ```bash
 mobilekit verify --env dev
+mobilekit lint
 mobilekit fix --apply
 mobilekit config generate --env dev
 mobilekit scaffold feature auth
@@ -54,7 +55,6 @@ The repository already has a mature tooling harness, but its command surface is 
 - `tool/verify_*.dart`
 - `tool/check_duplication.sh`
 - `tool/filter_duplication_report.dart`
-- `tool/lints/architecture_lints.yaml`
 
 The current docs treat these as first-class workflows. Examples:
 
@@ -88,7 +88,7 @@ The goal is not to invent a new harness. The goal is to make the existing harnes
 
 - Do not publish the CLI to pub.dev as part of the first migration.
 - Do not combine the CLI package with `packages/mobile_core_kit_lints`.
-- Do not move architecture policy such as `tool/lints/architecture_lints.yaml` into the CLI package.
+- Do not move architecture policy such as `lint/architecture_lints.yaml` into the CLI package.
 - Do not change verification behavior while creating the CLI.
 - Do not remove existing `tool/` entry points until docs and CI have migrated.
 - Do not add new checks just because a CLI now exists.
@@ -100,6 +100,7 @@ The first version should expose workflows, not every internal script.
 | Command | Purpose | Current source |
 | --- | --- | --- |
 | `mobilekit verify --env dev` | Canonical local quality gate | `tool/verify.dart` |
+| `mobilekit lint` | Run Flutter analyzer and custom lint rules | `fvm flutter analyze`, `dart run custom_lint` |
 | `mobilekit fix --apply` | Safe formatting/import fix workflow | `tool/fix.dart` |
 | `mobilekit config generate --env dev` | Generate build config from `.env/<env>.yaml` | `tool/gen_config.dart` |
 | `mobilekit scaffold feature <name>` | Generate feature scaffolding | `tool/scaffold_feature.dart` |
@@ -172,7 +173,7 @@ The CLI should own orchestration:
 
 The CLI should not own repository policy:
 
-- architecture import boundaries stay in `tool/lints/architecture_lints.yaml`;
+- architecture import boundaries stay in `lint/architecture_lints.yaml`;
 - custom lint AST rules stay in `packages/mobile_core_kit_lints`;
 - duplication allowlists stay in `tool/*.json`;
 - jscpd profile config stays in `.jscpd*.json`;

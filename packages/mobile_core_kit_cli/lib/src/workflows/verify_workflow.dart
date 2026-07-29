@@ -6,6 +6,7 @@ import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 
@@ -103,14 +104,7 @@ class VerifyWorkflow {
     );
     if (exitCode != 0) return exitCode;
 
-    exitCode = await context.step('Flutter analyze', ['flutter', 'analyze']);
-    if (exitCode != 0) return exitCode;
-
-    exitCode = await context.step('Custom lint', [
-      'dart',
-      'run',
-      'custom_lint',
-    ]);
+    exitCode = await LintWorkflow(context).run(const []);
     if (exitCode != 0) return exitCode;
 
     if (!skipDuplication) {

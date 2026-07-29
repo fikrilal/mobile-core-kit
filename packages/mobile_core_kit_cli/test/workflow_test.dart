@@ -6,6 +6,29 @@ import 'package:test/test.dart';
 
 void main() {
   test(
+    'lint runs analyzer and custom lint through the shared executor',
+    () async {
+      final repository = await _createRepository();
+      addTearDown(() => repository.delete(recursive: true));
+      final commands = <List<String>>[];
+
+      final result = await MobilekitCli(
+        currentDirectory: repository,
+        commandExecutor: (command) async {
+          commands.add(List<String>.from(command));
+          return 0;
+        },
+      ).run(['lint']);
+
+      expect(result, 0);
+      expect(commands, [
+        ['flutter', 'analyze'],
+        ['dart', 'run', 'custom_lint'],
+      ]);
+    },
+  );
+
+  test(
     'verify runs migrated workflows directly and preserves the step sequence',
     () async {
       final repository = await _createRepository();

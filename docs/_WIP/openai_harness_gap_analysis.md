@@ -23,7 +23,7 @@ Capture current-state gaps between this repo and the workflow model described in
    - `docs/engineering/agent_pr_loop.md`
 4. Architecture constraints are codified, not aspirational.
    - `docs/engineering/guardrails.md`
-   - `tool/lints/architecture_lints.yaml`
+   - `lint/architecture_lints.yaml`
 5. Basic end-to-end coverage exists.
    - `integration_test/auth_happy_path_test.dart`
    - `integration_test/startup_deep_link_resume_test.dart`

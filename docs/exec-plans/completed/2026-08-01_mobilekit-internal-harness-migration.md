@@ -22,7 +22,7 @@ workflow path.
   - `tool/verify_modal_entrypoints.dart`
   - `tool/filter_duplication_report.dart`
 - keep repo-local:
-  - `tool/lints/`
+  - `lint/`
   - duplication allowlists and `.jscpd*.json`
   - `tool/untranslated_messages.json`
 - leave unrelated asset generation (`tool/gen_android12_splash_icon.dart`)

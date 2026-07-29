@@ -20,6 +20,7 @@ void main() {
       contains('mobilekit - mobile-core-kit repository tooling'),
     );
     expect(output.toString(), contains('doctor'));
+    expect(output.toString(), contains('lint'));
     expect(output.toString(), contains('runtime'));
     expect(errors, isEmpty);
   });
@@ -41,6 +42,21 @@ void main() {
       expect(errors, isEmpty);
     },
   );
+
+  test('prints lint command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['lint', '--help']);
+
+    expect(result, 0);
+    expect(output.toString(), contains('Usage: mobilekit lint'));
+    expect(errors, isEmpty);
+  });
 
   test(
     'prints runtime evidence command help without finding a repository',
