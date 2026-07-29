@@ -1,7 +1,8 @@
 enum TemplatePlanStatus { changed, skipped, conflicted, external, generated }
 
-bool templateBytesEqual(List<int>? left, List<int> right) {
-  if (left == null || left.length != right.length) return false;
+bool templateBytesEqual(List<int>? left, List<int>? right) {
+  if (left == null || right == null) return left == null && right == null;
+  if (left.length != right.length) return false;
   for (var index = 0; index < right.length; index++) {
     if (left[index] != right[index]) return false;
   }
@@ -35,21 +36,25 @@ class TemplateFileChange {
   TemplateFileChange({
     required this.relativePath,
     required List<int>? beforeBytes,
-    required List<int> afterBytes,
+    required List<int>? afterBytes,
   }) : beforeBytes = beforeBytes == null
            ? null
            : List<int>.unmodifiable(beforeBytes),
-       afterBytes = List<int>.unmodifiable(afterBytes),
+       afterBytes = afterBytes == null
+           ? null
+           : List<int>.unmodifiable(afterBytes),
        beforeFingerprint = beforeBytes == null
            ? null
            : templateContentFingerprint(beforeBytes),
-       afterFingerprint = templateContentFingerprint(afterBytes);
+       afterFingerprint = afterBytes == null
+           ? null
+           : templateContentFingerprint(afterBytes);
 
   final String relativePath;
   final List<int>? beforeBytes;
-  final List<int> afterBytes;
+  final List<int>? afterBytes;
   final String? beforeFingerprint;
-  final String afterFingerprint;
+  final String? afterFingerprint;
 
   bool get hasChanges => !templateBytesEqual(beforeBytes, afterBytes);
 }

@@ -2,7 +2,7 @@
 
 Date: 2026-08-01
 Owner: Dante
-Status: active
+Status: completed
 Risk class: high
 Related issue/PR: [template initialization and customization proposal](../../../_WIP/2026-08-01_mobilekit_template_initialization_customization_proposal.md)
 
@@ -52,17 +52,17 @@ existing flavor and signing behavior.
 
 ## Implementation Checklist
 
-- [ ] Add Android namespace/application-ID validators and flavor derivation.
-- [ ] Add target-aware Gradle transformations for namespace,
+- [x] Add Android namespace/application-ID validators and flavor derivation.
+- [x] Add target-aware Gradle transformations for namespace,
   defaultConfig.applicationId, and flavor suffixes.
-- [ ] Move the Kotlin package path and update its package declaration
+- [x] Move the Kotlin package path and update its package declaration
   transactionally.
-- [ ] Update the Android manifest product label through the branding input.
-- [ ] Preserve Firebase plugin declarations, signing configuration, and
+- [x] Update the Android manifest product label through the branding input.
+- [x] Preserve Firebase plugin declarations, signing configuration, and
   existing flavor behavior.
-- [ ] Add fixture tests that inspect Gradle, manifest, and Kotlin outputs.
-- [ ] Add a debug APK identity assertion using the Android build tooling.
-- [ ] Connect the adapter to the shared transformation registry.
+- [x] Add fixture tests that inspect Gradle, manifest, and Kotlin outputs.
+- [x] Add a debug APK identity assertion using the Android build tooling.
+- [x] Connect the adapter to the shared transformation registry.
 
 ## Decision Log
 
@@ -82,11 +82,21 @@ Run after implementation:
 (cd packages/mobile_core_kit_cli && dart test)
 fvm flutter analyze
 dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
+dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests
 fvm flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=ENV=dev
 ~~~
 
-Expected outcome: the CLI/platform fixture tests pass and the customized dev APK
-build completes with the requested namespace/application ID.
+Outcome: the CLI package suite passed 67 tests; the Android fixture suite
+passed dry-run, apply, conflict, rollback, idempotency, package-path, label,
+and flavor-ID assertions; Flutter analyze, custom lints, the CLI lint workflow,
+and the repository verification gate passed. The customized dev APK built in an
+isolated copy and its manifest application ID was `com.example.shopping.dev`.
+
+The first isolated build attempt correctly stopped because the unchanged demo
+`google-services.json` had no client for the new application ID. A temporary
+matching Firebase client entry was used only in the isolated copy for the build
+and was not added to the transformation or the repository.
 
 Additional targeted checks:
 
@@ -95,21 +105,25 @@ dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests
 git diff --check
 ~~~
 
-If local environment values are unavailable, use a fixture project with valid
-test inputs and record the missing environment setup as a blocker rather than
-writing placeholder runtime values.
+The Android fixture dry-run left its worktree unchanged. The repository diff
+check passed. The customized APK was inspected with `apkanalyzer`, installed
+on the `Medium_Phone` emulator, and launched successfully through
+`com.example.shopping.MainActivity` under package `com.example.shopping.dev`.
+No runtime credentials were written; Firebase reconfiguration remains an
+external setup step.
 
 ## Runtime Evidence
 
 Required because this changes package identity and installable Android output.
 
-- Device/emulator: Android emulator or test device
+- Device/emulator: `Medium_Phone` emulator (`emulator-5554`)
 - Flavor: dev
-- Executed target(s): Install and launch the customized debug APK; inspect the
-  installed package and application label.
-- Artifact path(s): Customized debug APK and any mobilekit evidence report.
-- Notes: Confirm that the installed package uses the expected base ID plus
-  .dev, and that the launchable activity resolves after the Kotlin path move.
+- Executed target(s): Installed and launched the customized debug APK; queried
+  the installed package and resolved launch activity.
+- Artifact path(s): `/tmp/tmp.lM4Qudjsip/build/app/outputs/flutter-apk/app-dev-debug.apk`
+- Notes: Confirmed package `com.example.shopping.dev`, activity
+  `com.example.shopping.MainActivity`, and version `1.0.0-dev` after the Kotlin
+  path move.
 
 ## Risks And Mitigations
 
@@ -127,9 +141,14 @@ Required because this changes package identity and installable Android output.
 
 ## Completion Notes
 
-Pending implementation.
+Implemented the Android transformation boundary inside the shared transactional
+engine. It updates only the named Gradle assignments, manifest label, and
+Android source package paths; it preserves flavor names, version suffixes,
+signing configuration, Firebase plugin declarations, and unrelated Gradle
+content. File moves are represented as add/delete operations and use the same
+fingerprint checks and rollback path as ordinary writes.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to docs/exec-plans/tech_debt_tracker.md for any
-  Android-specific Gradle or package-path limitation.
+- [x] Firebase client registration and native service-file replacement remain
+  explicit external setup; the adapter intentionally does not rewrite them.

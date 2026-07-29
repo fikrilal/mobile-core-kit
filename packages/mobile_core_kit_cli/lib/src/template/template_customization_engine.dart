@@ -46,6 +46,16 @@ class TemplateTransformationContext {
     );
   }
 
+  TemplateFileChange delete(String relativePath) {
+    final target = file(relativePath);
+    final before = target.existsSync() ? target.readAsBytesSync() : null;
+    return TemplateFileChange(
+      relativePath: relativePath,
+      beforeBytes: before,
+      afterBytes: null,
+    );
+  }
+
   String? readText(String relativePath) {
     final target = file(relativePath);
     if (!target.existsSync()) return null;
@@ -148,6 +158,7 @@ class TemplateCustomizationEngine {
       _DartPackageImportTransformation(),
       _LocalizationTransformation(),
       _ReadmeTransformation(),
+      _AndroidTransformation(),
     ];
     for (final transformation in transformations) {
       final result = transformation.plan(context);
@@ -163,7 +174,11 @@ class TemplateCustomizationEngine {
     };
     for (final change in changes) {
       if (change.relativePath == projectManifestRelativePath) continue;
-      managedFiles[change.relativePath] = change.afterFingerprint;
+      if (change.afterFingerprint == null) {
+        managedFiles.remove(change.relativePath);
+      } else {
+        managedFiles[change.relativePath] = change.afterFingerprint!;
+      }
     }
 
     final manifest = nextManifest.withManagedFileFingerprints(managedFiles);
@@ -579,6 +594,427 @@ class _ReadmeTransformation implements TemplateTransformation {
   }
 }
 
+class _AndroidTransformation implements TemplateTransformation {
+  static const _gradlePath = 'android/app/build.gradle.kts';
+  static const _manifestPath = 'android/app/src/main/AndroidManifest.xml';
+  static const _sourceRoots = [
+    'android/app/src/main/kotlin',
+    'android/app/src/main/java',
+    'android/app/src/debug/kotlin',
+    'android/app/src/debug/java',
+    'android/app/src/profile/kotlin',
+    'android/app/src/profile/java',
+  ];
+
+  @override
+  String get id => 'Android identity and packaging';
+
+  @override
+  TemplateTransformationResult plan(TemplateTransformationContext context) {
+    if (!Directory(
+      p.join(context.rootDirectory.path, 'android'),
+    ).existsSync()) {
+      return TemplateTransformationResult();
+    }
+
+    final items = <TemplatePlanItem>[];
+    final changes = <TemplateFileChange>[];
+    final gradle = context.readText(_gradlePath);
+    final manifest = context.readText(_manifestPath);
+
+    if (gradle == null) {
+      items.add(
+        _androidConflict(
+          _gradlePath,
+          'Android Gradle configuration is missing',
+        ),
+      );
+    } else {
+      final result = _planGradle(context, gradle);
+      items.addAll(result.items);
+      changes.addAll(result.changes);
+    }
+
+    if (manifest == null) {
+      items.add(
+        _androidConflict(_manifestPath, 'Android main manifest is missing'),
+      );
+    } else {
+      final result = _planManifest(context, manifest);
+      items.addAll(result.items);
+      changes.addAll(result.changes);
+    }
+
+    final sourceResult = _planSourcePackages(context);
+    items.addAll(sourceResult.items);
+    changes.addAll(sourceResult.changes);
+
+    return TemplateTransformationResult(changes: changes, items: items);
+  }
+
+  TemplateTransformationResult _planGradle(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    var updated = contents;
+    final errors = <String>[];
+    final replacements = [
+      _AndroidReplacement(
+        field: 'namespace',
+        pattern: RegExp(
+          r'^([ \t]*namespace[ \t]*=[ \t]*")([^"]+)("[ \t]*)$',
+          multiLine: true,
+        ),
+        expected: context.previous.androidNamespace,
+        replacement: context.next.androidNamespace,
+      ),
+      _AndroidReplacement(
+        field: 'defaultConfig.applicationId',
+        pattern: RegExp(
+          r'^([ \t]*applicationId[ \t]*=[ \t]*")([^"]+)("[ \t]*)$',
+          multiLine: true,
+        ),
+        expected: context.previous.androidApplicationId,
+        replacement: context.next.androidApplicationId,
+      ),
+      _AndroidReplacement(
+        field: 'dev.applicationIdSuffix',
+        pattern: _flavorSuffixPattern('dev'),
+        expected: context.previous.androidDevSuffix,
+        replacement: context.next.androidDevSuffix,
+      ),
+      _AndroidReplacement(
+        field: 'staging.applicationIdSuffix',
+        pattern: _flavorSuffixPattern('staging'),
+        expected: context.previous.androidStagingSuffix,
+        replacement: context.next.androidStagingSuffix,
+      ),
+    ];
+
+    for (final replacement in replacements) {
+      final result = _replaceAndroidText(
+        updated,
+        replacement.pattern,
+        expected: replacement.expected,
+        replacement: replacement.replacement,
+      );
+      if (result.error != null) {
+        errors.add(replacement.field + ': ' + result.error!);
+      } else {
+        updated = result.contents;
+      }
+    }
+
+    if (errors.isNotEmpty) {
+      return TemplateTransformationResult(
+        items: [_androidConflict(_gradlePath, errors.join('; '))],
+      );
+    }
+    if (updated == contents) return TemplateTransformationResult();
+    return TemplateTransformationResult(
+      changes: [context.change(_gradlePath, updated)],
+    );
+  }
+
+  TemplateTransformationResult _planManifest(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final doubleQuote = RegExp(
+      r'^([ \t]*android:label[ \t]*=[ \t]*")([^"]*)("[ \t]*)$',
+      multiLine: true,
+    );
+    final singleQuote = RegExp(
+      r"^([ \t]*android:label[ \t]*=[ \t]*')([^']*)('[ \t]*)$",
+      multiLine: true,
+    );
+    final matches = [
+      ...doubleQuote.allMatches(contents),
+      ...singleQuote.allMatches(contents),
+    ];
+    if (matches.length != 1) {
+      return TemplateTransformationResult(
+        items: [
+          _androidConflict(
+            _manifestPath,
+            matches.isEmpty
+                ? 'application label is missing'
+                : 'application label is defined more than once',
+          ),
+        ],
+      );
+    }
+
+    final match = matches.single;
+    final current = _xmlUnescape(match.group(2)!);
+    if (current != context.previous.displayName &&
+        current != context.next.displayName) {
+      return TemplateTransformationResult(
+        items: [
+          _androidConflict(
+            _manifestPath,
+            'application label is ' +
+                current +
+                ', expected ' +
+                context.previous.displayName,
+          ),
+        ],
+      );
+    }
+    if (current == context.next.displayName) {
+      return TemplateTransformationResult();
+    }
+
+    final updated = contents.replaceRange(
+      match.start,
+      match.end,
+      match.group(1)! + _xmlEscape(context.next.displayName) + match.group(3)!,
+    );
+    return TemplateTransformationResult(
+      changes: [context.change(_manifestPath, updated)],
+    );
+  }
+
+  TemplateTransformationResult _planSourcePackages(
+    TemplateTransformationContext context,
+  ) {
+    if (context.previous.androidNamespace == context.next.androidNamespace) {
+      return TemplateTransformationResult();
+    }
+    if (_namespacePathOverlaps(
+      context.previous.androidNamespace,
+      context.next.androidNamespace,
+    )) {
+      return TemplateTransformationResult(
+        items: [
+          _androidConflict(
+            'android/app/src',
+            'old and new Android namespaces overlap; choose unrelated package paths',
+          ),
+        ],
+      );
+    }
+
+    final oldPath = _packagePath(context.previous.androidNamespace);
+    final newPath = _packagePath(context.next.androidNamespace);
+    final sourceFiles = <File>[];
+    for (final sourceRoot in _sourceRoots) {
+      final directory = Directory(
+        p.join(context.rootDirectory.path, sourceRoot, oldPath),
+      );
+      _collectAndroidSourceFiles(directory, sourceFiles);
+    }
+    sourceFiles.sort((left, right) => left.path.compareTo(right.path));
+    if (sourceFiles.isEmpty) {
+      return TemplateTransformationResult(
+        items: [
+          _androidConflict(
+            'android/app/src',
+            'Android source package directory is missing: ' + oldPath,
+          ),
+        ],
+      );
+    }
+
+    final sourcePaths = sourceFiles
+        .map((file) => _relativePath(context.rootDirectory, file))
+        .toSet();
+    final changes = <TemplateFileChange>[];
+    final errors = <String>[];
+    for (final source in sourceFiles) {
+      final sourceRelativePath = _relativePath(context.rootDirectory, source);
+      final sourceRoot = _sourceRoots.firstWhere(
+        (root) => sourceRelativePath.startsWith(root + '/'),
+      );
+      final sourcePackageDirectory = Directory(
+        p.join(context.rootDirectory.path, sourceRoot, oldPath),
+      );
+      final relativeDirectory = p
+          .relative(p.dirname(source.path), from: sourcePackageDirectory.path)
+          .replaceAll('\\', '/');
+      final suffix = relativeDirectory == '.'
+          ? ''
+          : '.' + relativeDirectory.replaceAll('/', '.');
+      final expectedOldPackage = context.previous.androidNamespace + suffix;
+      final expectedNewPackage = context.next.androidNamespace + suffix;
+      final contents = source.readAsStringSync();
+      final packagePattern = RegExp(
+        r'^([ \t]*package[ \t]+)([A-Za-z_][A-Za-z0-9_.]*)([ \t]*)$',
+        multiLine: true,
+      );
+      final packageMatches = packagePattern.allMatches(contents).toList();
+      if (packageMatches.length != 1) {
+        errors.add(
+          sourceRelativePath + ': package declaration is missing or ambiguous',
+        );
+        continue;
+      }
+      final packageMatch = packageMatches.single;
+      final currentPackage = packageMatch.group(2)!;
+      if (currentPackage != expectedOldPackage &&
+          currentPackage != expectedNewPackage) {
+        errors.add(
+          sourceRelativePath +
+              ': package is ' +
+              currentPackage +
+              ', expected ' +
+              expectedOldPackage,
+        );
+        continue;
+      }
+
+      final updated = currentPackage == expectedNewPackage
+          ? contents
+          : contents.replaceRange(
+              packageMatch.start,
+              packageMatch.end,
+              packageMatch.group(1)! +
+                  expectedNewPackage +
+                  packageMatch.group(3)!,
+            );
+      final relativeFile = p.relative(
+        source.path,
+        from: sourcePackageDirectory.path,
+      );
+      final target = p.join(
+        context.rootDirectory.path,
+        sourceRoot,
+        newPath,
+        relativeFile,
+      );
+      final targetRelativePath = _relativePath(
+        context.rootDirectory,
+        File(target),
+      );
+      if (Directory(target).existsSync() ||
+          (File(target).existsSync() &&
+              !sourcePaths.contains(targetRelativePath))) {
+        errors.add(
+          targetRelativePath + ': destination already exists and is user-owned',
+        );
+        continue;
+      }
+      changes.add(context.change(targetRelativePath, updated));
+      changes.add(context.delete(sourceRelativePath));
+    }
+
+    if (errors.isNotEmpty) {
+      return TemplateTransformationResult(
+        items: [_androidConflict('android/app/src', errors.join('; '))],
+      );
+    }
+    return TemplateTransformationResult(changes: changes);
+  }
+}
+
+class _AndroidReplacement {
+  const _AndroidReplacement({
+    required this.field,
+    required this.pattern,
+    required this.expected,
+    required this.replacement,
+  });
+
+  final String field;
+  final RegExp pattern;
+  final String expected;
+  final String replacement;
+}
+
+class _AndroidTextResult {
+  const _AndroidTextResult({required this.contents, this.error});
+
+  final String contents;
+  final String? error;
+}
+
+_AndroidTextResult _replaceAndroidText(
+  String contents,
+  RegExp pattern, {
+  required String expected,
+  required String replacement,
+}) {
+  final matches = pattern.allMatches(contents).toList();
+  if (matches.length != 1) {
+    return _AndroidTextResult(
+      contents: contents,
+      error: matches.isEmpty
+          ? 'managed assignment is missing'
+          : 'managed assignment is defined more than once',
+    );
+  }
+  final match = matches.single;
+  final current = match.group(2)!;
+  if (current != expected && current != replacement) {
+    return _AndroidTextResult(
+      contents: contents,
+      error: 'found ' + current + ', expected ' + expected,
+    );
+  }
+  if (current == replacement) return _AndroidTextResult(contents: contents);
+  return _AndroidTextResult(
+    contents: contents.replaceRange(
+      match.start,
+      match.end,
+      match.group(1)! + replacement + match.group(3)!,
+    ),
+  );
+}
+
+RegExp _flavorSuffixPattern(String flavor) {
+  return RegExp(
+    r'''(create[ \t]*\([ \t]*["']''' +
+        flavor +
+        r'''["'][ \t]*\)[ \t]*\{[^{}]*?[ \t]*applicationIdSuffix[ \t]*=[ \t]*")([^"]*)("[ \t]*)''',
+    multiLine: true,
+  );
+}
+
+TemplatePlanItem _androidConflict(String target, String description) {
+  return TemplatePlanItem(
+    status: TemplatePlanStatus.conflicted,
+    target: target,
+    description: description,
+  );
+}
+
+String _packagePath(String namespace) => namespace.split('.').join(p.separator);
+
+bool _namespacePathOverlaps(String oldNamespace, String newNamespace) {
+  return newNamespace.startsWith(oldNamespace + '.') ||
+      oldNamespace.startsWith(newNamespace + '.');
+}
+
+void _collectAndroidSourceFiles(Directory directory, List<File> output) {
+  if (!directory.existsSync()) return;
+  for (final entity in directory.listSync(followLinks: false)) {
+    if (entity is Directory) {
+      _collectAndroidSourceFiles(entity, output);
+    } else if (entity is File &&
+        (entity.path.endsWith('.kt') || entity.path.endsWith('.java'))) {
+      output.add(entity);
+    }
+  }
+}
+
+String _xmlEscape(String value) {
+  return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&apos;');
+}
+
+String _xmlUnescape(String value) {
+  return value
+      .replaceAll('&quot;', '"')
+      .replaceAll('&apos;', "'")
+      .replaceAll('&gt;', '>')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&amp;', '&');
+}
+
 TemplateTransformationResult _conflict(String path, String description) {
   return TemplateTransformationResult(
     items: [
@@ -835,14 +1271,16 @@ class _TemplateFileTransaction {
         );
         entries.add(entry);
         beforeWrite?.call(change.relativePath);
-        target.parent.createSync(recursive: true);
-        temporary.writeAsBytesSync(change.afterBytes, flush: true);
         if (target.existsSync()) {
           target.renameSync(backup.path);
           entry.backupCreated = true;
         }
-        temporary.renameSync(target.path);
-        entry.targetInstalled = true;
+        if (change.afterBytes != null) {
+          target.parent.createSync(recursive: true);
+          temporary.writeAsBytesSync(change.afterBytes!, flush: true);
+          temporary.renameSync(target.path);
+          entry.targetInstalled = true;
+        }
       }
       for (final entry in entries) {
         if (entry.backup.existsSync()) entry.backup.deleteSync();
