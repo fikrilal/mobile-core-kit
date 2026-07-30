@@ -5,6 +5,22 @@ When cloning this template into a real app, you should update identifiers and br
 - wrong iOS bundle identifiers,
 - Firebase/app links/auth redirect misconfiguration.
 
+## Preferred path: `mobilekit init`
+
+Run the repository-local initialization flow first. It owns the allowlisted
+identity changes and keeps the stable CLI/lint package names intact:
+
+```bash
+dart pub global activate --source path packages/mobile_core_kit_cli
+mobilekit init
+```
+
+Use `mobilekit customize` for a later identity change. Preview either command
+with `--dry-run`; use `mobilekit doctor` afterward to find blocking defaults,
+review-required documentation or environment placeholders, and historical
+template references. The manual sections below describe the ownership
+boundaries and the native settings that still need review.
+
 ## 1) Choose Your Identifiers
 
 Pick a base identifier for your app, for example:
@@ -65,4 +81,3 @@ If you use deep links:
 - Native splash: `flutter_native_splash` config in `pubspec.yaml`
 - App icons: update launcher icons per platform
 - In-app title: `lib/app.dart` → `MaterialApp.router(title: ...)`
-

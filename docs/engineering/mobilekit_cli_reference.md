@@ -94,6 +94,20 @@ environment values in tracked configuration. API endpoints, OIDC client IDs,
 Firebase credentials, signing material, Git remotes, and external hosting
 state remain user-owned configuration.
 
+After a successful apply, `init` and `customize` run the existing generation
+owners in this order: `flutter pub get`, `flutter gen-l10n` when ARB inputs
+exist, environment validation and `config generate` when a non-empty local
+environment file exists, and `build_runner` when it is declared. Missing
+inputs are reported as skips; a failed generation step returns non-zero and
+does not claim that setup is complete. A second apply with the same manifest
+is a no-op.
+
+`mobilekit doctor` adds a residual-default report after initialization. Known
+application/package/platform defaults are `blocking`, placeholders in example
+environment files are `review-required`, and matches in harness or historical
+documentation are `historical`. Blocking findings make the doctor report
+fail; the report includes a short path preview for each category.
+
 ## Verification and quality commands
 
 ### `lint`

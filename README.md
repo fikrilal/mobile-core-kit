@@ -25,6 +25,40 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 ## Getting Started
 
+### First use as a template
+
+When this repository is copied for a new application, bootstrap the
+repository-local CLI and run the identity wizard before editing application
+code:
+
+```bash
+dart pub global activate --source path packages/mobile_core_kit_cli
+mobilekit init
+```
+
+For reproducible setup, provide the same values through a non-secret YAML
+file:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit init \
+  --config path/to/project-input.yaml --yes
+```
+
+`init` writes `.mobilekit/project.yaml`, updates the allowlisted application
+and platform surfaces, then runs dependency acquisition and available
+generation workflows. Missing local `.env/*.yaml` values, Firebase, signing,
+domains, CI secrets, and store metadata remain explicit follow-up work. Run
+the read-only report when setup is complete:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit doctor
+```
+
+See [`docs/template/first_use_checklist.md`](docs/template/first_use_checklist.md)
+for the complete copy-and-customize workflow.
+
+### Day-to-day development
+
 1. **Install dependencies**
    ```bash
    fvm flutter pub get
@@ -155,6 +189,8 @@ For deeper details on the architecture and patterns used in this template:
 
 Template customization guides:
 
+- `docs/template/first_use_checklist.md`
+- `docs/template/rename_rebrand.md`
 - `docs/template/deep_linking.md`
 
 `AGENTS.md` contains repo-specific tooling notes (verification commands, architecture constraints, authoring preferences).

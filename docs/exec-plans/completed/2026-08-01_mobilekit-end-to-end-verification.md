@@ -2,7 +2,7 @@
 
 Date: 2026-08-01
 Owner: Dante
-Status: active
+Status: completed
 Risk class: high
 Related issue/PR: [template initialization and customization proposal](../../../_WIP/2026-08-01_mobilekit_template_initialization_customization_proposal.md)
 
@@ -60,25 +60,26 @@ This is the release gate for the full mobilekit init/customize lifecycle.
 
 ## Implementation Checklist
 
-- [ ] Add the residual-default scanner to mobilekit doctor, including known
+- [x] Add the residual-default scanner to mobilekit doctor, including known
   template names, old package/import values, old IDs, old host, demo Firebase
   identity, placeholder environment values, and categorized severity.
-- [ ] Connect init to dependency acquisition, localization generation,
+- [x] Connect init to dependency acquisition, localization generation,
   configuration generation, and code generation with clear skip/failure
   reporting.
-- [ ] Add a fixture-copy integration test that runs the non-interactive flow,
+- [x] Add a fixture-copy integration test that runs the non-interactive flow,
   inspects managed outputs, checks idempotency, and verifies dry-run behavior.
-- [ ] Add failure-injection coverage for transactional rollback and managed-file
+- [x] Add failure-injection coverage for transactional rollback and managed-file
   conflicts.
-- [ ] Update the command reference, root README, template guides, and
+- [x] Update the command reference, root README, template guides, and
   first-use checklist to describe bootstrap, customization, environment
   ownership, Firebase modes, and external steps.
-- [ ] Verify CI remains pinned to the repository-local CLI command and does not
+- [x] Verify CI remains pinned to the repository-local CLI command and does not
   depend on a globally activated executable.
-- [ ] Run the full static/test/duplication verification set.
-- [ ] Collect Android emulator/device evidence for the dev flavor.
-- [ ] Collect iOS simulator/device and macOS build evidence.
-- [ ] Record limitations or unresolved follow-ups in the plan and debt tracker.
+- [x] Run the full static/test/duplication verification set.
+- [x] Collect Android emulator/device evidence for the dev flavor.
+- [ ] Collect iOS simulator/device and macOS build evidence; deferred to a
+  macOS host.
+- [x] Record limitations or unresolved follow-ups in the plan and debt tracker.
 
 ## Decision Log
 
@@ -107,6 +108,28 @@ git diff --check
 Expected outcome: all applicable checks pass, or any environment/platform
 limitation is recorded explicitly in the plan rather than presented as passed.
 
+Completed on 2026-08-01:
+
+- `dart test` in `packages/mobile_core_kit_cli` — 83 tests passed.
+- `fvm flutter analyze` — no issues.
+- `dart run custom_lint` — no issues.
+- `fvm flutter test` — 554 tests passed.
+- `dart run mobile_core_kit_cli:mobilekit verify --env dev` — passed the
+  complete verification pipeline, including duplication checks and formatting.
+- `dart run mobile_core_kit_cli:mobilekit doctor` — passed on the repository.
+- `mobilekit init --dry-run` with interactive fixture input — exited successfully
+  and reported `Dry run: no files were changed.`
+- `git diff --check` — passed.
+- CI invocation audit — executable workflow calls remain pinned to
+  `dart run mobile_core_kit_cli:mobilekit`.
+
+Additional Android runtime evidence completed on 2026-08-02:
+
+- Android dev APK build and launch passed on `Medium_Phone` / `emulator-5554`.
+- Both integration targets passed on the emulator.
+- Package, activity, version, label, startup screens, and explicit deep-link
+  dispatch were recorded under `_artifacts/mobile/2026-08-02_android-dev/`.
+
 Additional targeted checks:
 
 ~~~bash
@@ -118,17 +141,33 @@ The worktree must remain unchanged after both dry-run commands.
 
 ## Runtime Evidence
 
-Required.
+Required for the final platform release gate; Android collected, iOS deferred.
 
-- Device/emulator: Android emulator/device and iOS simulator/device on macOS
-- Flavor: Android dev; iOS debug/dev configuration
-- Executed target(s): Launch the customized app, verify package/bundle identity,
-  display name, startup path, and one enabled deep-link scenario when enabled;
-  verify no deep-link claim when disabled.
-- Artifact path(s): Build outputs and the repository runtime evidence report
-  location defined by mobilekit runtime evidence.
-- Notes: Use test Firebase/environment configuration only. Do not commit
-  credentials, native service files, or signing material.
+- Android device/emulator: `Medium_Phone` / `emulator-5554`, Android 15 (API
+  35).
+- Android flavor: `dev`.
+- Android executed targets: `integration_test/auth_happy_path_test.dart` and
+  `integration_test/startup_deep_link_resume_test.dart`, both passed through
+  `mobilekit runtime evidence`.
+- Android application launch: built the real `lib/main_dev.dart` entrypoint,
+  installed `app-dev-debug.apk`, and launched
+  `dev.fikril.mobile.corekit.dev/com.example.mobile_core_kit.MainActivity`.
+  The app reached the onboarding `Welcome` screen, continued to `Sign In`,
+  and rendered the expected UI hierarchy.
+- Android identity: package `dev.fikril.mobile.corekit.dev`, version
+  `1.0.0-dev`, label `Mobile Core Kit`.
+- Android deep link: an explicit dispatch of
+  `https://links.fikril.dev/profile` to the app returned `Status: ok` and
+  reached the app. An implicit Android App Link dispatch selected Chrome
+  because domain verification for the placeholder host is not configured;
+  `assetlinks.json` and production domain verification remain external setup.
+- Android artifact paths: `_artifacts/mobile/2026-08-02_android-dev/summary.md`,
+  `android_main_dev_startup.png`, `android_main_dev_after_onboarding.png`,
+  and `android_main_dev_deep_link.png`.
+- iOS: no macOS, Xcode, or iOS simulator environment is available on this
+  Linux host; iOS evidence remains tracked in DEBT-002.
+- Notes: Test Firebase/environment configuration was used. No credentials,
+  native service files, or signing material were committed.
 
 ## Risks And Mitigations
 
@@ -149,8 +188,17 @@ Required.
 
 ## Completion Notes
 
-Pending implementation.
+The end-to-end initialization lifecycle is implemented and covered by fixture,
+unit, static-analysis, duplication, and full verification checks. `mobilekit
+doctor` now reports residual defaults by blocking, review-required, and
+historical severity; successful initialization refreshes only valid generation
+inputs and reports skipped or failed post-apply workflows clearly.
+
+The Android portion of the platform runtime gate is complete with emulator
+evidence and stored artifacts. The iOS/macOS portion remains deferred and is
+tracked by DEBT-002; it is not represented as passed here.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to docs/exec-plans/tech_debt_tracker.md.
+- [x] Add the remaining iOS/macOS runtime limitation to
+  `docs/exec-plans/tech_debt_tracker.md` (DEBT-002).
