@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
+import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
 import 'package:path/path.dart' as p;
 
 enum DoctorCheckStatus {
@@ -92,6 +93,7 @@ class Doctor {
       ),
       _fvmrcCheck(root),
     ];
+    checks.addAll(_templateIntegrationChecks(root));
 
     final commandRunner = CommandRunner(
       rootDirectory: root,
@@ -105,6 +107,139 @@ class Doctor {
     }
 
     return DoctorReport(repositoryPath: root.path, checks: checks);
+  }
+
+  List<DoctorCheck> _templateIntegrationChecks(Directory root) {
+    final manifestFile = File(p.join(root.path, projectManifestRelativePath));
+    if (!manifestFile.existsSync()) return const [];
+
+    final TemplateManifest manifest;
+    try {
+      manifest = TemplateManifest.fromFile(manifestFile);
+    } on FormatException catch (error) {
+      return [
+        DoctorCheck(
+          label: 'template manifest',
+          status: DoctorCheckStatus.error,
+          detail: error.message,
+        ),
+      ];
+    }
+
+    return [
+      _deepLinkPolicyCheck(root, manifest.customization),
+      _firebasePolicyCheck(root, manifest.customization),
+    ];
+  }
+
+  DoctorCheck _deepLinkPolicyCheck(
+    Directory root,
+    TemplateCustomization customization,
+  ) {
+    final android = File(
+      p.join(root.path, 'android/app/src/main/AndroidManifest.xml'),
+    );
+    final ios = File(p.join(root.path, 'ios/Runner/Runner.entitlements'));
+    final androidContents = android.existsSync()
+        ? android.readAsStringSync()
+        : '';
+    final iosContents = ios.existsSync() ? ios.readAsStringSync() : '';
+    final androidHost = RegExp(
+      r'android:host="([^"]+)"',
+    ).firstMatch(androidContents)?.group(1);
+    final iosHost = RegExp(
+      r'<string>applinks:([^<]+)</string>',
+    ).firstMatch(iosContents)?.group(1);
+    final androidClaim = androidContents.contains('android:autoVerify="true"');
+    final iosClaim = iosContents.contains('applinks:');
+    final runtimeEnv = File(p.join(root.path, '.env/dev.yaml'));
+    final runtimeContents = runtimeEnv.existsSync()
+        ? runtimeEnv.readAsStringSync()
+        : '';
+    final runtimeHasHost =
+        customization.deepLinkHost != null &&
+        runtimeContents.contains(customization.deepLinkHost!);
+
+    if (customization.deepLinkMode == DeepLinkMode.disabled) {
+      if (androidClaim || iosClaim) {
+        return const DoctorCheck(
+          label: 'deep-link policy',
+          status: DoctorCheckStatus.error,
+          detail: 'Disabled deep links still have native platform claims.',
+        );
+      }
+      if (runtimeContents.contains('deepLinkAllowedHosts:') &&
+          !runtimeContents.contains('deepLinkAllowedHosts: []')) {
+        return const DoctorCheck(
+          label: 'deep-link policy',
+          status: DoctorCheckStatus.warning,
+          detail:
+              'Disabled deep links have a non-empty ignored runtime host list; clear .env/*.yaml and regenerate BuildConfig.',
+        );
+      }
+      return const DoctorCheck(
+        label: 'deep-link policy',
+        status: DoctorCheckStatus.ok,
+        detail: 'Disabled; no native deep-link claims are active.',
+      );
+    }
+
+    final host = customization.deepLinkHost;
+    if (host == null || androidHost != host || iosHost != host) {
+      return DoctorCheck(
+        label: 'deep-link policy',
+        status: DoctorCheckStatus.error,
+        detail:
+            'Enabled host $host is not applied consistently to Android and iOS claims.',
+      );
+    }
+    if (!runtimeHasHost) {
+      return DoctorCheck(
+        label: 'deep-link policy',
+        status: DoctorCheckStatus.warning,
+        detail:
+            'Native claims use $host, but ignored .env/dev.yaml does not yet contain it.',
+      );
+    }
+    return DoctorCheck(
+      label: 'deep-link policy',
+      status: DoctorCheckStatus.ok,
+      detail: 'Enabled for $host across native claims and runtime policy.',
+    );
+  }
+
+  DoctorCheck _firebasePolicyCheck(
+    Directory root,
+    TemplateCustomization customization,
+  ) {
+    final demo = const ['firebase.json', 'lib/firebase_options.dart'].any((
+      path,
+    ) {
+      final file = File(p.join(root.path, path));
+      return file.existsSync() &&
+          file.readAsStringSync().contains('mobile-kit-5f1d6');
+    });
+    return switch (customization.firebaseMode) {
+      FirebaseMode.keepDemo => DoctorCheck(
+        label: 'Firebase policy',
+        status: DoctorCheckStatus.error,
+        detail: demo
+            ? 'BLOCKING production readiness: Firebase still points to the template demo project.'
+            : 'keep-demo is selected; verify the retained Firebase configuration before production.',
+      ),
+      FirebaseMode.configure => DoctorCheck(
+        label: 'Firebase policy',
+        status: demo ? DoctorCheckStatus.warning : DoctorCheckStatus.ok,
+        detail: demo
+            ? 'Run `flutterfire configure`; the template demo options are still present.'
+            : 'External Firebase configuration is not managed by mobilekit.',
+      ),
+      FirebaseMode.disabled => const DoctorCheck(
+        label: 'Firebase policy',
+        status: DoctorCheckStatus.ok,
+        detail: 'Disabled by policy; Firebase code and files were preserved.',
+      ),
+    };
   }
 
   DoctorCheck _fvmrcCheck(Directory root) {

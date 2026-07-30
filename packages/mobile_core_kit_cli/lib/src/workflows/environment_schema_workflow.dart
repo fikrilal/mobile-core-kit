@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
@@ -55,12 +56,14 @@ class EnvironmentSchemaWorkflow {
         : _supportedEnvs.where(selected.contains).toList();
 
     final errors = <String>[];
+    final deepLinkPolicy = _readDeepLinkPolicy(context.rootDirectory, errors);
     for (final env in envs) {
       errors.addAll(
         _validateEnvFile(
           context.rootDirectory,
           env,
           enforceProdInvariants: strict && env == 'prod',
+          deepLinkPolicy: deepLinkPolicy,
         ),
       );
     }
@@ -85,6 +88,7 @@ List<String> _validateEnvFile(
   Directory rootDirectory,
   String env, {
   required bool enforceProdInvariants,
+  required TemplateCustomization? deepLinkPolicy,
 }) {
   final errors = <String>[];
   final path = '.env/$env.yaml';
@@ -163,15 +167,28 @@ List<String> _validateEnvFile(
   }
 
   final hosts = _stringListValue(map['deepLinkAllowedHosts']);
-  if (hosts.isEmpty) {
-    errors.add('[$env] deepLinkAllowedHosts must contain at least one host.');
-  } else {
-    for (final host in hosts) {
-      if (host.contains('://') || host.contains('/') || host.contains(' ')) {
+  for (final host in hosts) {
+    if (!_deepLinkHostPattern.hasMatch(host)) {
+      errors.add(
+        '[$env] deepLinkAllowedHosts must contain valid hostnames only: $host',
+      );
+    }
+  }
+  if (deepLinkPolicy != null) {
+    if (deepLinkPolicy.deepLinkMode == DeepLinkMode.enabled) {
+      final expectedHost = deepLinkPolicy.deepLinkHost;
+      if (expectedHost == null ||
+          hosts.length != 1 ||
+          hosts.single != expectedHost) {
         errors.add(
-          '[$env] deepLinkAllowedHosts must contain hostnames only: $host',
+          '[$env] deepLinkAllowedHosts must contain the configured host: ' +
+              (expectedHost ?? '<missing>'),
         );
       }
+    } else if (hosts.isNotEmpty) {
+      errors.add(
+        '[$env] deepLinkAllowedHosts must be empty when deep links are disabled.',
+      );
     }
   }
 
@@ -206,6 +223,20 @@ List<String> _validateEnvFile(
   }
 
   return errors;
+}
+
+TemplateCustomization? _readDeepLinkPolicy(
+  Directory rootDirectory,
+  List<String> errors,
+) {
+  final file = File(p.join(rootDirectory.path, projectManifestRelativePath));
+  if (!file.existsSync()) return null;
+  try {
+    return TemplateManifest.fromFile(file).customization;
+  } on FormatException catch (error) {
+    errors.add('[project] Invalid template manifest: ${error.message}');
+    return null;
+  }
 }
 
 String? _stringValue(dynamic value) {
@@ -257,6 +288,10 @@ List<String> _stringListValue(dynamic value) {
   }
   return <String>[single];
 }
+
+final _deepLinkHostPattern = RegExp(
+  r'^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$',
+);
 
 void _checkBoolInvariant(
   List<String> errors, {

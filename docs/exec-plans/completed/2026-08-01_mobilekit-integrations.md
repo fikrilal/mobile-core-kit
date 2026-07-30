@@ -2,7 +2,7 @@
 
 Date: 2026-08-01
 Owner: Dante
-Status: active
+Status: completed
 Risk class: high
 Related issue/PR: [template initialization and customization proposal](../../../_WIP/2026-08-01_mobilekit_template_initialization_customization_proposal.md)
 
@@ -61,22 +61,22 @@ report Firebase/external setup without inventing credentials or cloud state.
 
 ## Implementation Checklist
 
-- [ ] Extend the environment/deep-link validation contract to represent enabled
+- [x] Extend the environment/deep-link validation contract to represent enabled
   and disabled explicitly.
-- [ ] Add deep-link transformations for env examples, generated config inputs,
+- [x] Add deep-link transformations for env examples, generated config inputs,
   Android manifest filters, iOS entitlements, parser fixtures, and selected
   current docs.
-- [ ] Ensure disabled mode is handled by runtime parsing without requiring a
+- [x] Ensure disabled mode is handled by runtime parsing without requiring a
   non-empty placeholder host.
-- [ ] Add Firebase state detection for the demo project/options and the three
+- [x] Add Firebase state detection for the demo project/options and the three
   manifest modes.
-- [ ] Add explicit FlutterFire handoff/reporting without collecting credentials
+- [x] Add explicit FlutterFire handoff/reporting without collecting credentials
   or silently invoking a cloud operation.
-- [ ] Add protected-file checks for ignored environment and native Firebase
+- [x] Add protected-file checks for ignored environment and native Firebase
   files.
-- [ ] Add focused unit/fixture tests and connect the integration adapter to
+- [x] Add focused unit/fixture tests and connect the integration adapter to
   init/customize.
-- [ ] Define the final external-setup report categories for endpoints, OIDC,
+- [x] Define the final external-setup report categories for endpoints, OIDC,
   Firebase, signing, domains, CI secrets, and store metadata.
 
 ## Decision Log
@@ -113,6 +113,25 @@ If local environment inputs are not configured, use fixture inputs and record
 the real-project environment verification as pending. Do not create values to
 make the check pass.
 
+Executed on 2026-08-01:
+
+~~~text
+(cd packages/mobile_core_kit_cli && dart test)  # 78 tests passed
+fvm flutter analyze                         # no issues
+fvm flutter test                             # 554 tests passed
+dart run custom_lint                         # no issues
+dart run mobile_core_kit_cli:mobilekit doctor # passed
+dart run mobile_core_kit_cli:mobilekit env verify # passed
+dart run mobile_core_kit_cli:mobilekit config generate --env dev # passed
+dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests # passed
+git diff --check                             # passed
+~~~
+
+The real repository also passed `mobilekit init --dry-run` with enabled and
+disabled deep-link inputs. No project, environment, or Firebase files were
+written by those dry runs. The ignored runtime environment and native Firebase
+files were explicitly reported as protected external inputs.
+
 ## Runtime Evidence
 
 Deep-link runtime evidence is collected in the final end-to-end plan after the
@@ -142,9 +161,23 @@ Android and iOS adapters are integrated.
 
 ## Completion Notes
 
-Pending implementation.
+Implemented the integration-policy adapter and connected it to `init` and
+`customize`. Deep-link enabled mode updates tracked environment examples,
+Android intent filters, iOS associated domains, parser/integration fixtures,
+and the current deep-link guide. Disabled mode clears native claims and uses
+an empty generated runtime allowlist without requiring a fake production host.
+
+Environment validation now accepts the explicit disabled state and enforces the
+manifest policy when one exists. Firebase configuration is detected without
+rewriting generated or ignored files; configure produces a FlutterFire handoff,
+keep-demo is reported as a production blocker, and disabled preserves the
+existing Firebase code. `mobilekit doctor` reports these policy states and the
+external setup report covers endpoints, OIDC, Firebase, signing, domains, CI
+secrets, and store metadata.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to docs/exec-plans/tech_debt_tracker.md for any
-  environment-schema or Firebase handoff limitation.
+- [x] No environment-schema or Firebase handoff limitation remains from this
+  exec; deliberate external setup is reported and remains user-owned.
+- [x] Runtime enabled/disabled deep-link evidence is deferred to the final
+  end-to-end verification plan as specified by this exec.

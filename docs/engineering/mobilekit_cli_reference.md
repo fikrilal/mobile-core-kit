@@ -24,7 +24,7 @@ The CLI is private to this repository and is not published to pub.dev.
 | --- | --- |
 | `mobilekit init` | Initialize template lifecycle state and enter customization. |
 | `mobilekit customize` | Review or update template lifecycle state. |
-| `mobilekit doctor` | Read-only local tooling and repository diagnostics. |
+| `mobilekit doctor` | Read-only tooling, template-policy, and external-setup diagnostics. |
 | `mobilekit lint` | Run Flutter analyzer and custom lint rules. |
 | `mobilekit verify` | Run the canonical repository quality gate. |
 | `mobilekit fix` | Preview or apply safe Dart fixes and formatting. |
@@ -81,8 +81,13 @@ flavor suffixes, Kotlin package path, Android label, localized branding, root
 metadata, README, iOS application and test bundle IDs, and iOS display/name
 values in `Runner/Info.plist`. The iOS transformation keeps the `Runner` and
 `RunnerTests` target names and only edits their target-owned bundle settings.
-Integration transformations are delivered by the follow-on customization
-plans.
+Deep-link policy updates the tracked examples, Android intent filters, iOS
+associated domains, parser fixtures, and the current deep-link guide. Disabled
+deep links clear platform claims and runtime example hosts. Firebase mode is
+persisted and reported; `configure` prints a `flutterfire configure` handoff,
+`keep-demo` reports a production blocker, and `disabled` preserves the Firebase
+code without deleting configuration files. Ignored runtime environment and
+native Firebase files are never overwritten.
 
 Both commands reject unsupported schema versions and secret-like or runtime
 environment values in tracked configuration. API endpoints, OIDC client IDs,

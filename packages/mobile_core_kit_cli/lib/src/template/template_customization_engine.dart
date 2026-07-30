@@ -32,6 +32,7 @@ class TemplateTransformationContext {
   final Directory rootDirectory;
   final TemplateCustomization previous;
   final TemplateCustomization next;
+  final _plannedBytes = <String, List<int>?>{};
 
   File file(String relativePath) =>
       File(p.join(rootDirectory.path, relativePath));
@@ -39,16 +40,19 @@ class TemplateTransformationContext {
   TemplateFileChange change(String relativePath, String contents) {
     final target = file(relativePath);
     final before = target.existsSync() ? target.readAsBytesSync() : null;
+    final after = utf8.encode(contents);
+    _plannedBytes[relativePath] = after;
     return TemplateFileChange(
       relativePath: relativePath,
       beforeBytes: before,
-      afterBytes: utf8.encode(contents),
+      afterBytes: after,
     );
   }
 
   TemplateFileChange delete(String relativePath) {
     final target = file(relativePath);
     final before = target.existsSync() ? target.readAsBytesSync() : null;
+    _plannedBytes[relativePath] = null;
     return TemplateFileChange(
       relativePath: relativePath,
       beforeBytes: before,
@@ -57,6 +61,10 @@ class TemplateTransformationContext {
   }
 
   String? readText(String relativePath) {
+    if (_plannedBytes.containsKey(relativePath)) {
+      final bytes = _plannedBytes[relativePath];
+      return bytes == null ? null : utf8.decode(bytes);
+    }
     final target = file(relativePath);
     if (!target.existsSync()) return null;
     if (target.statSync().type != FileSystemEntityType.file) return null;
@@ -143,10 +151,11 @@ class TemplateCustomizationEngine {
             existingManifest!.managedFileFingerprints.isNotEmpty
         ? existingManifest!.customization
         : _inferCurrentValues();
+    final nextCustomization = _effectiveNextCustomization();
     final context = TemplateTransformationContext(
       rootDirectory: rootDirectory,
       previous: previous,
-      next: nextManifest.customization,
+      next: nextCustomization,
     );
     final items = <TemplatePlanItem>[];
     final changes = <TemplateFileChange>[];
@@ -160,10 +169,26 @@ class TemplateCustomizationEngine {
       _ReadmeTransformation(),
       _AndroidTransformation(),
       _IosTransformation(),
+      _DeepLinkTransformation(),
+      _FirebaseTransformation(),
     ];
     for (final transformation in transformations) {
       final result = transformation.plan(context);
-      changes.addAll(result.changes);
+      for (final change in result.changes) {
+        final index = changes.indexWhere(
+          (existing) => existing.relativePath == change.relativePath,
+        );
+        if (index < 0) {
+          changes.add(change);
+          continue;
+        }
+        final existing = changes[index];
+        changes[index] = TemplateFileChange(
+          relativePath: change.relativePath,
+          beforeBytes: existing.beforeBytes,
+          afterBytes: change.afterBytes,
+        );
+      }
       items.addAll(result.items);
       for (final change in result.changes) {
         items.add(_filePlanItem(change, transformation.id));
@@ -182,7 +207,9 @@ class TemplateCustomizationEngine {
       }
     }
 
-    final manifest = nextManifest.withManagedFileFingerprints(managedFiles);
+    final manifest = nextManifest
+        .withCustomization(nextCustomization)
+        .withManagedFileFingerprints(managedFiles);
     final manifestChange = _manifestChange(context, manifest);
     changes.add(manifestChange);
     items.add(_filePlanItem(manifestChange, 'manifest'));
@@ -203,6 +230,23 @@ class TemplateCustomizationEngine {
       changes: changes,
       manifest: manifest,
     );
+  }
+
+  TemplateCustomization _effectiveNextCustomization() {
+    if (nextManifest.customization.environmentExamplesUpdated) {
+      return nextManifest.customization;
+    }
+    const paths = [
+      '.env/dev.example.yaml',
+      '.env/staging.example.yaml',
+      '.env/prod.example.yaml',
+    ];
+    final examplesExist = paths.any(
+      (path) => File(p.join(rootDirectory.path, path)).existsSync(),
+    );
+    return examplesExist
+        ? nextManifest.customization.withEnvironmentExamplesUpdated(true)
+        : nextManifest.customization;
   }
 
   TemplateCustomizationResult apply(
@@ -277,6 +321,7 @@ class TemplateCustomizationEngine {
     final packageName = packageMatch?.group(1) ?? supportedTemplateId;
     final displayName = _inferDisplayName();
     final repositorySlug = _inferRepositorySlug();
+    final deepLinkHost = _inferDeepLinkHost();
     return TemplateCustomization.fromValues(
       repositorySlug: repositorySlug,
       repositoryDescription: displayName,
@@ -285,7 +330,29 @@ class TemplateCustomizationEngine {
       androidNamespace: TemplateCustomization.defaultAndroidNamespace,
       androidApplicationId: TemplateCustomization.defaultAndroidApplicationId,
       iosBundleId: TemplateCustomization.defaultIosBundleId,
+      deepLinkMode: deepLinkHost == null
+          ? DeepLinkMode.disabled
+          : DeepLinkMode.enabled,
+      deepLinkHost: deepLinkHost,
     );
+  }
+
+  String? _inferDeepLinkHost() {
+    const paths = [
+      'android/app/src/main/AndroidManifest.xml',
+      'ios/Runner/Runner.entitlements',
+      '.env/dev.example.yaml',
+    ];
+    for (final path in paths) {
+      final contents = File(p.join(rootDirectory.path, path));
+      if (!contents.existsSync()) continue;
+      if (contents.readAsStringSync().contains(
+        TemplateCustomization.defaultDeepLinkHost,
+      )) {
+        return TemplateCustomization.defaultDeepLinkHost;
+      }
+    }
+    return null;
   }
 
   String _inferDisplayName() {
@@ -1281,6 +1348,583 @@ TemplatePlanItem _iosConflict(String target, String description) {
     description: description,
   );
 }
+
+class _DeepLinkTransformation implements TemplateTransformation {
+  static const _androidManifestPath =
+      'android/app/src/main/AndroidManifest.xml';
+  static const _entitlementsPath = 'ios/Runner/Runner.entitlements';
+  static const _environmentExamplePaths = [
+    '.env/dev.example.yaml',
+    '.env/staging.example.yaml',
+    '.env/prod.example.yaml',
+  ];
+  static const _fixturePaths = [
+    'test/core/runtime/navigation/deep_link_parser_test.dart',
+    'test/core/runtime/navigation/pending_deep_link_controller_test.dart',
+    'test/navigation/app_redirect_test.dart',
+    'test/navigation/widgets/pending_deep_link_cancel_on_pop_test.dart',
+    'integration_test/auth_happy_path_test.dart',
+    'integration_test/startup_deep_link_resume_test.dart',
+  ];
+  static const _documentationPaths = ['docs/template/deep_linking.md'];
+
+  @override
+  String get id => 'deep-link policy';
+
+  @override
+  TemplateTransformationResult plan(TemplateTransformationContext context) {
+    final changes = <TemplateFileChange>[];
+    final items = <TemplatePlanItem>[];
+
+    for (final path in _environmentExamplePaths) {
+      final contents = context.readText(path);
+      if (contents == null) continue;
+      final result = _replaceDeepLinkExample(context, contents);
+      if (result.error != null) {
+        items.add(_integrationConflict(path, result.error!));
+      } else if (result.contents != contents) {
+        changes.add(context.change(path, result.contents));
+      }
+    }
+
+    final androidManifest = context.readText(_androidManifestPath);
+    if (androidManifest != null) {
+      final result = _planAndroidManifest(context, androidManifest);
+      if (result.error != null) {
+        items.add(_integrationConflict(_androidManifestPath, result.error!));
+      } else if (result.contents != androidManifest) {
+        changes.add(context.change(_androidManifestPath, result.contents));
+      }
+    }
+
+    final entitlements = context.readText(_entitlementsPath);
+    if (entitlements != null) {
+      final result = _planEntitlements(context, entitlements);
+      if (result.error != null) {
+        items.add(_integrationConflict(_entitlementsPath, result.error!));
+      } else if (result.contents != entitlements) {
+        changes.add(context.change(_entitlementsPath, result.contents));
+      }
+    }
+
+    for (final path in _fixturePaths) {
+      final contents = context.readText(path);
+      if (contents == null) continue;
+      final result = _replaceDeepLinkReferences(context, contents);
+      if (result.error != null) {
+        items.add(_integrationConflict(path, result.error!));
+      } else if (result.contents != contents) {
+        changes.add(context.change(path, result.contents));
+      }
+    }
+
+    for (final path in _documentationPaths) {
+      final contents = context.readText(path);
+      if (contents == null) continue;
+      final result = _replaceDeepLinkDocumentation(context, contents);
+      if (result.error != null) {
+        items.add(_integrationConflict(path, result.error!));
+      } else if (result.contents != contents) {
+        changes.add(context.change(path, result.contents));
+      }
+    }
+
+    items.add(
+      TemplatePlanItem(
+        status: TemplatePlanStatus.external,
+        target: 'environment runtime inputs',
+        description: context.next.deepLinkMode == DeepLinkMode.enabled
+            ? 'Update ignored .env/*.yaml with the configured deep-link host, then regenerate BuildConfig.'
+            : 'Clear deepLinkAllowedHosts in ignored .env/*.yaml and regenerate BuildConfig; existing files were preserved.',
+      ),
+    );
+    items.add(
+      TemplatePlanItem(
+        status: TemplatePlanStatus.external,
+        target: 'deep-link domains',
+        description: context.next.deepLinkMode == DeepLinkMode.enabled
+            ? 'Publish Android assetlinks.json and iOS AASA for ' +
+                  context.next.deepLinkHost! +
+                  '.'
+            : 'No deep-link host verification or domain ownership is required while deep links are disabled.',
+      ),
+    );
+    items.addAll(_protectedIntegrationFiles(context));
+
+    return TemplateTransformationResult(changes: changes, items: items);
+  }
+
+  _DeepLinkTextResult _replaceDeepLinkExample(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final matches = _deepLinkAllowedHostsPattern.allMatches(contents).toList();
+    if (matches.length != 1) {
+      return _DeepLinkTextResult(
+        contents: contents,
+        error: matches.isEmpty
+            ? 'deepLinkAllowedHosts is missing'
+            : 'deepLinkAllowedHosts is defined more than once',
+      );
+    }
+
+    final match = matches.single;
+    final current = _parseDeepLinkHosts(match.group(0)!);
+    if (current.error != null) {
+      return _DeepLinkTextResult(contents: contents, error: current.error);
+    }
+    final expected = _managedDeepLinkHosts(context);
+    if (current.hosts.any((host) => !expected.contains(host))) {
+      return _DeepLinkTextResult(
+        contents: contents,
+        error:
+            'deepLinkAllowedHosts contains a user-owned host; resolve it before customization',
+      );
+    }
+
+    final replacement = context.next.deepLinkMode == DeepLinkMode.enabled
+        ? 'deepLinkAllowedHosts:\n  - ' + context.next.deepLinkHost!
+        : 'deepLinkAllowedHosts: []';
+    return _DeepLinkTextResult(
+      contents: contents.replaceRange(match.start, match.end, replacement),
+    );
+  }
+
+  _DeepLinkTextResult _planAndroidManifest(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final matches = _androidDeepLinkFilterPattern.allMatches(contents).toList();
+    if (context.next.deepLinkMode == DeepLinkMode.disabled) {
+      if (matches.isEmpty) {
+        if (_androidAutoVerifyPattern.hasMatch(contents) ||
+            _androidHttpsHostPattern.hasMatch(contents)) {
+          return const _DeepLinkTextResult(
+            contents: '',
+            error: 'an unsupported autoVerify intent filter is present',
+          );
+        }
+        return _DeepLinkTextResult(contents: contents);
+      }
+      if (matches.length != 1) {
+        return _DeepLinkTextResult(
+          contents: contents,
+          error: 'expected one managed HTTPS intent filter',
+        );
+      }
+      final filter = matches.single.group(0)!;
+      final hosts = _androidHosts(filter);
+      if (hosts.isEmpty ||
+          _androidHttpsHosts(contents).length != hosts.length ||
+          hosts.any((host) => !_managedDeepLinkHosts(context).contains(host))) {
+        return _DeepLinkTextResult(
+          contents: contents,
+          error: 'intent filter contains an unknown deep-link host',
+        );
+      }
+      return _DeepLinkTextResult(
+        contents: contents.replaceRange(
+          matches.single.start,
+          matches.single.end,
+          '',
+        ),
+      );
+    }
+
+    if (matches.length != 1) {
+      return _DeepLinkTextResult(
+        contents: contents,
+        error: matches.isEmpty
+            ? 'managed HTTPS intent filter is missing'
+            : 'expected one managed HTTPS intent filter',
+      );
+    }
+    final match = matches.single;
+    final filter = match.group(0)!;
+    final hosts = _androidHosts(filter);
+    if (hosts.isEmpty || _androidHttpsHosts(contents).length != hosts.length) {
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'managed HTTPS intent filter has no hosts',
+      );
+    }
+    final managedHosts = _managedDeepLinkHosts(context);
+    if (hosts.any((host) => !managedHosts.contains(host))) {
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'intent filter contains an unknown deep-link host',
+      );
+    }
+    final nextHost = context.next.deepLinkHost!;
+    var updatedFilter = filter;
+    for (final host in hosts) {
+      if (host != nextHost) {
+        updatedFilter = updatedFilter.replaceAll(
+          'android:host="' + host + '"',
+          'android:host="' + nextHost + '"',
+        );
+      }
+    }
+    return _DeepLinkTextResult(
+      contents: contents.replaceRange(match.start, match.end, updatedFilter),
+    );
+  }
+
+  _DeepLinkTextResult _planEntitlements(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final matches = _associatedDomainsPattern.allMatches(contents).toList();
+    if (matches.length > 1) {
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'associated-domains entitlement is defined more than once',
+      );
+    }
+    if (matches.isEmpty) {
+      if (context.next.deepLinkMode == DeepLinkMode.disabled) {
+        return _DeepLinkTextResult(contents: contents);
+      }
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'associated-domains entitlement is missing',
+      );
+    }
+
+    final match = matches.single;
+    final domains = _associatedDomains(match.group(0)!);
+    final deepLinkDomains = domains
+        .where((domain) => domain.startsWith('applinks:'))
+        .toList();
+    if (context.next.deepLinkMode == DeepLinkMode.enabled &&
+        deepLinkDomains.isEmpty) {
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'associated-domains has no applinks entry',
+      );
+    }
+    final managedHosts = _managedDeepLinkHosts(context);
+    final unknown = domains.where((domain) {
+      if (!domain.startsWith('applinks:')) return false;
+      return !managedHosts.contains(domain.substring('applinks:'.length));
+    });
+    if (unknown.isNotEmpty) {
+      return const _DeepLinkTextResult(
+        contents: '',
+        error: 'associated-domains contains an unknown deep-link host',
+      );
+    }
+
+    if (context.next.deepLinkMode == DeepLinkMode.disabled) {
+      final remaining = domains
+          .where((domain) => !domain.startsWith('applinks:'))
+          .toList();
+      if (remaining.isEmpty) {
+        return _DeepLinkTextResult(
+          contents: contents.replaceRange(match.start, match.end, ''),
+        );
+      }
+      return _DeepLinkTextResult(
+        contents: contents.replaceRange(
+          match.start,
+          match.end,
+          _associatedDomainsXml(remaining),
+        ),
+      );
+    }
+
+    final nextDomain = 'applinks:' + context.next.deepLinkHost!;
+    var updated = match.group(0)!;
+    for (final domain in domains.where(
+      (value) => value.startsWith('applinks:'),
+    )) {
+      if (domain != nextDomain) {
+        updated = updated.replaceAll(
+          '<string>' + domain + '</string>',
+          '<string>' + nextDomain + '</string>',
+        );
+      }
+    }
+    return _DeepLinkTextResult(
+      contents: contents.replaceRange(match.start, match.end, updated),
+    );
+  }
+
+  _DeepLinkTextResult _replaceDeepLinkReferences(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final managedHosts = _managedDeepLinkHosts(context).toList()
+      ..sort((left, right) => right.length.compareTo(left.length));
+    final pattern = RegExp(managedHosts.map(RegExp.escape).join('|'));
+    if (!pattern.hasMatch(contents)) {
+      return _DeepLinkTextResult(contents: contents);
+    }
+    final replacement = context.next.deepLinkMode == DeepLinkMode.enabled
+        ? context.next.deepLinkHost!
+        : _deepLinkFixtureHost;
+    return _DeepLinkTextResult(
+      contents: contents.replaceAllMapped(pattern, (_) => replacement),
+    );
+  }
+
+  _DeepLinkTextResult _replaceDeepLinkDocumentation(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final references = _replaceDeepLinkReferences(context, contents);
+    if (references.error != null) return references;
+
+    final replacementHost = context.next.deepLinkMode == DeepLinkMode.enabled
+        ? context.next.deepLinkHost!
+        : _deepLinkFixtureHost;
+    var updated = references.contents.replaceFirst(
+      _deepLinkDefaultsPattern,
+      context.next.deepLinkMode == DeepLinkMode.enabled
+          ? '- External deep links support **HTTPS** for `' +
+                replacementHost +
+                '` only (strict allowlist).'
+          : '- External deep links are disabled for this project; the runtime allowlist and native platform claims are empty.',
+    );
+    final policy = context.next.deepLinkMode == DeepLinkMode.enabled
+        ? 'Deep links are enabled for `https://' + replacementHost + '`.'
+        : 'Deep links are disabled for this project. The `example.test` host below is illustrative only.';
+    const start = '<!-- mobilekit:deep-link-policy:start -->';
+    const end = '<!-- mobilekit:deep-link-policy:end -->';
+    final policyBlock =
+        start + '\n## Project policy\n\n- ' + policy + '\n' + end;
+    final startIndex = updated.indexOf(start);
+    final endIndex = updated.indexOf(end);
+    if (startIndex >= 0 && endIndex > startIndex) {
+      updated = updated.replaceRange(
+        startIndex,
+        endIndex + end.length,
+        policyBlock,
+      );
+    } else {
+      final headingEnd = updated.indexOf('\n');
+      if (headingEnd < 0) {
+        updated = policyBlock + '\n\n' + updated;
+      } else {
+        updated =
+            updated.substring(0, headingEnd + 1) +
+            '\n' +
+            policyBlock +
+            '\n' +
+            updated.substring(headingEnd + 1);
+      }
+    }
+    return _DeepLinkTextResult(contents: updated);
+  }
+
+  Set<String> _managedDeepLinkHosts(TemplateTransformationContext context) {
+    return {
+      TemplateCustomization.defaultDeepLinkHost,
+      if (context.previous.deepLinkHost != null) context.previous.deepLinkHost!,
+      if (context.next.deepLinkHost != null) context.next.deepLinkHost!,
+      _deepLinkFixtureHost,
+    };
+  }
+
+  List<TemplatePlanItem> _protectedIntegrationFiles(
+    TemplateTransformationContext context,
+  ) {
+    const paths = [
+      '.env/dev.yaml',
+      '.env/staging.yaml',
+      '.env/prod.yaml',
+      'android/app/google-services.json',
+      'ios/Runner/GoogleService-Info.plist',
+    ];
+    return [
+      for (final path in paths)
+        if (context.file(path).existsSync())
+          TemplatePlanItem(
+            status: TemplatePlanStatus.external,
+            target: path,
+            description:
+                'protected user-owned file preserved; update it only through its explicit configuration workflow',
+          ),
+    ];
+  }
+}
+
+class _FirebaseTransformation implements TemplateTransformation {
+  @override
+  String get id => 'Firebase external setup';
+
+  @override
+  TemplateTransformationResult plan(TemplateTransformationContext context) {
+    final demoDetected = _demoFirebaseDetected(context.rootDirectory);
+    final description = switch (context.next.firebaseMode) {
+      FirebaseMode.configure =>
+        demoDetected
+            ? 'Run `flutterfire configure` for the new project and platforms; the tracked demo options remain until that external step completes.'
+            : 'Review or run `flutterfire configure` for the selected project and platforms; credentials and generated native files remain external.',
+      FirebaseMode.keepDemo =>
+        demoDetected
+            ? 'BLOCKING for production readiness: the tracked Firebase options still point to the template demo project.'
+            : 'keep-demo was selected, but the template demo marker was not detected; verify the external Firebase state.',
+      FirebaseMode.disabled =>
+        'Firebase code is retained, but no Firebase project or native configuration files are changed.',
+    };
+    return TemplateTransformationResult(
+      items: [
+        TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'Firebase',
+          description: description,
+        ),
+        const TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'API endpoints',
+          description:
+              'Runtime API endpoints remain in user-owned .env files and are not requested by init.',
+        ),
+        const TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'OIDC client IDs',
+          description:
+              'OIDC client IDs remain in user-owned environment configuration and are not stored in the manifest.',
+        ),
+        const TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'signing',
+          description:
+              'Android/iOS signing identities, certificates, and provisioning remain external setup.',
+        ),
+        const TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'CI secrets',
+          description:
+              'CI credentials and secret provisioning remain external setup.',
+        ),
+        const TemplatePlanItem(
+          status: TemplatePlanStatus.external,
+          target: 'store metadata',
+          description:
+              'App-store records, listings, screenshots, and release metadata remain external setup.',
+        ),
+      ],
+    );
+  }
+}
+
+class _DeepLinkTextResult {
+  const _DeepLinkTextResult({required this.contents, this.error});
+
+  final String contents;
+  final String? error;
+}
+
+class _ParsedDeepLinkHosts {
+  const _ParsedDeepLinkHosts({required this.hosts, this.error});
+
+  final List<String> hosts;
+  final String? error;
+}
+
+_ParsedDeepLinkHosts _parseDeepLinkHosts(String block) {
+  final lines = block.split(RegExp(r'\r?\n'));
+  final inline = lines.first.substring(lines.first.indexOf(':') + 1).trim();
+  if (inline == '[]' || inline.isEmpty && lines.length == 1) {
+    return const _ParsedDeepLinkHosts(hosts: []);
+  }
+  if (inline.isNotEmpty) {
+    return const _ParsedDeepLinkHosts(
+      hosts: [],
+      error: 'deepLinkAllowedHosts must be a list or []',
+    );
+  }
+  final hosts = <String>[];
+  for (final line in lines.skip(1)) {
+    final value = line.trim();
+    if (value.isEmpty) continue;
+    if (!value.startsWith('-')) {
+      return const _ParsedDeepLinkHosts(
+        hosts: [],
+        error: 'deepLinkAllowedHosts contains an unsupported value',
+      );
+    }
+    final host = value.substring(1).trim();
+    if (host.isEmpty) {
+      return const _ParsedDeepLinkHosts(
+        hosts: [],
+        error: 'deepLinkAllowedHosts contains an empty host',
+      );
+    }
+    hosts.add(host.toLowerCase());
+  }
+  return _ParsedDeepLinkHosts(hosts: hosts);
+}
+
+List<String> _androidHosts(String filter) {
+  return RegExp(
+    r'android:host="([^"]+)"',
+  ).allMatches(filter).map((match) => match.group(1)!.toLowerCase()).toList();
+}
+
+List<String> _androidHttpsHosts(String contents) {
+  return _androidHttpsHostPattern
+      .allMatches(contents)
+      .map((match) => match.group(1)!.toLowerCase())
+      .toList();
+}
+
+List<String> _associatedDomains(String block) {
+  return RegExp(
+    r'<string>([^<]+)</string>',
+  ).allMatches(block).map((match) => match.group(1)!.trim()).toList();
+}
+
+String _associatedDomainsXml(List<String> domains) {
+  final lines = domains.map((domain) => '\t\t<string>' + domain + '</string>');
+  return '<key>com.apple.developer.associated-domains</key>\n\t<array>\n' +
+      lines.join('\n') +
+      '\n\t</array>';
+}
+
+TemplatePlanItem _integrationConflict(String target, String description) {
+  return TemplatePlanItem(
+    status: TemplatePlanStatus.conflicted,
+    target: target,
+    description: description,
+  );
+}
+
+bool _demoFirebaseDetected(Directory rootDirectory) {
+  const paths = ['firebase.json', 'lib/firebase_options.dart'];
+  return paths.any((path) {
+    final file = File(p.join(rootDirectory.path, path));
+    return file.existsSync() &&
+        file.readAsStringSync().contains('mobile-kit-5f1d6');
+  });
+}
+
+final _deepLinkAllowedHostsPattern = RegExp(
+  r'^deepLinkAllowedHosts[ \t]*:[^\r\n]*(?:\r?\n[ \t]+-[^\r\n]*)*',
+  multiLine: true,
+);
+final _androidDeepLinkFilterPattern = RegExp(
+  r'(?:[ \t]*<!-- HTTPS App Links.*?-->[ \t]*\r?\n)?[ \t]*<intent-filter\s+android:autoVerify="true"\s*>.*?</intent-filter>',
+  multiLine: true,
+  dotAll: true,
+);
+final _androidAutoVerifyPattern = RegExp(
+  r'<intent-filter[^>]*android:autoVerify="true"',
+);
+final _androidHttpsHostPattern = RegExp(
+  r'<data[^>]*android:scheme="https"[^>]*android:host="([^"]+)"',
+);
+final _associatedDomainsPattern = RegExp(
+  r'<key>com\.apple\.developer\.associated-domains</key>\s*<array>.*?</array>',
+  multiLine: true,
+  dotAll: true,
+);
+final _deepLinkDefaultsPattern = RegExp(
+  r'- External deep links support \*\*HTTPS\*\* for `[^`]+` only \(strict allowlist\)\.',
+);
+const _deepLinkFixtureHost = 'example.test';
 
 class _AndroidReplacement {
   const _AndroidReplacement({

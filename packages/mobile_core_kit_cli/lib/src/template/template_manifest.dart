@@ -132,6 +132,7 @@ class TemplateCustomization {
   static const defaultAndroidNamespace = 'com.example.mobile_core_kit';
   static const defaultAndroidApplicationId = 'dev.fikril.mobile.corekit';
   static const defaultIosBundleId = 'dev.fikril.mobile.corekit';
+  static const defaultDeepLinkHost = 'links.fikril.dev';
 
   final String repositorySlug;
   final String repositoryDescription;
@@ -154,6 +155,25 @@ class TemplateCustomization {
       androidApplicationId + androidStagingSuffix;
 
   String get androidProductionApplicationId => androidApplicationId;
+
+  TemplateCustomization withEnvironmentExamplesUpdated(bool updated) {
+    return TemplateCustomization._(
+      repositorySlug: repositorySlug,
+      repositoryDescription: repositoryDescription,
+      displayName: displayName,
+      dartPackage: dartPackage,
+      androidNamespace: androidNamespace,
+      androidApplicationId: androidApplicationId,
+      androidDevSuffix: androidDevSuffix,
+      androidStagingSuffix: androidStagingSuffix,
+      iosBundleId: iosBundleId,
+      iosTestBundleId: iosTestBundleId,
+      deepLinkMode: deepLinkMode,
+      deepLinkHost: deepLinkHost,
+      firebaseMode: firebaseMode,
+      environmentExamplesUpdated: updated,
+    );
+  }
 
   factory TemplateCustomization.fromValues({
     required String repositorySlug,
@@ -505,6 +525,17 @@ class TemplateManifest {
       customization: customization,
       managedSurfaces: managedSurfaces,
       managedFileFingerprints: Map<String, String>.unmodifiable(fingerprints),
+    );
+  }
+
+  TemplateManifest withCustomization(TemplateCustomization customization) {
+    return TemplateManifest(
+      schema: schema,
+      template: template,
+      templateVersion: templateVersion,
+      customization: customization,
+      managedSurfaces: managedSurfaces,
+      managedFileFingerprints: managedFileFingerprints,
     );
   }
 

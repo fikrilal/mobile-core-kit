@@ -65,6 +65,17 @@ These map to:
 - `netLogSlowMs` (int) → `BuildConfig.netLogSlowMs` (default `800`)
 - `netLogRedact` (bool) → `BuildConfig.netLogRedact` (default `true`)
 
+### Deep-link policy
+
+- `deepLinkAllowedHosts` (list of hostnames) — hosts accepted by the runtime
+  parser. An empty list explicitly disables external deep links.
+
+When `.mobilekit/project.yaml` is present, `mobilekit env verify` checks this
+list against the manifest policy: enabled projects must contain the configured
+host, while disabled projects must keep the list empty. The CLI updates only
+the tracked `.example.yaml` files; ignored `.env/*.yaml` files remain
+user-owned and must be updated through the environment workflow.
+
 ## What To Commit
 
 Typical template defaults:

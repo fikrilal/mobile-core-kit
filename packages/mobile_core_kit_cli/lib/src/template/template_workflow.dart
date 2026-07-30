@@ -98,7 +98,7 @@ class TemplateLifecycleWorkflow {
     );
     final customizationPlan = engine.buildPlan();
     final plan = customizationPlan.summary;
-    _writePlan(command, manifest, customizationPlan);
+    _writePlan(command, customizationPlan);
 
     if (args.flag('dry-run')) {
       context.output.writeln('Dry run: no files were changed.');
@@ -143,8 +143,8 @@ class TemplateLifecycleWorkflow {
     }
     context.output.writeln('Wrote ' + projectManifestRelativePath + '.');
     context.output.writeln(
-      'Managed application package, branding, metadata, and documentation '
-      'changes were applied.',
+      'Managed application package, branding, metadata, deep-link policy, and '
+      'documentation changes were applied.',
     );
     return TemplateLifecycleResult(
       plan: plan,
@@ -301,11 +301,10 @@ class TemplateLifecycleWorkflow {
 
   void _writePlan(
     TemplateLifecycleCommand command,
-    TemplateManifest manifest,
     TemplateCustomizationPlan customizationPlan,
   ) {
     final plan = customizationPlan.summary;
-    final customization = manifest.customization;
+    final customization = customizationPlan.manifest.customization;
     context.output.writeln('mobilekit ' + command.label + ' plan');
     context.output.writeln(
       '- repository slug: ' + customization.repositorySlug,
@@ -317,7 +316,13 @@ class TemplateLifecycleWorkflow {
     );
     context.output.writeln('- iOS bundle ID: ' + customization.iosBundleId);
     context.output.writeln(
+      '- iOS test bundle ID: ' + customization.iosTestBundleId,
+    );
+    context.output.writeln(
       '- deep-link mode: ' + customization.deepLinkMode.wireValue,
+    );
+    context.output.writeln(
+      '- deep-link host: ' + (customization.deepLinkHost ?? 'none (disabled)'),
     );
     context.output.writeln(
       '- Android dev application ID: ' + customization.androidDevApplicationId,
