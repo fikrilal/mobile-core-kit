@@ -1,8 +1,12 @@
 # Networking + Backend Contract Guide
 
-This template ships with a production-style networking stack (Dio + typed parsers + interceptors).
-When you clone this repo for a real product, the **first thing you should align** is the network
-layer’s contract with your backend: response envelope, error shape, and pagination.
+This template ships with a production-style networking stack (Dio + typed parsers + interceptors)
+and is designed to pair with
+[backend-core-kit](https://github.com/fikrilal/backend-core-kit). Together they align the response,
+error, auth, session, and current-user contracts, so a new product can focus on its main features.
+
+When using a different backend, the **first thing you should align** is the network layer’s
+contract: response envelope, error shape, and pagination.
 
 This doc explains what the template currently assumes and what to change for a different backend.
 

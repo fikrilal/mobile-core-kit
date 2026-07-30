@@ -7,7 +7,15 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 > Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/firebase_setup.md`).
 
-> Status: actively maintained. This template evolves over time; treat it as a starting point and adjust it to your product’s needs.
+> Status: entering stable phase. The foundation is ready for comfortable use in new mobile products and will continue to receive maintenance and improvements.
+
+## Recommended stack
+
+Mobile Core Kit is designed to work with
+[backend-core-kit](https://github.com/fikrilal/backend-core-kit). The two kits
+share the API, error, auth, session, and current-user contracts. Using both
+means you can start with the project foundation already in place and focus on
+your product features.
 
 - Flavor-aware configuration (`dev`, `staging`, `prod`) via `.env/*.yaml` + `BuildConfig`.
 - Network layer (Dio, interceptors, API helpers, connectivity checks, logging).
@@ -27,9 +35,8 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 ### First use as a template
 
-When this repository is copied for a new application, bootstrap the
-repository-local CLI and run the identity wizard before editing application
-code:
+Copy this repository for a new product, then bootstrap the repository-local
+CLI and run the identity wizard before editing application code:
 
 ```bash
 dart pub global activate --source path packages/mobile_core_kit_cli
@@ -54,8 +61,13 @@ the read-only report when setup is complete:
 dart run mobile_core_kit_cli:mobilekit doctor
 ```
 
+After that, connect the backend, replace product branding and external
+platform configuration, and start building your main features.
+
 See [`docs/template/first_use_checklist.md`](docs/template/first_use_checklist.md)
-for the complete copy-and-customize workflow.
+for the short copy-and-customize workflow, and
+[`docs/template/networking_backend_contract.md`](docs/template/networking_backend_contract.md)
+for the backend-core-kit integration.
 
 ### Day-to-day development
 

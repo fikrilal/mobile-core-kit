@@ -2,6 +2,13 @@
 
 Use this checklist when copying `mobile-core-kit` into a new mobile app.
 
+## Recommended backend
+
+For the fastest path, pair the mobile template with
+[backend-core-kit](https://github.com/fikrilal/backend-core-kit). The API,
+auth, session, and current-user contracts are already aligned. Set the backend
+URL in `.env/dev.yaml` and continue with the steps below.
+
 ## 1. Bootstrap the repository-local CLI
 
 From the copied repository:
