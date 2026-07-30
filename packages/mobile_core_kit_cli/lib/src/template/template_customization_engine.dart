@@ -159,6 +159,7 @@ class TemplateCustomizationEngine {
       _LocalizationTransformation(),
       _ReadmeTransformation(),
       _AndroidTransformation(),
+      _IosTransformation(),
     ];
     for (final transformation in transformations) {
       final result = transformation.plan(context);
@@ -907,6 +908,380 @@ class _AndroidTransformation implements TemplateTransformation {
   }
 }
 
+class _IosTransformation implements TemplateTransformation {
+  static const _projectPath = 'ios/Runner.xcodeproj/project.pbxproj';
+  static const _infoPlistPath = 'ios/Runner/Info.plist';
+
+  @override
+  String get id => 'iOS identity and packaging';
+
+  @override
+  TemplateTransformationResult plan(TemplateTransformationContext context) {
+    if (!Directory(p.join(context.rootDirectory.path, 'ios')).existsSync()) {
+      return TemplateTransformationResult();
+    }
+
+    final items = <TemplatePlanItem>[];
+    final changes = <TemplateFileChange>[];
+    final project = context.readText(_projectPath);
+    final infoPlist = context.readText(_infoPlistPath);
+
+    if (project == null) {
+      items.add(
+        _iosConflict(
+          _projectPath,
+          'iOS Xcode project configuration is missing',
+        ),
+      );
+    } else {
+      final result = _planProject(context, project);
+      items.addAll(result.items);
+      changes.addAll(result.changes);
+    }
+
+    if (infoPlist == null) {
+      items.add(_iosConflict(_infoPlistPath, 'Runner Info.plist is missing'));
+    } else {
+      final result = _planInfoPlist(context, infoPlist);
+      items.addAll(result.items);
+      changes.addAll(result.changes);
+    }
+
+    return TemplateTransformationResult(changes: changes, items: items);
+  }
+
+  TemplateTransformationResult _planProject(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    final objects = _parsePbxObjects(contents);
+    final objectById = <String, _PbxObject>{
+      for (final object in objects) object.id: object,
+    };
+    final edits = <_IosTextEdit>[];
+    final errors = <String>[];
+    final editedObjects = <String>{};
+
+    for (final target in const [
+      _IosTargetSpec(
+        name: 'Runner',
+        expectedPrevious: _IosBundleValue.application,
+        targetNext: _IosBundleValue.application,
+      ),
+      _IosTargetSpec(
+        name: 'RunnerTests',
+        expectedPrevious: _IosBundleValue.test,
+        targetNext: _IosBundleValue.test,
+      ),
+    ]) {
+      final targetObjects = objects.where(
+        (object) =>
+            object.isa == 'PBXNativeTarget' && object.name == target.name,
+      );
+      if (targetObjects.length != 1) {
+        errors.add(
+          target.name +
+              ': expected one PBXNativeTarget, found ' +
+              targetObjects.length.toString(),
+        );
+        continue;
+      }
+      final targetObject = targetObjects.single;
+      final configurationListId = targetObject.buildConfigurationListId;
+      if (configurationListId == null) {
+        errors.add(target.name + ': build configuration list is missing');
+        continue;
+      }
+      final configurationList = objectById[configurationListId];
+      if (configurationList == null ||
+          configurationList.isa != 'XCConfigurationList') {
+        errors.add(target.name + ': build configuration list is invalid');
+        continue;
+      }
+      final configurationIds = configurationList.buildConfigurationIds;
+      if (configurationIds.isEmpty) {
+        errors.add(target.name + ': build configurations are missing');
+        continue;
+      }
+
+      final expectedPrevious =
+          target.expectedPrevious == _IosBundleValue.application
+          ? <String>{context.previous.iosBundleId, context.next.iosBundleId}
+          : <String>{
+              context.previous.iosTestBundleId,
+              context.previous.iosBundleId,
+              context.next.iosTestBundleId,
+            };
+      final targetNext = target.targetNext == _IosBundleValue.application
+          ? context.next.iosBundleId
+          : context.next.iosTestBundleId;
+
+      for (final configurationId in configurationIds) {
+        final configuration = objectById[configurationId];
+        if (configuration == null ||
+            configuration.isa != 'XCBuildConfiguration') {
+          errors.add(
+            target.name +
+                ': build configuration ' +
+                configurationId +
+                ' is invalid',
+          );
+          continue;
+        }
+        if (!editedObjects.add(configuration.id)) {
+          errors.add(
+            target.name +
+                ': a build configuration is shared with another target',
+          );
+          continue;
+        }
+        final matches = _productBundleIdentifierPattern
+            .allMatches(configuration.text)
+            .toList();
+        if (matches.length != 1) {
+          errors.add(
+            target.name +
+                ' ' +
+                (configuration.name ?? configuration.id) +
+                ': expected one PRODUCT_BUNDLE_IDENTIFIER setting',
+          );
+          continue;
+        }
+        final match = matches.single;
+        final current = match.group(2)!.trim();
+        if (!expectedPrevious.contains(current) && current != targetNext) {
+          errors.add(
+            target.name +
+                ' ' +
+                (configuration.name ?? configuration.id) +
+                ': found ' +
+                current +
+                ', expected one of ' +
+                expectedPrevious.join(', '),
+          );
+          continue;
+        }
+        if (current == targetNext) continue;
+        edits.add(
+          _IosTextEdit(
+            start: configuration.start + match.start,
+            end: configuration.start + match.end,
+            replacement: match.group(1)! + targetNext + match.group(3)!,
+          ),
+        );
+      }
+    }
+
+    if (errors.isNotEmpty) {
+      return TemplateTransformationResult(
+        items: [_iosConflict(_projectPath, errors.join('; '))],
+      );
+    }
+    if (edits.isEmpty) return TemplateTransformationResult();
+    return TemplateTransformationResult(
+      changes: [context.change(_projectPath, _applyIosEdits(contents, edits))],
+    );
+  }
+
+  TemplateTransformationResult _planInfoPlist(
+    TemplateTransformationContext context,
+    String contents,
+  ) {
+    var updated = contents;
+    final errors = <String>[];
+    for (final key in const ['CFBundleDisplayName', 'CFBundleName']) {
+      final pattern = RegExp(
+        r'(<key>' + key + r'</key>[ \t\r\n]*<string>)([^<]*)(</string>)',
+      );
+      final matches = pattern.allMatches(updated).toList();
+      if (matches.length != 1) {
+        errors.add(
+          key +
+              ': expected one string value, found ' +
+              matches.length.toString(),
+        );
+        continue;
+      }
+      final match = matches.single;
+      final current = _xmlUnescape(match.group(2)!);
+      if (current != context.previous.displayName &&
+          current != context.next.displayName) {
+        errors.add(
+          key +
+              ': found ' +
+              current +
+              ', expected ' +
+              context.previous.displayName,
+        );
+        continue;
+      }
+      if (current == context.next.displayName) continue;
+      updated = updated.replaceRange(
+        match.start,
+        match.end,
+        match.group(1)! +
+            _xmlEscape(context.next.displayName) +
+            match.group(3)!,
+      );
+    }
+
+    if (errors.isNotEmpty) {
+      return TemplateTransformationResult(
+        items: [_iosConflict(_infoPlistPath, errors.join('; '))],
+      );
+    }
+    if (updated == contents) return TemplateTransformationResult();
+    return TemplateTransformationResult(
+      changes: [context.change(_infoPlistPath, updated)],
+    );
+  }
+}
+
+enum _IosBundleValue { application, test }
+
+class _IosTargetSpec {
+  const _IosTargetSpec({
+    required this.name,
+    required this.expectedPrevious,
+    required this.targetNext,
+  });
+
+  final String name;
+  final _IosBundleValue expectedPrevious;
+  final _IosBundleValue targetNext;
+}
+
+class _IosTextEdit {
+  const _IosTextEdit({
+    required this.start,
+    required this.end,
+    required this.replacement,
+  });
+
+  final int start;
+  final int end;
+  final String replacement;
+}
+
+class _PbxObject {
+  const _PbxObject({
+    required this.id,
+    required this.comment,
+    required this.start,
+    required this.end,
+    required this.text,
+  });
+
+  final String id;
+  final String comment;
+  final int start;
+  final int end;
+  final String text;
+
+  String? get isa {
+    final match = RegExp(
+      r'^\s*isa = ([^;]+);$',
+      multiLine: true,
+    ).firstMatch(text);
+    return match?.group(1)?.trim();
+  }
+
+  String? get name {
+    final match = RegExp(
+      r'^\s*name = ([^;]+);$',
+      multiLine: true,
+    ).firstMatch(text);
+    return match?.group(1)?.trim();
+  }
+
+  String? get buildConfigurationListId {
+    final match = RegExp(
+      r'^\s*buildConfigurationList = ([A-Fa-f0-9]+) /\*[^*]+\*/;$',
+      multiLine: true,
+    ).firstMatch(text);
+    return match?.group(1);
+  }
+
+  List<String> get buildConfigurationIds {
+    final section = RegExp(
+      r'buildConfigurations\s*=\s*\(([\s\S]*?)\);',
+    ).firstMatch(text)?.group(1);
+    if (section == null) return const [];
+    return RegExp(
+      r'([A-Fa-f0-9]+) /\*[^*]+\*/',
+    ).allMatches(section).map((match) => match.group(1)!).toList();
+  }
+}
+
+List<_PbxObject> _parsePbxObjects(String contents) {
+  final header = RegExp(
+    r'^\t\t([A-Fa-f0-9]+)(?: /\* ([^*]+) \*/)? = \{$',
+    multiLine: true,
+  );
+  final objects = <_PbxObject>[];
+  for (final match in header.allMatches(contents)) {
+    final opening = match.end - 1;
+    final closing = _findPbxClosingBrace(contents, opening);
+    if (closing == null) continue;
+    objects.add(
+      _PbxObject(
+        id: match.group(1)!,
+        comment: match.group(2) ?? '',
+        start: match.start,
+        end: closing + 1,
+        text: contents.substring(match.start, closing + 1),
+      ),
+    );
+  }
+  return objects;
+}
+
+int? _findPbxClosingBrace(String contents, int opening) {
+  var depth = 0;
+  var inString = false;
+  var escaped = false;
+  for (var index = opening; index < contents.length; index++) {
+    final character = contents[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character == '\\') {
+        escaped = true;
+      } else if (character == '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (character == '"') {
+      inString = true;
+    } else if (character == '{') {
+      depth++;
+    } else if (character == '}') {
+      depth--;
+      if (depth == 0) return index;
+    }
+  }
+  return null;
+}
+
+String _applyIosEdits(String contents, List<_IosTextEdit> edits) {
+  final sorted = edits.toList()
+    ..sort((left, right) => right.start.compareTo(left.start));
+  var updated = contents;
+  for (final edit in sorted) {
+    updated = updated.replaceRange(edit.start, edit.end, edit.replacement);
+  }
+  return updated;
+}
+
+TemplatePlanItem _iosConflict(String target, String description) {
+  return TemplatePlanItem(
+    status: TemplatePlanStatus.conflicted,
+    target: target,
+    description: description,
+  );
+}
+
 class _AndroidReplacement {
   const _AndroidReplacement({
     required this.field,
@@ -1139,6 +1514,10 @@ final _appTitlePattern = RegExp(
   multiLine: true,
 );
 final _readmeHeadingPattern = RegExp(r'^(# +)([^\r\n]+)', multiLine: true);
+final _productBundleIdentifierPattern = RegExp(
+  r'^([ \t]*PRODUCT_BUNDLE_IDENTIFIER[ \t]*=[ \t]*)([^;]+)(;[ \t]*)$',
+  multiLine: true,
+);
 
 void _collectFiles(
   Directory directory,

@@ -2,7 +2,7 @@
 
 Date: 2026-08-01
 Owner: Dante
-Status: active
+Status: completed
 Risk class: high
 Related issue/PR: [template initialization and customization proposal](../../../_WIP/2026-08-01_mobilekit_template_initialization_customization_proposal.md)
 
@@ -52,17 +52,17 @@ native structure.
 
 ## Implementation Checklist
 
-- [ ] Add target-aware parsing/anchoring for the Runner and RunnerTests build
+- [x] Add target-aware parsing/anchoring for the Runner and RunnerTests build
   configurations.
-- [ ] Define and validate the test bundle ID derivation policy.
-- [ ] Update application and test PRODUCT_BUNDLE_IDENTIFIER settings without
+- [x] Define and validate the test bundle ID derivation policy.
+- [x] Update application and test PRODUCT_BUNDLE_IDENTIFIER settings without
   renaming Xcode targets.
-- [ ] Update Info.plist display/name values through the branding input.
-- [ ] Preserve entitlements, signing settings, build phases, and target names.
-- [ ] Add fixture tests for multiple build configurations, conflict detection,
+- [x] Update Info.plist display/name values through the branding input.
+- [x] Preserve entitlements, signing settings, build phases, and target names.
+- [x] Add fixture tests for multiple build configurations, conflict detection,
   rollback, and idempotency.
-- [ ] Connect the adapter to the shared transformation registry.
-- [ ] Add macOS build validation to the end-to-end evidence checklist.
+- [x] Connect the adapter to the shared transformation registry.
+- [x] Add macOS build validation to the end-to-end evidence checklist.
 
 ## Decision Log
 
@@ -103,6 +103,22 @@ git diff --check
 
 On Linux, record the macOS build as pending rather than claiming it passed.
 
+Executed on 2026-08-01 from the Linux development host:
+
+~~~text
+(cd packages/mobile_core_kit_cli && dart test)  # 72 tests passed
+fvm flutter analyze                         # no issues
+dart run custom_lint                         # no issues
+dart run mobile_core_kit_cli:mobilekit lint  # passed
+dart run mobile_core_kit_cli:mobilekit verify --env dev --skip-tests  # passed
+git diff --check                             # passed
+~~~
+
+The real repository also passed `mobilekit init --dry-run` with iOS identity
+inputs; the project file and `ios/Runner/Info.plist` were not modified. A native
+`xcodebuild`/Flutter iOS build and simulator evidence remain pending because
+this host is Linux and does not provide Xcode.
+
 ## Runtime Evidence
 
 Required because this changes iOS bundle identity and packaged output.
@@ -128,9 +144,13 @@ Required because this changes iOS bundle identity and packaged output.
 
 ## Completion Notes
 
-Pending implementation.
+Implemented the target-aware iOS transformation in the shared customization
+engine. It updates all Runner and RunnerTests target-owned build
+configurations, rejects ambiguous or user-edited settings as conflicts, updates
+the two Info.plist branding values, and preserves unrelated Xcode objects and
+target names. Apply remains dry-run safe, transactional, and idempotent.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to docs/exec-plans/tech_debt_tracker.md for any
-  iOS project-format limitation.
+- [ ] Run the macOS no-code-sign build and simulator smoke evidence before
+  release; the current Linux host cannot perform this validation.

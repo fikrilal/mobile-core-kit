@@ -78,8 +78,11 @@ identity and integration-policy values to be reviewed or replaced. It fails
 when no manifest exists unless a config file is supplied. Applying the plan
 updates the allowlisted application package, Android namespace/application IDs,
 flavor suffixes, Kotlin package path, Android label, localized branding, root
-metadata, and current README identity references. iOS and integration
-transformations are delivered by the follow-on customization plans.
+metadata, README, iOS application and test bundle IDs, and iOS display/name
+values in `Runner/Info.plist`. The iOS transformation keeps the `Runner` and
+`RunnerTests` target names and only edits their target-owned bundle settings.
+Integration transformations are delivered by the follow-on customization
+plans.
 
 Both commands reject unsupported schema versions and secret-like or runtime
 environment values in tracked configuration. API endpoints, OIDC client IDs,

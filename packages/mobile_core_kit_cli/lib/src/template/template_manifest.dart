@@ -404,6 +404,11 @@ class TemplateCustomization {
             iosTestBundleId,
       );
     }
+    if (iosTestBundleId == iosBundleId) {
+      throw const FormatException(
+        'platforms.ios.test_bundle_id must differ from the application bundle ID.',
+      );
+    }
 
     if (deepLinkMode == DeepLinkMode.enabled) {
       final host = deepLinkHost;
