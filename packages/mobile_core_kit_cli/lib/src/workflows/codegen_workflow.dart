@@ -20,14 +20,18 @@ class CodegenWorkflow {
 
   final WorkflowContext context;
 
-  Future<int> run(List<String> _) async {
-    var exitCode = await context.step('Build runner', [
+  Future<int> generate() {
+    return context.step('Dart build_runner', [
       'dart',
       'run',
       'build_runner',
       'build',
       '--delete-conflicting-outputs',
     ]);
+  }
+
+  Future<int> run(List<String> _) async {
+    var exitCode = await generate();
     if (exitCode != 0) return exitCode;
 
     final diffExitCode = await _verifyGeneratedFilesClean(

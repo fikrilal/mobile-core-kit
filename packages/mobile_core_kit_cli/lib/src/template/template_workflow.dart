@@ -4,6 +4,9 @@ import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/template/template_customization_engine.dart';
 import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
 import 'package:mobile_core_kit_cli/src/template/template_plan.dart';
+import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 
@@ -146,6 +149,13 @@ class TemplateLifecycleWorkflow {
       'Managed application package, branding, metadata, deep-link policy, and '
       'documentation changes were applied.',
     );
+    final generatedExitCode = await _runPostApplyWorkflows();
+    if (generatedExitCode != 0) {
+      return TemplateLifecycleResult(
+        plan: plan,
+        outcome: TemplateLifecycleOutcome.failed,
+      ).exitCode;
+    }
     return TemplateLifecycleResult(
       plan: plan,
       outcome: TemplateLifecycleOutcome.applied,
@@ -285,6 +295,113 @@ class TemplateLifecycleWorkflow {
     final input = _inputReader();
     return input?.trim().toLowerCase() == 'y' ||
         input?.trim().toLowerCase() == 'yes';
+  }
+
+  Future<int> _runPostApplyWorkflows() async {
+    var exitCode = await context.step('Flutter pub get', [
+      'flutter',
+      'pub',
+      'get',
+    ]);
+    if (exitCode != 0) {
+      _reportPostApplyFailure('Flutter pub get');
+      return exitCode;
+    }
+
+    if (_hasLocalizationInputs()) {
+      exitCode = await context.step('Flutter gen-l10n', [
+        'flutter',
+        'gen-l10n',
+      ]);
+      if (exitCode != 0) {
+        _reportPostApplyFailure('Flutter gen-l10n');
+        return exitCode;
+      }
+    } else {
+      context.output.writeln(
+        'SKIP: Flutter gen-l10n (no lib/l10n/*.arb inputs were found).',
+      );
+    }
+
+    final environment = _availableEnvironment();
+    if (environment == null) {
+      context.output.writeln(
+        'SKIP: build config generation (no non-empty .env/dev.yaml, '
+        '.env/staging.yaml, or .env/prod.yaml was found).',
+      );
+    } else {
+      exitCode = await context.workflowStep(
+        'Validate environment inputs ($environment)',
+        () => EnvironmentSchemaWorkflow(context).run(['--env', environment]),
+      );
+      if (exitCode != 0) {
+        _reportPostApplyFailure('environment validation');
+        return exitCode;
+      }
+
+      exitCode = await context.workflowStep(
+        'Generate build config (.env/$environment.yaml)',
+        () => BuildConfigWorkflow(context).run(['--env', environment]),
+      );
+      if (exitCode != 0) {
+        _reportPostApplyFailure('build config generation');
+        return exitCode;
+      }
+    }
+
+    if (_hasCodegenInputs()) {
+      exitCode = await CodegenWorkflow(context).generate();
+      if (exitCode != 0) {
+        _reportPostApplyFailure('Dart build_runner');
+        return exitCode;
+      }
+    } else {
+      context.output.writeln(
+        'SKIP: Dart build_runner (build_runner is not declared in pubspec.yaml).',
+      );
+    }
+
+    context.output.writeln(
+      'Post-apply generation complete. Run `mobilekit doctor` for residual '
+      'defaults and external setup.',
+    );
+    return 0;
+  }
+
+  bool _hasLocalizationInputs() {
+    final directory = context.directory('lib/l10n');
+    if (!directory.existsSync()) return false;
+    return directory
+        .listSync(followLinks: false)
+        .whereType<File>()
+        .any((file) => file.path.endsWith('.arb'));
+  }
+
+  String? _availableEnvironment() {
+    for (final environment in const ['dev', 'staging', 'prod']) {
+      final file = context.file('.env/$environment.yaml');
+      if (file.existsSync() && file.readAsStringSync().trim().isNotEmpty) {
+        return environment;
+      }
+    }
+    return null;
+  }
+
+  bool _hasCodegenInputs() {
+    final pubspec = context.file('pubspec.yaml');
+    if (!pubspec.existsSync()) return false;
+    return RegExp(
+      r'^\s*build_runner\s*:',
+      multiLine: true,
+    ).hasMatch(pubspec.readAsStringSync());
+  }
+
+  void _reportPostApplyFailure(String step) {
+    context.errorOutput.writeln(
+      'ERROR: $step failed after the customization files were applied. '
+      'The identity changes are complete, but generated outputs need '
+      'attention before the project is ready.',
+    );
   }
 
   String _directorySlug() {

@@ -80,6 +80,156 @@ void main() {
     expect(output.toString(), contains('Wrote .mobilekit/project.yaml.'));
   });
 
+  test(
+    'initializes a fixture, runs valid generators, and is dry-run/idempotent',
+    () async {
+      final repository = await _createGenerationRepository();
+      addTearDown(() => repository.delete(recursive: true));
+      final config = File(p.join(repository.path, 'project-input.yaml'))
+        ..writeAsStringSync(_validConfig);
+      final beforeDryRun = _snapshot(repository);
+      final dryRunCommands = <List<String>>[];
+
+      final dryRunResult =
+          await TemplateLifecycleWorkflow(
+            WorkflowContext(
+              rootDirectory: repository,
+              execute: (command) async {
+                dryRunCommands.add(command);
+                return 0;
+              },
+              output: StringBuffer(),
+              errorOutput: StringBuffer(),
+            ),
+          ).run(TemplateLifecycleCommand.init, [
+            '--config',
+            config.path,
+            '--dry-run',
+          ]);
+
+      expect(dryRunResult, 0);
+      expect(dryRunCommands, isEmpty);
+      expect(_snapshot(repository), beforeDryRun);
+
+      final commands = <List<String>>[];
+      final output = StringBuffer();
+      final errors = StringBuffer();
+      final workflow = TemplateLifecycleWorkflow(
+        WorkflowContext(
+          rootDirectory: repository,
+          execute: (command) async {
+            commands.add(command);
+            return 0;
+          },
+          output: output,
+          errorOutput: errors,
+        ),
+      );
+
+      expect(
+        await workflow.run(TemplateLifecycleCommand.init, [
+          '--config',
+          config.path,
+          '--yes',
+        ]),
+        0,
+        reason: '${errors.toString()}\n${output.toString()}',
+      );
+      final commandNames = commands.map((command) => command.join(' '));
+      expect(commandNames, contains('flutter pub get'));
+      expect(commandNames, contains('flutter gen-l10n'));
+      expect(
+        commandNames,
+        contains('dart run build_runner build --delete-conflicting-outputs'),
+      );
+      expect(
+        File(
+          p.join(
+            repository.path,
+            'lib/core/foundation/config/build_config_values.dart',
+          ),
+        ).existsSync(),
+        isTrue,
+      );
+
+      final existingManifest = File(
+        p.join(repository.path, projectManifestRelativePath),
+      ).readAsStringSync();
+      final secondCommands = <List<String>>[];
+      final secondResult =
+          await TemplateLifecycleWorkflow(
+            WorkflowContext(
+              rootDirectory: repository,
+              execute: (command) async {
+                secondCommands.add(command);
+                return 0;
+              },
+              output: StringBuffer(),
+              errorOutput: errors,
+            ),
+          ).run(TemplateLifecycleCommand.customize, [
+            '--config',
+            config.path,
+            '--yes',
+          ]);
+
+      expect(secondResult, 0);
+      expect(secondCommands, isEmpty);
+      expect(
+        File(
+          p.join(repository.path, projectManifestRelativePath),
+        ).readAsStringSync(),
+        existingManifest,
+      );
+    },
+  );
+
+  test('fixture customization stops on a managed-file conflict', () async {
+    final repository = await _createGenerationRepository();
+    addTearDown(() => repository.delete(recursive: true));
+    final config = File(p.join(repository.path, 'project-input.yaml'))
+      ..writeAsStringSync(_validConfig);
+    final errors = StringBuffer();
+    final workflow = TemplateLifecycleWorkflow(
+      WorkflowContext(
+        rootDirectory: repository,
+        execute: (_) async => 0,
+        output: StringBuffer(),
+        errorOutput: errors,
+      ),
+    );
+
+    expect(
+      await workflow.run(TemplateLifecycleCommand.init, [
+        '--config',
+        config.path,
+        '--yes',
+      ]),
+      0,
+    );
+    final manifestBefore = File(
+      p.join(repository.path, projectManifestRelativePath),
+    ).readAsStringSync();
+    File(
+      p.join(repository.path, 'README.md'),
+    ).writeAsStringSync('# user-owned-heading\n');
+
+    final result = await workflow.run(TemplateLifecycleCommand.customize, [
+      '--config',
+      config.path,
+      '--yes',
+    ]);
+
+    expect(result, 1);
+    expect(errors.toString(), contains('conflicts'));
+    expect(
+      File(
+        p.join(repository.path, projectManifestRelativePath),
+      ).readAsStringSync(),
+      manifestBefore,
+    );
+  });
+
   test('requires init before interactive customization', () async {
     final repository = await _createRepository();
     addTearDown(() => repository.delete(recursive: true));
@@ -186,6 +336,33 @@ version: 2026-08-01
   return repository;
 }
 
+Future<Directory> _createGenerationRepository() async {
+  final repository = await _createRepository();
+  File(p.join(repository.path, 'pubspec.yaml')).writeAsStringSync('''
+name: mobile_core_kit
+description: 'A new Flutter project.'
+dev_dependencies:
+  build_runner: ^2.12.2
+''');
+  File(
+    p.join(repository.path, 'README.md'),
+  ).writeAsStringSync('# mobile-core-kit\n');
+  File(p.join(repository.path, 'lib', 'l10n', 'app_en.arb'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('''
+{
+  "appTitle": "Mobile Core Kit"
+}
+''');
+  File(p.join(repository.path, '.env', 'dev.yaml'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(_validEnvironment);
+  Directory(
+    p.join(repository.path, 'lib', 'core', 'foundation', 'config'),
+  ).createSync(recursive: true);
+  return repository;
+}
+
 TemplateInputReader _reader(List<String> answers) {
   final queue = ListQueue<String>.from(answers);
   return () => queue.isEmpty ? null : queue.removeFirst();
@@ -217,3 +394,31 @@ firebase:
 environment:
   examples_updated: false
 ''';
+
+const _validEnvironment = '''
+core: https://api.example.test/v1
+auth: https://api.example.test/v1
+profile: https://api.example.test/v1
+enableLogging: true
+reminderExperiment: false
+analyticsEnabledDefault: true
+analyticsDebugLoggingEnabled: true
+googleOidcServerClientId: example.apps.googleusercontent.com
+deepLinkAllowedHosts: []
+netLogMode: full
+netLogBodyLimitBytes: 8192
+netLogLargeThresholdBytes: 65536
+netLogSlowMs: 800
+netLogRedact: true
+''';
+
+Map<String, String> _snapshot(Directory root) {
+  final result = <String, String>{};
+  for (final entity in root.listSync(recursive: true, followLinks: false)) {
+    if (entity is File) {
+      result[p.relative(entity.path, from: root.path)] = entity
+          .readAsStringSync();
+    }
+  }
+  return result;
+}

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
+import 'package:mobile_core_kit_cli/src/doctor/residual_defaults.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
@@ -127,9 +128,59 @@ class Doctor {
     }
 
     return [
+      ..._residualDefaultChecks(root, manifest.customization),
       _deepLinkPolicyCheck(root, manifest.customization),
       _firebasePolicyCheck(root, manifest.customization),
     ];
+  }
+
+  List<DoctorCheck> _residualDefaultChecks(
+    Directory root,
+    TemplateCustomization customization,
+  ) {
+    final findings = ResidualDefaultScanner().scan(root, customization);
+    if (findings.isEmpty) {
+      return const [
+        DoctorCheck(
+          label: 'residual defaults',
+          status: DoctorCheckStatus.ok,
+          detail: 'No known template defaults remain in application surfaces.',
+        ),
+      ];
+    }
+
+    return [
+      for (final severity in ResidualDefaultSeverity.values)
+        if (findings.any((finding) => finding.severity == severity))
+          _residualDefaultCheck(
+            severity,
+            findings.where((finding) => finding.severity == severity).toList(),
+          ),
+    ];
+  }
+
+  DoctorCheck _residualDefaultCheck(
+    ResidualDefaultSeverity severity,
+    List<ResidualDefaultFinding> findings,
+  ) {
+    final details = findings
+        .map((finding) {
+          final preview = finding.paths.take(3).join(', ');
+          final suffix = finding.paths.length > 3
+              ? ' (+${finding.paths.length - 3} more)'
+              : '';
+          return '${finding.marker}: ${finding.detail} [$preview$suffix]';
+        })
+        .join(' | ');
+    return DoctorCheck(
+      label: 'residual defaults (${severity.label})',
+      status: switch (severity) {
+        ResidualDefaultSeverity.blocking => DoctorCheckStatus.error,
+        ResidualDefaultSeverity.reviewRequired => DoctorCheckStatus.warning,
+        ResidualDefaultSeverity.historical => DoctorCheckStatus.ok,
+      },
+      detail: details,
+    );
   }
 
   DoctorCheck _deepLinkPolicyCheck(
