@@ -42,7 +42,7 @@ Phase 2 must:
 
 - [x] Review `lib/features/auth/data/model/remote/auth_response_model.dart` and `lib/features/auth/data/model/remote/auth_result_model.dart` and record the decision.
 - [x] Add a repository-local allowlist file for reviewed acceptable duplicates.
-- [x] Extend `tool/filter_duplication_report.dart` to:
+- [x] Extend the CLI duplication report filter to:
   - [x] load the allowlist
   - [x] suppress allowlisted duplicates from actionable groups
   - [x] report reviewed acceptable groups separately
@@ -55,7 +55,7 @@ Phase 2 must:
   - [x] parser
   - [x] formatter
   - [x] normalization helper
-- [x] Update `tool/check_duplication.sh` comments/output expectations if needed.
+- [x] Update the core duplication profile comments/output expectations if needed.
 - [x] Document duplication-harness usage in `docs/engineering/agent_pr_loop.md`.
 - [x] Update any docs index or related references if needed.
 - [x] Run duplication harness, analyze, and custom lints.
@@ -70,15 +70,12 @@ Phase 2 must:
 List exact commands and outcomes.
 
 ```bash
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 # Passed
 # Result: 0 actionable duplicate groups, 1 reviewed acceptable group
 # (auth_response_model/auth_result_model with explicit rationale)
 
-fvm flutter analyze
-# Passed
-
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 # Passed
 ```
 
@@ -101,8 +98,8 @@ dart run custom_lint
 ## Completion Notes
 
 Phase 2 shipped the reviewed-signal layer for duplication detection:
-- added `tool/duplication_allowlist.json` for reviewed acceptable duplicates with rationale
-- extended `tool/filter_duplication_report.dart` to separate actionable vs reviewed acceptable groups
+- added `duplication/duplication_allowlist.json` for reviewed acceptable duplicates with rationale
+- extended the CLI duplication report filter to separate actionable vs reviewed acceptable groups
 - tightened duplicate categories so the report no longer misclassifies value objects or auth use cases
 - documented duplication-check usage in the self-review / PR loop
 

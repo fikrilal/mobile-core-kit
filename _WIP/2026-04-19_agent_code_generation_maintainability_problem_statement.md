@@ -149,7 +149,8 @@ The next step should be to turn this into a repository-specific diagnosis:
 - where the pattern appears most often
 - which classes of duplication are most common
 - which kinds of defensive code are legitimate vs noise
-- which parts should be addressed by docs, lints, verify scripts, or scaffolding
+- which parts should be addressed by docs, lints, CLI verification workflows,
+  or scaffolding
 
 ## Sources
 

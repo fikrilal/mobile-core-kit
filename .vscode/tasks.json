@@ -5,7 +5,7 @@
             "label": "Generate Config (Dev)",
             "type": "shell",
             "command": "dart",
-            "args": ["run", "tool/gen_config.dart", "-e", "dev"],
+            "args": ["run", "mobile_core_kit_cli:mobilekit", "config", "generate", "--env", "dev"],
             "group": "build",
             "presentation": {
                 "reveal": "silent",
@@ -17,7 +17,7 @@
             "label": "Generate Config (Staging)",
             "type": "shell",
             "command": "dart",
-            "args": ["run", "tool/gen_config.dart", "-e", "staging"],
+            "args": ["run", "mobile_core_kit_cli:mobilekit", "config", "generate", "--env", "staging"],
             "group": "build",
             "presentation": {
                 "reveal": "silent",
@@ -29,7 +29,7 @@
             "label": "Generate Config (Prod)",
             "type": "shell",
             "command": "dart",
-            "args": ["run", "tool/gen_config.dart", "-e", "prod"],
+            "args": ["run", "mobile_core_kit_cli:mobilekit", "config", "generate", "--env", "prod"],
             "group": "build",
             "presentation": {
                 "reveal": "silent",

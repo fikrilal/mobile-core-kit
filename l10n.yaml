@@ -10,6 +10,6 @@ nullable-getter: false
 
 # Enterprise toggles (low complexity / high leverage)
 required-resource-attributes: true
-untranslated-messages-file: tool/untranslated_messages.json
+untranslated-messages-file: .tmp/untranslated_messages.json
 preferred-supported-locales: [en, id]
 use-named-parameters: true

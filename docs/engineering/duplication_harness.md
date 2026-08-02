@@ -30,8 +30,8 @@ self-review instead of relying on reviewer memory.
 The duplication harness is a two-layer setup:
 
 1. `jscpd` finds raw duplicate code blocks
-2. `tool/filter_duplication_report.dart` turns raw clone output into a
-   repository-specific review signal
+2. the internal CLI filter turns raw clone output into a repository-specific
+   review signal
 
 This repository intentionally does **not** use raw clone output directly.
 The filter narrows the output to the duplicate classes that matter here.
@@ -51,7 +51,7 @@ Note:
 Command:
 
 ```bash
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 ```
 
 Purpose:
@@ -68,7 +68,7 @@ Current scan scope:
 
 Config:
 - `.jscpd.json`
-- `tool/duplication_allowlist.json`
+- `duplication/duplication_allowlist.json`
 
 Current categories:
 - `failure_mapper`
@@ -91,7 +91,7 @@ Typical examples:
 Command:
 
 ```bash
-./tool/check_small_helper_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers
 ```
 
 Purpose:
@@ -101,7 +101,7 @@ Purpose:
 
 Config:
 - `.jscpd.small_helpers.json`
-- `tool/small_helper_duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
 
 Current categories:
 - `field_error_helper`
@@ -122,7 +122,7 @@ Typical examples:
 Command:
 
 ```bash
-./tool/check_presentation_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
 ```
 
 Purpose:
@@ -132,7 +132,7 @@ Purpose:
 
 Config:
 - `.jscpd.presentation.json`
-- `tool/presentation_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Current categories:
 - `cubit_field_validation`
@@ -234,13 +234,13 @@ Use these heuristics:
 The harness supports reviewed acceptable duplicates through JSON allowlists.
 
 Core profile:
-- `tool/duplication_allowlist.json`
+- `duplication/duplication_allowlist.json`
 
 Small-helper profile:
-- `tool/small_helper_duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
 
 Presentation profile:
-- `tool/presentation_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Each entry records:
 - `firstPath`
@@ -301,7 +301,7 @@ Recommended use:
 - run the harness during self-review when the change touches shared or repeated
   patterns
 - expect the core profile and small-helper profile to run during
-  `dart run tool/verify.dart --env dev`
+  `dart run mobile_core_kit_cli:mobilekit verify --env dev`
 - review the output before opening/updating the PR
 - if a duplicate is acceptable, record it explicitly
 - if it is debt, either fix it now or call it out as follow-up debt
@@ -321,17 +321,15 @@ At the time of writing:
 
 ## Related Files
 
-Scripts and config:
+Implementation and config:
 - `.jscpd.json`
 - `.jscpd.small_helpers.json`
 - `.jscpd.presentation.json`
-- `tool/check_duplication.sh`
-- `tool/check_small_helper_duplication.sh`
-- `tool/check_presentation_duplication.sh`
-- `tool/filter_duplication_report.dart`
-- `tool/duplication_allowlist.json`
-- `tool/small_helper_duplication_allowlist.json`
-- `tool/presentation_duplication_allowlist.json`
+- `packages/mobile_core_kit_cli/lib/src/duplication/duplication_runner.dart`
+- `packages/mobile_core_kit_cli/lib/src/duplication/duplication_report_filter.dart`
+- `duplication/duplication_allowlist.json`
+- `duplication/small_helper_duplication_allowlist.json`
+- `duplication/presentation_duplication_allowlist.json`
 
 Workflow docs:
 - `docs/engineering/agent_pr_loop.md`

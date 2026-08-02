@@ -19,20 +19,20 @@ The goal is not folder symmetry. The goal is explicit dependency direction.
 ## Where The Rules Live
 
 Primary sources of truth:
-- `tool/lints/architecture_lints.yaml`
+- `lint/architecture_lints.yaml`
 - `analysis_options.yaml`
 - `packages/mobile_core_kit_lints/`
 
 Run locally with:
 
 ```bash
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 ```
 
 The canonical gate also runs them:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 ## What Is Enforced
@@ -132,7 +132,7 @@ Instead ask:
 
 Preferred order of action:
 1. move the code to the correct boundary
-2. refine config in `tool/lints/architecture_lints.yaml`
+2. refine config in `lint/architecture_lints.yaml`
 3. add a temporary documented exception
 4. only then consider a tightly-scoped suppression
 
@@ -153,8 +153,8 @@ Do not normalize temporary allowlists into permanent architecture.
 Prefer config changes when the rule is about import boundaries.
 
 Typical path:
-- update `tool/lints/architecture_lints.yaml`
-- verify locally with `dart run custom_lint`
+- update `lint/architecture_lints.yaml`
+- verify locally with `dart run mobile_core_kit_cli:mobilekit lint`
 - document the stable policy here if the rule changes conceptually
 
 ### Custom lint path
@@ -169,7 +169,8 @@ Typical path:
 
 ## Troubleshooting
 
-- `flutter analyze` does not run custom lints. Use `dart run custom_lint` or the full verify gate.
+- The analyzer step does not run custom lints by itself. Use
+  `dart run mobile_core_kit_cli:mobilekit lint` or the full verify gate.
 - If the IDE is not showing custom-lint diagnostics:
   - confirm `custom_lint` is in `dev_dependencies`
   - confirm `analysis_options.yaml` enables the plugin
@@ -180,4 +181,5 @@ Typical path:
 
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/guardrails.md`
+- `docs/engineering/mobilekit_cli_reference.md`
 - `docs/engineering/data_domain_guide.md`

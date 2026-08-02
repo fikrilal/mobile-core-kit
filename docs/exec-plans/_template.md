@@ -38,17 +38,16 @@ List exact commands and outcomes.
 
 ```bash
 # example
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Additional targeted checks when relevant:
 
 ```bash
 # examples
-# fvm flutter analyze
-# dart run custom_lint
+# dart run mobile_core_kit_cli:mobilekit lint
 # fvm flutter test
-# dart run tool/verify_codegen.dart
+# dart run mobile_core_kit_cli:mobilekit codegen verify
 ```
 
 ## Runtime Evidence

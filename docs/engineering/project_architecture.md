@@ -349,12 +349,12 @@ Conventions:
 
 ## 8) Config & Environments
 
-- Environment YAMLs live under `.env/`. The generator `tool/gen_config.dart` produces `lib/core/foundation/config/build_config_values.dart`.
+- Environment YAMLs live under `.env/`. `mobilekit config generate` produces `lib/core/foundation/config/build_config_values.dart`.
 - `BuildConfig` reads compile‑time env via `--dart-define=ENV=<env>` and exposes URLs, logging flags, and OAuth client IDs.
 - `AppConfig` holds runtime config (e.g., access token) and proxies to `BuildConfig` for hosts and flags.
 
 Commands:
-- Generate config: `dart run tool/gen_config.dart -e dev` (or `staging`/`prod`).
+- Generate config: `dart run mobile_core_kit_cli:mobilekit config generate -e dev` (or `staging`/`prod`).
 - Run app (dev): `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`.
 
 ---

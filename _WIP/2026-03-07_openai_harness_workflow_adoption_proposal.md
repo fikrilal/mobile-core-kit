@@ -43,7 +43,7 @@ The relevant question is:
 This repository already has several strong harness elements:
 - `AGENTS.md`
 - architecture lints
-- `tool/verify.dart`
+- `mobilekit verify`
 - execution-plan docs
 - runtime harness docs
 - source-local boundary READMEs
@@ -58,7 +58,7 @@ Strong existing pieces:
 - repository-local operating rules in `AGENTS.md`
 - architecture guidance in `docs/engineering/`
 - custom lints enforcing boundaries and UI conventions
-- a full verify pipeline in `tool/verify.dart`
+- a full verify pipeline in `mobilekit verify`
 - execution-plan workflow in `docs/exec-plans/`
 - agent PR loop doc in `docs/engineering/agent_pr_loop.md`
 - mobile runtime harness doc in `docs/engineering/mobile_runtime_harness.md`
@@ -109,7 +109,7 @@ For this repository, the operating model should be:
 - improve legibility when touching a confusing area
 
 3. Machine verification
-- run `dart run tool/verify.dart --env dev` for non-trivial changes
+- run `dart run mobile_core_kit_cli:mobilekit verify --env dev` for non-trivial changes
 - collect targeted evidence for risky flows when needed
 
 4. Runtime evidence for medium/high-risk mobile changes
@@ -229,7 +229,7 @@ Level 1: Repository rules
 - ADRs for durable repo-level decisions
 
 Level 2: Mechanical gates
-- `tool/verify.dart`
+- `mobilekit verify`
 - custom lints
 - drift checks
 - codegen checks
@@ -259,7 +259,7 @@ This is the correct compromise between speed and safety.
 Recommendation:
 - when a bug/review failure repeats twice, promote it deliberately into one of:
   - lint rule
-  - verify script
+  - CLI verification workflow
   - template/scaffold update
   - source-local README
   - engineering doc
@@ -287,8 +287,8 @@ Do first.
 - explicitly tie risk class to runtime evidence expectations
 - reduce ambiguity around when runtime evidence is required
 
-2. Review `tool/agent/*` scripts
-- keep only scripts that provide clear, repeated value
+2. Review runtime CLI commands
+- keep only commands that provide clear, repeated value
 - remove or consolidate any that are additive but not essential
 
 3. Add a short section to `docs/engineering/project_architecture.md`

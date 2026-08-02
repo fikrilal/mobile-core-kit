@@ -71,7 +71,7 @@ Examples:
 This repo enforces the dependency direction via custom lints:
 
 - Architecture import boundaries:
-    - `tool/lints/architecture_lints.yaml`
+    - `lint/architecture_lints.yaml`
     - Notably: `feature_domain_no_infra` blocks feature domain code from importing:
         - `lib/core/infra/**`
         - `lib/core/platform/**`
@@ -195,8 +195,7 @@ The session manager doesn’t “know” how refresh is implemented; it knows on
 
 ## 9) Quick check (how to verify you’re following DIP)
 
-- Run:
-    - `dart run custom_lint`
+- Run: `dart run mobile_core_kit_cli:mobilekit lint`
 - If you violated the boundary, you’ll typically see:
     - `architecture_imports` error like `feature_domain_no_infra`
     - `restricted_imports` error if you imported a banned low-level package
@@ -222,6 +221,6 @@ This repo uses a pragmatic “core kernel” approach:
 
 - Guardrails / boundaries:
     - `docs/engineering/architecture_linting.md`
-    - `tool/lints/architecture_lints.yaml`
+    - `lint/architecture_lints.yaml`
 - Data/Domain responsibilities:
     - `docs/engineering/data_domain_guide.md`

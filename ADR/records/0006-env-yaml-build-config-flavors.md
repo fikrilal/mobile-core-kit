@@ -29,12 +29,12 @@ Apps derived from this template need flavor‑aware configuration (dev/staging/p
 
 ## Decision Outcome
 
-Chosen option: **Environment YAML files compiled into `BuildConfig` via `tool/gen_config.dart`**, because it provides a straightforward, version‑controlled source of truth and a stable API for code to consume.
+Chosen option: **Environment YAML files compiled into `BuildConfig` via `mobilekit config generate`**, because it provides a straightforward, version‑controlled source of truth and a stable API for code to consume.
 
 Pattern:
 
 * Per‑environment YAML lives in `.env/dev.yaml`, `.env/staging.yaml`, `.env/prod.yaml`.
-* `dart run tool/gen_config.dart --env <env>` generates `lib/core/configs/build_config.g.dart`.
+* `dart run mobile_core_kit_cli:mobilekit config generate --env <env>` generates `lib/core/foundation/config/build_config_values.dart`.
 * Builds select the env via `--dart-define=ENV=<env>`, read by `BuildConfig`.
 * Runtime config (e.g., access token) lives in `AppConfig`.
 
@@ -51,4 +51,3 @@ Confirmed when:
 
 * Env changes update YAML and re‑generate `build_config.g.dart` in the same PR.
 * New env keys are surfaced through `BuildConfig` getters.
-

@@ -34,15 +34,12 @@ The goal is to keep UX consistent across phone + tablet, avoid duplicated heuris
 
 ## Where the rule is enforced
 
-The repo includes a guardrail script:
-
-```bash
-dart run tool/verify_modal_entrypoints.dart
-```
+The CLI package includes an internal modal-entrypoint guardrail check,
+`packages/mobile_core_kit_cli/lib/src/guardrails/modal_entrypoints_check.dart`.
 
 It fails the build if disallowed modal APIs are used outside the allowlist (currently only `lib/core/design_system/adaptive/widgets/`).
 
-`dart run tool/verify.dart` runs this check automatically.
+`mobilekit verify` runs this check automatically.
 
 ## When to use which entrypoint
 
@@ -92,4 +89,3 @@ If you need a new modal type, create a wrapper under `lib/core/design_system/wid
 - Calling `showDialog`/`showModalBottomSheet` directly in `lib/features/**`.
 - Embedding a `Dialog` widget inside a bottom sheet (leads to double surfaces/padding and weird semantics).
 - Divergent “dismiss means cancel” vs “dismiss means null” semantics across features.
-

@@ -82,7 +82,8 @@ Deliverable: wrappers that are easy to understand in one screen of code.
 
 ### 3.1 Custom lints
 
-Find the existing lint infrastructure (likely under `packages/` or `tool/` depending on how `hardcoded_ui_colors` is implemented) and add:
+Use the existing lint infrastructure under `packages/mobile_core_kit_lints/`
+and the repository configuration under `lint/` to add:
 
 1) `hardcoded_font_sizes`
    - Disallow `TextStyle(fontSize: ...)` in:

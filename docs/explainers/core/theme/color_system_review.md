@@ -162,7 +162,7 @@ Rule: if a spec mentions a ramp step (e.g. `neutral/200`), it must include inten
 
 1) Update seeds: `lib/core/design_system/theme/system/app_color_seeds.dart`
 2) Run:
-   - `fvm flutter analyze`
+   - `dart run mobile_core_kit_cli:mobilekit lint`
    - `fvm flutter test test/core/theme/color_contrast_test.dart`
 3) Manual QA:
    - light/dark: surfaces and text hierarchy

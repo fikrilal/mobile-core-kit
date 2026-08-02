@@ -45,5 +45,18 @@ void main() {
         isNull,
       );
     });
+
+    test('rejects every external link when the allowlist is empty', () {
+      final parser = DeepLinkParser(allowedHosts: const {});
+
+      expect(
+        parser.parseExternalUri(Uri.parse('https://links.fikril.dev/home')),
+        isNull,
+      );
+      expect(
+        parser.parseExternalUri(Uri.parse('https://example.test/profile')),
+        isNull,
+      );
+    });
   });
 }

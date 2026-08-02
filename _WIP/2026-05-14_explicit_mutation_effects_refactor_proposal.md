@@ -343,20 +343,18 @@ Decision: defer a lint/harness rule for now. The pattern is now documented and t
 ### Phase 6 — Verification
 
 - [x] Run targeted tests after each slice.
-- [x] Run `dart run custom_lint`.
-- [x] Run `fvm flutter analyze`.
+- [x] Run `dart run mobile_core_kit_cli:mobilekit lint`.
 - [x] Run `fvm flutter test`.
-- [x] For the full migration, run `dart run tool/verify.dart --env dev`.
+- [x] For the full migration, run `dart run mobile_core_kit_cli:mobilekit verify --env dev`.
 
 Verification completed on 2026-05-15.
 
 - Targeted Cubit tests passed for each migrated mutation slice.
 - `dart run build_runner build --delete-conflicting-outputs` completed after the logout state change.
-- `fvm flutter analyze` passed.
-- `dart run custom_lint` passed.
-- `./tool/check_duplication.sh` passed with no actionable duplicate groups.
-- `./tool/check_small_helper_duplication.sh` passed with no actionable duplicate groups.
-- `dart run tool/verify.dart --env dev` passed, including the full Flutter test suite.
+- `dart run mobile_core_kit_cli:mobilekit lint` passed.
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile core` passed with no actionable duplicate groups.
+- `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers` passed with no actionable duplicate groups.
+- `dart run mobile_core_kit_cli:mobilekit verify --env dev` passed, including the full Flutter test suite.
 - Final scan found no remaining `BlocListener`, `resetStatus`, `resetRevokeStatus`, or `clearFailure` hits under `lib/features` or `lib/navigation`.
 
 ## Review Checklist Per Slice

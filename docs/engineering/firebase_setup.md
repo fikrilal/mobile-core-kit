@@ -14,8 +14,13 @@ This repo currently includes Firebase configuration (`lib/firebase_options.dart`
 `android/app/google-services.json`) for a **demo Firebase project used only for this template**.
 
 - This is not production configuration.
-- When you clone this repo for a real app, you should run `flutterfire configure` and replace these
-  files so your app points to your own Firebase project.
+- When you initialize a real app copy, `mobilekit init` or `mobilekit customize`
+  reports the selected Firebase mode. `configure` prints the explicit
+  `flutterfire configure` handoff; `keep-demo` remains a production-readiness
+  blocker; `disabled` preserves the Firebase code without deleting files.
+- Run `flutterfire configure` and replace these files so your app points to
+  your own Firebase project. The CLI never collects credentials or overwrites
+  ignored native Firebase files.
 
 ---
 

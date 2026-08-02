@@ -83,13 +83,10 @@ List exact commands and outcomes.
 fvm flutter test test/core/domain/session/auth_to_session_failure_mapper_test.dart test/features/account/data/error/account_auth_failure_mapper_test.dart test/features/account/adapters/current_user_fetcher_adapter_test.dart test/features/account/subfeatures/profile/domain/usecase/refresh_current_user_after_profile_image_mutation_test.dart test/features/account/subfeatures/profile/domain/usecase/clear_profile_image_usecase_test.dart test/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase_test.dart
 # Passed
 
-fvm flutter analyze
+dart run mobile_core_kit_cli:mobilekit lint
 # Passed
 
-dart run custom_lint
-# Passed
-
-./tool/check_duplication.sh
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
 # Passed; actionable duplicate groups reduced from 6 to 1.
 # Remaining group is the intentionally out-of-scope auth_response_model/auth_result_model pair.
 ```

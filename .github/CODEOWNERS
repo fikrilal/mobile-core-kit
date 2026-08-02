@@ -14,7 +14,9 @@
 # Feature slices.
 /lib/features/** @fikrilal
 
-# Lint package and engineering scripts.
+# CLI, lint package, and repository policy.
+/packages/mobile_core_kit_cli/** @fikrilal
 /packages/mobile_core_kit_lints/** @fikrilal
-/tool/** @fikrilal
+/duplication/** @fikrilal
+/lint/** @fikrilal
 /docs/engineering/** @fikrilal

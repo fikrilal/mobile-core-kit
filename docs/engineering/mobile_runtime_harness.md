@@ -39,16 +39,17 @@ If Firebase or similar platform configuration is missing, fail early with an act
 
 Use this as the default runtime-evidence path.
 
-Primary helper:
+Primary command:
 
 ```bash
-tool/agent/mobile_evidence_check.sh --device <device-id> --flavor dev
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --device <device-id> --flavor dev
 ```
 
 Example with explicit platform config:
 
 ```bash
-tool/agent/mobile_evidence_check.sh \
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --device <device-id> \
   --flavor dev \
   --google-services-json /secure/path/google-services.json
@@ -57,7 +58,7 @@ tool/agent/mobile_evidence_check.sh \
 Optional single-target run:
 
 ```bash
-tool/agent/mobile_evidence_check.sh \
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --device <device-id> \
   --target integration_test/auth_happy_path_test.dart
 ```
@@ -85,16 +86,18 @@ Use this lane for:
 
 ## Live Log Capture
 
-Use the log bridge when continuous runtime logs help debug or prove behavior.
+Use the CLI log bridge when continuous runtime logs help debug or prove
+behavior.
 
 Examples:
 
 ```bash
-tool/agent/flutter_log_stream.sh start --session emulator --mode logs --device emulator-5554
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
+  --session emulator --mode logs --device emulator-5554
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh start \
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
   --session dev-run \
   --mode run \
   --device emulator-5554 \
@@ -103,12 +106,15 @@ tool/agent/flutter_log_stream.sh start \
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh tail --session emulator --lines 200
+dart run mobile_core_kit_cli:mobilekit runtime logs tail \
+  --session emulator --lines 200
 ```
 
 ```bash
-tool/agent/flutter_log_stream.sh status --session emulator
-tool/agent/flutter_log_stream.sh stop --session emulator
+dart run mobile_core_kit_cli:mobilekit runtime logs status \
+  --session emulator
+dart run mobile_core_kit_cli:mobilekit runtime logs stop \
+  --session emulator
 ```
 
 Typical artifacts:
@@ -130,7 +136,7 @@ If runtime evidence repeatedly fails for the same reason, improve the harness in
 
 Typical upgrades:
 - add or strengthen integration tests
-- add better assertions to the evidence script
+- add better assertions to the CLI evidence workflow
 - improve logging/metrics exposure
 - update this document with the stable workflow
 
@@ -138,3 +144,4 @@ Typical upgrades:
 
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/guardrails.md`
+- `docs/engineering/mobilekit_cli_reference.md`

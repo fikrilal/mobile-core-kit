@@ -7,7 +7,15 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 > Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/firebase_setup.md`).
 
-> Status: actively maintained. This template evolves over time; treat it as a starting point and adjust it to your product’s needs.
+> Status: entering stable phase. The foundation is ready for comfortable use in new mobile products and will continue to receive maintenance and improvements.
+
+## Recommended stack
+
+Mobile Core Kit is designed to work with
+[backend-core-kit](https://github.com/fikrilal/backend-core-kit). The two kits
+share the API, error, auth, session, and current-user contracts. Using both
+means you can start with the project foundation already in place and focus on
+your product features.
 
 - Flavor-aware configuration (`dev`, `staging`, `prod`) via `.env/*.yaml` + `BuildConfig`.
 - Network layer (Dio, interceptors, API helpers, connectivity checks, logging).
@@ -25,6 +33,44 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 ## Getting Started
 
+### First use as a template
+
+Copy this repository for a new product, then bootstrap the repository-local
+CLI and run the identity wizard before editing application code:
+
+```bash
+dart pub global activate --source path packages/mobile_core_kit_cli
+mobilekit init
+```
+
+For reproducible setup, provide the same values through a non-secret YAML
+file:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit init \
+  --config path/to/project-input.yaml --yes
+```
+
+`init` writes `.mobilekit/project.yaml`, updates the allowlisted application
+and platform surfaces, then runs dependency acquisition and available
+generation workflows. Missing local `.env/*.yaml` values, Firebase, signing,
+domains, CI secrets, and store metadata remain explicit follow-up work. Run
+the read-only report when setup is complete:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit doctor
+```
+
+After that, connect the backend, replace product branding and external
+platform configuration, and start building your main features.
+
+See [`docs/template/first_use_checklist.md`](docs/template/first_use_checklist.md)
+for the short copy-and-customize workflow, and
+[`docs/template/networking_backend_contract.md`](docs/template/networking_backend_contract.md)
+for the backend-core-kit integration.
+
+### Day-to-day development
+
 1. **Install dependencies**
    ```bash
    fvm flutter pub get
@@ -32,7 +78,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 2. **Generate build config from `.env`**
    ```bash
-   dart run tool/gen_config.dart --env dev
+   dart run mobile_core_kit_cli:mobilekit config generate --env dev
    ```
    or `staging` / `prod` as needed. This writes `lib/core/foundation/config/build_config_values.dart`.
 
@@ -48,7 +94,7 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 5. **Analyze & format**
    ```bash
-   fvm flutter analyze
+   dart run mobile_core_kit_cli:mobilekit lint
    fvm dart format .
    ```
 
@@ -61,8 +107,8 @@ This repo is meant to be cloned and customized as a **starting point** for produ
 
 This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
 
-- Rules config: `tool/lints/architecture_lints.yaml`
-- Run locally: `dart run custom_lint` (also included in `dart run tool/verify.dart --env dev`)
+- Rules config: `lint/architecture_lints.yaml`
+- Run locally: `dart run mobile_core_kit_cli:mobilekit lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --env dev`)
 - Guardrails index: `docs/engineering/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`
@@ -73,10 +119,11 @@ This repo uses `custom_lint` to enforce architecture import boundaries in both I
 Run all checks (config generation + analyze + custom lint + tests + format check):
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
-See `docs/engineering/guardrails.md` for the full list of guardrails (lints + verify scripts + scaffolding).
+See `docs/engineering/guardrails.md` for the full list of guardrails (lints +
+CLI verification workflows + scaffolding).
 
 ## Project Structure
 
@@ -95,7 +142,9 @@ See `docs/engineering/guardrails.md` for the full list of guardrails (lints + ve
   - Each future feature follows the same vertical slice layout.
 - `lib/navigation/` – GoRouter setup and route lists per feature.
 - `.env/` – YAML per environment (`dev.yaml`, `staging.yaml`, `prod.yaml`).
-- `tool/` – scripts like `gen_config.dart` for generating `BuildConfig`.
+- `packages/mobile_core_kit_cli/` – internal `mobilekit` CLI implementation.
+- `packages/mobile_core_kit_lints/` – custom analyzer lint implementation.
+- `duplication/` – reviewed duplication-policy allowlists.
 - `docs/engineering/` – core architecture and implementation guides.
 - `docs/template/` – template customization guides (what to change when cloning).
 - `docs/contracts/` – cross-team/backend contracts (API/auth semantics, error codes).
@@ -106,7 +155,7 @@ Docs index: `docs/README.md`.
 ## Configuration & Flavors
 
 - `.env/<env>.yaml` holds environment-specific values like API hosts, logging, and analytics flags.
-- `tool/gen_config.dart` reads these files and generates `lib/core/foundation/config/build_config_values.dart` used by `BuildConfig`.
+- `mobilekit config generate` reads these files and generates `lib/core/foundation/config/build_config_values.dart` used by `BuildConfig`.
 - Entry points:
   - `lib/main_dev.dart`
   - `lib/main_staging.dart`
@@ -139,6 +188,7 @@ See `docs/engineering/analytics_documentation.md` for patterns and examples.
 For deeper details on the architecture and patterns used in this template:
 
 - `docs/engineering/architecture_linting.md`
+- `docs/engineering/mobilekit_cli_reference.md`
 - `docs/engineering/guardrails.md`
 - `docs/engineering/ai_agent_workflow.md`
 - `docs/engineering/project_architecture.md`
@@ -151,6 +201,8 @@ For deeper details on the architecture and patterns used in this template:
 
 Template customization guides:
 
+- `docs/template/first_use_checklist.md`
+- `docs/template/rename_rebrand.md`
 - `docs/template/deep_linking.md`
 
 `AGENTS.md` contains repo-specific tooling notes (verification commands, architecture constraints, authoring preferences).

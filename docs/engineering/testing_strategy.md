@@ -302,7 +302,8 @@ Developers should run through this list before submitting a PR:
 - [ ] Bloc/Cubit logic changed → add/adjust `bloc_test` coverage.
 - [ ] Repository/datasource logic changed → add/adjust integration tests or fixtures.
 - [ ] Added new feature slice → ensure corresponding tests live under `test/features/<feature>/...`.
-- [ ] `flutter test` and `flutter analyze` pass locally.
+- [ ] `fvm flutter test` and `dart run mobile_core_kit_cli:mobilekit lint` pass
+  locally.
 - [ ] Updated documentation if patterns changed (`AGENTS.md`, this file, or feature docs).
 
 ---

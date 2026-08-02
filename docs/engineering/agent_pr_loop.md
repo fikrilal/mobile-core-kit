@@ -22,6 +22,7 @@ Use these documents together, not interchangeably:
 - architecture rules: `docs/engineering/project_architecture.md`
 - mechanical enforcement: `docs/engineering/guardrails.md`
 - runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+- CLI commands: `docs/engineering/mobilekit_cli_reference.md`
 - multi-agent coordination: `docs/engineering/parallel_agent_workflow.md`
 
 ## Loop Contract
@@ -52,24 +53,23 @@ During implementation:
 Canonical local gate for non-trivial work:
 
 ```bash
-dart run tool/verify.dart --env dev
+dart run mobile_core_kit_cli:mobilekit verify --env dev
 ```
 
 Targeted checks when the full gate is unnecessary or too expensive:
 
 ```bash
-fvm flutter analyze
-dart run custom_lint
+dart run mobile_core_kit_cli:mobilekit lint
 fvm flutter test
-dart run tool/verify_project_map_drift.dart
-./tool/check_duplication.sh
-./tool/check_small_helper_duplication.sh
-./tool/check_presentation_duplication.sh
+dart run mobile_core_kit_cli:mobilekit project-map verify
+dart run mobile_core_kit_cli:mobilekit duplication check --profile core
+dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers
+dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation
 ```
 
 Use native commands as the source of truth for verification.
 
-Use `./tool/check_duplication.sh` when the change is likely to introduce or
+Use `dart run mobile_core_kit_cli:mobilekit duplication check --profile core` when the change is likely to introduce or
 reshape shared logic, for example:
 - extraction/consolidation refactors
 - new helpers, mappers, formatters, or parsers
@@ -143,7 +143,7 @@ For substantive follow-up changes:
 If the same class of failure appears 2+ times, do not rely on repeated manual fixes.
 Promote it into one of:
 - lint rule
-- verify script
+- CLI workflow
 - scaffolder/template update
 - engineering doc update
 - source-local `README.md`

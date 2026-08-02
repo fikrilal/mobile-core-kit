@@ -8,9 +8,10 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   High-signal examples:
   - `docs/engineering/testing_strategy.md`
   - `docs/engineering/agent_pr_loop.md`
+  - `docs/engineering/mobilekit_cli_reference.md`
   - `docs/engineering/parallel_agent_workflow.md`
   - duplication harness overview, profiles, and commands: `docs/engineering/duplication_harness.md`
-- `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, etc.).
+- `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, and backend integration).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).
 - `docs/explainers/` — deep dives on “how this works” that are not daily guides (complex flows, tricky components, feature internals).
 - `docs/core/` — deep dives on **core runtime systems** (session, startup, networking policies) intended to be stable across cloned products.

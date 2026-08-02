@@ -1,8 +1,12 @@
 # Networking + Backend Contract Guide
 
-This template ships with a production-style networking stack (Dio + typed parsers + interceptors).
-When you clone this repo for a real product, the **first thing you should align** is the network
-layer’s contract with your backend: response envelope, error shape, and pagination.
+This template ships with a production-style networking stack (Dio + typed parsers + interceptors)
+and is designed to pair with
+[backend-core-kit](https://github.com/fikrilal/backend-core-kit). Together they align the response,
+error, auth, session, and current-user contracts, so a new product can focus on its main features.
+
+When using a different backend, the **first thing you should align** is the network layer’s
+contract: response envelope, error shape, and pagination.
 
 This doc explains what the template currently assumes and what to change for a different backend.
 
@@ -118,7 +122,7 @@ Where it’s implemented:
 
 Edit `.env/dev.yaml`, `.env/staging.yaml`, `.env/prod.yaml` and regenerate:
 
-`dart run tool/gen_config.dart --env dev`
+`dart run mobile_core_kit_cli:mobilekit config generate --env dev`
 
 Then use:
 - `BuildConfig.apiUrl(ApiHost.core|auth|profile)` from `lib/core/foundation/config/build_config.dart`.
@@ -184,8 +188,8 @@ If your backend uses offset/page pagination instead of cursor:
 
 ## 4) Verification checklist (after customizing)
 
-- Generate env config: `dart run tool/gen_config.dart --env dev`
-- Analyze: `fvm flutter analyze`
+- Generate env config: `dart run mobile_core_kit_cli:mobilekit config generate --env dev`
+- Lint: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
 
 ---
@@ -203,5 +207,5 @@ Backend (from `/mnt/c/Development/_CORE/backend-core-kit`):
 Mobile (this repo):
 
 1) Ensure `.env/dev.yaml` points to the reachable base URL (see section 2.1).
-2) Regenerate build config: `dart run tool/gen_config.dart --env dev`
+2) Regenerate build config: `dart run mobile_core_kit_cli:mobilekit config generate --env dev`
 3) Run: `fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev`

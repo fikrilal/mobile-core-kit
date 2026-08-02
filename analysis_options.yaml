@@ -7,9 +7,9 @@
 
 # The following line activates a set of recommended lints for Flutter apps.
 #
-# Note: We vendor these lints under `tool/lints/` to avoid `dart format`
+# Note: We vendor these lints under `lint/` to avoid `dart format`
 # include-resolution warnings across local toolchain setups.
-include: tool/lints/flutter_lints.yaml
+include: lint/flutter_lints.yaml
 
 analyzer:
   plugins:
@@ -19,7 +19,7 @@ custom_lint:
   rules:
     # Note: custom_lint reads rule options as sibling keys of the rule name.
     - architecture_imports:
-      config: tool/lints/architecture_lints.yaml
+      config: lint/architecture_lints.yaml
     - modal_entrypoints:
       include:
         - lib/**

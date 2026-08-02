@@ -1,6 +1,6 @@
 # Environment Config (`.env/*.yaml`)
 
-This template uses YAML files under `.env/` to configure environment-specific settings (dev/staging/prod). A small generator script converts these YAML files into a typed `BuildConfig` API used by the app at runtime.
+This template uses YAML files under `.env/` to configure environment-specific settings (dev/staging/prod). The `mobilekit` CLI converts these YAML files into a typed `BuildConfig` API used by the app at runtime.
 
 ## Files
 
@@ -20,9 +20,9 @@ Examples live next to them:
 
 2) You run:
 
-`dart run tool/gen_config.dart --env <env>`
+`dart run mobile_core_kit_cli:mobilekit config generate --env <env>`
 
-3) The script writes:
+3) The CLI writes:
 
 `lib/core/foundation/config/build_config_values.dart` (generated; do not edit)
 
@@ -65,6 +65,17 @@ These map to:
 - `netLogSlowMs` (int) → `BuildConfig.netLogSlowMs` (default `800`)
 - `netLogRedact` (bool) → `BuildConfig.netLogRedact` (default `true`)
 
+### Deep-link policy
+
+- `deepLinkAllowedHosts` (list of hostnames) — hosts accepted by the runtime
+  parser. An empty list explicitly disables external deep links.
+
+When `.mobilekit/project.yaml` is present, `mobilekit env verify` checks this
+list against the manifest policy: enabled projects must contain the configured
+host, while disabled projects must keep the list empty. The CLI updates only
+the tracked `.example.yaml` files; ignored `.env/*.yaml` files remain
+user-owned and must be updated through the environment workflow.
+
 ## What To Commit
 
 Typical template defaults:
@@ -75,8 +86,8 @@ Typical template defaults:
 
 ## Verification
 
-Use the verify script:
+Use the canonical mobilekit verification command:
 
-`dart run tool/verify.dart --env dev`
+`dart run mobile_core_kit_cli:mobilekit verify --env dev`
 
 This runs config generation + analyze + tests, and will fail if `.env/<env>.yaml` is missing/empty.
