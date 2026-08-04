@@ -6,8 +6,7 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/datasource/remote/account_deletion_remote_datasource.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/repository/account_deletion_repository_impl.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/cancel_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/request_account_deletion_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/account_deletion_action.dart';
 
 import '../../../../../../support/network_test_harness.dart';
 
@@ -44,7 +43,7 @@ AccountDeletionRepositoryImpl _buildRepository(HttpFetchHandler onFetch) {
 
 void main() {
   group('AccountDeletionRepositoryImpl integration', () {
-    test('requestAccountDeletion maps 204 response to success', () async {
+    test('deleteAccount(request) maps 204 response to success', () async {
       final repository = _buildRepository((options) async {
         expect(options.method, 'POST');
         expect(options.path, UserEndpoint.meAccountDeletionRequest);
@@ -52,15 +51,15 @@ void main() {
         return _emptyResponse(204, requestId: 'rid-request-account-deletion');
       });
 
-      final result = await repository.requestAccountDeletion(
-        const RequestAccountDeletionRequestEntity(),
+      final result = await repository.deleteAccount(
+        AccountDeletionAction.request,
       );
 
       expect(result.isRight(), isTrue);
     });
 
     test(
-      'requestAccountDeletion maps conflict response to AuthFailure.unexpected',
+      'deleteAccount(request) maps conflict response to AuthFailure.unexpected',
       () async {
         final fixture = <String, dynamic>{
           'code': 'CONFLICT',
@@ -76,8 +75,8 @@ void main() {
           );
         });
 
-        final result = await repository.requestAccountDeletion(
-          const RequestAccountDeletionRequestEntity(),
+        final result = await repository.deleteAccount(
+          AccountDeletionAction.request,
         );
 
         result.match((failure) {
@@ -86,7 +85,7 @@ void main() {
       },
     );
 
-    test('cancelAccountDeletion maps 204 response to success', () async {
+    test('deleteAccount(cancel) maps 204 response to success', () async {
       final repository = _buildRepository((options) async {
         expect(options.method, 'POST');
         expect(options.path, UserEndpoint.meAccountDeletionCancel);
@@ -94,15 +93,15 @@ void main() {
         return _emptyResponse(204, requestId: 'rid-cancel-account-deletion');
       });
 
-      final result = await repository.cancelAccountDeletion(
-        const CancelAccountDeletionRequestEntity(),
+      final result = await repository.deleteAccount(
+        AccountDeletionAction.cancel,
       );
 
       expect(result.isRight(), isTrue);
     });
 
     test(
-      'cancelAccountDeletion maps idempotency in-progress response to AuthFailure.unexpected',
+      'deleteAccount(cancel) maps idempotency in-progress response to AuthFailure.unexpected',
       () async {
         final fixture = <String, dynamic>{
           'code': 'IDEMPOTENCY_IN_PROGRESS',
@@ -118,8 +117,8 @@ void main() {
           );
         });
 
-        final result = await repository.cancelAccountDeletion(
-          const CancelAccountDeletionRequestEntity(),
+        final result = await repository.deleteAccount(
+          AccountDeletionAction.cancel,
         );
 
         result.match((failure) {
