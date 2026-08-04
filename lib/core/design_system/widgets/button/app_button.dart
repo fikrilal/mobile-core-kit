@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button_styles.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button_variants.dart';
-import 'package:mobile_core_kit/core/design_system/widgets/common/app_haptic_feedback.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class AppButton extends StatelessWidget {
-  // Core functionality
   final String text;
   final VoidCallback? onPressed;
   final ButtonVariant variant;
@@ -14,13 +11,11 @@ class AppButton extends StatelessWidget {
   final bool isLoading;
   final bool isDisabled;
 
-  // Icons & content
   final Widget? icon;
   final Widget? suffixIcon;
   final double? iconSize;
   final double? iconSpacing;
 
-  // Visual customization
   final Color? backgroundColor;
   final Color? textColor;
   final FontWeight? fontWeight;
@@ -29,24 +24,13 @@ class AppButton extends StatelessWidget {
   final EdgeInsets? padding;
   final EdgeInsets? margin;
 
-  // Layout helpers
-  final bool isExpanded; // Fill available width when constraints are bounded
+  final bool isExpanded;
 
-  // Accessibility
   final String? semanticLabel;
-  final String? tooltip;
-  final bool excludeFromSemantics;
 
-  // Focus & interaction
-  final bool autofocus;
-  final FocusNode? focusNode;
-  final ValueChanged<bool>? onFocusChange;
   final ValueChanged<bool>? onHover;
   final VoidCallback? onLongPress;
-  final bool enableFeedback;
-  final AppHapticFeedback? hapticFeedback;
 
-  // Loading customization
   final Widget? loadingIndicator;
   final String? loadingText;
   final double? loadingIndicatorSize;
@@ -60,12 +44,10 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
-    // Icons & content
     this.icon,
     this.suffixIcon,
     this.iconSize,
     this.iconSpacing,
-    // Visual customization
     this.backgroundColor,
     this.textColor,
     this.fontWeight,
@@ -73,25 +55,14 @@ class AppButton extends StatelessWidget {
     this.width,
     this.padding,
     this.margin,
-    // Accessibility
     this.semanticLabel,
-    this.tooltip,
-    this.excludeFromSemantics = false,
-    // Focus & interaction
-    this.autofocus = false,
-    this.focusNode,
-    this.onFocusChange,
     this.onHover,
     this.onLongPress,
-    this.enableFeedback = true,
-    this.hapticFeedback,
-    // Loading customization
     this.loadingIndicator,
     this.loadingText,
     this.loadingIndicatorSize,
   });
 
-  // Named constructors for convenience
   const AppButton.primary({
     super.key,
     required this.text,
@@ -100,12 +71,10 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
-    // Icons & content
     this.icon,
     this.suffixIcon,
     this.iconSize,
     this.iconSpacing,
-    // Visual customization
     this.backgroundColor,
     this.textColor,
     this.fontWeight,
@@ -113,19 +82,9 @@ class AppButton extends StatelessWidget {
     this.width,
     this.padding,
     this.margin,
-    // Accessibility
     this.semanticLabel,
-    this.tooltip,
-    this.excludeFromSemantics = false,
-    // Focus & interaction
-    this.autofocus = false,
-    this.focusNode,
-    this.onFocusChange,
     this.onHover,
     this.onLongPress,
-    this.enableFeedback = true,
-    this.hapticFeedback,
-    // Loading customization
     this.loadingIndicator,
     this.loadingText,
     this.loadingIndicatorSize,
@@ -139,12 +98,10 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
-    // Icons & content
     this.icon,
     this.suffixIcon,
     this.iconSize,
     this.iconSpacing,
-    // Visual customization
     this.backgroundColor,
     this.textColor,
     this.fontWeight,
@@ -152,19 +109,9 @@ class AppButton extends StatelessWidget {
     this.width,
     this.padding,
     this.margin,
-    // Accessibility
     this.semanticLabel,
-    this.tooltip,
-    this.excludeFromSemantics = false,
-    // Focus & interaction
-    this.autofocus = false,
-    this.focusNode,
-    this.onFocusChange,
     this.onHover,
     this.onLongPress,
-    this.enableFeedback = true,
-    this.hapticFeedback,
-    // Loading customization
     this.loadingIndicator,
     this.loadingText,
     this.loadingIndicatorSize,
@@ -178,12 +125,10 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
-    // Icons & content
     this.icon,
     this.suffixIcon,
     this.iconSize,
     this.iconSpacing,
-    // Visual customization
     this.backgroundColor,
     this.textColor,
     this.fontWeight,
@@ -191,19 +136,9 @@ class AppButton extends StatelessWidget {
     this.width,
     this.padding,
     this.margin,
-    // Accessibility
     this.semanticLabel,
-    this.tooltip,
-    this.excludeFromSemantics = false,
-    // Focus & interaction
-    this.autofocus = false,
-    this.focusNode,
-    this.onFocusChange,
     this.onHover,
     this.onLongPress,
-    this.enableFeedback = true,
-    this.hapticFeedback,
-    // Loading customization
     this.loadingIndicator,
     this.loadingText,
     this.loadingIndicatorSize,
@@ -217,12 +152,10 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.isExpanded = false,
-    // Icons & content
     this.icon,
     this.suffixIcon,
     this.iconSize,
     this.iconSpacing,
-    // Visual customization
     this.backgroundColor,
     this.textColor,
     this.fontWeight,
@@ -230,19 +163,9 @@ class AppButton extends StatelessWidget {
     this.width,
     this.padding,
     this.margin,
-    // Accessibility
     this.semanticLabel,
-    this.tooltip,
-    this.excludeFromSemantics = false,
-    // Focus & interaction
-    this.autofocus = false,
-    this.focusNode,
-    this.onFocusChange,
     this.onHover,
     this.onLongPress,
-    this.enableFeedback = true,
-    this.hapticFeedback,
-    // Loading customization
     this.loadingIndicator,
     this.loadingText,
     this.loadingIndicatorSize,
@@ -263,16 +186,13 @@ class AppButton extends StatelessWidget {
 
     Widget buttonChild = _buildButtonContent(context);
 
-    // Apply sizing constraints
     if (width != null) {
       buttonChild = SizedBox(width: width, child: buttonChild);
     }
 
-    // Handle press with haptic feedback
     VoidCallback? handlePress = isButtonDisabled
         ? null
         : () {
-            _triggerHapticFeedback();
             onPressed?.call();
           };
 
@@ -283,30 +203,22 @@ class AppButton extends StatelessWidget {
       child: buttonChild,
     );
 
-    // Wrap with accessibility features
     button = _wrapWithAccessibility(button);
 
-    // Wrap with focus management
-    button = _wrapWithFocusManagement(button);
-
-    // Add subtle zoom interaction on tap for enabled buttons.
     if (!isButtonDisabled) {
       button = ZoomTapAnimation(begin: 1.0, end: 0.99, child: button);
     }
 
-    // Apply margin if specified
     if (margin != null) {
       button = Padding(padding: margin!, child: button);
     }
 
-    // Apply safe expansion: only when width is bounded
     return LayoutBuilder(
       builder: (context, constraints) {
         if (isExpanded && width == null && constraints.hasBoundedWidth) {
           return SizedBox(width: double.infinity, child: button);
         }
         if (isExpanded && width == null && !constraints.hasBoundedWidth) {
-          // In unbounded contexts (e.g., Row), advise using Expanded externally
           debugPrint(
             'AppButton.isExpanded ignored: parent has unbounded width. Wrap with Expanded in a Row/Column.',
           );
@@ -398,7 +310,6 @@ class AppButton extends StatelessWidget {
     );
   }
 
-  // Build the base button widget based on variant
   Widget _buildBaseButton({
     required BuildContext context,
     required VoidCallback? onPressed,
@@ -427,60 +338,13 @@ class AppButton extends StatelessWidget {
     }
   }
 
-  // Wrap button with accessibility features
   Widget _wrapWithAccessibility(Widget button) {
-    if (excludeFromSemantics) {
-      return ExcludeSemantics(child: button);
-    }
-
-    Widget accessibleButton = button;
-
-    if (tooltip != null) {
-      accessibleButton = Tooltip(message: tooltip!, child: accessibleButton);
-    }
-
     return Semantics(
       label: semanticLabel ?? text,
       button: true,
       enabled: !isDisabled && !isLoading,
-      child: accessibleButton,
+      child: button,
     );
-  }
-
-  // Wrap button with focus management
-  Widget _wrapWithFocusManagement(Widget button) {
-    if (focusNode != null || autofocus || onFocusChange != null) {
-      return Focus(
-        focusNode: focusNode,
-        autofocus: autofocus,
-        onFocusChange: onFocusChange,
-        child: button,
-      );
-    }
-    return button;
-  }
-
-  // Trigger haptic feedback based on configuration
-  void _triggerHapticFeedback() {
-    if (!enableFeedback || hapticFeedback == null) return;
-
-    switch (hapticFeedback!) {
-      case AppHapticFeedback.lightImpact:
-        HapticFeedback.lightImpact();
-        break;
-      case AppHapticFeedback.mediumImpact:
-        HapticFeedback.mediumImpact();
-        break;
-      case AppHapticFeedback.heavyImpact:
-        HapticFeedback.heavyImpact();
-        break;
-      case AppHapticFeedback.selectionClick:
-        HapticFeedback.selectionClick();
-        break;
-      case AppHapticFeedback.vibrate:
-        HapticFeedback.vibrate();
-        break;
-    }
   }
 
   double _getIconSize() {
@@ -508,5 +372,3 @@ class AppButton extends StatelessWidget {
   }
 }
 
-// Enum for haptic feedback types
-// AppHapticFeedback lives in core/widgets/common/app_haptic_feedback.dart

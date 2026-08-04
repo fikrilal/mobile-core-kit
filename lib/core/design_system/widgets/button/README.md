@@ -127,42 +127,19 @@ AppButton(
 AppButton(
   text: 'Save Document',
   semanticLabel: 'Save the current document to your account',
-  tooltip: 'Click to save your work',
-  hapticFeedback: AppHapticFeedback.mediumImpact,
   onPressed: () => saveDocument(),
 )
 ```
 
-### Focus Management
+### Interaction
 
 ```dart
-class MyWidget extends StatefulWidget {
-  @override
-  _MyWidgetState createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  final FocusNode _buttonFocus = FocusNode();
-
-  @override
-  Widget build(BuildContext context) {
-    return AppButton(
-      text: 'Focused Button',
-      focusNode: _buttonFocus,
-      autofocus: true,
-      onFocusChange: (focused) => print('Focus changed: $focused'),
-      onHover: (isHovered) => print('Button hovered: $isHovered'),
-      onLongPress: () => print('Long press detected'),
-      onPressed: () => print('Button pressed'),
-    );
-  }
-
-  @override
-  void dispose() {
-    _buttonFocus.dispose();
-    super.dispose();
-  }
-}
+AppButton(
+  text: 'Interactive Button',
+  onHover: (isHovered) => print('Button hovered: $isHovered'),
+  onLongPress: () => print('Long press detected'),
+  onPressed: () => print('Button pressed'),
+)
 ```
 
 ### Custom Dimensions and Layout
@@ -212,23 +189,16 @@ AppButton(
 
 ### Accessibility
 
-| Parameter              | Type      | Default | Description                |
-| ---------------------- | --------- | ------- | -------------------------- |
-| `semanticLabel`        | `String?` | null    | Screen reader label        |
-| `tooltip`              | `String?` | null    | Hover tooltip              |
-| `excludeFromSemantics` | `bool`    | `false` | Exclude from accessibility |
+| Parameter       | Type      | Default | Description         |
+| --------------- | --------- | ------- | ------------------- |
+| `semanticLabel` | `String?` | null    | Screen reader label |
 
-### Focus & Interaction
+### Interaction
 
-| Parameter        | Type                      | Default | Description                 |
-| ---------------- | ------------------------- | ------- | --------------------------- |
-| `autofocus`      | `bool`                    | `false` | Auto focus on creation      |
-| `focusNode`      | `FocusNode?`              | null    | Custom focus node           |
-| `onFocusChange`  | `ValueChanged<bool>?`     | null    | Focus change callback       |
-| `onHover`        | `ValueChanged<bool>?`     | null    | Hover callback              |
-| `onLongPress`    | `VoidCallback?`           | null    | Long press callback         |
-| `enableFeedback` | `bool`                    | `true`  | Enable interaction feedback |
-| `hapticFeedback` | `AppHapticFeedback?`      | null    | Haptic feedback type        |
+| Parameter     | Type                  | Default | Description          |
+| ------------- | --------------------- | ------- | -------------------- |
+| `onHover`     | `ValueChanged<bool>?` | null    | Hover callback       |
+| `onLongPress` | `VoidCallback?`       | null    | Long press callback  |
 
 ### Loading Customization
 
@@ -238,24 +208,11 @@ AppButton(
 | `loadingText`          | `String?` | null    | Custom loading text    |
 | `loadingIndicatorSize` | `double?` | auto    | Loading spinner size   |
 
-## Haptic Feedback Types
-
-```dart
-enum AppHapticFeedback {
-  lightImpact,    // Light tactile feedback
-  mediumImpact,   // Medium tactile feedback
-  heavyImpact,    // Heavy tactile feedback
-  selectionClick, // Selection feedback
-  vibrate,        // Standard vibration
-}
-```
-
 ## Best Practices
 
 ### 1. Accessibility
 
 - Always provide semantic labels for complex buttons
-- Use tooltips for buttons with icons only
 - Ensure sufficient color contrast
 - Test with screen readers
 
@@ -263,11 +220,9 @@ enum AppHapticFeedback {
 
 - Use named constructors for common variants
 - Avoid excessive customization when theme defaults suffice
-- Dispose of custom focus nodes properly
 
 ### 3. UX Guidelines
 
-- Use appropriate haptic feedback for different actions
 - Provide loading states for async operations
 - Use consistent sizing throughout your app
 - Follow platform conventions for button placement
@@ -284,7 +239,6 @@ Recommended tests for this component cover:
 
 - Variants and sizes
 - Accessibility features
-- Focus and hover behavior
 - Loading states
 - Interaction callbacks
 
@@ -292,10 +246,9 @@ Recommended tests for this component cover:
 
 If upgrading from a previous version:
 
-1. **Haptic Feedback**: The `hapticFeedback` parameter now uses `AppHapticFeedback` enum
-2. **Focus Management**: New focus-related parameters available
-3. **Loading**: Enhanced loading customization options
-4. **Accessibility**: New semantic and tooltip parameters
+1. **Removed parameters**: `tooltip`, `excludeFromSemantics`, `autofocus`, `focusNode`, `onFocusChange`, `enableFeedback`, and `hapticFeedback` were removed. Haptic feedback and focus management are no longer supported on `AppButton`; use `semanticLabel` for accessibility.
+2. **Loading**: Enhanced loading customization options
+3. **Accessibility**: New semantic parameters
 
 ## Contributing
 
