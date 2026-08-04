@@ -7,11 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/upload_profile_image_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_image_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/get_cached_profile_avatar_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
@@ -21,19 +18,13 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     this._userContext,
     this._uploadProfileImage,
     this._clearProfileImage,
-    this._getCachedProfileAvatar,
-    this._refreshProfileAvatarCache,
-    this._saveProfileAvatarCache,
-    this._clearProfileAvatarCache,
+    this._avatarRepository,
   ) : super(ProfileImageState.initial());
 
   final UserContextService _userContext;
   final UploadProfileImageUseCase _uploadProfileImage;
   final ClearProfileImageUseCase _clearProfileImage;
-  final GetCachedProfileAvatarUseCase _getCachedProfileAvatar;
-  final RefreshProfileAvatarCacheUseCase _refreshProfileAvatarCache;
-  final SaveProfileAvatarCacheUseCase _saveProfileAvatarCache;
-  final ClearProfileAvatarCacheUseCase _clearProfileAvatarCache;
+  final ProfileAvatarRepository _avatarRepository;
   final _effects = StreamController<ProfileImageEffect>();
 
   Future<void>? _refreshFuture;
@@ -80,7 +71,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
         var nextCachedFilePath = state.cachedFilePath;
         final fileId = user.profile.profileImageFileId?.trim();
         if (fileId != null && fileId.isNotEmpty) {
-          final saved = await _saveProfileAvatarCache(
+          final saved = await _avatarRepository.saveAvatarBytes(
             userId: user.id,
             profileImageFileId: fileId,
             bytes: bytes,
@@ -178,7 +169,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
       ),
     );
 
-    final cachedResult = await _getCachedProfileAvatar(
+    final cachedResult = await _avatarRepository.getCachedAvatar(
       userId: userId,
       profileImageFileId: profileImageFileId,
     );
@@ -218,7 +209,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
 
         // Cache miss.
         if (!hasFileId) {
-          await _clearProfileAvatarCache(userId: userId);
+          await _avatarRepository.clearAvatar(userId: userId);
           if (isClosed) return;
           emit(
             state.copyWith(
@@ -263,7 +254,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
         ),
       );
 
-      final result = await _refreshProfileAvatarCache(
+      final result = await _avatarRepository.refreshAvatar(
         userId: userId,
         profileImageFileId: profileImageFileId,
       );

@@ -11,11 +11,8 @@ import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.d
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_avatar_cache_entry_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/upload_profile_image_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_avatar_cache_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_image_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/get_cached_profile_avatar_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/refresh_profile_avatar_cache_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_avatar_cache_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_effect.dart';
@@ -30,17 +27,8 @@ class _MockUploadProfileImageUseCase extends Mock
 class _MockClearProfileImageUseCase extends Mock
     implements ClearProfileImageUseCase {}
 
-class _MockGetCachedProfileAvatarUseCase extends Mock
-    implements GetCachedProfileAvatarUseCase {}
-
-class _MockRefreshProfileAvatarCacheUseCase extends Mock
-    implements RefreshProfileAvatarCacheUseCase {}
-
-class _MockSaveProfileAvatarCacheUseCase extends Mock
-    implements SaveProfileAvatarCacheUseCase {}
-
-class _MockClearProfileAvatarCacheUseCase extends Mock
-    implements ClearProfileAvatarCacheUseCase {}
+class _MockProfileAvatarRepository extends Mock
+    implements ProfileAvatarRepository {}
 
 void main() {
   setUpAll(() {
@@ -56,10 +44,7 @@ void main() {
   late _MockUploadProfileImageUseCase uploadProfileImage;
   late _MockClearProfileImageUseCase clearProfileImage;
   late _MockUserContextService userContext;
-  late _MockGetCachedProfileAvatarUseCase getCachedProfileAvatar;
-  late _MockRefreshProfileAvatarCacheUseCase refreshProfileAvatarCache;
-  late _MockSaveProfileAvatarCacheUseCase saveProfileAvatarCache;
-  late _MockClearProfileAvatarCacheUseCase clearProfileAvatarCache;
+  late _MockProfileAvatarRepository avatarRepository;
   late List<ProfileImageEffect> effects;
   late StreamSubscription<ProfileImageEffect> effectSubscription;
 
@@ -67,10 +52,7 @@ void main() {
     uploadProfileImage = _MockUploadProfileImageUseCase();
     clearProfileImage = _MockClearProfileImageUseCase();
     userContext = _MockUserContextService();
-    getCachedProfileAvatar = _MockGetCachedProfileAvatarUseCase();
-    refreshProfileAvatarCache = _MockRefreshProfileAvatarCacheUseCase();
-    saveProfileAvatarCache = _MockSaveProfileAvatarCacheUseCase();
-    clearProfileAvatarCache = _MockClearProfileAvatarCacheUseCase();
+    avatarRepository = _MockProfileAvatarRepository();
     effects = [];
   });
 
@@ -86,10 +68,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
@@ -125,10 +104,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
@@ -166,10 +142,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
@@ -202,10 +175,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
@@ -241,7 +211,7 @@ void main() {
         ),
       );
       when(
-        () => getCachedProfileAvatar(
+        () => avatarRepository.getCachedAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
@@ -258,10 +228,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
     },
     act: (cubit) async => cubit.loadAvatar(),
@@ -278,7 +245,7 @@ void main() {
     ],
     verify: (_) {
       verifyNever(
-        () => refreshProfileAvatarCache(
+        () => avatarRepository.refreshAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
@@ -295,7 +262,7 @@ void main() {
         ),
       );
       when(
-        () => getCachedProfileAvatar(
+        () => avatarRepository.getCachedAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
@@ -309,7 +276,7 @@ void main() {
         ),
       );
       when(
-        () => refreshProfileAvatarCache(
+        () => avatarRepository.refreshAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
@@ -326,10 +293,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
     },
     act: (cubit) async => cubit.loadAvatar(),
@@ -366,13 +330,13 @@ void main() {
         ),
       );
       when(
-        () => getCachedProfileAvatar(
+        () => avatarRepository.getCachedAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
       ).thenAnswer((_) async => right(null));
       when(
-        () => refreshProfileAvatarCache(
+        () => avatarRepository.refreshAvatar(
           userId: any(named: 'userId'),
           profileImageFileId: any(named: 'profileImageFileId'),
         ),
@@ -389,10 +353,7 @@ void main() {
         userContext,
         uploadProfileImage,
         clearProfileImage,
-        getCachedProfileAvatar,
-        refreshProfileAvatarCache,
-        saveProfileAvatarCache,
-        clearProfileAvatarCache,
+        avatarRepository,
       );
     },
     act: (cubit) async => cubit.loadAvatar(),
@@ -414,10 +375,7 @@ void main() {
       userContext,
       uploadProfileImage,
       clearProfileImage,
-      getCachedProfileAvatar,
-      refreshProfileAvatarCache,
-      saveProfileAvatarCache,
-      clearProfileAvatarCache,
+      avatarRepository,
     );
     final done = expectLater(cubit.effects, emitsDone);
 
