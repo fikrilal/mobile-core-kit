@@ -7,6 +7,7 @@ import 'package:analyzer/error/error.dart' show ErrorSeverity;
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:glob/glob.dart';
+import 'package:mobile_core_kit_lints/src/shared.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -38,13 +39,13 @@ class ArchitectureImportsLint extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    final projectRoot = _ProjectRootFinder.findForFile(resolver.path);
+    final projectRoot = ProjectRootFinder.findForFile(resolver.path);
     if (projectRoot == null) return;
 
-    final sourceRelativePath = _normalizePath(
+    final sourceRelativePath = normalizePath(
       p.relative(resolver.path, from: projectRoot),
     );
-    if (_isGeneratedDart(sourceRelativePath)) return;
+    if (isGeneratedDart(sourceRelativePath)) return;
 
     final configPath = _configPathFromOptions(
       projectRoot: projectRoot,
@@ -129,11 +130,6 @@ String? _readPackageName(String projectRoot) {
   return match?.group(1);
 }
 
-bool _isGeneratedDart(String path) =>
-    path.endsWith('.g.dart') || path.endsWith('.freezed.dart');
-
-String _normalizePath(String value) => value.replaceAll('\\', '/');
-
 String? resolveImportToProjectRelativePath({
   required String uri,
   required String sourceFileAbsolutePath,
@@ -149,55 +145,14 @@ String? resolveImportToProjectRelativePath({
     final pkg = rest.substring(0, firstSlash);
     final pkgPath = rest.substring(firstSlash + 1);
     if (pkg != packageName) return null;
-    return _normalizePath(p.join('lib', pkgPath));
+    return normalizePath(p.join('lib', pkgPath));
   }
 
   if (uri.startsWith('asset:')) return null;
 
   final sourceDir = p.dirname(sourceFileAbsolutePath);
   final absoluteTarget = p.normalize(p.join(sourceDir, uri));
-  return _normalizePath(p.relative(absoluteTarget, from: projectRoot));
-}
-
-class _ProjectRootFinder {
-  static String? findForFile(String filePath) {
-    final dir = Directory(p.dirname(filePath));
-
-    final fromCache = _cache[dir.path];
-    if (fromCache != null) return fromCache;
-
-    final root = _find(dir);
-    if (root != null) {
-      _cache[dir.path] = root;
-    }
-    return root;
-  }
-
-  static final Map<String, String> _cache = {};
-
-  static String? _find(Directory start) {
-    Directory current = start;
-    Directory? firstPubspec;
-
-    while (true) {
-      final pubspec = File(p.join(current.path, 'pubspec.yaml'));
-      if (pubspec.existsSync()) {
-        firstPubspec ??= current;
-        final pkgConfig = File(
-          p.join(current.path, '.dart_tool', 'package_config.json'),
-        );
-        if (pkgConfig.existsSync()) {
-          return current.path;
-        }
-      }
-
-      final parent = current.parent;
-      if (parent.path == current.path) {
-        return firstPubspec?.path;
-      }
-      current = parent;
-    }
-  }
+  return normalizePath(p.relative(absoluteTarget, from: projectRoot));
 }
 
 class _ArchitectureImportsConfigCache {
