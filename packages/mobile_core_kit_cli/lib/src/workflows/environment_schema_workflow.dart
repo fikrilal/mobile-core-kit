@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/template/template_manifest.dart';
+import 'package:mobile_core_kit_cli/src/workflows/env_config_reader.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
-import 'package:yaml/yaml.dart';
 
-const _supportedEnvs = <String>['dev', 'staging', 'prod'];
 const _requiredUrlKeys = <String>['core', 'auth', 'profile'];
 const _requiredBoolKeys = <String>[
   'enableLogging',
@@ -32,7 +31,7 @@ class EnvironmentSchemaWorkflow {
       ..addMultiOption(
         'env',
         abbr: 'e',
-        allowed: _supportedEnvs,
+        allowed: supportedEnvs,
         help: 'Environment(s) to validate. Defaults to all environments.',
       )
       ..addFlag(
@@ -49,11 +48,11 @@ class EnvironmentSchemaWorkflow {
     final args = parser.parse(argv);
     final strict = args.flag('strict');
     final selected = args.flag('all')
-        ? List<String>.from(_supportedEnvs)
+        ? List<String>.from(supportedEnvs)
         : args.multiOption('env');
     final envs = selected.isEmpty
-        ? List<String>.from(_supportedEnvs)
-        : _supportedEnvs.where(selected.contains).toList();
+        ? List<String>.from(supportedEnvs)
+        : supportedEnvs.where(selected.contains).toList();
 
     final errors = <String>[];
     final deepLinkPolicy = _readDeepLinkPolicy(context.rootDirectory, errors);
@@ -103,21 +102,14 @@ List<String> _validateEnvFile(
     return ['[$env] File is empty: $path'];
   }
 
-  dynamic parsed;
-  try {
-    parsed = loadYaml(content);
-  } catch (error) {
-    return ['[$env] Invalid YAML in $path: $error'];
+  final reader = EnvConfigReader(rootDirectory);
+  final map = reader.read(env);
+  if (map.isEmpty) {
+    return ['[$env] Invalid YAML in $path: expected a map at the top level.'];
   }
-
-  if (parsed is! YamlMap) {
-    return ['[$env] Top-level YAML node must be a map: $path'];
-  }
-
-  final map = Map<String, dynamic>.from(parsed);
 
   for (final key in _requiredUrlKeys) {
-    final value = _stringValue(map[key]);
+    final value = reader.stringValue(map[key]);
     if (value == null) {
       errors.add('[$env] Missing or invalid string key: $key');
       continue;
@@ -132,7 +124,7 @@ List<String> _validateEnvFile(
     }
   }
 
-  final oidcClientId = _stringValue(map['googleOidcServerClientId']);
+  final oidcClientId = reader.stringValue(map['googleOidcServerClientId']);
   if (oidcClientId == null) {
     errors.add(
       '[$env] Missing or invalid string key: googleOidcServerClientId',
@@ -140,13 +132,13 @@ List<String> _validateEnvFile(
   }
 
   for (final key in _requiredBoolKeys) {
-    if (!_isBoolLike(map[key])) {
+    if (reader.boolValue(map[key]) == null) {
       errors.add('[$env] Key $key must be boolean (true/false).');
     }
   }
 
   for (final key in _requiredIntKeys) {
-    final value = _intValue(map[key]);
+    final value = reader.intValue(map[key]);
     if (value == null) {
       errors.add('[$env] Key $key must be an integer.');
       continue;
@@ -156,7 +148,7 @@ List<String> _validateEnvFile(
     }
   }
 
-  final netLogMode = _stringValue(map['netLogMode']);
+  final netLogMode = reader.stringValue(map['netLogMode']);
   if (netLogMode == null) {
     errors.add('[$env] Missing or invalid string key: netLogMode');
   } else if (!_allowedNetLogModes.contains(netLogMode)) {
@@ -166,7 +158,7 @@ List<String> _validateEnvFile(
     );
   }
 
-  final hosts = _stringListValue(map['deepLinkAllowedHosts']);
+  final hosts = reader.stringListValue(map['deepLinkAllowedHosts']);
   for (final host in hosts) {
     if (!_deepLinkHostPattern.hasMatch(host)) {
       errors.add(
@@ -239,56 +231,6 @@ TemplateCustomization? _readDeepLinkPolicy(
   }
 }
 
-String? _stringValue(dynamic value) {
-  if (value == null) return null;
-  final normalized = '$value'.trim();
-  if (normalized.isEmpty) return null;
-  return normalized;
-}
-
-int? _intValue(dynamic value) {
-  if (value is int) return value;
-  if (value is String) return int.tryParse(value.trim());
-  return null;
-}
-
-bool _isBoolLike(dynamic value) {
-  if (value is bool) return true;
-  if (value is String) {
-    final lower = value.trim().toLowerCase();
-    return lower == 'true' || lower == 'false';
-  }
-  return false;
-}
-
-bool? _boolValue(dynamic value) {
-  if (value is bool) return value;
-  if (value is String) {
-    final lower = value.trim().toLowerCase();
-    if (lower == 'true') return true;
-    if (lower == 'false') return false;
-  }
-  return null;
-}
-
-List<String> _stringListValue(dynamic value) {
-  if (value is YamlList || value is List) {
-    final result = <String>[];
-    for (final item in (value as Iterable<dynamic>)) {
-      final normalized = _stringValue(item);
-      if (normalized != null) {
-        result.add(normalized);
-      }
-    }
-    return result;
-  }
-  final single = _stringValue(value);
-  if (single == null) {
-    return const <String>[];
-  }
-  return <String>[single];
-}
-
 final _deepLinkHostPattern = RegExp(
   r'^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$',
 );
@@ -300,7 +242,7 @@ void _checkBoolInvariant(
   required bool expected,
   required dynamic value,
 }) {
-  final parsed = _boolValue(value);
+  final parsed = EnvConfigReader.boolValueOf(value);
   if (parsed == null) {
     errors.add('[$env] Key $key must be boolean in strict mode.');
     return;

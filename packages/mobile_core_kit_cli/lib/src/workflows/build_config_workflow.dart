@@ -1,6 +1,6 @@
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/workflows/env_config_reader.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
-import 'package:yaml/yaml.dart';
 
 class BuildConfigWorkflow {
   const BuildConfigWorkflow(this.context);
@@ -11,26 +11,13 @@ class BuildConfigWorkflow {
     final parser = ArgParser()..addOption('env', abbr: 'e');
     final requestedEnv = parser.parse(argv)['env'] as String? ?? 'dev';
 
-    const environments = <String>['dev', 'staging', 'prod'];
-    if (!environments.contains(requestedEnv)) {
+    final reader = EnvConfigReader(context.rootDirectory);
+    if (!reader.isSupported(requestedEnv)) {
       context.errorOutput.writeln(
         "Unknown environment '$requestedEnv'. "
-        'Expected one of: ${environments.join(', ')}',
+        'Expected one of: ${supportedEnvs.join(', ')}',
       );
       return 1;
-    }
-
-    Map<String, dynamic> readYaml(String env) {
-      final file = context.file('.env/$env.yaml');
-      if (!file.existsSync()) {
-        return <String, dynamic>{};
-      }
-      final contents = file.readAsStringSync();
-      final parsed = loadYaml(contents);
-      if (parsed is YamlMap) {
-        return Map<String, dynamic>.from(parsed);
-      }
-      return <String, dynamic>{};
     }
 
     String escapeSingleQuotes(String value) => value.replaceAll("'", r"\'");
@@ -53,20 +40,13 @@ class BuildConfigWorkflow {
       String key, {
       bool defaultValue = false,
     }) {
-      final value = map[key];
-      if (value is bool) return value.toString();
-      if (value is String) {
-        final lower = value.toLowerCase();
-        if (lower == 'true') return 'true';
-        if (lower == 'false') return 'false';
-      }
-      return defaultValue.toString();
+      return (reader.boolValue(map[key]) ?? defaultValue).toString();
     }
 
     String stringLiteral(Map<String, dynamic> map, String key) {
-      final value = map[key];
+      final value = reader.stringValue(map[key]);
       if (value == null) return "''";
-      return "'${escapeSingleQuotes('$value')}'";
+      return "'${escapeSingleQuotes(value)}'";
     }
 
     String stringListLiteral(
@@ -74,29 +54,7 @@ class BuildConfigWorkflow {
       Map<String, dynamic> map,
       String key,
     ) {
-      final value = map[key];
-      final items = <String>[];
-
-      if (value is YamlList) {
-        for (final item in value) {
-          final normalized = '$item'.trim();
-          if (normalized.isNotEmpty) {
-            items.add(normalized);
-          }
-        }
-      } else if (value is List) {
-        for (final item in value) {
-          final normalized = '$item'.trim();
-          if (normalized.isNotEmpty) {
-            items.add(normalized);
-          }
-        }
-      } else if (value is String) {
-        final normalized = value.trim();
-        if (normalized.isNotEmpty) {
-          items.add(normalized);
-        }
-      }
+      final items = reader.stringListValue(map[key]);
 
       if (items.isEmpty) {
         return 'const List<String> _$name = [];';
@@ -109,13 +67,7 @@ class BuildConfigWorkflow {
     }
 
     int intLiteral(Map<String, dynamic> map, String key, int defaultValue) {
-      final value = map[key];
-      if (value is int) return value;
-      if (value is String) {
-        final parsed = int.tryParse(value);
-        if (parsed != null) return parsed;
-      }
-      return defaultValue;
+      return reader.intValue(map[key]) ?? defaultValue;
     }
 
     final buffer = StringBuffer()
@@ -123,7 +75,7 @@ class BuildConfigWorkflow {
       ..writeln("part of 'build_config.dart';\n");
 
     final envConfigs = <String, Map<String, dynamic>>{
-      for (final env in environments) env: readYaml(env),
+      for (final env in supportedEnvs) env: reader.read(env),
     };
 
     final missingRequested = envConfigs[requestedEnv]?.isEmpty ?? true;
@@ -135,7 +87,7 @@ class BuildConfigWorkflow {
       return 1;
     }
 
-    for (final env in environments) {
+    for (final env in supportedEnvs) {
       final map = envConfigs[env] ?? <String, dynamic>{};
       buffer
         ..writeln(mapLiteral('${env}Hosts', map))

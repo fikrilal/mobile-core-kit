@@ -2,6 +2,7 @@ import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/env_config_reader.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
@@ -30,10 +31,10 @@ class VerifyWorkflow {
     final skipFormat = args.flag('skip-format');
     final skipTests = args.flag('skip-tests');
 
-    final envs = {'dev', 'staging', 'prod'};
+    final envs = supportedEnvs.toSet();
     if (!envs.contains(env)) {
       context.errorOutput.writeln(
-        "Unknown --env '$env'. Expected one of: ${envs.join(', ')}",
+        "Unknown --env '$env'. Expected one of: ${supportedEnvs.join(', ')}",
       );
       return 2;
     }
