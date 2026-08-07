@@ -3,14 +3,9 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
-import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
-import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/confirm_password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
+import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_state.dart';
 
@@ -24,16 +19,11 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   Stream<ChangePasswordEffect> get effects => _effects.stream;
 
   void currentPasswordChanged(String value) {
-    final currentResult = LoginPassword.create(value);
-    final currentError = currentResult.fold(
-      (ValueFailure f) =>
-          ValidationError(field: 'currentPassword', message: '', code: f.code),
-      (_) => null,
-    );
+    final currentError = PasswordFieldValidator.validateCurrentPassword(value);
 
     // Re-validate "new != current" when current password changes.
-    final newPasswordError = _validateNewPassword(
-      newPassword: state.newPassword,
+    final newPasswordError = PasswordFieldValidator.validateNewPassword(
+      state.newPassword,
       currentPassword: value,
     );
 
@@ -43,7 +33,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
         currentPasswordTouched: true,
         currentPasswordError: currentError,
         newPasswordError: newPasswordError,
-        confirmNewPasswordError: _validateConfirmNewPassword(
+        confirmNewPasswordError: PasswordFieldValidator.validateConfirmPassword(
           newPassword: state.newPassword,
           confirmNewPassword: state.confirmNewPassword,
           newPasswordError: newPasswordError,
@@ -57,8 +47,8 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   }
 
   void newPasswordChanged(String value) {
-    final newPasswordError = _validateNewPassword(
-      newPassword: value,
+    final newPasswordError = PasswordFieldValidator.validateNewPassword(
+      value,
       currentPassword: state.currentPassword,
     );
 
@@ -67,7 +57,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
         newPassword: value,
         newPasswordTouched: true,
         newPasswordError: newPasswordError,
-        confirmNewPasswordError: _validateConfirmNewPassword(
+        confirmNewPasswordError: PasswordFieldValidator.validateConfirmPassword(
           newPassword: value,
           confirmNewPassword: state.confirmNewPassword,
           newPasswordError: newPasswordError,
@@ -85,7 +75,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       state.copyWith(
         confirmNewPassword: value,
         confirmNewPasswordTouched: true,
-        confirmNewPasswordError: _validateConfirmNewPassword(
+        confirmNewPasswordError: PasswordFieldValidator.validateConfirmPassword(
           newPassword: state.newPassword,
           confirmNewPassword: value,
           newPasswordError: state.newPasswordError,
@@ -101,18 +91,19 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   Future<void> submit() async {
     if (state.isSubmitting) return;
 
-    final currentPasswordError = _validateCurrentPassword(
+    final currentPasswordError = PasswordFieldValidator.validateCurrentPassword(
       state.currentPassword,
     );
-    final newPasswordError = _validateNewPassword(
-      newPassword: state.newPassword,
+    final newPasswordError = PasswordFieldValidator.validateNewPassword(
+      state.newPassword,
       currentPassword: state.currentPassword,
     );
-    final confirmNewPasswordError = _validateConfirmNewPassword(
-      newPassword: state.newPassword,
-      confirmNewPassword: state.confirmNewPassword,
-      newPasswordError: newPasswordError,
-    );
+    final confirmNewPasswordError =
+        PasswordFieldValidator.validateConfirmPassword(
+          newPassword: state.newPassword,
+          confirmNewPassword: state.confirmNewPassword,
+          newPasswordError: newPasswordError,
+        );
 
     if (currentPasswordError != null ||
         newPasswordError != null ||
@@ -152,60 +143,6 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
         ),
       );
     });
-  }
-
-  ValidationError? _validateCurrentPassword(String value) {
-    final result = LoginPassword.create(value);
-    return result.fold(
-      (ValueFailure f) =>
-          ValidationError(field: 'currentPassword', message: '', code: f.code),
-      (_) => null,
-    );
-  }
-
-  ValidationError? _validateNewPassword({
-    required String newPassword,
-    required String currentPassword,
-  }) {
-    final result = Password.create(newPassword);
-    final baseError = result.fold(
-      (ValueFailure f) =>
-          ValidationError(field: 'newPassword', message: '', code: f.code),
-      (_) => null,
-    );
-
-    if (baseError != null) return baseError;
-
-    final canCheckSameAsCurrent =
-        newPassword.isNotEmpty && currentPassword.isNotEmpty;
-    if (canCheckSameAsCurrent && newPassword == currentPassword) {
-      return const ValidationError(
-        field: 'newPassword',
-        message: '',
-        code: ValidationErrorCodes.passwordSameAsCurrent,
-      );
-    }
-
-    return null;
-  }
-
-  ValidationError? _validateConfirmNewPassword({
-    required String newPassword,
-    required String confirmNewPassword,
-    required ValidationError? newPasswordError,
-  }) {
-    // Avoid noisy "does not match" while the new password itself is invalid.
-    if (newPasswordError != null) return null;
-
-    final result = ConfirmPassword.create(newPassword, confirmNewPassword);
-    return result.fold(
-      (ValueFailure f) => ValidationError(
-        field: 'confirmNewPassword',
-        message: '',
-        code: f.code,
-      ),
-      (_) => null,
-    );
   }
 
   void _handleFailure(AuthFailure failure) {

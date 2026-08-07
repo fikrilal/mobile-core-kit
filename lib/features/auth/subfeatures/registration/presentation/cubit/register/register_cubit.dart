@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
+import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
@@ -140,16 +141,12 @@ class RegisterCubit extends Cubit<RegisterState> {
       emailNotVerified: (_) => _emitFailure(failure),
       oidcLinkRequired: (_) => _emitFailure(failure),
       validation: (v) {
-        ValidationError? emailError;
-        ValidationError? passwordError;
-
-        for (final ValidationError err in v.errors) {
-          if (err.field == 'email' && emailError == null) {
-            emailError = err;
-          } else if (err.field == 'password' && passwordError == null) {
-            passwordError = err;
-          }
-        }
+        final emailError = findFirstValidationErrorForFields(v.errors, [
+          'email',
+        ]);
+        final passwordError = findFirstValidationErrorForFields(v.errors, [
+          'password',
+        ]);
 
         emit(
           state.copyWith(
