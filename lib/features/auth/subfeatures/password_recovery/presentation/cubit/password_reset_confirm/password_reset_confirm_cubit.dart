@@ -8,8 +8,7 @@ import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/confirm_password.dart';
-import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
+import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/reset_token.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_state.dart';
@@ -48,14 +47,14 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
   }
 
   void newPasswordChanged(String value) {
-    final newPasswordError = _validateNewPassword(value);
+    final newPasswordError = PasswordFieldValidator.validateNewPassword(value);
 
     emit(
       state.copyWith(
         newPassword: value,
         newPasswordTouched: true,
         newPasswordError: newPasswordError,
-        confirmNewPasswordError: _validateConfirmNewPassword(
+        confirmNewPasswordError: PasswordFieldValidator.validateConfirmPassword(
           newPassword: value,
           confirmNewPassword: state.confirmNewPassword,
           newPasswordError: newPasswordError,
@@ -73,7 +72,7 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
       state.copyWith(
         confirmNewPassword: value,
         confirmNewPasswordTouched: true,
-        confirmNewPasswordError: _validateConfirmNewPassword(
+        confirmNewPasswordError: PasswordFieldValidator.validateConfirmPassword(
           newPassword: state.newPassword,
           confirmNewPassword: value,
           newPasswordError: state.newPasswordError,
@@ -90,12 +89,15 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
     if (state.isSubmitting) return;
 
     final tokenError = _validateToken(state.token);
-    final newPasswordError = _validateNewPassword(state.newPassword);
-    final confirmNewPasswordError = _validateConfirmNewPassword(
-      newPassword: state.newPassword,
-      confirmNewPassword: state.confirmNewPassword,
-      newPasswordError: newPasswordError,
+    final newPasswordError = PasswordFieldValidator.validateNewPassword(
+      state.newPassword,
     );
+    final confirmNewPasswordError =
+        PasswordFieldValidator.validateConfirmPassword(
+          newPassword: state.newPassword,
+          confirmNewPassword: state.confirmNewPassword,
+          newPasswordError: newPasswordError,
+        );
 
     if (tokenError != null ||
         newPasswordError != null ||
@@ -147,34 +149,6 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
     return result.fold(
       (ValueFailure f) =>
           ValidationError(field: 'token', message: '', code: f.code),
-      (_) => null,
-    );
-  }
-
-  ValidationError? _validateNewPassword(String value) {
-    final result = Password.create(value);
-    return result.fold(
-      (ValueFailure f) =>
-          ValidationError(field: 'newPassword', message: '', code: f.code),
-      (_) => null,
-    );
-  }
-
-  ValidationError? _validateConfirmNewPassword({
-    required String newPassword,
-    required String confirmNewPassword,
-    required ValidationError? newPasswordError,
-  }) {
-    // Avoid noisy "does not match" while the new password itself is invalid.
-    if (newPasswordError != null) return null;
-
-    final result = ConfirmPassword.create(newPassword, confirmNewPassword);
-    return result.fold(
-      (ValueFailure f) => ValidationError(
-        field: 'confirmNewPassword',
-        message: '',
-        code: f.code,
-      ),
       (_) => null,
     );
   }

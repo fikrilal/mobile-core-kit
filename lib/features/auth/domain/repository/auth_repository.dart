@@ -5,7 +5,6 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.da
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -27,7 +26,7 @@ abstract class AuthRepository {
   /// Logout (revoke the session associated with the refresh token).
   ///
   /// Backend: `POST /v1/auth/logout` (204 No Content, does not require access token).
-  Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request);
+  Future<Either<AuthFailure, Unit>> logout(String refreshToken);
 
   /// Sign in with Google via OIDC and exchange the provider `id_token` with the backend.
   ///

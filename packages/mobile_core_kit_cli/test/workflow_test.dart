@@ -34,12 +34,10 @@ void main() {
       final repository = await _createRepository();
       addTearDown(() => repository.delete(recursive: true));
       final commands = <List<String>>[];
-      final output = StringBuffer();
 
       final result =
           await MobilekitCli(
             currentDirectory: repository,
-            output: output,
             commandExecutor: (command) async {
               commands.add(List<String>.from(command));
               return 0;
@@ -65,11 +63,6 @@ void main() {
         ['flutter', 'analyze'],
         ['dart', 'run', 'custom_lint'],
       ]);
-      expect(
-        output.toString(),
-        contains('OK: no disallowed modal entrypoints'),
-      );
-      expect(output.toString(), contains('OK: no hardcoded UI colors found.'));
       expect(
         File(
           p.join(

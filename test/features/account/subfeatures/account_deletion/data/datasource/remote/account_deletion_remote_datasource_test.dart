@@ -5,15 +5,14 @@ import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/datasource/remote/account_deletion_remote_datasource.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/model/remote/cancel_account_deletion_request_model.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/model/remote/request_account_deletion_request_model.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/account_deletion_action.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockApiHelper extends Mock implements ApiHelper {}
 
 void main() {
   test(
-    'requestAccountDeletion hits /me/account-deletion/request on profile host with idempotency key',
+    'requestDeletion(request) hits /me/account-deletion/request on profile host with idempotency key',
     () async {
       final apiHelper = _MockApiHelper();
       final datasource = AccountDeletionRemoteDataSource(apiHelper);
@@ -29,8 +28,8 @@ void main() {
         ),
       ).thenAnswer((_) async => expected);
 
-      final response = await datasource.requestAccountDeletion(
-        request: const RequestAccountDeletionRequestModel(),
+      final response = await datasource.requestDeletion(
+        AccountDeletionAction.request,
       );
 
       expect(response, same(expected));
@@ -54,7 +53,7 @@ void main() {
   );
 
   test(
-    'cancelAccountDeletion hits /me/account-deletion/cancel on profile host with idempotency key',
+    'requestDeletion(cancel) hits /me/account-deletion/cancel on profile host with idempotency key',
     () async {
       final apiHelper = _MockApiHelper();
       final datasource = AccountDeletionRemoteDataSource(apiHelper);
@@ -70,8 +69,8 @@ void main() {
         ),
       ).thenAnswer((_) async => expected);
 
-      final response = await datasource.cancelAccountDeletion(
-        request: const CancelAccountDeletionRequestModel(),
+      final response = await datasource.requestDeletion(
+        AccountDeletionAction.cancel,
       );
 
       expect(response, same(expected));

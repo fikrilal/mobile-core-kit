@@ -10,37 +10,29 @@ import 'package:mobile_core_kit/core/domain/user/entity/account_deletion_entity.
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/cancel_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/request_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/cancel_account_deletion_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/request_account_deletion_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/account_deletion_action.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/pages/request_account_deletion_page.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRequestAccountDeletionUseCase extends Mock
-    implements RequestAccountDeletionUseCase {}
-
-class _MockCancelAccountDeletionUseCase extends Mock
-    implements CancelAccountDeletionUseCase {}
+class _MockAccountDeletionUseCase extends Mock implements AccountDeletionUseCase {}
 
 class _MockUserContextService extends Mock implements UserContextService {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const RequestAccountDeletionRequestEntity());
-    registerFallbackValue(const CancelAccountDeletionRequestEntity());
+    registerFallbackValue(AccountDeletionAction.request);
+    registerFallbackValue(AccountDeletionAction.cancel);
   });
 
   group('RequestAccountDeletionPage', () {
-    late _MockRequestAccountDeletionUseCase requestUseCase;
-    late _MockCancelAccountDeletionUseCase cancelUseCase;
+    late _MockAccountDeletionUseCase accountDeletion;
     late _MockUserContextService userContext;
 
     setUp(() {
-      requestUseCase = _MockRequestAccountDeletionUseCase();
-      cancelUseCase = _MockCancelAccountDeletionUseCase();
+      accountDeletion = _MockAccountDeletionUseCase();
       userContext = _MockUserContextService();
     });
 
@@ -62,12 +54,10 @@ void main() {
             logoutOnUnauthenticated: any(named: 'logoutOnUnauthenticated'),
           ),
         ).thenAnswer((_) async => right(_baseUser()));
-        when(() => requestUseCase(any())).thenAnswer((_) async => right(unit));
-        when(() => cancelUseCase(any())).thenAnswer((_) async => right(unit));
+        when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
 
         final cubit = RequestAccountDeletionCubit(
-          requestUseCase,
-          cancelUseCase,
+          accountDeletion,
           userContext,
         );
         addTearDown(cubit.close);
@@ -83,8 +73,7 @@ void main() {
         expect(find.text(l10n.accountDeletionConfirmTitle), findsOneWidget);
         await _pressAppButton(tester, l10n.accountDeletionConfirmCta);
 
-        verify(() => requestUseCase(any())).called(1);
-        verifyNever(() => cancelUseCase(any()));
+        verify(() => accountDeletion(AccountDeletionAction.request)).called(1);
         expect(
           find.text(l10n.accountDeletionRequestSuccessMessage),
           findsOneWidget,
@@ -116,12 +105,10 @@ void main() {
             logoutOnUnauthenticated: any(named: 'logoutOnUnauthenticated'),
           ),
         ).thenAnswer((_) async => right(scheduledUser));
-        when(() => requestUseCase(any())).thenAnswer((_) async => right(unit));
-        when(() => cancelUseCase(any())).thenAnswer((_) async => right(unit));
+        when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
 
         final cubit = RequestAccountDeletionCubit(
-          requestUseCase,
-          cancelUseCase,
+          accountDeletion,
           userContext,
         );
         addTearDown(cubit.close);
@@ -140,8 +127,7 @@ void main() {
         );
         await _pressAppButton(tester, l10n.accountDeletionCancelConfirmCta);
 
-        verify(() => cancelUseCase(any())).called(1);
-        verifyNever(() => requestUseCase(any()));
+        verify(() => accountDeletion(AccountDeletionAction.cancel)).called(1);
         expect(
           find.text(l10n.accountDeletionCancelSuccessMessage),
           findsOneWidget,
@@ -174,13 +160,11 @@ void main() {
         ),
       ).thenAnswer((_) async => right(scheduledUser));
       when(
-        () => cancelUseCase(any()),
+        () => accountDeletion(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
-      when(() => requestUseCase(any())).thenAnswer((_) async => right(unit));
 
       final cubit = RequestAccountDeletionCubit(
-        requestUseCase,
-        cancelUseCase,
+        accountDeletion,
         userContext,
       );
       addTearDown(cubit.close);

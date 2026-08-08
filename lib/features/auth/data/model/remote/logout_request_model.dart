@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
-
 part 'logout_request_model.freezed.dart';
 part 'logout_request_model.g.dart';
 
@@ -14,7 +12,4 @@ abstract class LogoutRequestModel with _$LogoutRequestModel {
 
   factory LogoutRequestModel.fromJson(Map<String, dynamic> json) =>
       _$LogoutRequestModelFromJson(json);
-
-  factory LogoutRequestModel.fromEntity(LogoutRequestEntity e) =>
-      LogoutRequestModel(refreshToken: e.refreshToken);
 }

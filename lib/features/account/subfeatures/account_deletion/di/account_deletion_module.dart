@@ -4,8 +4,7 @@ import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.d
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/datasource/remote/account_deletion_remote_datasource.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/data/repository/account_deletion_repository_impl.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/repository/account_deletion_repository.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/cancel_account_deletion_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/request_account_deletion_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 
 class AccountDeletionModule {
@@ -24,23 +23,16 @@ class AccountDeletionModule {
       );
     }
 
-    if (!getIt.isRegistered<RequestAccountDeletionUseCase>()) {
-      getIt.registerFactory<RequestAccountDeletionUseCase>(
-        () => RequestAccountDeletionUseCase(getIt<AccountDeletionRepository>()),
-      );
-    }
-
-    if (!getIt.isRegistered<CancelAccountDeletionUseCase>()) {
-      getIt.registerFactory<CancelAccountDeletionUseCase>(
-        () => CancelAccountDeletionUseCase(getIt<AccountDeletionRepository>()),
+    if (!getIt.isRegistered<AccountDeletionUseCase>()) {
+      getIt.registerFactory<AccountDeletionUseCase>(
+        () => AccountDeletionUseCase(getIt<AccountDeletionRepository>()),
       );
     }
 
     if (!getIt.isRegistered<RequestAccountDeletionCubit>()) {
       getIt.registerFactory<RequestAccountDeletionCubit>(
         () => RequestAccountDeletionCubit(
-          getIt<RequestAccountDeletionUseCase>(),
-          getIt<CancelAccountDeletionUseCase>(),
+          getIt<AccountDeletionUseCase>(),
           getIt<UserContextService>(),
         ),
       );

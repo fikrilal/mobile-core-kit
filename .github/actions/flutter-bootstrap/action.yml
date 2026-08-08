@@ -53,6 +53,10 @@ runs:
         flutter-version: ${{ steps.fvm.outputs.flutter_version }}
         cache: ${{ inputs.cache }}
 
+    - name: Prepare generated report directory
+      shell: bash
+      run: mkdir -p .tmp
+
     - name: Install dependencies
       if: ${{ inputs.install-dependencies == 'true' }}
       shell: bash

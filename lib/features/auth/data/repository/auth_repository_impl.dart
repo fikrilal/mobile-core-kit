@@ -22,7 +22,6 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/register_request
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/logout_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -109,8 +108,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, Unit>> logout(LogoutRequestEntity request) async {
-    final apiRequest = LogoutRequestModel.fromEntity(request);
+  Future<Either<AuthFailure, Unit>> logout(String refreshToken) async {
+    final apiRequest = LogoutRequestModel(refreshToken: refreshToken);
     try {
       final apiResponse = await _remote.logout(apiRequest);
       return apiResponse

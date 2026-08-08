@@ -9,10 +9,8 @@ import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_draft_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_draft_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/get_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/family_name.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/given_name.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
@@ -20,16 +18,12 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/presentatio
 
 class CompleteProfileCubit extends Cubit<CompleteProfileState> {
   CompleteProfileCubit(
-    this._getDraft,
-    this._saveDraft,
-    this._clearDraft,
+    this._draftRepository,
     this._patchMeProfile,
     this._sessionManager,
   ) : super(CompleteProfileState.initial());
 
-  final GetProfileDraftUseCase _getDraft;
-  final SaveProfileDraftUseCase _saveDraft;
-  final ClearProfileDraftUseCase _clearDraft;
+  final ProfileDraftRepository _draftRepository;
   final PatchMeProfileUseCase _patchMeProfile;
   final SessionManager _sessionManager;
   final _effects = StreamController<CompleteProfileEffect>.broadcast();
@@ -46,7 +40,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     final userId = _currentUserId;
     if (userId == null || userId.isEmpty) return;
 
-    final draft = await _getDraft(userId: userId);
+    final draft = await _draftRepository.getDraft(userId: userId);
 
     // Guard against applying stale drafts after logout/login.
     if (_currentUserId != userId) return;
@@ -171,7 +165,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
       (user) async {
         await _sessionManager.setUser(user);
         if (userId != null && userId.isNotEmpty) {
-          await _clearDraft(userId: userId);
+          await _draftRepository.clearDraft(userId: userId);
         }
         emit(state.copyWith(status: CompleteProfileStatus.success));
       },
@@ -211,7 +205,9 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
         displayName: null,
         updatedAt: DateTime.now(),
       );
-      unawaited(_saveDraft(userId: userId, draft: draft));
+      unawaited(
+        _draftRepository.saveDraft(userId: userId, draft: draft),
+      );
     });
   }
 

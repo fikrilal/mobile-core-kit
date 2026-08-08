@@ -1,0 +1,1 @@
+enum AccountDeletionAction { request, cancel }
