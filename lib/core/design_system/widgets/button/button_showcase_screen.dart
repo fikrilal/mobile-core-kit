@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/app_button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button_variants.dart';
-import 'package:mobile_core_kit/core/design_system/widgets/common/app_haptic_feedback.dart';
 
 /// A lightweight playground to verify AppButton variants, sizes, and states.
 ///
@@ -277,14 +276,6 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
           onPressed: () {},
         ),
         const SizedBox(height: AppSpacing.space12),
-        AppButton.primary(
-          text: 'Opt‑in haptics',
-          hapticFeedback: AppHapticFeedback.selectionClick,
-          isLoading: _loading,
-          isDisabled: _disabled,
-          isExpanded: _expanded,
-          onPressed: () {},
-        ),
       ],
     );
   }

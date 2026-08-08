@@ -4,64 +4,55 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/cancel_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/entity/request_account_deletion_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/cancel_account_deletion_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/request_account_deletion_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/account_deletion_action.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/domain/usecase/account_deletion_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_state.dart';
 
 class RequestAccountDeletionCubit extends Cubit<RequestAccountDeletionState> {
   RequestAccountDeletionCubit(
-    this._requestAccountDeletion,
-    this._cancelAccountDeletion,
+    this._accountDeletion,
     this._userContext,
   ) : super(RequestAccountDeletionState.initial());
 
-  final RequestAccountDeletionUseCase _requestAccountDeletion;
-  final CancelAccountDeletionUseCase _cancelAccountDeletion;
+  final AccountDeletionUseCase _accountDeletion;
   final UserContextService _userContext;
   final _effects = StreamController<RequestAccountDeletionEffect>();
 
   Stream<RequestAccountDeletionEffect> get effects => _effects.stream;
 
-  Future<void> request({String? idempotencyKey}) async {
-    if (state.isSubmitting) return;
-
-    emit(
-      state.copyWith(
-        status: RequestAccountDeletionStatus.submitting,
-        action: AccountDeletionAction.request,
-        failure: null,
-      ),
-    );
-
-    await _handleResult(
+  Future<void> request() async {
+    await _submit(
       action: AccountDeletionAction.request,
       reason: 'account_deletion_requested',
-      resultFuture: _requestAccountDeletion(
-        RequestAccountDeletionRequestEntity(idempotencyKey: idempotencyKey),
-      ),
     );
   }
 
-  Future<void> cancel({String? idempotencyKey}) async {
+  Future<void> cancel() async {
+    await _submit(
+      action: AccountDeletionAction.cancel,
+      reason: 'account_deletion_canceled',
+    );
+  }
+
+  Future<void> _submit({
+    required AccountDeletionAction action,
+    required String reason,
+  }) async {
     if (state.isSubmitting) return;
 
     emit(
       state.copyWith(
         status: RequestAccountDeletionStatus.submitting,
-        action: AccountDeletionAction.cancel,
+        action: action,
         failure: null,
       ),
     );
 
     await _handleResult(
-      action: AccountDeletionAction.cancel,
-      reason: 'account_deletion_canceled',
-      resultFuture: _cancelAccountDeletion(
-        CancelAccountDeletionRequestEntity(idempotencyKey: idempotencyKey),
-      ),
+      action: action,
+      reason: reason,
+      resultFuture: _accountDeletion(action),
     );
   }
 

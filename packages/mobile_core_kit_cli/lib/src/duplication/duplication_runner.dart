@@ -45,9 +45,9 @@ class DuplicationRunner {
         output: _output,
         errorOutput: _errorOutput,
       ).run(
-        profileName: filter.profile,
         reportPath: filter.report,
         allowlistPath: filter.allowlist,
+        scanRoots: filter.scanRoots,
       );
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: Invalid duplication report data.');
@@ -95,19 +95,30 @@ class DuplicationRunner {
   _FilterSpec _filterSpecFor(DuplicationProfile profile) {
     return switch (profile) {
       DuplicationProfile.core => const _FilterSpec(
-        profile: 'core',
         report: '.tmp/jscpd-phase1/jscpd-report.json',
         allowlist: 'duplication/duplication_allowlist.json',
+        scanRoots: [
+          'lib/features',
+          'lib/core/foundation',
+          'lib/core/runtime',
+          'lib/core/infra',
+          'lib/navigation',
+        ],
       ),
       DuplicationProfile.smallHelpers => const _FilterSpec(
-        profile: 'small_helpers',
         report: '.tmp/jscpd-small-helpers/jscpd-report.json',
         allowlist: 'duplication/small_helper_duplication_allowlist.json',
+        scanRoots: [
+          'lib/features',
+          'lib/core/foundation',
+          'lib/core/runtime',
+          'lib/navigation',
+        ],
       ),
       DuplicationProfile.presentation => const _FilterSpec(
-        profile: 'presentation',
         report: '.tmp/jscpd-presentation/jscpd-report.json',
         allowlist: 'duplication/presentation_duplication_allowlist.json',
+        scanRoots: ['lib/features'],
       ),
     };
   }
@@ -161,12 +172,12 @@ class DuplicationRunner {
 
 class _FilterSpec {
   const _FilterSpec({
-    required this.profile,
     required this.report,
     required this.allowlist,
+    required this.scanRoots,
   });
 
-  final String profile;
   final String report;
   final String allowlist;
+  final List<String> scanRoots;
 }

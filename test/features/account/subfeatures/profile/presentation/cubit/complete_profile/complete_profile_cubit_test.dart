@@ -9,10 +9,8 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error_code
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_draft_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_draft_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/get_profile_draft_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/save_profile_draft_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
@@ -21,14 +19,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockPatchMeProfileUseCase extends Mock
     implements PatchMeProfileUseCase {}
 
-class _MockGetProfileDraftUseCase extends Mock
-    implements GetProfileDraftUseCase {}
-
-class _MockSaveProfileDraftUseCase extends Mock
-    implements SaveProfileDraftUseCase {}
-
-class _MockClearProfileDraftUseCase extends Mock
-    implements ClearProfileDraftUseCase {}
+class _MockProfileDraftRepository extends Mock
+    implements ProfileDraftRepository {}
 
 class _MockSessionManager extends Mock implements SessionManager {}
 
@@ -44,16 +36,12 @@ void main() {
   });
 
   group('CompleteProfileCubit', () {
-    late _MockGetProfileDraftUseCase getDraft;
-    late _MockSaveProfileDraftUseCase saveDraft;
-    late _MockClearProfileDraftUseCase clearDraft;
+    late _MockProfileDraftRepository draftRepository;
     late _MockPatchMeProfileUseCase patchMeProfile;
     late _MockSessionManager sessionManager;
 
     setUp(() {
-      getDraft = _MockGetProfileDraftUseCase();
-      saveDraft = _MockSaveProfileDraftUseCase();
-      clearDraft = _MockClearProfileDraftUseCase();
+      draftRepository = _MockProfileDraftRepository();
       patchMeProfile = _MockPatchMeProfileUseCase();
       sessionManager = _MockSessionManager();
 
@@ -71,25 +59,23 @@ void main() {
         ),
       );
       when(
-        () => getDraft(userId: any(named: 'userId')),
+        () => draftRepository.getDraft(userId: any(named: 'userId')),
       ).thenAnswer((_) async => null);
       when(
-        () => saveDraft(
+        () => draftRepository.saveDraft(
           userId: any(named: 'userId'),
           draft: any(named: 'draft'),
         ),
       ).thenAnswer((_) async {});
       when(
-        () => clearDraft(userId: any(named: 'userId')),
+        () => draftRepository.clearDraft(userId: any(named: 'userId')),
       ).thenAnswer((_) async {});
       when(() => sessionManager.setUser(any())).thenAnswer((_) async {});
     });
 
     test('emits field errors and does not call usecase when invalid', () async {
       final cubit = CompleteProfileCubit(
-        getDraft,
-        saveDraft,
-        clearDraft,
+        draftRepository,
         patchMeProfile,
         sessionManager,
       );
@@ -119,9 +105,7 @@ void main() {
       when(() => patchMeProfile(any())).thenAnswer((_) async => right(user));
 
       final cubit = CompleteProfileCubit(
-        getDraft,
-        saveDraft,
-        clearDraft,
+        draftRepository,
         patchMeProfile,
         sessionManager,
       );
@@ -151,19 +135,18 @@ void main() {
 
     test('loadDraft populates fields when draft exists', () async {
       final now = DateTime(2026, 1, 1);
-      when(() => getDraft(userId: any(named: 'userId'))).thenAnswer(
-        (_) async => ProfileDraftEntity(
-          givenName: 'John',
-          familyName: 'Doe',
-          displayName: null,
-          updatedAt: now,
-        ),
-      );
+      when(() => draftRepository.getDraft(userId: any(named: 'userId')))
+          .thenAnswer(
+            (_) async => ProfileDraftEntity(
+              givenName: 'John',
+              familyName: 'Doe',
+              displayName: null,
+              updatedAt: now,
+            ),
+          );
 
       final cubit = CompleteProfileCubit(
-        getDraft,
-        saveDraft,
-        clearDraft,
+        draftRepository,
         patchMeProfile,
         sessionManager,
       );
@@ -174,7 +157,7 @@ void main() {
       expect(cubit.state.familyName, 'Doe');
       expect(cubit.state.givenNameError, isNull);
       expect(cubit.state.familyNameError, isNull);
-      verify(() => getDraft(userId: 'u1')).called(1);
+      verify(() => draftRepository.getDraft(userId: 'u1')).called(1);
 
       await cubit.close();
     });
@@ -185,9 +168,7 @@ void main() {
       ).thenAnswer((_) async => left(const AuthFailure.serverError()));
 
       final cubit = CompleteProfileCubit(
-        getDraft,
-        saveDraft,
-        clearDraft,
+        draftRepository,
         patchMeProfile,
         sessionManager,
       );

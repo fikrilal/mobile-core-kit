@@ -11,7 +11,6 @@ import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmation_dialog.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/date_utils.dart';
-import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
@@ -180,9 +179,7 @@ class _RequestAccountDeletionPageState
 
     if (confirmed != true || !context.mounted) return;
 
-    await context.read<RequestAccountDeletionCubit>().request(
-      idempotencyKey: IdempotencyKeyUtils.generate(),
-    );
+    await context.read<RequestAccountDeletionCubit>().request();
   }
 
   Future<void> _confirmAndCancel(BuildContext context) async {
@@ -201,8 +198,6 @@ class _RequestAccountDeletionPageState
 
     if (confirmed != true || !context.mounted) return;
 
-    await context.read<RequestAccountDeletionCubit>().cancel(
-      idempotencyKey: IdempotencyKeyUtils.generate(),
-    );
+    await context.read<RequestAccountDeletionCubit>().cancel();
   }
 }

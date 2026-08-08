@@ -1,11 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:io';
-
 import 'package:analyzer/error/error.dart' show ErrorSeverity;
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:glob/glob.dart';
+import 'package:mobile_core_kit_lints/src/shared.dart';
 import 'package:path/path.dart' as p;
 
 class ModalEntrypointsLint extends DartLintRule {
@@ -36,13 +35,13 @@ class ModalEntrypointsLint extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    final projectRoot = _ProjectRootFinder.findForFile(resolver.path);
+    final projectRoot = ProjectRootFinder.findForFile(resolver.path);
     if (projectRoot == null) return;
 
-    final sourceRelativePath = _normalizePath(
+    final sourceRelativePath = normalizePath(
       p.relative(resolver.path, from: projectRoot),
     );
-    if (_isGeneratedDart(sourceRelativePath)) return;
+    if (isGeneratedDart(sourceRelativePath)) return;
 
     final config = _ModalEntrypointsConfig.fromOptions(_options);
     if (!config.isIncluded(sourceRelativePath)) return;
@@ -99,16 +98,8 @@ class _ModalEntrypointsConfig {
   }
 }
 
-List<Glob> _readGlobList(Object? raw, {required List<String> fallback}) {
-  if (raw is List) {
-    final values = raw
-        .whereType<String>()
-        .map((v) => v.trim())
-        .where((v) => v.isNotEmpty);
-    return [for (final v in values) Glob(v)];
-  }
-  return [for (final v in fallback) Glob(v)];
-}
+List<Glob> _readGlobList(Object? raw, {required List<String> fallback}) =>
+    readGlobList(raw, fallback: fallback);
 
 List<String> _readStringList(Object? raw, {required List<String> fallback}) {
   if (raw is List) {
@@ -118,22 +109,4 @@ List<String> _readStringList(Object? raw, {required List<String> fallback}) {
     ];
   }
   return [...fallback];
-}
-
-String _normalizePath(String value) => value.replaceAll('\\', '/');
-
-bool _isGeneratedDart(String path) =>
-    path.endsWith('.g.dart') || path.endsWith('.freezed.dart');
-
-class _ProjectRootFinder {
-  static String? findForFile(String filePath) {
-    var dir = p.dirname(filePath);
-    while (true) {
-      final candidate = p.join(dir, 'pubspec.yaml');
-      if (File(candidate).existsSync()) return dir;
-      final parent = p.dirname(dir);
-      if (parent == dir) return null;
-      dir = parent;
-    }
-  }
 }

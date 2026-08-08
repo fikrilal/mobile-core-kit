@@ -14,7 +14,6 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_use
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/logout_flow_usecase.dart';
-import 'package:mobile_core_kit/features/auth/domain/usecase/logout_remote_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
@@ -59,12 +58,6 @@ void _registerUseCases(GetIt getIt) {
   if (!getIt.isRegistered<LoginUserUseCase>()) {
     getIt.registerFactory<LoginUserUseCase>(
       () => LoginUserUseCase(getIt<AuthRepository>()),
-    );
-  }
-
-  if (!getIt.isRegistered<LogoutRemoteUseCase>()) {
-    getIt.registerFactory<LogoutRemoteUseCase>(
-      () => LogoutRemoteUseCase(getIt<AuthRepository>()),
     );
   }
 
@@ -121,7 +114,7 @@ void _registerSessionIntegration(GetIt getIt) {
   if (!getIt.isRegistered<LogoutFlowUseCase>()) {
     getIt.registerFactory<LogoutFlowUseCase>(
       () => LogoutFlowUseCase(
-        logoutRemote: getIt<LogoutRemoteUseCase>(),
+        authRepository: getIt<AuthRepository>(),
         pushTokenRevoker: getIt<SessionPushTokenRevoker>(),
         session: getIt<SessionManager>(),
       ),
