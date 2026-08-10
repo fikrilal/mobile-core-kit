@@ -682,6 +682,11 @@ void _rejectSecretKeys(dynamic value, String path) {
   if (value is Map) {
     for (final entry in value.entries) {
       final key = entry.key.toString();
+      // `managed_files` values are fingerprint hashes keyed by repository
+      // file paths; the path keys legitimately contain words like `token`
+      // (e.g. `token_refresher.dart`). Secret rejection applies to
+      // customization input field names, not managed file paths.
+      if (key == 'managed_files') continue;
       if (_secretKeyPattern.hasMatch(key)) {
         throw FormatException(
           'Secret-like field ' +

@@ -123,8 +123,7 @@ lib/features/account/
    │  └─ usecase/
    │     ├─ patch_me_profile_usecase.dart
    │     ├─ upload_profile_image_usecase.dart
-   │     ├─ clear_profile_image_usecase.dart
-   │     └─ get_profile_image_url_usecase.dart
+   │     └─ clear_profile_image_usecase.dart
    ├─ presentation/
    │  ├─ cubit/profile_image/
    │  │  ├─ profile_image_cubit.dart
@@ -158,7 +157,6 @@ test/features/account/subfeatures/profile/
 ├─ data/repository/profile_repository_impl_integration_test.dart
 ├─ domain/usecase/upload_profile_image_usecase_test.dart
 ├─ domain/usecase/clear_profile_image_usecase_test.dart
-├─ domain/usecase/get_profile_image_url_usecase_test.dart
 └─ presentation/cubit/profile_image/profile_image_cubit_test.dart
 ```
 

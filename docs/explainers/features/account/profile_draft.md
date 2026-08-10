@@ -72,22 +72,22 @@ lib/features/account/subfeatures/profile/
 ├─ domain/
 │  ├─ entity/
 │  │  └─ profile_draft_entity.dart                # client-only draft entity
-│  ├─ repository/
-│  │  └─ profile_draft_repository.dart
-│  └─ usecase/
-│     ├─ get_profile_draft_usecase.dart
-│     ├─ save_profile_draft_usecase.dart
-│     └─ clear_profile_draft_usecase.dart
+│  └─ repository/
+│     └─ profile_draft_repository.dart
 ├─ presentation/
 │  └─ cubit/
 │     └─ complete_profile/
-│        └─ complete_profile_cubit.dart           # loads/saves/clears draft
+│        └─ complete_profile_cubit.dart           # loads/saves/clears draft (calls repository directly)
 └─ di/
    └─ account_profile_module.dart                 # DI wiring
 
 lib/navigation/account/
 └─ account_routes_list.dart                          # route names are still transitional in Phase 3
 ```
+
+> Note: the draft flow has no use cases. The cubit calls `ProfileDraftRepository`
+> directly (`getDraft`/`saveDraft`/`clearDraft`) — the repository is the seam for
+> a future server-side draft sync.
 
 Tests:
 
