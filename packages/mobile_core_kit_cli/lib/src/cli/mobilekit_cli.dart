@@ -1,19 +1,29 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/ci/ci_workflow.dart';
+import 'package:mobile_core_kit_cli/src/contracts/openapi_contract_workflow.dart';
 import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
+import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
+import 'package:mobile_core_kit_cli/src/evidence/evidence_workflow.dart';
+import 'package:mobile_core_kit_cli/src/handoff/handoff_workflow.dart';
+import 'package:mobile_core_kit_cli/src/improvement/improvement_workflow.dart';
+import 'package:mobile_core_kit_cli/src/maintenance/maintenance_workflow.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
+import 'package:mobile_core_kit_cli/src/task/task_workflow.dart';
 import 'package:mobile_core_kit_cli/src/template/template_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/fix_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
@@ -70,9 +80,18 @@ class MobilekitCli {
       'verify' => _runWorkflow(
         command: 'verify',
         arguments: arguments.skip(1).toList(),
-        usage: 'Usage: mobilekit verify [options]',
-        workflow: (context) =>
-            VerifyWorkflow(context).run(arguments.skip(1).toList()),
+        usage:
+            'Usage: mobilekit verify '
+            '[--profile <fast|full|runtime|ci>] [options]',
+        workflow: (context) => VerifyWorkflow(
+          context,
+          runtimeVerification: (runtimeArguments) => RuntimeEvidenceWorkflow(
+            rootDirectory: context.rootDirectory,
+            platform: _platform,
+            output: _output,
+            errorOutput: _errorOutput,
+          ).run(runtimeArguments),
+        ).run(arguments.skip(1).toList()),
       ),
       'lint' => _runWorkflow(
         command: 'lint',
@@ -128,6 +147,91 @@ class MobilekitCli {
         workflow: (context, workflowArguments) =>
             ProjectMapWorkflow(context).run(workflowArguments),
       ),
+      'knowledge' => _runGroupedWorkflow(
+        group: 'knowledge',
+        subcommand: 'verify',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit knowledge verify',
+        workflow: (context, workflowArguments) =>
+            KnowledgeWorkflow(context).run(workflowArguments),
+      ),
+      'oracle' => _runGroupedWorkflow(
+        group: 'oracle',
+        subcommand: 'verify',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit oracle verify',
+        workflow: (context, workflowArguments) =>
+            OracleWorkflow(context).run(workflowArguments),
+      ),
+      'evidence' => _runWorkflow(
+        command: 'evidence',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit evidence <verify|report|mutation-pilot>',
+        workflow: (context) =>
+            EvidenceWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'improve' => _runWorkflow(
+        command: 'improve',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit improve <check|analyze|shadow>',
+        workflow: (context) =>
+            ImprovementWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'contract' => _runContract(arguments.skip(1).toList()),
+      'task' => _runWorkflow(
+        command: 'task',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit task begin --plan <path> | '
+            'task preflight --task <id> [--action <action>] | '
+            'task verify --task <id> [--env <env>] | '
+            'task repair --task <id> | '
+            'task workspace <prepare|status|cancel|cleanup> --task <id> | '
+            'task status --task <id>',
+        workflow: (context) =>
+            TaskWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'event' => _runWorkflow(
+        command: 'event',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit event intake --once',
+        workflow: (context) =>
+            EventWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'maintenance' => _runWorkflow(
+        command: 'maintenance',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit maintenance run --once',
+        workflow: (context) =>
+            MaintenanceWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'ci' => _runWorkflow(
+        command: 'ci',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit ci classify --base <revision> --head <revision>',
+        workflow: (context) =>
+            CiWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'handoff' => _runWorkflow(
+        command: 'handoff',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit handoff dry-run --task <id> '
+            '--action <commit|push|draft-pr> | '
+            'handoff commit --task <id> --message <message> | '
+            'handoff push --task <id> | '
+            'handoff draft-pr --task <id> --base <branch> --title <title>',
+        workflow: (context) =>
+            HandoffWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'risk' => _runWorkflow(
+        command: 'risk',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit risk classify [--plan <path>]',
+        workflow: (context) =>
+            RiskWorkflow(context).run(arguments.skip(1).toList()),
+      ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
       'runtime' => _runRuntime(arguments.skip(1).toList()),
@@ -145,6 +249,35 @@ class MobilekitCli {
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
+  }
+
+  Future<int> _runContract(List<String> arguments) async {
+    const usage =
+        'Usage: mobilekit contract openapi verify | '
+        'contract openapi sync --source <path> '
+        '--source-revision <revision> --accept';
+    if (arguments.isEmpty) {
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    if (_isHelp(arguments.first)) {
+      _writeCommandUsage(_output, usage);
+      return 0;
+    }
+    if (arguments.first != 'openapi') {
+      _errorOutput.writeln(
+        "ERROR: Unknown contract command '${arguments.first}'.",
+      );
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    return _runWorkflow(
+      command: 'contract openapi',
+      arguments: arguments.skip(1).toList(),
+      usage: usage,
+      workflow: (context) =>
+          OpenApiContractWorkflow(context).run(arguments.skip(1).toList()),
+    );
   }
 
   Future<int> _runTemplateLifecycle({
@@ -345,7 +478,11 @@ class MobilekitCli {
 
     final execute =
         _commandExecutor ??
-        CommandRunner(rootDirectory: root, platform: _platform).run;
+        CommandRunner(
+          rootDirectory: root,
+          platform: _platform,
+          output: _output,
+        ).run;
     final runner = DuplicationRunner(
       rootDirectory: root,
       execute: execute,
@@ -376,7 +513,11 @@ class MobilekitCli {
   }) async {
     final execute =
         _commandExecutor ??
-        CommandRunner(rootDirectory: root, platform: _platform).run;
+        CommandRunner(
+          rootDirectory: root,
+          platform: _platform,
+          output: _output,
+        ).run;
     final context = WorkflowContext(
       rootDirectory: root,
       execute: execute,
@@ -501,6 +642,27 @@ class MobilekitCli {
     output.writeln('  codegen   Verify generated-code freshness.');
     output.writeln('  l10n      Verify untranslated localization messages.');
     output.writeln('  project-map  Verify AGENTS project-map drift.');
+    output.writeln(
+      '  knowledge Verify project-map, links, and plan lifecycle.',
+    );
+    output.writeln('  oracle    Verify registered behavioral oracles.');
+    output.writeln(
+      '  evidence  Verify and report sanitized operating evidence.',
+    );
+    output.writeln(
+      '  improve   Analyze evidence and evaluate approved hypotheses.',
+    );
+    output.writeln('  contract  Verify or explicitly sync pinned contracts.');
+    output.writeln(
+      '  task      Manage current-agent task authority and state.',
+    );
+    output.writeln('  event     Activate one authorized queued V2 plan.');
+    output.writeln(
+      '  maintenance  Run fixed read-only repository observations.',
+    );
+    output.writeln('  ci        Classify a clean base/head CI candidate.');
+    output.writeln('  handoff   Prepare or execute a verified narrow handoff.');
+    output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
     output.writeln('  runtime   Manage runtime evidence and log sessions.');

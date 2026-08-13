@@ -113,7 +113,7 @@ Recommended flow per agent:
 
 ```bash
 git status --short
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 Use lighter targeted checks only when the task is small enough to justify it.

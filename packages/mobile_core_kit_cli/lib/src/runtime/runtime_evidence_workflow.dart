@@ -1,14 +1,21 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:crypto/crypto.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_binding.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_process.dart';
+import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 
+const runtimeEvidenceSchemaVersion = 1;
+
 class RuntimeEvidenceOptions {
   const RuntimeEvidenceOptions({
+    required this.taskId,
     required this.device,
     required this.flavor,
     required this.targets,
@@ -17,6 +24,7 @@ class RuntimeEvidenceOptions {
     required this.googleServicesJson,
   });
 
+  final String taskId;
   final String device;
   final String flavor;
   final List<String> targets;
@@ -29,7 +37,9 @@ class RuntimeEvidenceWorkflow {
   RuntimeEvidenceWorkflow({
     required Directory rootDirectory,
     RuntimeEvidenceProcessRunner? processRunner,
+    RuntimeEvidenceBindingResolver? bindingResolver,
     CommandPlatform? platform,
+    DateTime Function()? now,
     StringSink? output,
     StringSink? errorOutput,
   }) : rootDirectory = rootDirectory,
@@ -39,11 +49,16 @@ class RuntimeEvidenceWorkflow {
              rootDirectory: rootDirectory,
              platform: platform,
            ),
+       _bindingResolver =
+           bindingResolver ?? TaskRuntimeEvidenceBindingResolver(rootDirectory),
+       _now = now ?? DateTime.now,
        _output = output ?? stdout,
        _errorOutput = errorOutput ?? stderr;
 
   final Directory rootDirectory;
   final RuntimeEvidenceProcessRunner _processRunner;
+  final RuntimeEvidenceBindingResolver _bindingResolver;
+  final DateTime Function() _now;
   final StringSink _output;
   final StringSink _errorOutput;
 
@@ -51,6 +66,7 @@ class RuntimeEvidenceWorkflow {
     output.writeln('Usage: mobilekit runtime evidence [options]');
     output.writeln();
     output.writeln('Options:');
+    output.writeln('  --task <id>              Required verified task ID.');
     output.writeln(
       '  --device <id>            Required device or emulator id.',
     );
@@ -58,28 +74,17 @@ class RuntimeEvidenceWorkflow {
       '  --flavor <name>          dev, staging, or prod (default: dev).',
     );
     output.writeln(
-      '  --target <path>          Repeatable integration test target.',
+      '  --target <path>          Repeatable selected registered target.',
     );
     output.writeln(
-      '  --artifacts-dir <path>   Artifact directory '
+      '  --artifacts-dir <path>   Repository-local artifact directory '
       '(default: _artifacts/mobile/<timestamp>).',
     );
     output.writeln(
       '  --no-example-env-fallback  Disable dev/staging env example fallback.',
     );
     output.writeln(
-      '  --google-services-json <path>  Copy explicit Firebase config before run.',
-    );
-    output.writeln();
-    output.writeln('Examples:');
-    output.writeln('  mobilekit runtime evidence --device emulator-5554');
-    output.writeln(
-      '  mobilekit runtime evidence --device emulator-5554 '
-      '--target integration_test/auth_happy_path_test.dart',
-    );
-    output.writeln(
-      '  mobilekit runtime evidence --device emulator-5554 '
-      '--flavor dev --google-services-json /secure/google-services.json',
+      '  --google-services-json <path>  Use explicit Firebase config transactionally.',
     );
   }
 
@@ -100,12 +105,13 @@ class RuntimeEvidenceWorkflow {
     }
 
     try {
-      final options = _optionsFrom(parsed);
-      return await _runEvidence(options);
+      return await _runEvidence(_optionsFrom(parsed));
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
-      writeUsage(_errorOutput);
       return 2;
+    } on TaskControlError catch (error) {
+      _errorOutput.writeln('FAIL [${error.code}] ${error.message}');
+      return 1;
     } on FileSystemException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
       return 1;
@@ -115,32 +121,34 @@ class RuntimeEvidenceWorkflow {
     }
   }
 
-  ArgParser _createParser() {
-    return ArgParser()
-      ..addFlag('help', abbr: 'h', negatable: false)
-      ..addOption('device')
-      ..addOption(
-        'flavor',
-        allowed: const ['dev', 'staging', 'prod'],
-        defaultsTo: 'dev',
-      )
-      ..addMultiOption('target')
-      ..addOption('artifacts-dir')
-      ..addFlag('no-example-env-fallback', negatable: false)
-      ..addOption('google-services-json');
-  }
+  ArgParser _createParser() => ArgParser()
+    ..addFlag('help', abbr: 'h', negatable: false)
+    ..addOption('task')
+    ..addOption('device')
+    ..addOption(
+      'flavor',
+      allowed: const ['dev', 'staging', 'prod'],
+      defaultsTo: 'dev',
+    )
+    ..addMultiOption('target')
+    ..addOption('artifacts-dir')
+    ..addFlag('no-example-env-fallback', negatable: false)
+    ..addOption('google-services-json');
 
   RuntimeEvidenceOptions _optionsFrom(ArgResults parsed) {
+    final taskId = parsed.option('task');
+    if (taskId == null || taskId.isEmpty) {
+      throw const FormatException('--task is required.');
+    }
     final device = parsed.option('device');
     if (device == null || device.isEmpty) {
       throw const FormatException('--device is required.');
     }
-
     if (parsed.rest.isNotEmpty) {
       throw FormatException("Unknown argument '${parsed.rest.first}'.");
     }
-
     return RuntimeEvidenceOptions(
+      taskId: taskId,
       device: device,
       flavor: parsed.option('flavor')!,
       targets: List.unmodifiable(parsed.multiOption('target')),
@@ -151,230 +159,230 @@ class RuntimeEvidenceWorkflow {
   }
 
   Future<int> _runEvidence(RuntimeEvidenceOptions options) async {
-    final targets = options.targets.isEmpty
-        ? _discoverTargets()
-        : options.targets;
-    if (targets.isEmpty) {
-      _errorOutput.writeln('ERROR: No integration_test targets found.');
-      return 1;
-    }
-
+    final binding = await _bindingResolver.resolve(options.taskId);
+    final selectedTargets = _selectTargets(binding, options.targets);
     final artifacts = _RuntimeEvidenceArtifacts(
       rootDirectory: rootDirectory,
       requestedDirectory: options.artifactsDirectory,
+      now: _now,
     );
-    artifacts.directory.createSync(recursive: true);
-    artifacts.logsDirectory.createSync(recursive: true);
+    artifacts.create();
 
-    final envSource = _prepareEnvironment(options);
-    if (envSource == null) return 1;
-    final googleServicesSource = _prepareGoogleServices(options);
-    if (googleServicesSource == null) return 1;
+    final started = _now().toUtc();
+    final results = <_RuntimeTargetResult>[];
+    final mutations = <_RestorableFile>[];
+    var outcome = 'failed';
+    var boundary = 'runtime.preflight';
+    var exitCode = 1;
+    String envSource = 'unavailable';
+    String googleServicesSource = 'unavailable';
+    try {
+      final environment = _prepareEnvironment(options);
+      if (environment == null) return 1;
+      envSource = environment.source;
+      if (environment.mutation != null) mutations.add(environment.mutation!);
 
-    _writeMetadata(
-      artifacts,
-      device: options.device,
-      flavor: options.flavor,
-      targets: targets,
-      envSource: envSource,
-      googleServicesSource: googleServicesSource,
-    );
-    _writeSummaryHeader(
-      artifacts,
-      device: options.device,
-      flavor: options.flavor,
-      envSource: envSource,
-      googleServicesSource: googleServicesSource,
-    );
-
-    final preflightLog = artifacts.logFile('preflight');
-    _writeOutputAndLog(
-      '==> Generating build config for env=${options.flavor}',
-      preflightLog,
-    );
-    final preflightErrors = StringBuffer();
-    final preflightContext = WorkflowContext(
-      rootDirectory: rootDirectory,
-      output: _output,
-      errorOutput: _TeeStringSink([_errorOutput, preflightErrors]),
-      execute: (command) => _processRunner.run(
-        command: command,
-        workingDirectory: rootDirectory,
-        logFile: preflightLog,
-        output: _output,
-        errorOutput: _errorOutput,
-      ),
-    );
-    final preflightExit = await BuildConfigWorkflow(
-      preflightContext,
-    ).run(['--env', options.flavor]);
-    if (preflightErrors.isNotEmpty) {
-      preflightLog.writeAsStringSync(
-        preflightErrors.toString(),
-        mode: FileMode.append,
-      );
-    }
-
-    if (preflightExit != 0) {
-      _appendSummary(
-        artifacts,
-        '- ❌ build config generation failed (exit=$preflightExit)',
-      );
-      _output.writeln(
-        'Mobile evidence preflight failed. See: ${artifacts.summaryFile.path}',
-      );
-      return 1;
-    }
-    _appendSummary(
-      artifacts,
-      '- ✅ build config generated (`mobilekit config generate --env ${options.flavor}`)',
-    );
-
-    final googleServicesFile = _findGoogleServicesFile(options.flavor);
-    if (googleServicesFile == null) {
-      _appendSummary(
-        artifacts,
-        '- ❌ google-services missing for flavor `${options.flavor}`',
-      );
-      _appendSummary(artifacts, '');
-      _appendSummary(artifacts, 'Expected one of:');
-      for (final candidate in _googleServicesCandidates(options.flavor)) {
-        _appendSummary(artifacts, '- `${candidate}`');
+      final googleServices = _prepareGoogleServices(options);
+      if (googleServices == null) return 1;
+      googleServicesSource = googleServices.source;
+      if (googleServices.mutation != null) {
+        mutations.add(googleServices.mutation!);
       }
-      _errorOutput.writeln(
-        "ERROR: google-services.json not found for flavor '${options.flavor}'.",
-      );
-      _errorOutput.writeln(
-        'See setup guide: docs/engineering/firebase_setup.md',
-      );
-      _output.writeln(
-        'Mobile evidence preflight failed. See: ${artifacts.summaryFile.path}',
-      );
-      return 1;
-    }
-    artifacts.metadataFile.writeAsStringSync(
-      'google_services_file=$googleServicesFile\n',
-      mode: FileMode.append,
-    );
-    _appendSummary(
-      artifacts,
-      '- ✅ google-services present (`$googleServicesFile`)',
-    );
 
-    _appendSummary(artifacts, '');
-    _appendSummary(artifacts, '## Results');
+      mutations.add(
+        _RestorableFile.capture(
+          _resolveFile('lib/core/foundation/config/build_config_values.dart'),
+        ),
+      );
+      final preflightExit = await _runBuildConfig(
+        flavor: options.flavor,
+        logFile: artifacts.logFile('preflight'),
+      );
+      if (preflightExit != 0) return 1;
 
-    var failCount = 0;
-    for (final target in targets) {
-      final targetFile = _resolveFile(target);
-      if (!targetFile.existsSync()) {
-        _errorOutput.writeln('ERROR: Target not found: $target');
+      final googleServicesFile = _findGoogleServicesFile(options.flavor);
+      if (googleServicesFile == null) {
+        _errorOutput.writeln(
+          "ERROR: google-services.json not found for flavor '${options.flavor}'.",
+        );
         return 1;
       }
 
-      final logFile = artifacts.logFile(target.replaceAll('/', '_'));
-      _output.writeln(
-        '==> Running $target on ${options.device} (flavor=${options.flavor})',
+      boundary = 'runtime.integration';
+      var failures = 0;
+      for (final entry in selectedTargets.entries) {
+        final target = entry.value;
+        final targetFile = _resolveFile(target);
+        if (!targetFile.existsSync()) {
+          _errorOutput.writeln('ERROR: Target not found: $target');
+          results.add(
+            _RuntimeTargetResult(
+              oracleId: entry.key,
+              target: target,
+              exitCode: 1,
+            ),
+          );
+          failures++;
+          continue;
+        }
+        final logFile = artifacts.logFile(target.replaceAll('/', '_'));
+        _output.writeln(
+          '==> Running $target (oracle=${entry.key}, flavor=${options.flavor})',
+        );
+        final targetExit = await _processRunner.run(
+          command: [
+            'flutter',
+            'test',
+            '-d',
+            options.device,
+            '--flavor',
+            options.flavor,
+            target,
+          ],
+          workingDirectory: rootDirectory,
+          logFile: logFile,
+          output: _output,
+          errorOutput: _errorOutput,
+        );
+        _boundLog(logFile);
+        results.add(
+          _RuntimeTargetResult(
+            oracleId: entry.key,
+            target: target,
+            exitCode: targetExit,
+          ),
+        );
+        if (targetExit != 0) failures++;
+      }
+      exitCode = failures == 0 ? 0 : 1;
+      outcome = failures == 0 ? 'passed' : 'failed';
+      return exitCode;
+    } finally {
+      for (final mutation in mutations.reversed) {
+        mutation.restore();
+      }
+      for (final file in artifacts.logFiles) {
+        _boundLog(file);
+      }
+      _writeSummary(
+        artifacts,
+        binding: binding,
+        flavor: options.flavor,
+        deviceHash: _hashIdentifier(options.device),
+        outcome: outcome,
+        results: results,
       );
-      final testExit = await _processRunner.run(
-        command: [
-          'flutter',
-          'test',
-          '-d',
-          options.device,
-          '--flavor',
-          options.flavor,
-          target,
-        ],
+      _writeManifest(
+        artifacts,
+        binding: binding,
+        started: started,
+        finished: _now().toUtc(),
+        flavor: options.flavor,
+        deviceHash: _hashIdentifier(options.device),
+        envSource: envSource,
+        googleServicesSource: googleServicesSource,
+        outcome: outcome,
+        boundary: boundary,
+        exitCode: exitCode,
+        results: results,
+      );
+      _output.writeln(
+        'Mobile evidence $outcome. See: ${artifacts.displayDirectory}/evidence.json',
+      );
+    }
+  }
+
+  Map<String, String> _selectTargets(
+    RuntimeEvidenceBinding binding,
+    List<String> requested,
+  ) {
+    if (requested.isEmpty) return binding.runtimeTargets;
+    final selected = <String, String>{};
+    for (final target in requested) {
+      final matches = binding.runtimeTargets.entries
+          .where((entry) => entry.value == target)
+          .toList();
+      if (matches.length != 1) {
+        throw FormatException(
+          "Target '$target' is not selected by exactly one registered task oracle.",
+        );
+      }
+      selected[matches.single.key] = matches.single.value;
+    }
+    return Map.unmodifiable(selected);
+  }
+
+  Future<int> _runBuildConfig({
+    required String flavor,
+    required File logFile,
+  }) async {
+    _output.writeln('==> Generating build config for env=$flavor');
+    logFile.parent.createSync(recursive: true);
+    logFile.writeAsStringSync(
+      'Generating build config for env=$flavor\n',
+      mode: FileMode.append,
+    );
+    final errors = StringBuffer();
+    final context = WorkflowContext(
+      rootDirectory: rootDirectory,
+      output: _output,
+      errorOutput: _TeeStringSink([_errorOutput, errors]),
+      execute: (command) => _processRunner.run(
+        command: command,
         workingDirectory: rootDirectory,
         logFile: logFile,
         output: _output,
         errorOutput: _errorOutput,
-      );
-
-      if (testExit == 0) {
-        _appendSummary(artifacts, '- ✅ `$target`');
-      } else {
-        _appendSummary(artifacts, '- ❌ `$target` (exit=$testExit)');
-        failCount++;
-      }
-    }
-
-    _appendSignalExtracts(artifacts);
-    if (failCount != 0) {
-      _output.writeln(
-        'Mobile evidence run completed with failures. '
-        'See: ${artifacts.summaryFile.path}',
-      );
-      return 1;
-    }
-
-    _output.writeln(
-      'Mobile evidence run completed successfully. '
-      'See: ${artifacts.summaryFile.path}',
+      ),
     );
-    return 0;
+    final result = await BuildConfigWorkflow(context).run(['--env', flavor]);
+    if (errors.isNotEmpty) {
+      logFile.writeAsStringSync(errors.toString(), mode: FileMode.append);
+    }
+    _boundLog(logFile);
+    return result;
   }
 
-  List<String> _discoverTargets() {
-    final integrationDirectory = Directory(
-      p.join(rootDirectory.path, 'integration_test'),
-    );
-    if (!integrationDirectory.existsSync()) return const [];
-
-    final targets =
-        integrationDirectory
-            .listSync(recursive: true)
-            .whereType<File>()
-            .map((file) => p.relative(file.path, from: rootDirectory.path))
-            .where((path) => path.endsWith('_test.dart'))
-            .toList()
-          ..sort();
-    return targets;
-  }
-
-  String? _prepareEnvironment(RuntimeEvidenceOptions options) {
+  _PreparedFile? _prepareEnvironment(RuntimeEvidenceOptions options) {
     final envFile = _resolveFile('.env/${options.flavor}.yaml');
-    if (envFile.existsSync() && envFile.lengthSync() > 0) return 'existing';
-
+    if (envFile.existsSync() && envFile.lengthSync() > 0) {
+      return const _PreparedFile('existing');
+    }
     final exampleFile = _resolveFile('.env/${options.flavor}.example.yaml');
     if (options.allowExampleEnvFallback &&
         options.flavor != 'prod' &&
         exampleFile.existsSync() &&
         exampleFile.lengthSync() > 0) {
+      final mutation = _RestorableFile.capture(envFile);
+      envFile.parent.createSync(recursive: true);
       exampleFile.copySync(envFile.path);
-      return 'copied-from-example';
+      return _PreparedFile('temporary-example', mutation);
     }
-
     _errorOutput.writeln(
       'ERROR: Missing or empty env file: .env/${options.flavor}.yaml',
     );
-    if (exampleFile.existsSync()) {
-      _errorOutput.writeln(
-        'Hint: copy .env/${options.flavor}.example.yaml -> '
-        '.env/${options.flavor}.yaml or re-run with fallback enabled.',
-      );
-    }
     return null;
   }
 
-  String? _prepareGoogleServices(RuntimeEvidenceOptions options) {
+  _PreparedFile? _prepareGoogleServices(RuntimeEvidenceOptions options) {
     final input = options.googleServicesJson;
-    if (input == null || input.isEmpty) return 'existing';
-
+    if (input == null || input.isEmpty) {
+      return const _PreparedFile('existing');
+    }
     final inputFile = _resolveFile(input);
     if (!inputFile.existsSync() || inputFile.lengthSync() == 0) {
       _errorOutput.writeln(
-        'ERROR: --google-services-json path is missing or empty: $input',
+        'ERROR: --google-services-json path is missing or empty.',
       );
       return null;
     }
-
     final destination = _resolveFile('android/app/google-services.json');
+    final mutation = _RestorableFile.capture(destination);
+    destination.parent.createSync(recursive: true);
     if (p.normalize(inputFile.path) != p.normalize(destination.path)) {
       inputFile.copySync(destination.path);
     }
-    return 'copied-from-flag';
+    return _PreparedFile('temporary-explicit', mutation);
   }
 
   String? _findGoogleServicesFile(String flavor) {
@@ -385,122 +393,133 @@ class RuntimeEvidenceWorkflow {
     return null;
   }
 
-  List<String> _googleServicesCandidates(String flavor) {
-    return [
-      'android/app/src/$flavor/debug/google-services.json',
-      'android/app/src/debug/$flavor/google-services.json',
-      'android/app/src/$flavor/google-services.json',
-      'android/app/src/debug/google-services.json',
-      'android/app/src/${flavor}Debug/google-services.json',
-      'android/app/google-services.json',
+  List<String> _googleServicesCandidates(String flavor) => [
+    'android/app/src/$flavor/debug/google-services.json',
+    'android/app/src/debug/$flavor/google-services.json',
+    'android/app/src/$flavor/google-services.json',
+    'android/app/src/debug/google-services.json',
+    'android/app/src/${flavor}Debug/google-services.json',
+    'android/app/google-services.json',
+  ];
+
+  File _resolveFile(String path) =>
+      File(p.isAbsolute(path) ? path : p.join(rootDirectory.path, path));
+
+  void _writeSummary(
+    _RuntimeEvidenceArtifacts artifacts, {
+    required RuntimeEvidenceBinding binding,
+    required String flavor,
+    required String deviceHash,
+    required String outcome,
+    required List<_RuntimeTargetResult> results,
+  }) {
+    final lines = <String>[
+      '# Mobile Runtime Evidence Summary',
+      '',
+      '- Task: `${binding.taskId}`',
+      '- Fingerprint: `${binding.taskFingerprint}`',
+      '- Device hash: `$deviceHash`',
+      '- Flavor: `$flavor`',
+      '- Outcome: `$outcome`',
+      '',
+      '## Registered Results',
+      '',
+      for (final result in results)
+        '- ${result.exitCode == 0 ? 'PASS' : 'FAIL'} `${result.oracleId}` -> `${result.target}`',
     ];
+    artifacts.summaryFile.writeAsStringSync('${lines.join('\n')}\n');
   }
 
-  File _resolveFile(String path) {
-    return File(p.isAbsolute(path) ? path : p.join(rootDirectory.path, path));
-  }
-
-  void _writeMetadata(
+  void _writeManifest(
     _RuntimeEvidenceArtifacts artifacts, {
-    required String device,
+    required RuntimeEvidenceBinding binding,
+    required DateTime started,
+    required DateTime finished,
     required String flavor,
-    required List<String> targets,
+    required String deviceHash,
     required String envSource,
     required String googleServicesSource,
+    required String outcome,
+    required String boundary,
+    required int exitCode,
+    required List<_RuntimeTargetResult> results,
   }) {
-    artifacts.metadataFile.writeAsStringSync(
-      [
-            'timestamp=${DateTime.now().toIso8601String()}',
-            'device=$device',
-            'flavor=$flavor',
-            'env_file=.env/$flavor.yaml',
-            'env_source=$envSource',
-            'google_services_source=$googleServicesSource',
-            'repo=${rootDirectory.path}',
-            'targets=${targets.join(' ')}',
-          ].join('\n') +
-          '\n',
-    );
-  }
-
-  void _writeSummaryHeader(
-    _RuntimeEvidenceArtifacts artifacts, {
-    required String device,
-    required String flavor,
-    required String envSource,
-    required String googleServicesSource,
-  }) {
-    artifacts.summaryFile.writeAsStringSync(
-      [
-            '# Mobile Runtime Evidence Summary',
-            '',
-            '- Device: `$device`',
-            '- Flavor: `$flavor`',
-            '- Env file: `.env/$flavor.yaml` (`$envSource`)',
-            '- Google services source: `$googleServicesSource`',
-            '- Timestamp: `${DateTime.now().toIso8601String()}`',
-            '- Artifacts dir: `${artifacts.displayDirectory}`',
-            '',
-            '## Preflight',
-          ].join('\n') +
-          '\n',
-    );
-  }
-
-  void _appendSummary(_RuntimeEvidenceArtifacts artifacts, String line) {
-    artifacts.summaryFile.writeAsStringSync('$line\n', mode: FileMode.append);
-  }
-
-  void _writeOutputAndLog(String line, File logFile) {
-    _output.writeln(line);
-    logFile.writeAsStringSync('$line\n', mode: FileMode.append);
-  }
-
-  void _appendSignalExtracts(_RuntimeEvidenceArtifacts artifacts) {
-    final logFiles =
-        artifacts.logsDirectory
-            .listSync()
-            .whereType<File>()
-            .where((file) => file.path.endsWith('.log'))
-            .toList()
-          ..sort((left, right) => left.path.compareTo(right.path));
-
-    _appendSummary(artifacts, '');
-    _appendSummary(artifacts, '## Signal Extracts');
-    _appendSummary(artifacts, '');
-    _appendSummary(artifacts, '### Startup Metrics');
-    _appendMatchingLines(
-      artifacts,
-      logFiles,
-      pattern: 'Startup metrics',
-      noMatchMessage: '_No startup metric lines found._',
-    );
-    _appendSummary(artifacts, '');
-    _appendSummary(artifacts, '### Trace IDs');
-    _appendMatchingLines(
-      artifacts,
-      logFiles,
-      pattern: 'traceId',
-      noMatchMessage: '_No traceId lines found._',
-    );
-  }
-
-  void _appendMatchingLines(
-    _RuntimeEvidenceArtifacts artifacts,
-    List<File> logFiles, {
-    required String pattern,
-    required String noMatchMessage,
-  }) {
-    var found = false;
-    for (final file in logFiles) {
-      for (final line in file.readAsLinesSync()) {
-        if (line.contains(pattern)) {
-          _appendSummary(artifacts, line);
-          found = true;
-        }
-      }
+    final artifactEntries = <Map<String, Object?>>[];
+    for (final file in [artifacts.summaryFile, ...artifacts.logFiles]) {
+      if (!file.existsSync()) continue;
+      artifactEntries.add({
+        'path': artifacts.relativePath(file),
+        'sha256': sha256.convert(file.readAsBytesSync()).toString(),
+        'sizeBytes': file.lengthSync(),
+        'durability': file == artifacts.summaryFile
+            ? 'durable-summary'
+            : 'transient-local-log',
+      });
     }
-    if (!found) _appendSummary(artifacts, noMatchMessage);
+    final manifest = <String, Object?>{
+      'schemaVersion': runtimeEvidenceSchemaVersion,
+      'task': {
+        'id': binding.taskId,
+        'planPath': binding.planPath,
+        'planSourceHash': binding.planSourceHash,
+        'authorityHash': binding.authorityHash,
+        'baseRevision': binding.baseRevision,
+        'candidateRevision': binding.candidateRevision,
+        'fingerprint': binding.taskFingerprint,
+        'oracleIds': binding.oracleIds,
+      },
+      'run': {
+        'startedAt': started.toIso8601String(),
+        'finishedAt': finished.toIso8601String(),
+        'durationMs': finished.difference(started).inMilliseconds,
+        'outcome': outcome,
+        'exitCode': exitCode,
+        'boundary': boundary,
+        'flavor': flavor,
+        'deviceIdentifierHash': deviceHash,
+        'environmentPreparation': envSource,
+        'firebasePreparation': googleServicesSource,
+        'artifactRoot': artifacts.displayDirectory,
+        'logPolicy': {
+          'durability': 'transient-local-ignored',
+          'maximumBytesPerLog': runtimeEvidenceLogLimitBytes,
+        },
+      },
+      'results': results.map((result) => result.toJson()).toList(),
+      'artifacts': artifactEntries,
+    };
+    artifacts.manifestFile.writeAsStringSync(
+      '${const JsonEncoder.withIndent('  ').convert(manifest)}\n',
+      flush: true,
+    );
+  }
+
+  void _boundLog(File file) {
+    if (!file.existsSync()) return;
+    if (file.lengthSync() <= runtimeEvidenceLogLimitBytes) {
+      _restrict(file.path, '600');
+      return;
+    }
+    final handle = file.openSync(mode: FileMode.read);
+    try {
+      handle.setPositionSync(file.lengthSync() - runtimeEvidenceLogLimitBytes);
+      final tail = handle.readSync(runtimeEvidenceLogLimitBytes);
+      file.writeAsBytesSync(tail, flush: true);
+    } finally {
+      handle.closeSync();
+    }
+    _restrict(file.path, '600');
+  }
+
+  void _restrict(String path, String mode) {
+    if (Platform.isWindows) return;
+    final result = Process.runSync('chmod', [mode, path]);
+    if (result.exitCode != 0) {
+      throw FileSystemException(
+        'Unable to restrict runtime evidence permissions.',
+        path,
+      );
+    }
   }
 }
 
@@ -508,33 +527,127 @@ class _RuntimeEvidenceArtifacts {
   _RuntimeEvidenceArtifacts({
     required Directory rootDirectory,
     required String? requestedDirectory,
-  }) {
-    final displayDirectory =
-        requestedDirectory ?? p.join('_artifacts', 'mobile', _timestamp());
-    final absoluteDirectory = p.isAbsolute(displayDirectory)
-        ? displayDirectory
-        : p.join(rootDirectory.path, displayDirectory);
-    this.displayDirectory = displayDirectory;
-    directory = Directory(absoluteDirectory);
-    logsDirectory = Directory(p.join(absoluteDirectory, 'logs'));
+    required DateTime Function() now,
+  }) : rootDirectory = rootDirectory {
+    final requested =
+        requestedDirectory ?? p.join('_artifacts', 'mobile', _timestamp(now()));
+    final absolute = p.normalize(
+      p.absolute(
+        p.isAbsolute(requested)
+            ? requested
+            : p.join(rootDirectory.path, requested),
+      ),
+    );
+    final rootPath = p.normalize(p.absolute(rootDirectory.path));
+    if (!p.isWithin(rootPath, absolute)) {
+      throw const FormatException(
+        '--artifacts-dir must stay inside the repository.',
+      );
+    }
+    displayDirectory = p.relative(absolute, from: rootPath);
+    directory = Directory(absolute);
+    logsDirectory = Directory(p.join(absolute, 'logs'));
   }
 
+  final Directory rootDirectory;
   late final String displayDirectory;
   late final Directory directory;
   late final Directory logsDirectory;
 
-  File get metadataFile => File(p.join(directory.path, 'metadata.txt'));
+  void create() {
+    directory.createSync(recursive: true);
+    logsDirectory.createSync(recursive: true);
+    final canonicalRoot = rootDirectory.resolveSymbolicLinksSync();
+    final canonicalDirectory = directory.resolveSymbolicLinksSync();
+    if (!p.isWithin(canonicalRoot, canonicalDirectory)) {
+      throw const FormatException(
+        '--artifacts-dir must not escape through a symlink.',
+      );
+    }
+    _restrictDirectory(directory);
+    _restrictDirectory(logsDirectory);
+  }
 
+  File get manifestFile => File(p.join(directory.path, 'evidence.json'));
   File get summaryFile => File(p.join(directory.path, 'summary.md'));
-
   File logFile(String name) => File(p.join(logsDirectory.path, '$name.log'));
 
-  String _timestamp() {
-    final now = DateTime.now();
-    String pad(int value) => value.toString().padLeft(2, '0');
-    return '${now.year}${pad(now.month)}${pad(now.day)}_'
-        '${pad(now.hour)}${pad(now.minute)}${pad(now.second)}';
+  List<File> get logFiles {
+    if (!logsDirectory.existsSync()) return const [];
+    final files = logsDirectory.listSync().whereType<File>().toList()
+      ..sort((left, right) => left.path.compareTo(right.path));
+    return files;
   }
+
+  String relativePath(File file) =>
+      p.relative(file.path, from: rootDirectory.path);
+
+  static String _timestamp(DateTime value) {
+    String pad(int number) => number.toString().padLeft(2, '0');
+    return '${value.year}${pad(value.month)}${pad(value.day)}_'
+        '${pad(value.hour)}${pad(value.minute)}${pad(value.second)}';
+  }
+
+  static void _restrictDirectory(Directory value) {
+    if (Platform.isWindows) return;
+    final result = Process.runSync('chmod', ['700', value.path]);
+    if (result.exitCode != 0) {
+      throw FileSystemException(
+        'Unable to restrict runtime evidence directory permissions.',
+        value.path,
+      );
+    }
+  }
+}
+
+class _PreparedFile {
+  const _PreparedFile(this.source, [this.mutation]);
+
+  final String source;
+  final _RestorableFile? mutation;
+}
+
+class _RestorableFile {
+  _RestorableFile._(this.file, this.existed, this.contents);
+
+  factory _RestorableFile.capture(File file) => _RestorableFile._(
+    file,
+    file.existsSync(),
+    file.existsSync() ? file.readAsBytesSync() : null,
+  );
+
+  final File file;
+  final bool existed;
+  final List<int>? contents;
+
+  void restore() {
+    if (existed) {
+      file.parent.createSync(recursive: true);
+      file.writeAsBytesSync(contents!, flush: true);
+    } else if (file.existsSync()) {
+      file.deleteSync();
+    }
+  }
+}
+
+class _RuntimeTargetResult {
+  const _RuntimeTargetResult({
+    required this.oracleId,
+    required this.target,
+    required this.exitCode,
+  });
+
+  final String oracleId;
+  final String target;
+  final int exitCode;
+
+  Map<String, Object?> toJson() => {
+    'oracleId': oracleId,
+    'target': target,
+    'outcome': exitCode == 0 ? 'passed' : 'failed',
+    'exitCode': exitCode,
+    'boundary': 'runtime.integration',
+  };
 }
 
 class _TeeStringSink implements StringSink {
@@ -570,3 +683,6 @@ class _TeeStringSink implements StringSink {
     }
   }
 }
+
+String _hashIdentifier(String value) =>
+    sha256.convert(utf8.encode('device:$value')).toString();

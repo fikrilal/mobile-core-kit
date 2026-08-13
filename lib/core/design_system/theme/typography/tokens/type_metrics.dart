@@ -23,9 +23,6 @@ class TypeMetrics {
       0.25; // Slightly more spaced for readability
   static const double labelLetterSpacing = 0.1;
 
-  // Paragraph spacing (used for multi-line text)
-  static const double paragraphSpacing = 1.5; // 1.5x the font size
-
   // Ideal characters per line (for readability)
   static const int minCharactersPerLine = 40;
   static const int maxCharactersPerLine = 75;
@@ -37,40 +34,5 @@ class TypeMetrics {
   // Calculate ideal max width for a text container based on font size
   static double getIdealTextContainerWidth(double fontSize) {
     return fontSize * averageCharWidthFactor * maxCharactersPerLine;
-  }
-
-  // Get metrics based on text style category
-  static double getLineHeight(String category) {
-    switch (category) {
-      case 'display':
-        return displayLineHeight;
-      case 'headline':
-        return headlineLineHeight;
-      case 'title':
-        return titleLineHeight;
-      case 'body':
-        return bodyLineHeight;
-      case 'label':
-        return labelLineHeight;
-      default:
-        return bodyLineHeight;
-    }
-  }
-
-  static double getLetterSpacing(String category) {
-    switch (category) {
-      case 'display':
-        return displayLetterSpacing;
-      case 'headline':
-        return headlineLetterSpacing;
-      case 'title':
-        return titleLetterSpacing;
-      case 'body':
-        return bodyLetterSpacing;
-      case 'label':
-        return labelLetterSpacing;
-      default:
-        return bodyLetterSpacing;
-    }
   }
 }

@@ -1,9 +1,19 @@
 # <Plan Title>
 
-Date: YYYY-MM-DD  
-Owner: <name>  
-Status: active  
-Risk class: low | medium | high  
+**Plan version:** 2
+**Task ID:** <lowercase-kebab-case-id>
+**Status:** active
+**Owner:** <name or agent>
+**Risk:** low | medium | high
+**Authority:** <plain-language statement of the authority granted>
+**Allowed paths:** <comma-separated repository-relative files/directories>
+**Allowed actions:** edit, verify
+**Maximum risk:** low | medium | high
+**Repair limit:** <non-negative integer>
+**Task timeout:** <positive duration, for example 90m or 6h>
+**Oracle IDs:** <comma-separated IDs from harness/oracles.yaml; required for medium/high risk>
+
+Date: YYYY-MM-DD
 Related issue/PR: <link or N/A>
 
 ## Objective
@@ -12,15 +22,28 @@ Describe the concrete outcome this task must deliver.
 
 ## Constraints
 
-- architectural constraints:
-- product/runtime constraints:
-- out of scope:
+- Architecture constraints:
+- Product/runtime constraints:
+- Out of scope:
+
+## Impact Areas
+
+- Auth/session: no
+- Navigation/deep links/startup: no
+- API/contracts: no
+- Database/migrations: no
+- Platform/Firebase/permissions: no
+- UI/UX/accessibility: no
+- Harness/CI/release: no
+- External systems: no
+
+## Acceptance Scenarios
+
+1. Given <starting condition>, when <action>, then <observable result>.
 
 ## Acceptance Criteria
 
-1.
-2.
-3.
+1. <Measurable completion condition>.
 
 ## Implementation Checklist
 
@@ -37,28 +60,18 @@ Describe the concrete outcome this task must deliver.
 List exact commands and outcomes.
 
 ```bash
-# example
-dart run mobile_core_kit_cli:mobilekit verify --env dev
-```
-
-Additional targeted checks when relevant:
-
-```bash
-# examples
-# dart run mobile_core_kit_cli:mobilekit lint
-# fvm flutter test
-# dart run mobile_core_kit_cli:mobilekit codegen verify
+dart run mobile_core_kit_cli:mobilekit task preflight --task <task-id> --action verify
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 ## Runtime Evidence
 
-Required when the change is medium/high-risk and behavior cannot be proven sufficiently by static checks alone.
+State why runtime evidence is unnecessary, or record the device, flavor,
+targets, artifacts, and observations required by the risk class.
 
-- Device/emulator:
-- Flavor:
-- Executed target(s):
-- Artifact path(s):
-- Notes:
+## Rollback
+
+Describe the smallest safe reversal and any state that must be restored.
 
 ## Risks And Mitigations
 
@@ -67,8 +80,8 @@ Required when the change is medium/high-risk and behavior cannot be proven suffi
 
 ## Completion Notes
 
-Summarize what shipped, what changed, and any important caveats.
+Pending.
 
 ## Follow-ups
 
-- [ ] Add unresolved debt to `docs/exec-plans/tech_debt_tracker.md`
+- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.

@@ -6,8 +6,8 @@ This document defines the presentation‑layer architecture using Flutter BLoC/C
 
 - Single source of truth: one immutable State describes the whole screen.
 - Finite state progression: initial → loading → (empty | success | failure [| loadingMore]).
-- Unidirectional flow: UI intent → Bloc/Cubit → UseCase(s) → State → UI renders.
-- Separation of concerns: presentation (Bloc/Cubit + State), domain (UseCases/Entities), data (repositories).
+- Unidirectional flow: UI intent → Bloc/Cubit → (UseCase(s) | Repository) → State → UI renders.
+- Separation of concerns: presentation (Bloc/Cubit + State), domain (UseCases/Entities when present), data (repositories). Use cases are optional — call the repository directly when the operation is a pure pass-through.
 - Side effects (snackbar/nav) are one‑shots, handled outside of build.
 - State is for persistent rendering; effects are for one-shot commands.
 

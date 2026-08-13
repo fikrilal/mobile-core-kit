@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "coverage": {
+    "observedAt": "2026-08-10",
+    "sourcePlan": "docs/exec-plans/completed/2026-08-10_harness-phase-1-truthful-profiles.md",
+    "coveredLines": 6277,
+    "executableLines": 9998,
+    "observedBasisPoints": 6278,
+    "enforcedFloorBasisPoints": 5500
+  },
+  "profiles": [
+    {
+      "id": "fast",
+      "observedDurationMs": 65040,
+      "advisoryBudgetMs": 120000,
+      "sourcePlan": "docs/exec-plans/completed/2026-08-10_harness-phase-1-truthful-profiles.md"
+    },
+    {
+      "id": "full",
+      "observedDurationMs": 125290,
+      "advisoryBudgetMs": 240000,
+      "sourcePlan": "docs/exec-plans/completed/2026-08-10_harness-phase-1-truthful-profiles.md"
+    }
+  ]
+}

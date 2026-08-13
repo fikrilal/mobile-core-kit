@@ -51,6 +51,21 @@
 - For non-trivial work, create an execution plan first:
   - `docs/exec-plans/README.md`
   - `docs/exec-plans/active/`
+  - use a V2 plan, run `mobilekit task begin` before editing, and run
+    report-only `mobilekit task preflight` for each controlled action
+  - medium/high-risk plans must select impact-compatible IDs from
+    `harness/oracles.yaml`; arbitrary new tests are not independent evidence
+  - for a controller-managed task, use `mobilekit task verify`; after failure,
+    repair with normal agent tools and record it with `mobilekit task repair`
+  - when a task workspace is prepared, continue the same agent session from
+    that exact path; cancellation never terminates the host agent
+  - events may activate only an already-authorized queued V2 plan through
+    one-shot `mobilekit event intake --once`; event payloads never create scope
+  - scheduled `mobilekit maintenance run --once` is read-only; findings require
+    a separate authorized task before source mutation
+  - local verification is not publication authority; use action-specific
+    `mobilekit handoff dry-run`, then require fresh explicit user authorization
+    for commit, push, or draft PR independently
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
   - CLI verification workflow
@@ -64,6 +79,27 @@
   - ADRs under `ADR/records/`
   - source-local `README.md` files near boundary-heavy code
 
+### Project Map
+
+This compact map is machine-checked by `mobilekit knowledge verify`. Detailed
+ownership stays in `docs/engineering/project_architecture.md`.
+
+```text
+lib/
+├─ core/
+│  ├─ design_system/
+│  ├─ dev_tools/
+│  ├─ di/
+│  ├─ domain/
+│  ├─ foundation/
+│  ├─ infra/
+│  ├─ platform/
+│  ├─ presentation/
+│  └─ runtime/
+├─ features/
+└─ navigation/
+```
+
 ## Agent Verification (required)
 
 Agents must verify changes before claiming completion (when feasible). Use native commands:
@@ -75,20 +111,22 @@ Minimum checks (pick what’s relevant to what you changed):
 
 - Lint checks: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
-- Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
+- Codegen (if touching Freezed/JSON/build config): `dart run build_runner build`
 - Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
 - Small-helper duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers`
 - Presentation duplication harness (targeted, not default): `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation`
 - AGENTS project-map drift: `dart run mobile_core_kit_cli:mobilekit project-map verify`
 
-Full pipeline (preferred for non-trivial changes):
+Verification profiles:
 
-- `dart run mobile_core_kit_cli:mobilekit verify --env dev`
+- Fast inner loop: `dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev`
+- Full pipeline (required for non-trivial changes): `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`
 
 Notes:
 
 - For non-trivial Dart/code changes, duplication checks are expected as part of verification.
-- `dart run mobile_core_kit_cli:mobilekit verify --env dev` is the preferred way to satisfy that requirement.
+- `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev` is the preferred way to satisfy that requirement.
+- The legacy `verify --env <env>` form remains a compatibility alias for `full`; do not use skip flags as completion evidence.
 - Docs-only changes can skip duplication checks.
 - `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation` remains a targeted self-review tool for presentation-heavy work, not a default per-change check.
 
@@ -106,6 +144,8 @@ Runtime evidence guidance:
 
 - For medium/high-risk mobile changes, follow `docs/engineering/mobile_runtime_harness.md`
 - PR delivery workflow and evidence expectations are defined in `docs/engineering/agent_pr_loop.md`
+- Hosted completion uses the stable `CI Required` aggregate; local task state
+  is never accepted as hosted CI evidence.
 
 ## Agent Preferences (Code Authoring)
 
@@ -126,9 +166,10 @@ Runtime evidence guidance:
 ## Documentation & Best Practices
 
 - Start here: `docs/README.md` (docs index + navigation).
-- Backend contract source of truth (for any API/network/auth/users work): `/mnt/c/Development/_CORE/backend-core-kit`
-  - OpenAPI: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
-  - Standards: `/mnt/c/Development/_CORE/backend-core-kit/docs/standards/`
+- Mobile-owned API contract: `docs/contracts/openapi/backend.openapi.yaml`
+  - Verify it with `mobilekit contract openapi verify`.
+  - An available backend checkout may be used only as an explicit reviewed
+    sync input; clean clones and CI must not depend on its absolute path.
 - For dependency/package changes:
   - Read upstream docs/changelogs; if web access is needed, ask before guessing.
   - Use `flutter pub outdated` to review version constraints and plan safe upgrades.
@@ -144,6 +185,7 @@ Runtime evidence guidance:
   - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
   - Parallel coordination: `docs/engineering/parallel_agent_workflow.md`
   - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+  - Event intake, maintenance, CI, and handoff: `docs/engineering/event_maintenance_handoff.md`
   - CLI command reference: `docs/engineering/mobilekit_cli_reference.md`
   - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.

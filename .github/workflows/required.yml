@@ -1,0 +1,173 @@
+name: Mobile Required Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: required-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  risk:
+    name: CI Risk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      effective_risk: ${{ steps.classify.outputs.effective_risk }}
+      runtime_required: ${{ steps.classify.outputs.runtime_required }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bootstrap pinned Flutter and Dart
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          install-dependencies: "true"
+          validate-env-schema: "false"
+          generate-build-config: "false"
+
+      - name: Classify clean base and head revisions
+        id: classify
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [[ ! "$BASE_SHA" =~ ^[0-9a-f]{40,64}$ || "$BASE_SHA" =~ ^0+$ ]]; then
+            BASE_SHA=$(git rev-parse "$HEAD_SHA^")
+          fi
+          dart run mobile_core_kit_cli:mobilekit ci classify \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+  full:
+    name: CI Full
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare non-secret environments
+        run: |
+          cp .env/dev.example.yaml .env/dev.yaml
+          cp .env/staging.example.yaml .env/staging.yaml
+          cp .env/prod.example.yaml .env/prod.yaml
+
+      - name: Bootstrap pinned Flutter and generated config
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          env: dev
+          install-dependencies: "true"
+          validate-env-schema: "true"
+          strict-env-schema: "false"
+
+      - name: Run canonical clean-checkout verification
+        run: dart run mobile_core_kit_cli:mobilekit verify --profile ci --env dev
+
+  runtime:
+    name: CI Runtime
+    needs: risk
+    if: needs.risk.outputs.runtime_required == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare non-secret dev environment
+        run: cp .env/dev.example.yaml .env/dev.yaml
+
+      - name: Prepare CI-only Firebase build fixture
+        run: cp harness/fixtures/google-services.ci.json android/app/google-services.json
+
+      - name: Bootstrap pinned Flutter and generated config
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          env: dev
+          install-dependencies: "true"
+          validate-env-schema: "true"
+          strict-env-schema: "false"
+
+      - name: Run portable golden evidence
+        run: flutter test test/core/design_system/adaptive/goldens --reporter expanded
+
+      - name: Prove Android debug assembly
+        run: flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=ENV=dev
+
+      - name: Upload golden failures
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: required-golden-failures
+          path: test/**/failures/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+  governance:
+    name: CI Governance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Review dependency changes
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4.8.2
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime, development
+
+      - name: Scan committed history for secrets
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  required:
+    name: CI Required
+    needs:
+      - risk
+      - full
+      - runtime
+      - governance
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    env:
+      RISK_RESULT: ${{ needs.risk.result }}
+      FULL_RESULT: ${{ needs.full.result }}
+      RUNTIME_RESULT: ${{ needs.runtime.result }}
+      GOVERNANCE_RESULT: ${{ needs.governance.result }}
+    steps:
+      - name: Require every selected lane
+        run: |
+          if [[ "$RISK_RESULT" != "success" || \
+                "$FULL_RESULT" != "success" || \
+                "$GOVERNANCE_RESULT" != "success" ]]; then
+            exit 1
+          fi
+          if [[ "$RUNTIME_RESULT" != "success" && \
+                "$RUNTIME_RESULT" != "skipped" ]]; then
+            exit 1
+          fi

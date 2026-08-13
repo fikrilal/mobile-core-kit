@@ -23,7 +23,7 @@ Risk notes:
 List exact commands and outcomes.
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 Additional checks:
@@ -36,21 +36,32 @@ Additional checks:
 # dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
+Hosted checks:
+- [ ] `CI Risk` passed
+- [ ] `CI Full` passed
+- [ ] `CI Runtime` passed or was intentionally skipped by classification
+- [ ] `CI Governance` passed
+- [ ] Stable `CI Required` aggregate passed
+
 ## Evidence
 
 - [ ] Tests added/updated where behavior changed
 - [ ] Screenshots/video attached (UI changes)
 - [ ] Logs/error traces attached (runtime or failure-path changes)
 - [ ] Mobile runtime evidence attached for medium/high UI/runtime PRs (see `docs/engineering/mobile_runtime_harness.md`)
+- [ ] Runtime evidence fingerprint matches the final reviewed candidate
 - [ ] No speculative refactor mixed into this PR
+- [ ] Handoff used fresh action-specific evidence and explicit publication authority
+- [ ] No force push, merge, deployment, signing, migration, or release was performed by the harness
 
 Links/artifacts:
 -
 
 Runtime evidence details (if applicable):
-- Device ID:
+- Task fingerprint:
+- Device identifier hash:
 - Flavor:
-- Integration targets:
+- Registered oracle results:
 - Evidence artifact paths:
 
 ## Safety And Rollback

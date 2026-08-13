@@ -79,19 +79,18 @@ lib/features/account/subfeatures/profile/
 ├─ domain/
 │  ├─ entity/
 │  │  └─ profile_avatar_cache_entry_entity.dart
-│  ├─ repository/
-│  │  └─ profile_avatar_repository.dart
-│  └─ usecase/
-│     ├─ get_cached_profile_avatar_usecase.dart
-│     ├─ refresh_profile_avatar_cache_usecase.dart
-│     ├─ save_profile_avatar_cache_usecase.dart
-│     ├─ clear_profile_avatar_cache_usecase.dart
-│     └─ clear_all_profile_avatar_caches_usecase.dart
+│  └─ repository/
+│     └─ profile_avatar_repository.dart
 └─ presentation/
    └─ cubit/profile_image/
-      ├─ profile_image_cubit.dart                       # loadAvatar() disk-first
+      ├─ profile_image_cubit.dart                       # loadAvatar() disk-first (calls repository directly)
       └─ profile_image_state.dart                       # cachedFilePath (disk-only UI)
 ```
+
+> Note: the avatar cache flow has no use cases. `ProfileImageCubit` calls
+> `ProfileAvatarRepository` directly (`getCachedAvatar`/`refreshAvatar`/
+> `saveAvatarBytes`/`clearAvatar`); session-teardown clearing happens in
+> `ProfileAvatarCacheSessionListener`.
 
 Tests:
 

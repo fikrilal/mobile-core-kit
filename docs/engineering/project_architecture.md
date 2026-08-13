@@ -233,12 +233,17 @@ true, use full vertical subfeatures.
 
 ## 3) Domain Layer (per feature)
 
-Contains entity/, value/, failure/, repository/ (interfaces), and usecase/.
+Contains entity/, value/, failure/, repository/ (interfaces), and optionally
+usecase/.
 
 - Pure Dart (no Flutter/framework dependencies).
 - Entities and values are UI‑agnostic.
 - Repository interfaces describe operations in domain terms.
 - Use cases encode business rules and return `Either<Failure, T>`.
+- The `usecase/` folder is **optional**: add a use case only when the operation
+  has logic worth isolating (validation, multi-step orchestration). A pure
+  pass-through use case should not exist — presentation calls the repository
+  directly in that case (cubit → repository).
 
 Common examples:
 - repository interface

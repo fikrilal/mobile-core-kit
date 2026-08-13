@@ -412,17 +412,29 @@ Rule:
 
 ## 11. Use Case Rules
 
-Use cases are domain entry points.
+Use cases are optional domain entry points.
 
-A use case should:
+Add a use case only when the operation has logic worth isolating:
+- validation / normalization (final gate before the repository)
+- orchestration of multiple steps (e.g. upload = plan → presigned upload → complete)
+- a business rule that needs its own unit test
+
+Do NOT add a use case that is a pure pass-through:
+- If `call(...)` just forwards to a repository method with no added logic,
+  the presentation layer should call the repository directly (cubit → repository).
+- This was applied across the template: profile draft/avatar use cases and
+  logout/login pass-throughs were removed; cubits now depend on repositories
+  directly.
+
+When a use case exists:
 - depend on the repository interface
 - return `Either<Failure, T>` when the operation can fail
 - keep business meaning explicit
 
-A use case may be thin. That is acceptable.
+A use case may be thin. That is acceptable, as long as it is not a pure
+forwarder.
 
 Do not add use cases only for ceremony.
-If a feature already uses use cases consistently, keep following that pattern.
 
 ## 12. Testing Rules
 

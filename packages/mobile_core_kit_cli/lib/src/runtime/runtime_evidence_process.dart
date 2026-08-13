@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 
+const runtimeEvidenceLogLimitBytes = 1024 * 1024;
+
 abstract interface class RuntimeEvidenceProcessRunner {
   Future<int> run({
     required List<String> command,
@@ -42,12 +44,17 @@ class DartRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
       command.skip(1).toList(),
       workingDirectory: workingDirectory.path,
     );
+    final existingBytes = logFile.existsSync() ? logFile.lengthSync() : 0;
     final logSink = logFile.openWrite(mode: FileMode.append);
+    final log = _BoundedLogWriter(
+      logSink,
+      remainingBytes: runtimeEvidenceLogLimitBytes - existingBytes,
+    );
 
     try {
       await Future.wait([
-        _forward(process.stdout, logSink, output),
-        _forward(process.stderr, logSink, errorOutput),
+        _forward(process.stdout, log, output),
+        _forward(process.stderr, log, errorOutput),
       ]);
       return await process.exitCode;
     } finally {
@@ -57,12 +64,31 @@ class DartRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
 
   Future<void> _forward(
     Stream<List<int>> stream,
-    IOSink logSink,
+    _BoundedLogWriter log,
     StringSink output,
   ) async {
-    await for (final chunk in stream.transform(utf8.decoder)) {
-      logSink.write(chunk);
-      output.write(chunk);
+    await for (final chunk in stream) {
+      log.add(chunk);
+      output.write(utf8.decode(chunk, allowMalformed: true));
     }
+  }
+}
+
+class _BoundedLogWriter {
+  _BoundedLogWriter(this.sink, {required int remainingBytes})
+    : _remainingBytes = remainingBytes < 0 ? 0 : remainingBytes;
+
+  final IOSink sink;
+  int _remainingBytes;
+
+  void add(List<int> bytes) {
+    if (_remainingBytes == 0) return;
+    if (bytes.length <= _remainingBytes) {
+      sink.add(bytes);
+      _remainingBytes -= bytes.length;
+      return;
+    }
+    sink.add(bytes.sublist(0, _remainingBytes));
+    _remainingBytes = 0;
   }
 }

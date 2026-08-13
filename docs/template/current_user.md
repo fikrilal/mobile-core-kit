@@ -88,7 +88,7 @@ Examples of “slices”:
 
 Guidelines:
 
-- Start with feature-owned state (use cases + bloc/cubit) if only one screen needs it.
+- Start with feature-owned state (bloc/cubit + repository directly) if only one screen needs it. Add a use case only when the operation has logic worth isolating (validation, orchestration) — not for pure pass-throughs.
 - If 2+ places need the same user-scoped data, consider a shared slice:
   - Add a template-level slice under `lib/core/runtime/user_context/`
   - Keep core independent of features by depending on **core interfaces**.

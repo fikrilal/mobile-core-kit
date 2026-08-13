@@ -72,9 +72,9 @@ user-owned setup is available:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit doctor
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
-Use `--env prod --check-codegen` for the production verification lane.
+Use `--profile ci --env prod` for the production CI verification lane.
 Collect Android emulator and iOS simulator/device evidence for customized
 identities, startup behavior, and the selected deep-link mode before release.

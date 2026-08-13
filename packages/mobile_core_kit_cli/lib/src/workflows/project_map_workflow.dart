@@ -24,11 +24,10 @@ class ProjectMapWorkflow {
       agentsFile.readAsStringSync(),
     );
     if (documentedCoreDirs.isEmpty) {
-      context.output.writeln(
-        'AGENTS.md does not define a core project map. '
-        'Skipping project-map drift verification.',
+      context.errorOutput.writeln(
+        'AGENTS.md does not define the required `lib/core` project map.',
       );
-      return 0;
+      return 1;
     }
 
     final actualCoreDirs = coreDir

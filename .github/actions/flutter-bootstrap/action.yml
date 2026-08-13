@@ -22,6 +22,10 @@ inputs:
     description: Pass --strict to mobilekit env verify
     required: false
     default: "false"
+  generate-build-config:
+    description: Generate the repository build configuration
+    required: false
+    default: "true"
 
 outputs:
   flutter-version:
@@ -48,7 +52,7 @@ runs:
         PY
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
         flutter-version: ${{ steps.fvm.outputs.flutter_version }}
         cache: ${{ inputs.cache }}
@@ -73,10 +77,12 @@ runs:
         dart run mobile_core_kit_cli:mobilekit "${args[@]}"
 
     - name: Generate build config
+      if: ${{ inputs.generate-build-config == 'true' }}
       shell: bash
       run: dart run mobile_core_kit_cli:mobilekit config generate --env "${{ inputs.env }}"
 
     - name: Assert generated build config
+      if: ${{ inputs.generate-build-config == 'true' }}
       shell: bash
       run: |
         config_path="lib/core/foundation/config/build_config_values.dart"

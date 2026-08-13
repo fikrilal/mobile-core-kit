@@ -26,9 +26,7 @@ void main() {
       final result = await usecase(AccountDeletionAction.request);
 
       expect(result, right(unit));
-      verify(
-        () => repo.deleteAccount(AccountDeletionAction.request),
-      ).called(1);
+      verify(() => repo.deleteAccount(AccountDeletionAction.request)).called(1);
     });
 
     test('delegates cancel action to repository', () async {
@@ -42,9 +40,7 @@ void main() {
       final result = await usecase(AccountDeletionAction.cancel);
 
       expect(result, right(unit));
-      verify(
-        () => repo.deleteAccount(AccountDeletionAction.cancel),
-      ).called(1);
+      verify(() => repo.deleteAccount(AccountDeletionAction.cancel)).called(1);
     });
 
     test('propagates failures', () async {
@@ -58,9 +54,7 @@ void main() {
       final result = await usecase(AccountDeletionAction.request);
 
       expect(result, left(const AuthFailure.network()));
-      verify(
-        () => repo.deleteAccount(AccountDeletionAction.request),
-      ).called(1);
+      verify(() => repo.deleteAccount(AccountDeletionAction.request)).called(1);
     });
   });
 }

@@ -126,4 +126,3 @@ class _ApiHelperDatasourcePolicyConfig {
 
 List<Glob> _readGlobList(Object? raw, {required List<String> fallback}) =>
     readGlobList(raw, fallback: fallback);
-

@@ -1,0 +1,45 @@
+name: Read-only Harness Maintenance
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maintenance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    name: Repository maintenance observations
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bootstrap pinned Flutter and Dart
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          install-dependencies: "true"
+          validate-env-schema: "false"
+          generate-build-config: "false"
+
+      - name: Run fixed one-shot maintenance registry
+        run: dart run mobile_core_kit_cli:mobilekit maintenance run --once
+
+      - name: Upload sanitized maintenance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: maintenance-report
+          path: .tmp/mobilekit/maintenance/latest.json
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 7

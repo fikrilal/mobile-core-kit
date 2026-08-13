@@ -32,13 +32,17 @@ class DuplicationReportFilter {
 
     final decoded = jsonDecode(reportFile.readAsStringSync());
     if (decoded is! Map<String, dynamic>) {
-      errorOutput.writeln("Report file '$reportPath' is not a valid JSON object.");
+      errorOutput.writeln(
+        "Report file '$reportPath' is not a valid JSON object.",
+      );
       return 2;
     }
 
     final rawDuplicates = decoded['duplicates'];
     if (rawDuplicates is! List) {
-      errorOutput.writeln("Report file '$reportPath' does not contain duplicates.");
+      errorOutput.writeln(
+        "Report file '$reportPath' does not contain duplicates.",
+      );
       return 2;
     }
 
@@ -79,9 +83,7 @@ class DuplicationReportFilter {
     if (reviewedGroups.isNotEmpty) {
       output.writeln('\nReviewed acceptable groups:');
       for (final group in reviewedGroups) {
-        output.writeln(
-          '- ${group.firstPath} <> ${group.secondPath}',
-        );
+        output.writeln('- ${group.firstPath} <> ${group.secondPath}');
         output.writeln(
           '  occurrences=${group.occurrences}, '
           'maxLines=${group.maxLines}, maxTokens=${group.maxTokens}',
@@ -96,9 +98,7 @@ class DuplicationReportFilter {
 
     output.writeln('\nActionable groups:');
     for (final group in actionableGroups) {
-      output.writeln(
-        '- ${group.firstPath} <> ${group.secondPath}',
-      );
+      output.writeln('- ${group.firstPath} <> ${group.secondPath}');
       output.writeln(
         '  occurrences=${group.occurrences}, '
         'maxLines=${group.maxLines}, maxTokens=${group.maxTokens}',
@@ -153,8 +153,8 @@ List<_DuplicateGroup> _group(List<_Duplicate> duplicates) {
     grouped.update(
       key,
       (existing) => existing.add(dup),
-      ifAbsent: () => _DuplicateGroup(firstPath: pair.$1, secondPath: pair.$2)
-        ..add(dup),
+      ifAbsent: () =>
+          _DuplicateGroup(firstPath: pair.$1, secondPath: pair.$2)..add(dup),
     );
   }
 
@@ -181,10 +181,7 @@ class _Allowlist {
 }
 
 class _AllowlistEntry {
-  const _AllowlistEntry({
-    required this.firstPath,
-    required this.secondPath,
-  });
+  const _AllowlistEntry({required this.firstPath, required this.secondPath});
 
   factory _AllowlistEntry.fromJson(Map<String, dynamic> json) {
     final pair = _canonicalPair(
@@ -240,10 +237,7 @@ class _Duplicate {
   ///
   /// Tries each [scanRoots] prefix and keeps the first that resolves to an
   /// existing file. Paths already repo-relative pass through unchanged.
-  _Duplicate toRepoRelative(
-    List<String> scanRoots,
-    Directory rootDirectory,
-  ) {
+  _Duplicate toRepoRelative(List<String> scanRoots, Directory rootDirectory) {
     final first = _toRepoRelativePath(firstPath, scanRoots, rootDirectory);
     final second = _toRepoRelativePath(secondPath, scanRoots, rootDirectory);
     if (first == firstPath && second == secondPath) return this;

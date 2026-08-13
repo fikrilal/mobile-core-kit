@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_aspect.dart';
@@ -57,19 +56,22 @@ class AdaptiveScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure we rebuild when input capabilities change (e.g., mouse/trackpad
-    // connect/disconnect), since Flutter does not expose this via MediaQueryData.
+    // Note: we intentionally do not listen for mouse-connect/disconnect events
+    // here. `InputSpec` is derived from `InputPolicy` at build time; a mouse
+    // connecting mid-session only matters for `minTapTarget` and density, and
+    // the spec is recomputed on any normal rebuild (layout, theme, route).
+    // A dedicated listener would need to propagate through the widget tree to
+    // be effective; a bare `setState` in a wrapper is a no-op (see
+    // `adaptive_mouse_connection_test.dart`).
     return AdaptivePolicies(
       modalPolicy: modalPolicy,
-      child: _MouseConnectionListener(
-        child: _AdaptiveScopeBody(
-          textScalePolicy: textScalePolicy,
-          navigationPolicy: navigationPolicy,
-          motionPolicy: motionPolicy,
-          inputPolicy: inputPolicy,
-          platformPolicy: platformPolicy,
-          child: child,
-        ),
+      child: _AdaptiveScopeBody(
+        textScalePolicy: textScalePolicy,
+        navigationPolicy: navigationPolicy,
+        motionPolicy: motionPolicy,
+        inputPolicy: inputPolicy,
+        platformPolicy: platformPolicy,
+        child: child,
       ),
     );
   }
@@ -119,40 +121,6 @@ class _AdaptiveScopeBody extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MouseConnectionListener extends StatefulWidget {
-  const _MouseConnectionListener({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_MouseConnectionListener> createState() =>
-      _MouseConnectionListenerState();
-}
-
-class _MouseConnectionListenerState extends State<_MouseConnectionListener> {
-  @override
-  void initState() {
-    super.initState();
-    RendererBinding.instance.mouseTracker.addListener(_handleMouseConnection);
-  }
-
-  @override
-  void dispose() {
-    RendererBinding.instance.mouseTracker.removeListener(
-      _handleMouseConnection,
-    );
-    super.dispose();
-  }
-
-  void _handleMouseConnection() {
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
 }
 
 /// InheritedModel wrapper that publishes the current [AdaptiveSpec].

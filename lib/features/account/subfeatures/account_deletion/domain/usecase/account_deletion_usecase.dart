@@ -8,9 +8,7 @@ class AccountDeletionUseCase {
 
   final AccountDeletionRepository _repository;
 
-  Future<Either<AuthFailure, Unit>> call(
-    AccountDeletionAction action,
-  ) {
+  Future<Either<AuthFailure, Unit>> call(AccountDeletionAction action) {
     return _repository.deleteAccount(action);
   }
 }

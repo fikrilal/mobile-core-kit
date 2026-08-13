@@ -138,10 +138,7 @@ void main() {
       final commandNames = commands.map((command) => command.join(' '));
       expect(commandNames, contains('flutter pub get'));
       expect(commandNames, contains('flutter gen-l10n'));
-      expect(
-        commandNames,
-        contains('dart run build_runner build --delete-conflicting-outputs'),
-      );
+      expect(commandNames, contains('dart run build_runner build'));
       expect(
         File(
           p.join(

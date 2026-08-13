@@ -33,7 +33,22 @@ Before implementation starts:
 - write a clear task statement
 - define acceptance criteria
 - classify risk
-- create a plan file for non-trivial work
+- create an active V2 plan for non-trivial work
+- establish its task baseline before editing:
+  `mobilekit task begin --plan <active-plan-path>`
+
+Before verification, commit, push, or draft-PR work, run report-only preflight
+for that exact action. An allowed edit does not authorize external mutation.
+The full contract is in `docs/engineering/task_authority.md`.
+
+When isolation is requested, prepare the current-agent workspace from the
+primary checkout and continue the same session from the reported path. Follow
+`docs/engineering/current_agent_workspaces.md`; do not copy dirty primary files
+or interpret cancellation as permission to terminate the host agent.
+
+An internal event may activate only an already-complete queued V2 plan through
+`mobilekit event intake --once`; it cannot derive scope from issue/webhook
+text. See `docs/engineering/event_maintenance_handoff.md`.
 
 Risk classes:
 - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact
@@ -53,8 +68,19 @@ During implementation:
 Canonical local gate for non-trivial work:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
+
+For a controller-managed V2 task, use the bounded owner instead; it selects the
+canonical lane from effective risk and records candidate-bound evidence:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit task verify --task <task-id> --env dev
+```
+
+After a failure, the agent repairs through ordinary tools and runs
+`mobilekit task repair --task <task-id>` before verification can repeat. See
+`docs/engineering/controlled_verification_loop.md`.
 
 Targeted checks when the full gate is unnecessary or too expensive:
 
@@ -92,12 +118,10 @@ Runtime evidence is expected for:
 Collect runtime evidence using:
 - `docs/engineering/mobile_runtime_harness.md`
 
-Typical evidence includes:
-- device/emulator ID
-- flavor
-- executed integration target(s)
-- artifact paths
-- relevant log snippets
+Attach the sanitized `evidence.json` and summary for the exact final task
+fingerprint. Record the hashed device identifier, flavor, registered oracle
+results, and repository-relative artifact paths. Do not attach raw device IDs,
+credentials, request/response bodies, trace contents, or local raw logs.
 
 ### 5. Self-review
 
@@ -112,7 +136,19 @@ Before opening or updating the PR, verify:
   patterns, and any acceptable duplicates were reviewed explicitly rather than
   ignored informally
 
-### 6. Open PR with evidence
+### 6. Verified handoff and PR evidence
+
+Successful local verification means ready for review, not permission to
+commit, push, or create a PR. Use `mobilekit handoff dry-run` for the exact next
+action. Each mutating handoff requires fresh evidence, matching task paths,
+branch/remote identity, an unexpired one-time approval, and separate explicit
+user authorization. Approvals are action-specific. Ambiguous external results
+stop permanently for human reconciliation.
+
+The adapter supports normal commit, normal same-branch push, and draft PR only.
+It does not expose force push, merge, deploy, signing, migrations, or release.
+
+Then use:
 
 Use:
 - `.github/pull_request_template.md`
@@ -131,6 +167,7 @@ For substantive follow-up changes:
 - rerun the relevant checks
 - rerun the full gate if the change materially affects behavior or risk
 - refresh runtime evidence when the reviewed behavior changed
+- reject stale evidence whose task fingerprint differs from the reviewed candidate
 
 ### 8. Merge policy
 
@@ -155,3 +192,4 @@ A PR is done only when:
 2. required checks pass
 3. risk-class review expectations are satisfied
 4. evidence is present when the change needs runtime proof
+5. the stable hosted `CI Required` aggregate passes for the reviewed commit

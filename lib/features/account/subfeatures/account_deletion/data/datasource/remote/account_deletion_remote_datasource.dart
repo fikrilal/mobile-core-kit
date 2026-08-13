@@ -11,9 +11,7 @@ class AccountDeletionRemoteDataSource {
 
   final ApiHelper _apiHelper;
 
-  Future<ApiResponse<ApiNoData>> requestDeletion(
-    AccountDeletionAction action,
-  ) {
+  Future<ApiResponse<ApiNoData>> requestDeletion(AccountDeletionAction action) {
     final endpoint = switch (action) {
       AccountDeletionAction.request => UserEndpoint.meAccountDeletionRequest,
       AccountDeletionAction.cancel => UserEndpoint.meAccountDeletionCancel,

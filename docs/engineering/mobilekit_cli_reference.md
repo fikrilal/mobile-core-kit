@@ -26,13 +26,24 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit customize` | Review or update template lifecycle state. |
 | `mobilekit doctor` | Read-only tooling, template-policy, and external-setup diagnostics. |
 | `mobilekit lint` | Run Flutter analyzer and custom lint rules. |
-| `mobilekit verify` | Run the canonical repository quality gate. |
+| `mobilekit verify` | Run a typed fast, full, runtime, or CI verification profile. |
 | `mobilekit fix` | Preview or apply safe Dart fixes and formatting. |
 | `mobilekit config generate` | Generate build configuration from `.env/*.yaml`. |
 | `mobilekit env verify` | Validate environment schema files. |
 | `mobilekit codegen verify` | Verify generated-code freshness. |
 | `mobilekit l10n verify` | Verify the generated untranslated-message report. |
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
+| `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
+| `mobilekit oracle verify` | Validate registered oracle targets and active-plan coverage. |
+| `mobilekit evidence` | Verify/report sanitized operating evidence or run its mutation pilot. |
+| `mobilekit improve` | Validate and read-only analyze controlled harness improvements. |
+| `mobilekit contract openapi` | Verify or explicitly sync the pinned backend OpenAPI snapshot. |
+| `mobilekit task` | Establish authority and run bounded task verification/repair. |
+| `mobilekit event intake` | Activate one already-authorized queued V2 plan. |
+| `mobilekit maintenance run` | Run the fixed read-only maintenance registry once. |
+| `mobilekit ci classify` | Classify a clean base/head candidate for hosted CI. |
+| `mobilekit handoff` | Prepare or execute one fresh action-specific handoff. |
+| `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
 | `mobilekit runtime logs` | Manage background Flutter log sessions. |
@@ -122,22 +133,41 @@ accepts no workflow-specific options.
 ### `verify`
 
 ```bash
-mobilekit verify --env dev
+mobilekit verify --profile fast --env dev
+mobilekit verify --profile full --env dev
+mobilekit verify --profile runtime --env dev --device emulator-5554
+mobilekit verify --profile ci --env prod
 ```
 
 Options:
 
+- `--profile <fast|full|runtime|ci>` — explicit evidence profile; omitted means
+  the legacy compatibility default, `full`.
 - `--env, -e <dev|staging|prod>` — environment; defaults to `dev`.
-- `--apply-fixes` — apply the supported `directives_ordering` fix before the
-  remaining checks.
-- `--check-codegen` — verify generated-code freshness.
-- `--skip-duplication` — skip core and small-helper duplication profiles.
-- `--skip-format` — skip the final formatting check.
-- `--skip-tests` — skip Flutter tests.
+- `--test-path <path>` — repeatable focused application test for `fast`.
+- `--device`, `--target`, `--artifacts-dir`,
+  `--no-example-env-fallback`, and `--google-services-json` — runtime-profile
+  options delegated to the existing evidence owner.
 
-The gate also generates build configuration and localization output, validates
-environment and project-map state, runs lint/guardrail checks, and returns on
-the first failing step.
+The profiles are intentionally different:
+
+- `fast` runs dependency/environment preflight, generated config and
+  localization, knowledge validation, formatting, analyzer/custom lints, both
+  harness-package test suites, and optional focused application tests;
+- `full` adds generated-output freshness, advisory core/small-helper
+  duplication reports, operating-evidence integrity, and every root
+  application test;
+- `runtime` delegates selected integration targets to the device evidence
+  workflow and requires `--device`;
+- `ci` has the same repository proof sequence as `full`; GitHub Actions adds
+  independent platform, coverage, golden, dependency, and secret-scanning
+  lanes around it.
+
+Every profile is fail-fast and reports stable step identifiers plus remediation.
+Explicit profiles reject weakening skip flags and file-mutating fixes. The old
+`--apply-fixes`, `--check-codegen`, `--skip-duplication`, `--skip-format`, and
+`--skip-tests` flags remain only for compatibility when `--profile` is omitted;
+their output is not sufficient completion evidence.
 
 ### `fix`
 
@@ -172,7 +202,136 @@ mobilekit env verify --all --strict
 mobilekit codegen verify
 mobilekit l10n verify
 mobilekit project-map verify
+mobilekit knowledge verify
 ```
+
+`knowledge verify` is the normal aggregate. It requires the compact
+`AGENTS.md` core map, checks normative repository-local Markdown links, and
+validates active/queued execution-plan metadata against directory lifecycle.
+`project-map verify` remains a focused compatibility command and now fails
+when the required map is absent instead of skipping successfully.
+
+### Behavioral oracles and API contract
+
+```bash
+mobilekit oracle verify
+mobilekit contract openapi verify
+mobilekit contract openapi sync \
+  --source <path-to-openapi.yaml> \
+  --source-revision <full-backend-git-revision> \
+  --accept
+```
+
+`oracle verify` validates `harness/oracles.yaml`, every registered target, and
+the impact coverage of active/queued V2 plans. `contract openapi verify`
+validates OpenAPI 3 structure and the locked SHA-256 digest. Sync validates
+before writing, records no source path, and requires explicit acceptance. See
+`docs/engineering/behavioral_oracles.md`.
+
+### Operating evidence
+
+```bash
+mobilekit evidence verify
+mobilekit evidence report
+mobilekit evidence mutation-pilot
+```
+
+`evidence verify` checks the strict checked-in ledger and calibration sources;
+repository knowledge validation includes it in fast, full, and CI profiles.
+`report` emits deterministic aggregate
+counts, observations, and missing eligibility categories without changing
+policy. The non-default mutation pilot proves three representative eligibility
+weakening errors are detected. Promotion remains a separately authorized,
+independently reviewed source edit; the CLI does not ingest agent telemetry or
+self-assert review. See `docs/engineering/harness_operating_evidence.md`.
+
+### Controlled harness improvement
+
+```bash
+mobilekit improve check
+mobilekit improve analyze
+mobilekit improve shadow
+```
+
+`improve check` validates the strict hypothesis ledger. `analyze` aggregates
+only categorical reviewed evidence. `shadow` evaluates one approved hypothesis
+against its disjoint later evidence window and makes no mutation. The loop is
+disabled while operating evidence is insufficient; eligibility grants no task
+or publication authority. See
+`docs/engineering/controlled_harness_improvement.md`.
+
+### Task authority and risk
+
+```bash
+mobilekit task begin --plan docs/exec-plans/active/<plan>.md
+mobilekit task status --task <task-id>
+mobilekit task preflight --task <task-id> --action verify
+mobilekit task verify --task <task-id> --env dev
+mobilekit task repair --task <task-id>
+mobilekit task workspace prepare --task <task-id>
+mobilekit task workspace status --task <task-id>
+mobilekit task workspace cancel --task <task-id>
+mobilekit task workspace cleanup --task <task-id>
+mobilekit risk classify
+mobilekit risk classify --plan docs/exec-plans/active/<plan>.md
+```
+
+`task begin` validates an active V2 execution plan and atomically records its
+authority, Git base revision, and fingerprints of pre-existing dirty paths in
+ignored local state. `task preflight` is report-only: it validates the current
+task-owned change set, action, scope, unchanged authority, and effective risk,
+then prints a stable fingerprint. It does not execute verification, commit,
+push, or create a PR.
+
+`task verify` selects `fast` for effective low risk and `full` for medium/high,
+then invokes the canonical verification owner under the plan timeout. Stable,
+sanitized failure evidence and finite repair counters are stored locally.
+After the conversational agent changes code, `task repair` records whether the
+candidate fingerprint meaningfully changed; it never edits code itself. See
+`docs/engineering/task_authority.md` and
+`docs/engineering/controlled_verification_loop.md`.
+
+`task workspace prepare` creates a deterministic `agent/<task-id>` branch and
+linked worktree from the recorded base without copying dirty primary files.
+Task state is shared and rediscoverable from either checkout. Cancellation is
+state-only; cleanup requires an exact, cancelled, clean owned worktree and
+preserves the branch. See `docs/engineering/current_agent_workspaces.md`.
+
+Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
+They are independent grants. Automated path and impact classification can
+raise risk and cannot lower the plan's declared risk.
+
+### Event intake and maintenance
+
+```bash
+mobilekit event intake --once
+mobilekit maintenance run --once
+mobilekit ci classify --base <revision> --head <revision>
+```
+
+Event intake accepts no payload fields. It selects and atomically activates one
+complete queued V2 plan, records a private idempotent receipt, and starts the
+normal task boundary. Maintenance accepts no command input and runs only its
+fixed registry; codegen is isolated and tracked source is checked before and
+after. CI classification reads the exact base/head Git revisions and changed
+V2 plans. See `docs/engineering/event_maintenance_handoff.md`.
+
+### Verified handoff
+
+```bash
+mobilekit handoff dry-run --task <task-id> --action commit
+mobilekit handoff dry-run --task <task-id> --action push
+mobilekit handoff dry-run --task <task-id> --action draft-pr
+```
+
+Dry-run verifies fresh candidate evidence, exact paths, branch, remote, and
+action authority without mutating Git/GitHub. A mutating command additionally
+requires the dry-run's unexpired one-time value in
+`MOBILEKIT_HANDOFF_APPROVAL` and separate explicit user authorization. Commit,
+push, and draft-PR approvals are not interchangeable. Merge, deploy, signing,
+migration, release, force push, and ready-for-review transitions are not
+supported. Full syntax and uncertain-outcome handling are documented in
+`docs/engineering/event_maintenance_handoff.md`.
 
 `env verify` accepts repeatable `--env, -e <dev|staging|prod>`, `--all`, and
 `--strict`. Strict checks enforce production invariants for `prod`.
@@ -214,15 +373,21 @@ arguments. Runtime log artifacts default to `_artifacts/runtime_logs/`.
 ### Evidence
 
 ```bash
-mobilekit runtime evidence --device emulator-5554
-mobilekit runtime evidence --device emulator-5554 --target integration_test/auth_happy_path_test.dart
-mobilekit runtime evidence --device emulator-5554 --flavor dev --google-services-json /secure/google-services.json
+mobilekit runtime evidence --task <task-id> --device emulator-5554
+mobilekit runtime evidence --task <task-id> --device emulator-5554 \
+  --target integration_test/auth_happy_path_test.dart
+mobilekit runtime evidence --task <task-id> --device emulator-5554 \
+  --flavor dev --google-services-json <secure-path>/google-services.json
 ```
 
-Options include repeatable `--target`, `--flavor dev|staging|prod`,
+The task must already be verified at its exact current fingerprint and must
+select registered integration-test oracles. Options include required `--task`
+and `--device`, repeatable registered `--target`, `--flavor dev|staging|prod`,
 `--artifacts-dir`, `--no-example-env-fallback`, and
-`--google-services-json`. Evidence artifacts default to
-`_artifacts/mobile/<timestamp>/`.
+`--google-services-json`. Evidence defaults to
+`_artifacts/mobile/<timestamp>/evidence.json`; raw logs are bounded, ignored,
+owner-restricted local diagnostics. See
+`docs/engineering/mobile_runtime_harness.md`.
 
 ## Exit codes
 

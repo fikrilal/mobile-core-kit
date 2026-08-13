@@ -71,4 +71,26 @@ void main() {
       p.join(binDirectory.path, 'dart.bat'),
     );
   });
+
+  test('describes PATH fallback with a stable diagnostic id', () async {
+    final tempDirectory = await Directory.systemTemp.createTemp(
+      'mobile_core_kit_cli_runner_diagnostics_test_',
+    );
+    addTearDown(() => tempDirectory.delete(recursive: true));
+    final output = StringBuffer();
+    final runner = CommandRunner(
+      rootDirectory: tempDirectory,
+      platform: CommandPlatform.posix,
+      output: output,
+    );
+
+    final resolved = runner.resolve('flutter');
+
+    expect(resolved.isPinned, isFalse);
+    expect(
+      runner.toolchainDiagnostic('flutter', resolved),
+      contains('WARN [toolchain.path-fallback]'),
+    );
+    expect(output, isEmpty);
+  });
 }
