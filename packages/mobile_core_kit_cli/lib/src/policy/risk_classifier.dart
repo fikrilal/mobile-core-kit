@@ -85,6 +85,10 @@ RiskReason classifyPath(String path) {
   );
 }
 
+bool isAuthSensitivePath(String path) => RegExp(
+  r'(?:^|/)(?:auth|session|account_deletion)(?:/|[._-])',
+).hasMatch(normalizeRepositoryPath(path));
+
 List<RiskReason> _impactReasons(TaskImpactAreas impacts) {
   final reasons = <RiskReason>[];
   void add(bool selected, String id, TaskRisk risk, String description) {
@@ -200,9 +204,7 @@ final _rules = <_RiskRule>[
     'risk.high.auth',
     TaskRisk.high,
     'Authentication, session, or destructive account behavior',
-    (path) => RegExp(
-      r'(?:^|/)(?:auth|session|account_deletion)(?:/|[._-])',
-    ).hasMatch(path),
+    isAuthSensitivePath,
   ),
   _RiskRule(
     'risk.high.navigation',

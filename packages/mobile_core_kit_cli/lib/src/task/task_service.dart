@@ -64,7 +64,10 @@ class TaskService {
   final void Function(TaskPlan plan) _oracleValidator;
   final DateTime Function() now;
 
-  Future<TaskBeginResult> begin(String planPath) async {
+  Future<TaskBeginResult> begin(
+    String planPath, {
+    Iterable<String> taskOwnedPaths = const [],
+  }) async {
     final plan = _loadPlan(planPath);
     _validateOracles(plan);
     if (plan.status != TaskPlanStatus.active ||
@@ -83,12 +86,27 @@ class TaskService {
       );
     }
     assertAllowedPathsStayInRepository(root, plan.boundaries.allowedPaths);
+    final normalizedTaskOwnedPaths = taskOwnedPaths
+        .map(normalizeRepositoryPath)
+        .toSet();
+    final taskOwnedScopeViolations = findScopeViolations(
+      normalizedTaskOwnedPaths,
+      plan.boundaries.allowedPaths,
+    );
+    if (taskOwnedScopeViolations.isNotEmpty) {
+      throw TaskControlError(
+        'task.task-owned-path-outside-scope',
+        'Initially task-owned paths exceed plan scope: '
+            '${taskOwnedScopeViolations.join(', ')}.',
+      );
+    }
 
     final baseRevision = await repository.head();
     final changes = await repository.worktreeChanges();
     final startedAt = now().toUtc();
     final preexisting = <PreexistingChange>[];
     for (final change in changes) {
+      if (normalizedTaskOwnedPaths.contains(change.path)) continue;
       preexisting.add(
         PreexistingChange(
           path: change.path,

@@ -24,6 +24,7 @@ void main() {
       expect(first.recovered, isFalse);
       expect(first.taskId, 'event-fixture-task');
       expect(fixture.beginCount, 1);
+      expect(fixture.taskOwnedPaths, {_queuedPath, _activePath});
       expect(
         File(p.join(fixture.root.path, _queuedPath)).existsSync(),
         isFalse,
@@ -57,7 +58,7 @@ void main() {
   test('recovers one claimed event after activation interruption', () async {
     var failOnce = true;
     final fixture = await _fixture(
-      begin: (path) async {
+      begin: (path, _) async {
         if (failOnce) {
           failOnce = false;
           throw const TaskControlError('fixture.interrupted', 'interrupted');
@@ -110,7 +111,7 @@ void main() {
 
   test('fails closed when claimed active content changes', () async {
     final fixture = await _fixture(
-      begin: (_) async =>
+      begin: (_, _) async =>
           throw const TaskControlError('fixture.interrupted', 'interrupted'),
     );
     addTearDown(() => fixture.root.deleteSync(recursive: true));
@@ -162,9 +163,7 @@ void main() {
 const _queuedPath = 'docs/exec-plans/queued/event.md';
 const _activePath = 'docs/exec-plans/active/event.md';
 
-Future<_EventFixture> _fixture({
-  Future<TaskBeginResult> Function(String path)? begin,
-}) async {
+Future<_EventFixture> _fixture({EventTaskBegin? begin}) async {
   final root = Directory.systemTemp.createTempSync('mobilekit_event_');
   File(p.join(root.path, _queuedPath))
     ..parent.createSync(recursive: true)
@@ -180,9 +179,10 @@ Future<_EventFixture> _fixture({
   fixture.service = EventIntakeService(
     root: root,
     controlRoot: root,
-    beginTask: (path) async {
+    beginTask: (path, taskOwnedPaths) async {
       fixture.beginCount += 1;
-      return begin == null ? _beginResult(path) : begin(path);
+      fixture.taskOwnedPaths = taskOwnedPaths.toSet();
+      return begin == null ? _beginResult(path) : begin(path, taskOwnedPaths);
     },
     now: () => DateTime.utc(2026, 8, 12, 12),
   );
@@ -236,4 +236,5 @@ class _EventFixture {
   final Directory root;
   late EventIntakeService service;
   var beginCount = 0;
+  Set<String> taskOwnedPaths = const {};
 }

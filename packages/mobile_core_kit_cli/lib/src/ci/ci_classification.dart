@@ -177,7 +177,7 @@ bool _runtimeRequired(List<String> paths, TaskImpactAreas impacts) {
         path.startsWith('ios/') ||
         path.startsWith('integration_test/') ||
         path.contains('/goldens/') ||
-        path.contains('/auth/') ||
+        isAuthSensitivePath(path) ||
         path.startsWith('lib/navigation/') ||
         path.contains('deep_link') ||
         path.contains('app_startup'),

@@ -8,6 +8,12 @@ import 'package:mobile_core_kit_cli/src/task/task_service.dart';
 import 'package:mobile_core_kit_cli/src/task/task_state.dart';
 import 'package:path/path.dart' as p;
 
+typedef EventTaskBegin =
+    Future<TaskBeginResult> Function(
+      String planPath,
+      Iterable<String> taskOwnedPaths,
+    );
+
 class EventIntakeResult {
   const EventIntakeResult._({
     required this.idleReason,
@@ -46,7 +52,7 @@ class EventIntakeService {
     required this.root,
     required this.controlRoot,
     EventReceiptStore? receipts,
-    Future<TaskBeginResult> Function(String planPath)? beginTask,
+    EventTaskBegin? beginTask,
     TaskStateStore? states,
     RepositoryMutationLock? lock,
     DateTime Function()? now,
@@ -54,10 +60,10 @@ class EventIntakeService {
        states = states ?? FileTaskStateStore(controlRoot),
        beginTask =
            beginTask ??
-           TaskService(
+           ((planPath, taskOwnedPaths) => TaskService(
              root: root,
              stateStore: states ?? FileTaskStateStore(controlRoot),
-           ).begin,
+           ).begin(planPath, taskOwnedPaths: taskOwnedPaths)),
        lock = lock ?? RepositoryMutationLock(controlRoot),
        now = now ?? DateTime.now;
 
@@ -66,7 +72,7 @@ class EventIntakeService {
   final Directory root;
   final Directory controlRoot;
   final EventReceiptStore receipts;
-  final Future<TaskBeginResult> Function(String planPath) beginTask;
+  final EventTaskBegin beginTask;
   final TaskStateStore states;
   final RepositoryMutationLock lock;
   final DateTime Function() now;
@@ -147,7 +153,10 @@ class EventIntakeService {
     final activePlan = parseTaskPlan(receipt.activePlanPath, activeSource);
     _assertReceiptMatches(receipt, activePlan, activeSource);
     try {
-      await beginTask(receipt.activePlanPath);
+      await beginTask(receipt.activePlanPath, {
+        receipt.queuedPlanPath,
+        receipt.activePlanPath,
+      });
     } on TaskControlError catch (error) {
       if (error.code != 'task.state-exists') rethrow;
       final state = states.read(receipt.taskId);

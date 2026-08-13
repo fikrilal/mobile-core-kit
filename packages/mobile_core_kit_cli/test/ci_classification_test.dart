@@ -60,6 +60,25 @@ void main() {
     expect(result.runtimeRequired, isFalse);
   });
 
+  test('auth-sensitive paths select runtime without plan impacts', () async {
+    for (final path in [
+      'lib/features/auth/domain/token.dart',
+      'lib/features/session/data/session_repository.dart',
+      'lib/features/account/subfeatures/account_deletion/domain/delete.dart',
+    ]) {
+      final root = Directory.systemTemp.createTempSync('mobilekit_ci_auth_');
+      addTearDown(() => root.deleteSync(recursive: true));
+      final result = await CiClassificationService(
+        root: root,
+        diffs: _FixedDiffReader([path]),
+        plans: _MemoryPlanReader(const {}),
+      ).classify(_base, _head);
+
+      expect(result.classification.effectiveRisk, TaskRisk.high, reason: path);
+      expect(result.runtimeRequired, isTrue, reason: path);
+    }
+  });
+
   test('uses the base copy of a deleted V2 plan', () async {
     final root = Directory.systemTemp.createTempSync('mobilekit_ci_deleted_');
     addTearDown(() => root.deleteSync(recursive: true));

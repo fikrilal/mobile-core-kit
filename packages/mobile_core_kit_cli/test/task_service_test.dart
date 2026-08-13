@@ -27,6 +27,47 @@ void main() {
     },
   );
 
+  test('begin preserves explicitly scoped task-owned changes', () async {
+    final fixture = await _serviceFixture();
+    addTearDown(() => fixture.root.delete(recursive: true));
+    fixture.repository.worktree = [
+      ...fixture.repository.worktree,
+      const RepositoryChange(
+        path: 'lib/features/example/promoted.dart',
+        sources: [ChangeSource.untracked],
+      ),
+    ];
+    fixture.repository.fingerprints['lib/features/example/promoted.dart'] =
+        _repeated('2', 64);
+
+    final result = await fixture.service.begin(
+      _planPath,
+      taskOwnedPaths: ['lib/features/example/promoted.dart'],
+    );
+
+    expect(result.preexistingPathCount, 1);
+    expect(
+      fixture.store.read(result.taskId).preexistingChanges.single.path,
+      'user.txt',
+    );
+    final preflight = await fixture.service.preflight(
+      result.taskId,
+      action: TaskAction.verify,
+    );
+    expect(preflight.preexistingPaths, ['user.txt']);
+    expect(preflight.taskPaths, ['lib/features/example/promoted.dart']);
+  });
+
+  test('begin rejects task-owned paths outside plan scope', () async {
+    final fixture = await _serviceFixture();
+    addTearDown(() => fixture.root.delete(recursive: true));
+
+    await expectLater(
+      fixture.service.begin(_planPath, taskOwnedPaths: ['outside.txt']),
+      throwsA(_controlError('task.task-owned-path-outside-scope')),
+    );
+  });
+
   test(
     'preflight preserves unchanged user work and rejects later scope escape',
     () async {
