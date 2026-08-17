@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-3-bounded-verification
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 3 locally; no external mutation
@@ -80,14 +80,14 @@ escalates deterministically instead of looping.
 
 ## Implementation Checklist
 
-- [ ] Define stable task lifecycle, failure taxonomy, and lane registry.
-- [ ] Extend atomic task state and add sanitized episode persistence.
-- [ ] Implement timeout-aware task verification through canonical owners.
-- [ ] Implement bounded repair intent/outcome and repeat-fingerprint policy.
-- [ ] Add deterministic escalation for exhaustion and unsafe controller state.
-- [ ] Add CLI routing, negative fixtures, and fail-fast integration tests.
-- [ ] Document the current-agent verification/repair protocol.
-- [ ] Exercise a controlled failure/repair/escalation fixture and verify Phase 3.
+- [x] Define stable task lifecycle, failure taxonomy, and lane registry.
+- [x] Extend atomic task state and add sanitized episode persistence.
+- [x] Implement timeout-aware task verification through canonical owners.
+- [x] Implement bounded repair intent/outcome and repeat-fingerprint policy.
+- [x] Add deterministic escalation for exhaustion and unsafe controller state.
+- [x] Add CLI routing, negative fixtures, and fail-fast integration tests.
+- [x] Document the current-agent verification/repair protocol.
+- [x] Exercise a controlled failure/repair/escalation fixture and verify Phase 3.
 
 ## Decision Log
 
@@ -111,6 +111,25 @@ dart run mobile_core_kit_cli:mobilekit task preflight --task mobile-harness-phas
 dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev
 dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
+
+Outcomes on 2026-08-11:
+
+- package analysis: passed with no issues;
+- CLI package tests: 133 passed, including controlled success, redaction,
+  changed-candidate repair, repeated unchanged exhaustion, timeout,
+  infrastructure escalation, episode recovery, and deadline refusal fixtures;
+- knowledge verification: passed;
+- authority-scope negative evidence: the first preflight rejected the omitted
+  canonical `verify_workflow.dart` path; the plan was narrowed correctly and a
+  clean zero-pre-existing-path baseline was re-established before continuing;
+- real high-risk `task verify`: selected `full` and passed twice, with final
+  fingerprint `e963d7a0ee540a243e49b067843f6e677df7fe27069a061395dc9a4c59e0e94b`
+  in 107189 ms;
+- final full lane: codegen freshness, knowledge/format/architecture checks, 133
+  CLI tests, 11 custom-lint tests, unchanged advisory duplication baselines,
+  and 553 application tests passed;
+- ignored state migrated from schema 1 to 2 and the episode recorded only
+  bounded structured start/pass events.
 
 ## Runtime Evidence
 
@@ -137,8 +156,14 @@ no application or external data migration is required.
 
 ## Completion Notes
 
-Pending.
+Phase 3 added a bounded verification controller around the existing typed
+profiles. Effective low risk selects `fast`; medium/high selects `full`.
+Failures now have stable categories, bounded redacted diagnostics, atomic
+lifecycle/attempt/repair state, and a sanitized local episode. The current
+conversational agent still performs every code repair; `mobilekit` only proves
+whether the candidate changed and deterministically escalates timeout,
+ambiguity, infrastructure loss, scope escape, or repair exhaustion.
 
 ## Follow-ups
 
-- [ ] Create Phase 4 only after Phase 3 evidence passes.
+- [x] Create Phase 4 only after Phase 3 evidence passes.
