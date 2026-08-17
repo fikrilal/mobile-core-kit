@@ -14,7 +14,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/pr
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_state.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockAccountDeletionUseCase extends Mock implements AccountDeletionUseCase {}
+class _MockAccountDeletionUseCase extends Mock
+    implements AccountDeletionUseCase {}
 
 class _MockUserContextService extends Mock implements UserContextService {}
 
@@ -46,15 +47,10 @@ void main() {
   blocTest<RequestAccountDeletionCubit, RequestAccountDeletionState>(
     'emits submitting then success and request effect when request succeeds',
     setUp: () {
-      when(
-        () => accountDeletion(any()),
-      ).thenAnswer((_) async => right(unit));
+      when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
     },
     build: () {
-      final cubit = RequestAccountDeletionCubit(
-        accountDeletion,
-        userContext,
-      );
+      final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
     },
@@ -74,9 +70,7 @@ void main() {
       expect(effects, [isA<ShowAccountDeletionRequested>()]);
       await effectSubscription.cancel();
 
-      verify(
-        () => accountDeletion(AccountDeletionAction.request),
-      ).called(1);
+      verify(() => accountDeletion(AccountDeletionAction.request)).called(1);
       verify(
         () => userContext.refreshUser(
           reason: 'account_deletion_requested',
@@ -89,15 +83,10 @@ void main() {
   blocTest<RequestAccountDeletionCubit, RequestAccountDeletionState>(
     'emits submitting then success and cancel effect when cancel succeeds',
     setUp: () {
-      when(
-        () => accountDeletion(any()),
-      ).thenAnswer((_) async => right(unit));
+      when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
     },
     build: () {
-      final cubit = RequestAccountDeletionCubit(
-        accountDeletion,
-        userContext,
-      );
+      final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
     },
@@ -117,9 +106,7 @@ void main() {
       expect(effects, [isA<ShowAccountDeletionCanceled>()]);
       await effectSubscription.cancel();
 
-      verify(
-        () => accountDeletion(AccountDeletionAction.cancel),
-      ).called(1);
+      verify(() => accountDeletion(AccountDeletionAction.cancel)).called(1);
       verify(
         () => userContext.refreshUser(
           reason: 'account_deletion_canceled',
@@ -137,10 +124,7 @@ void main() {
       ).thenAnswer((_) async => left(const AuthFailure.network()));
     },
     build: () {
-      final cubit = RequestAccountDeletionCubit(
-        accountDeletion,
-        userContext,
-      );
+      final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
     },
@@ -177,19 +161,14 @@ void main() {
   blocTest<RequestAccountDeletionCubit, RequestAccountDeletionState>(
     'success and effect still emit even when refreshUser fails',
     build: () {
-      when(
-        () => accountDeletion(any()),
-      ).thenAnswer((_) async => right(unit));
+      when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
       when(
         () => userContext.refreshUser(
           reason: any(named: 'reason'),
           logoutOnUnauthenticated: any(named: 'logoutOnUnauthenticated'),
         ),
       ).thenAnswer((_) async => left(const SessionFailure.network()));
-      final cubit = RequestAccountDeletionCubit(
-        accountDeletion,
-        userContext,
-      );
+      final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
       effectSubscription = cubit.effects.listen(effects.add);
       return cubit;
     },
@@ -212,10 +191,7 @@ void main() {
   );
 
   test('closes effects stream on close', () async {
-    final cubit = RequestAccountDeletionCubit(
-      accountDeletion,
-      userContext,
-    );
+    final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
     final done = expectLater(cubit.effects, emitsDone);
 
     await cubit.close();

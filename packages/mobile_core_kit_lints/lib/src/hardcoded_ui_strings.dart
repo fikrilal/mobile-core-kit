@@ -28,10 +28,7 @@ class HardcodedUiStringsLint extends DartLintRule {
     'lib/presentation/**',
   ];
 
-  static const _fallbackExclude = [
-    'lib/core/dev_tools/**',
-    '**/*showcase*',
-  ];
+  static const _fallbackExclude = ['lib/core/dev_tools/**', '**/*showcase*'];
 
   @override
   void run(

@@ -17,7 +17,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/pr
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockAccountDeletionUseCase extends Mock implements AccountDeletionUseCase {}
+class _MockAccountDeletionUseCase extends Mock
+    implements AccountDeletionUseCase {}
 
 class _MockUserContextService extends Mock implements UserContextService {}
 
@@ -56,10 +57,7 @@ void main() {
         ).thenAnswer((_) async => right(_baseUser()));
         when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
 
-        final cubit = RequestAccountDeletionCubit(
-          accountDeletion,
-          userContext,
-        );
+        final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
         addTearDown(cubit.close);
 
         await _pumpPage(tester, cubit: cubit, userContext: userContext);
@@ -107,10 +105,7 @@ void main() {
         ).thenAnswer((_) async => right(scheduledUser));
         when(() => accountDeletion(any())).thenAnswer((_) async => right(unit));
 
-        final cubit = RequestAccountDeletionCubit(
-          accountDeletion,
-          userContext,
-        );
+        final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
         addTearDown(cubit.close);
 
         await _pumpPage(tester, cubit: cubit, userContext: userContext);
@@ -163,10 +158,7 @@ void main() {
         () => accountDeletion(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
 
-      final cubit = RequestAccountDeletionCubit(
-        accountDeletion,
-        userContext,
-      );
+      final cubit = RequestAccountDeletionCubit(accountDeletion, userContext);
       addTearDown(cubit.close);
 
       await _pumpPage(tester, cubit: cubit, userContext: userContext);

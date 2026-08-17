@@ -135,15 +135,16 @@ void main() {
 
     test('loadDraft populates fields when draft exists', () async {
       final now = DateTime(2026, 1, 1);
-      when(() => draftRepository.getDraft(userId: any(named: 'userId')))
-          .thenAnswer(
-            (_) async => ProfileDraftEntity(
-              givenName: 'John',
-              familyName: 'Doe',
-              displayName: null,
-              updatedAt: now,
-            ),
-          );
+      when(
+        () => draftRepository.getDraft(userId: any(named: 'userId')),
+      ).thenAnswer(
+        (_) async => ProfileDraftEntity(
+          givenName: 'John',
+          familyName: 'Doe',
+          displayName: null,
+          updatedAt: now,
+        ),
+      );
 
       final cubit = CompleteProfileCubit(
         draftRepository,

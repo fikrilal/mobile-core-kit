@@ -205,9 +205,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
         displayName: null,
         updatedAt: DateTime.now(),
       );
-      unawaited(
-        _draftRepository.saveDraft(userId: userId, draft: draft),
-      );
+      unawaited(_draftRepository.saveDraft(userId: userId, draft: draft));
     });
   }
 

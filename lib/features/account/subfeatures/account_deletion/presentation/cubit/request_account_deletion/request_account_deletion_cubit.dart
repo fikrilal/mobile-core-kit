@@ -10,10 +10,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/pr
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_state.dart';
 
 class RequestAccountDeletionCubit extends Cubit<RequestAccountDeletionState> {
-  RequestAccountDeletionCubit(
-    this._accountDeletion,
-    this._userContext,
-  ) : super(RequestAccountDeletionState.initial());
+  RequestAccountDeletionCubit(this._accountDeletion, this._userContext)
+    : super(RequestAccountDeletionState.initial());
 
   final AccountDeletionUseCase _accountDeletion;
   final UserContextService _userContext;
