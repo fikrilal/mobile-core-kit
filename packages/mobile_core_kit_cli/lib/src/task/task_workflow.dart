@@ -1,20 +1,36 @@
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/process/deadline_command_runner.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
+import 'package:mobile_core_kit_cli/src/task/task_controller.dart';
+import 'package:mobile_core_kit_cli/src/task/task_episode.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/task/task_service.dart';
+import 'package:mobile_core_kit_cli/src/task/task_state.dart';
+import 'package:mobile_core_kit_cli/src/verification/verification_result.dart';
+import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 
 class TaskWorkflow {
-  TaskWorkflow(this.context)
-    : service = TaskService(root: context.rootDirectory);
+  TaskWorkflow(this.context) {
+    stateStore = FileTaskStateStore(context.rootDirectory);
+    service = TaskService(root: context.rootDirectory, stateStore: stateStore);
+    controller = TaskController(
+      service: service,
+      stateStore: stateStore,
+      episodeStore: FileTaskEpisodeStore(context.rootDirectory),
+    );
+  }
 
   final WorkflowContext context;
-  final TaskService service;
+  late final TaskStateStore stateStore;
+  late final TaskService service;
+  late final TaskController controller;
 
   Future<int> run(List<String> arguments) async {
     if (arguments.isEmpty) {
       context.errorOutput.writeln(
-        'ERROR: Expected `task begin`, `task preflight`, or `task status`.',
+        'ERROR: Expected `task begin`, `task preflight`, `task verify`, '
+        '`task repair`, or `task status`.',
       );
       return 2;
     }
@@ -22,6 +38,8 @@ class TaskWorkflow {
       return switch (arguments.first) {
         'begin' => _begin(arguments.skip(1).toList()),
         'preflight' => _preflight(arguments.skip(1).toList()),
+        'verify' => _verify(arguments.skip(1).toList()),
+        'repair' => _repair(arguments.skip(1).toList()),
         'status' => _status(arguments.skip(1).toList()),
         _ => _unknown(arguments.first),
       };
@@ -111,7 +129,107 @@ class TaskWorkflow {
     context.output.writeln(
       'Pre-existing paths protected: ${state.preexistingChanges.length}',
     );
+    context.output.writeln('Verification attempts: ${state.attemptCount}');
+    context.output.writeln(
+      'Repair opportunities: ${state.repairCount}/${state.boundaries.repairLimit}',
+    );
+    if (state.selectedLanes.isNotEmpty) {
+      context.output.writeln(
+        'Selected lanes: ${state.selectedLanes.join(', ')}',
+      );
+    }
+    if (state.failure case final failure?) {
+      context.output.writeln('Last failure: ${failure.boundary}');
+      context.output.writeln('Category: ${failure.category.name}');
+    }
+    if (state.escalationReason case final reason?) {
+      context.output.writeln('Escalation: $reason');
+    }
     return 0;
+  }
+
+  Future<int> _verify(List<String> arguments) async {
+    final parser = ArgParser()
+      ..addOption('task')
+      ..addOption('env', defaultsTo: 'dev');
+    final parsed = parser.parse(arguments);
+    _rejectRest(parsed.rest);
+    final taskId = parsed.option('task');
+    if (taskId == null || taskId.isEmpty) {
+      throw const FormatException('--task is required.');
+    }
+    final env = parsed.option('env')!;
+    if (!const {'dev', 'staging', 'prod'}.contains(env)) {
+      throw FormatException("Unknown --env '$env'.");
+    }
+    final result = await controller.verify(
+      taskId,
+      runLane: (profile, deadline) async {
+        final commandRunner = DeadlineCommandRunner(
+          rootDirectory: context.rootDirectory,
+          deadline: deadline,
+          output: context.output,
+          errorOutput: context.errorOutput,
+        );
+        VerificationStepOutcome? failed;
+        final stopwatch = Stopwatch()..start();
+        final exitCode = await VerifyWorkflow(
+          WorkflowContext(
+            rootDirectory: context.rootDirectory,
+            execute: commandRunner.run,
+            output: context.output,
+            errorOutput: context.errorOutput,
+          ),
+          observer: (outcome) {
+            if (!outcome.passed) failed = outcome;
+          },
+        ).run(['--profile', profile.label, '--env', env]);
+        stopwatch.stop();
+        return TaskLaneExecution(
+          exitCode: exitCode,
+          duration: stopwatch.elapsed,
+          timedOut: commandRunner.lastResult?.timedOut ?? false,
+          diagnostic: failed == null
+              ? ''
+              : '${failed!.step.title} failed with exit '
+                    '${failed!.exitCode}.',
+          failedStep: failed?.step,
+        );
+      },
+    );
+    context.output.writeln(
+      'Task verification: ${result.lifecycle.name} '
+      '(profile=${result.profile.label}, attempt=${result.attempt}).',
+    );
+    if (result.failure case final failure?) {
+      context.errorOutput.writeln(
+        'FAIL [${failure.boundary}] ${failure.diagnostic}',
+      );
+      context.errorOutput.writeln('Remediation: ${failure.remediation}');
+    }
+    return result.exitCode;
+  }
+
+  Future<int> _repair(List<String> arguments) async {
+    final parser = ArgParser()..addOption('task');
+    final parsed = parser.parse(arguments);
+    _rejectRest(parsed.rest);
+    final taskId = parsed.option('task');
+    if (taskId == null || taskId.isEmpty) {
+      throw const FormatException('--task is required.');
+    }
+    final result = await controller.recordRepair(taskId);
+    context.output.writeln(
+      'Repair recorded: ${result.candidateChanged ? 'candidate changed' : 'no candidate change'}.',
+    );
+    context.output.writeln(
+      'Repair opportunities: ${result.repairCount}/${result.repairLimit}.',
+    );
+    context.output.writeln('Task lifecycle: ${result.lifecycle.name}.');
+    return result.lifecycle == TaskLifecycle.escalated ||
+            !result.candidateChanged
+        ? 1
+        : 0;
   }
 
   int _unknown(String command) {

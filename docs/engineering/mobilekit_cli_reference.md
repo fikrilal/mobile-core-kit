@@ -34,7 +34,7 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit l10n verify` | Verify the generated untranslated-message report. |
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
 | `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
-| `mobilekit task` | Establish and inspect task authority; run report-only preflight. |
+| `mobilekit task` | Establish authority and run bounded task verification/repair. |
 | `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
@@ -208,6 +208,8 @@ when the required map is absent instead of skipping successfully.
 mobilekit task begin --plan docs/exec-plans/active/<plan>.md
 mobilekit task status --task <task-id>
 mobilekit task preflight --task <task-id> --action verify
+mobilekit task verify --task <task-id> --env dev
+mobilekit task repair --task <task-id>
 mobilekit risk classify
 mobilekit risk classify --plan docs/exec-plans/active/<plan>.md
 ```
@@ -217,7 +219,15 @@ authority, Git base revision, and fingerprints of pre-existing dirty paths in
 ignored local state. `task preflight` is report-only: it validates the current
 task-owned change set, action, scope, unchanged authority, and effective risk,
 then prints a stable fingerprint. It does not execute verification, commit,
-push, or create a PR. See `docs/engineering/task_authority.md`.
+push, or create a PR.
+
+`task verify` selects `fast` for effective low risk and `full` for medium/high,
+then invokes the canonical verification owner under the plan timeout. Stable,
+sanitized failure evidence and finite repair counters are stored locally.
+After the conversational agent changes code, `task repair` records whether the
+candidate fingerprint meaningfully changed; it never edits code itself. See
+`docs/engineering/task_authority.md` and
+`docs/engineering/controlled_verification_loop.md`.
 
 Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
 They are independent grants. Automated path and impact classification can

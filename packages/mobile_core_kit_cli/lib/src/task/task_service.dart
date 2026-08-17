@@ -78,6 +78,7 @@ class TaskService {
 
     final baseRevision = await repository.head();
     final changes = await repository.worktreeChanges();
+    final startedAt = now().toUtc();
     final preexisting = <PreexistingChange>[];
     for (final change in changes) {
       preexisting.add(
@@ -91,8 +92,9 @@ class TaskService {
     stateStore.create(
       TaskState(
         taskId: plan.taskId,
-        status: 'authorized',
-        startedAt: now().toUtc(),
+        lifecycle: TaskLifecycle.authorized,
+        startedAt: startedAt,
+        updatedAt: startedAt,
         baseRevision: baseRevision,
         planPath: plan.path,
         planSourceHash: plan.sourceHash,
@@ -101,6 +103,18 @@ class TaskService {
         boundaries: plan.boundaries,
         impacts: plan.impacts,
         preexistingChanges: List.unmodifiable(preexisting),
+        attemptCount: 0,
+        repairCount: 0,
+        repeatedFailureCount: 0,
+        selectedLanes: const [],
+        transitions: [
+          TaskTransition(
+            at: startedAt,
+            from: null,
+            to: TaskLifecycle.authorized,
+            reason: 'task-begin',
+          ),
+        ],
       ),
     );
     return TaskBeginResult(

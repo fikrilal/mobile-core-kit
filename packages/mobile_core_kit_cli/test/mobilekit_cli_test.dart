@@ -41,6 +41,8 @@ void main() {
 
     expect(result, 0);
     expect(output.toString(), contains('Usage: mobilekit task begin'));
+    expect(output.toString(), contains('task verify --task <id>'));
+    expect(output.toString(), contains('task repair --task <id>'));
     expect(errors, isEmpty);
   });
 

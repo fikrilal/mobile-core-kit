@@ -53,6 +53,8 @@
   - `docs/exec-plans/active/`
   - use a V2 plan, run `mobilekit task begin` before editing, and run
     report-only `mobilekit task preflight` for each controlled action
+  - for a controller-managed task, use `mobilekit task verify`; after failure,
+    repair with normal agent tools and record it with `mobilekit task repair`
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
   - CLI verification workflow

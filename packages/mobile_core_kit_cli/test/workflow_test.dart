@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:mobile_core_kit_cli/mobile_core_kit_cli.dart';
+import 'package:mobile_core_kit_cli/src/verification/verification_profile.dart';
+import 'package:mobile_core_kit_cli/src/verification/verification_result.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
@@ -71,6 +73,28 @@ void main() {
       );
     },
   );
+
+  test('verify reports structured fail-fast step outcomes', () async {
+    final repository = await _createRepository();
+    addTearDown(() => repository.delete(recursive: true));
+    final outcomes = <VerificationStepOutcome>[];
+    final context = WorkflowContext(
+      rootDirectory: repository,
+      execute: (_) async => 17,
+      output: StringBuffer(),
+      errorOutput: StringBuffer(),
+    );
+
+    final result = await VerifyWorkflow(
+      context,
+      observer: outcomes.add,
+    ).run(['--profile', 'fast']);
+
+    expect(result, 17);
+    expect(outcomes, hasLength(1));
+    expect(outcomes.single.step, VerificationStep.dependencies);
+    expect(outcomes.single.exitCode, 17);
+  });
 
   test(
     'scaffold writes generated files relative to the repository root',

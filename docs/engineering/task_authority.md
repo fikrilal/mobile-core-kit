@@ -58,8 +58,10 @@ dart run mobile_core_kit_cli:mobilekit task preflight \
 Preflight fails closed when the authority changed, the action was not granted,
 task-owned files exceed scope, effective risk exceeds the ceiling, or local
 state cannot be trusted. On success it prints the task-owned paths, protected
-pre-existing paths, effective risk, and a stable task fingerprint. Phase 2 is
-report-only: the agent still executes the requested command explicitly.
+pre-existing paths, effective risk, and a stable task fingerprint. Preflight
+remains report-only. `mobilekit task verify` is the separate controlled action
+that invokes the canonical risk-selected profile; see
+`docs/engineering/controlled_verification_loop.md`.
 
 Do not edit authority metadata in place after `task begin`. If scope or action
 authority must change, make the human decision explicit and establish a new

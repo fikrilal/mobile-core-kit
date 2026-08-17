@@ -221,6 +221,11 @@ class _MemoryTaskStateStore implements TaskStateStore {
     }
     return value;
   }
+
+  @override
+  void write(TaskState value) {
+    state = value;
+  }
 }
 
 Matcher _controlError(String code) =>

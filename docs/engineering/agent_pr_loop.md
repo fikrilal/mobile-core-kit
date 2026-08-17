@@ -62,6 +62,17 @@ Canonical local gate for non-trivial work:
 dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
+For a controller-managed V2 task, use the bounded owner instead; it selects the
+canonical lane from effective risk and records candidate-bound evidence:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit task verify --task <task-id> --env dev
+```
+
+After a failure, the agent repairs through ordinary tools and runs
+`mobilekit task repair --task <task-id>` before verification can repeat. See
+`docs/engineering/controlled_verification_loop.md`.
+
 Targeted checks when the full gate is unnecessary or too expensive:
 
 ```bash

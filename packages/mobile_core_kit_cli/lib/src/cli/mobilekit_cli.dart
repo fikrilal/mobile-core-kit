@@ -153,6 +153,8 @@ class MobilekitCli {
         usage:
             'Usage: mobilekit task begin --plan <path> | '
             'task preflight --task <id> [--action <action>] | '
+            'task verify --task <id> [--env <env>] | '
+            'task repair --task <id> | '
             'task status --task <id>',
         workflow: (context) =>
             TaskWorkflow(context).run(arguments.skip(1).toList()),

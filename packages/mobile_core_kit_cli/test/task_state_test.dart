@@ -42,8 +42,9 @@ void main() {
 
 TaskState _state() => TaskState(
   taskId: 'test-task-authority',
-  status: 'authorized',
+  lifecycle: TaskLifecycle.authorized,
   startedAt: DateTime.utc(2026, 8, 11),
+  updatedAt: DateTime.utc(2026, 8, 11),
   baseRevision: _repeated('a', 40),
   planPath: 'docs/exec-plans/active/test.md',
   planSourceHash: _repeated('b', 64),
@@ -72,6 +73,18 @@ TaskState _state() => TaskState(
       sources: [ChangeSource.untracked],
       contentFingerprint:
           'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+    ),
+  ],
+  attemptCount: 0,
+  repairCount: 0,
+  repeatedFailureCount: 0,
+  selectedLanes: const [],
+  transitions: [
+    TaskTransition(
+      at: DateTime.utc(2026, 8, 11),
+      from: null,
+      to: TaskLifecycle.authorized,
+      reason: 'task-begin',
     ),
   ],
 );

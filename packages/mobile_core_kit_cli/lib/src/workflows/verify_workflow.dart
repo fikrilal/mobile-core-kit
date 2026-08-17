@@ -1,6 +1,7 @@
 import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/verification/verification_profile.dart';
+import 'package:mobile_core_kit_cli/src/verification/verification_result.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/env_config_reader.dart';
@@ -13,10 +14,11 @@ import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 typedef RuntimeVerification = Future<int> Function(List<String> arguments);
 
 class VerifyWorkflow {
-  const VerifyWorkflow(this.context, {this.runtimeVerification});
+  const VerifyWorkflow(this.context, {this.runtimeVerification, this.observer});
 
   final WorkflowContext context;
   final RuntimeVerification? runtimeVerification;
+  final VerificationObserver? observer;
 
   Future<int> run(List<String> argv) async {
     final parser = ArgParser()
@@ -83,10 +85,20 @@ class VerifyWorkflow {
       '${explicitProfile ? '(explicit)' : '(compatibility default)'}.',
     );
     for (final step in steps) {
+      final stopwatch = Stopwatch()..start();
       final exitCode = await _runStep(
         step,
         env: env,
         testPaths: args.multiOption('test-path'),
+      );
+      stopwatch.stop();
+      observer?.call(
+        VerificationStepOutcome(
+          profile: profile,
+          step: step,
+          exitCode: exitCode,
+          duration: stopwatch.elapsed,
+        ),
       );
       if (exitCode != 0) {
         context.errorOutput.writeln(
@@ -293,6 +305,14 @@ class VerifyWorkflow {
       '\n==> [verify.runtime] Collect device runtime evidence',
     );
     final exitCode = await runner(runtimeArguments);
+    observer?.call(
+      VerificationStepOutcome(
+        profile: VerificationProfile.runtime,
+        step: VerificationStep.runtimeEvidence,
+        exitCode: exitCode,
+        duration: Duration.zero,
+      ),
+    );
     if (exitCode != 0) {
       final step = VerificationStep.runtimeEvidence;
       context.errorOutput.writeln(
