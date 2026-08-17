@@ -34,6 +34,8 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit l10n verify` | Verify the generated untranslated-message report. |
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
 | `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
+| `mobilekit task` | Establish and inspect task authority; run report-only preflight. |
+| `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
 | `mobilekit runtime logs` | Manage background Flutter log sessions. |
@@ -199,6 +201,27 @@ mobilekit knowledge verify
 validates active/queued execution-plan metadata against directory lifecycle.
 `project-map verify` remains a focused compatibility command and now fails
 when the required map is absent instead of skipping successfully.
+
+### Task authority and risk
+
+```bash
+mobilekit task begin --plan docs/exec-plans/active/<plan>.md
+mobilekit task status --task <task-id>
+mobilekit task preflight --task <task-id> --action verify
+mobilekit risk classify
+mobilekit risk classify --plan docs/exec-plans/active/<plan>.md
+```
+
+`task begin` validates an active V2 execution plan and atomically records its
+authority, Git base revision, and fingerprints of pre-existing dirty paths in
+ignored local state. `task preflight` is report-only: it validates the current
+task-owned change set, action, scope, unchanged authority, and effective risk,
+then prints a stable fingerprint. It does not execute verification, commit,
+push, or create a PR. See `docs/engineering/task_authority.md`.
+
+Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
+They are independent grants. Automated path and impact classification can
+raise risk and cannot lower the plan's declared risk.
 
 `env verify` accepts repeatable `--env, -e <dev|staging|prod>`, `--all`, and
 `--strict`. Strict checks enforce production invariants for `prod`.

@@ -24,6 +24,38 @@ void main() {
     expect(output.toString(), contains('customize'));
     expect(output.toString(), contains('lint'));
     expect(output.toString(), contains('runtime'));
+    expect(output.toString(), contains('task'));
+    expect(output.toString(), contains('risk'));
+    expect(errors, isEmpty);
+  });
+
+  test('prints task command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['task', '--help']);
+
+    expect(result, 0);
+    expect(output.toString(), contains('Usage: mobilekit task begin'));
+    expect(errors, isEmpty);
+  });
+
+  test('prints risk command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['risk', '--help']);
+
+    expect(result, 0);
+    expect(output.toString(), contains('Usage: mobilekit risk classify'));
     expect(errors, isEmpty);
   });
 

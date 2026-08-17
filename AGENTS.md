@@ -51,6 +51,8 @@
 - For non-trivial work, create an execution plan first:
   - `docs/exec-plans/README.md`
   - `docs/exec-plans/active/`
+  - use a V2 plan, run `mobilekit task begin` before editing, and run
+    report-only `mobilekit task preflight` for each controlled action
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
   - CLI verification workflow

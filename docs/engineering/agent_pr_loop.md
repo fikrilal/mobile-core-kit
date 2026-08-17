@@ -33,7 +33,13 @@ Before implementation starts:
 - write a clear task statement
 - define acceptance criteria
 - classify risk
-- create a plan file for non-trivial work
+- create an active V2 plan for non-trivial work
+- establish its task baseline before editing:
+  `mobilekit task begin --plan <active-plan-path>`
+
+Before verification, commit, push, or draft-PR work, run report-only preflight
+for that exact action. An allowed edit does not authorize external mutation.
+The full contract is in `docs/engineering/task_authority.md`.
 
 Risk classes:
 - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact

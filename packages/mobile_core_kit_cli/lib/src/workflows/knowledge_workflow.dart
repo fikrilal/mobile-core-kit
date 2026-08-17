@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
@@ -55,7 +56,9 @@ List<String> _validateCiProfileOwnership(Directory root) {
 
 List<String> _validatePlanLifecycle(Directory root) {
   final errors = <String>[];
-  for (final lifecycle in const ['active', 'queued']) {
+  final taskIds = <String, String>{};
+  var activeV2Count = 0;
+  for (final lifecycle in const ['active', 'queued', 'completed']) {
     final directory = Directory(
       p.join(root.path, 'docs', 'exec-plans', lifecycle),
     );
@@ -71,40 +74,89 @@ List<String> _validatePlanLifecycle(Directory root) {
     for (final file in files) {
       final relative = _relative(root, file.path);
       final content = file.readAsStringSync();
-      for (final field in const [
-        'Date',
-        'Owner',
-        'Status',
-        'Risk class',
-        'Related issue/PR',
-      ]) {
-        if (!RegExp(
-          '^${RegExp.escape(field)}:\\s*\\S+',
-          multiLine: true,
-        ).hasMatch(content)) {
-          errors.add('$relative is missing required field `$field`.');
+      final isV2 = content.contains('**Plan version:**');
+      if (!isV2) {
+        if (lifecycle != 'completed' && !_isGrandfatheredLegacyPlan(content)) {
+          errors.add('$relative must use execution-plan version 2.');
+        } else if (lifecycle != 'completed') {
+          errors.addAll(_validateLegacyPlan(relative, content, lifecycle));
         }
+        continue;
       }
 
-      final status = RegExp(
-        r'^Status:\s*(.+)$',
-        multiLine: true,
-      ).firstMatch(content)?.group(1)?.trim().toLowerCase();
-      if (status != null && !status.startsWith(lifecycle)) {
-        errors.add(
-          '$relative declares status `$status` but is stored under '
-          '`$lifecycle/`.',
-        );
-      }
-
-      final risk = RegExp(
-        r'^Risk class:\s*(\S+)',
-        multiLine: true,
-      ).firstMatch(content)?.group(1)?.toLowerCase();
-      if (risk != null && !const {'low', 'medium', 'high'}.contains(risk)) {
-        errors.add('$relative declares unsupported risk class `$risk`.');
+      try {
+        final plan = parseTaskPlan(relative, content);
+        if (plan.status.name != lifecycle) {
+          errors.add(
+            '$relative declares status `${plan.status.name}` but is stored '
+            'under `$lifecycle/`.',
+          );
+        }
+        final duplicate = taskIds[plan.taskId];
+        if (duplicate != null) {
+          errors.add(
+            '$relative duplicates task ID `${plan.taskId}` from $duplicate.',
+          );
+        } else {
+          taskIds[plan.taskId] = relative;
+        }
+        if (lifecycle == 'active') activeV2Count += 1;
+        if (lifecycle == 'completed' &&
+            RegExp(r'^- \[ \]', multiLine: true).hasMatch(content)) {
+          errors.add(
+            '$relative is completed but has unchecked checklist items.',
+          );
+        }
+      } on TaskPlanError catch (error) {
+        errors.add('$relative: ${error.code}: ${error.message}');
       }
     }
+  }
+  if (activeV2Count > 1) {
+    errors.add(
+      'Only one V2 execution plan may be active for the current agent.',
+    );
+  }
+  return errors;
+}
+
+bool _isGrandfatheredLegacyPlan(String content) {
+  final value = RegExp(
+    r'^Date:\s*(\d{4}-\d{2}-\d{2})',
+    multiLine: true,
+  ).firstMatch(content)?.group(1);
+  final date = value == null ? null : DateTime.tryParse(value);
+  return date != null && date.isBefore(DateTime.utc(2026, 8, 11));
+}
+
+List<String> _validateLegacyPlan(
+  String relative,
+  String content,
+  String lifecycle,
+) {
+  final errors = <String>[];
+  for (final field in const [
+    'Date',
+    'Owner',
+    'Status',
+    'Risk class',
+    'Related issue/PR',
+  ]) {
+    if (!RegExp(
+      '^${RegExp.escape(field)}:\\s*\\S+',
+      multiLine: true,
+    ).hasMatch(content)) {
+      errors.add('$relative is missing legacy field `$field`.');
+    }
+  }
+  final status = RegExp(
+    r'^Status:\s*(.+)$',
+    multiLine: true,
+  ).firstMatch(content)?.group(1)?.trim().toLowerCase();
+  if (status != null && !status.startsWith(lifecycle)) {
+    errors.add(
+      '$relative declares status `$status` but is stored under `$lifecycle/`.',
+    );
   }
   return errors;
 }

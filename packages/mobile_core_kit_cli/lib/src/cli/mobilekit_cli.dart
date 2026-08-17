@@ -9,6 +9,7 @@ import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
+import 'package:mobile_core_kit_cli/src/task/task_workflow.dart';
 import 'package:mobile_core_kit_cli/src/template/template_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
@@ -145,6 +146,23 @@ class MobilekitCli {
         usage: 'Usage: mobilekit knowledge verify',
         workflow: (context, workflowArguments) =>
             KnowledgeWorkflow(context).run(workflowArguments),
+      ),
+      'task' => _runWorkflow(
+        command: 'task',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit task begin --plan <path> | '
+            'task preflight --task <id> [--action <action>] | '
+            'task status --task <id>',
+        workflow: (context) =>
+            TaskWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'risk' => _runWorkflow(
+        command: 'risk',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit risk classify [--plan <path>]',
+        workflow: (context) =>
+            RiskWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
@@ -530,6 +548,10 @@ class MobilekitCli {
     output.writeln(
       '  knowledge Verify project-map, links, and plan lifecycle.',
     );
+    output.writeln(
+      '  task      Manage current-agent task authority and state.',
+    );
+    output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
     output.writeln('  runtime   Manage runtime evidence and log sessions.');
