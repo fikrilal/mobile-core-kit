@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-2-task-authority
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 2 locally; no external mutation
@@ -76,14 +76,14 @@ protect pre-existing work, and conservatively classify effective task risk.
 
 ## Implementation Checklist
 
-- [ ] Implement V2 plan and authority parsing.
-- [ ] Implement conservative mobile path/impact risk classification.
-- [ ] Implement Git change discovery and content fingerprints.
-- [ ] Implement validated atomic local task state.
-- [ ] Implement task begin, status, and report-only preflight.
-- [ ] Upgrade knowledge validation and the execution-plan template.
-- [ ] Add CLI routing, focused tests, and agent documentation.
-- [ ] Exercise begin/preflight against this repository and verify Phase 2.
+- [x] Implement V2 plan and authority parsing.
+- [x] Implement conservative mobile path/impact risk classification.
+- [x] Implement Git change discovery and content fingerprints.
+- [x] Implement validated atomic local task state.
+- [x] Implement task begin, status, and report-only preflight.
+- [x] Upgrade knowledge validation and the execution-plan template.
+- [x] Add CLI routing, focused tests, and agent documentation.
+- [x] Exercise begin/preflight against this repository and verify Phase 2.
 
 ## Decision Log
 
@@ -110,6 +110,18 @@ dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev
 dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
+Outcomes on 2026-08-11:
+
+- package analysis: passed with no issues;
+- CLI package tests: 121 passed;
+- knowledge verification: passed;
+- real task begin/status/risk/preflight cycle: passed from clean revision
+  `64907f8628dc242ef128b61000b297ed152e2d3a` with no pre-existing paths;
+- fast profile: passed, including architecture and both harness test suites;
+- full profile: passed, including codegen freshness, architecture checks, 121
+  CLI tests, 11 custom-lint tests, advisory duplication reports, and 553
+  application tests.
+
 ## Runtime Evidence
 
 The applicable runtime evidence is a real begin/status/preflight cycle in this
@@ -134,8 +146,13 @@ application or external data requires migration.
 
 ## Completion Notes
 
-Pending.
+Phase 2 added executable V2 task authority without introducing another coding
+agent. Existing chat-driven agents can establish a local Git baseline, protect
+pre-existing work, inspect risk, and prove scope/action/risk compliance before
+they explicitly run a controlled action. The controller state is local,
+ignored, versioned, atomic, and fail-closed. Historical plans remain readable;
+new plans use the enforced lifecycle contract.
 
 ## Follow-ups
 
-- [ ] Create Phase 3 only after Phase 2 evidence passes.
+- [x] Create Phase 3 only after Phase 2 evidence passes.
