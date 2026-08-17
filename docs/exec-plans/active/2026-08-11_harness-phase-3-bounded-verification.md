@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 3 locally; no external mutation
-**Allowed paths:** packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/verification/, packages/mobile_core_kit_cli/lib/src/process/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/
+**Allowed paths:** packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/verification/, packages/mobile_core_kit_cli/lib/src/process/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/lib/src/workflows/verify_workflow.dart, packages/mobile_core_kit_cli/test/, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/
 **Allowed actions:** edit, verify, commit
 **Maximum risk:** high
 **Repair limit:** 2
@@ -97,6 +97,9 @@ escalates deterministically instead of looping.
   repository controls the loop but does not become another coding tool.
 - 2026-08-11: Persist bounded structured diagnostics, not raw transcripts ->
   local rediscovery remains useful without creating a secret/PII sink.
+- 2026-08-11: Add only `verify_workflow.dart` to the original path authority ->
+  the canonical owner needs a typed result observer; preflight correctly
+  rejected the omission before verification or commit.
 
 ## Verification
 
