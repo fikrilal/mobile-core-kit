@@ -63,7 +63,7 @@ Generated files are committed:
 When a Freezed or JSON-annotated type changes, run:
 
 ```bash
-fvm dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 ```
 
 ## 3. Domain Entities

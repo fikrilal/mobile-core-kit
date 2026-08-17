@@ -325,7 +325,8 @@ class ScaffoldWorkflow {
       '- Add routes: include `${feature}Routes` from `$navDir/${feature}_routes_list.dart` in `lib/navigation/app_router.dart`.',
     );
     context.output.writeln(
-      '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify --env dev`.',
+      '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify '
+      '--profile full --env dev`.',
     );
     context.output.writeln('');
     final l10nPrefix = _toCamelCase(baseSnake);

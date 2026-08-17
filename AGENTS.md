@@ -64,6 +64,27 @@
   - ADRs under `ADR/records/`
   - source-local `README.md` files near boundary-heavy code
 
+### Project Map
+
+This compact map is machine-checked by `mobilekit knowledge verify`. Detailed
+ownership stays in `docs/engineering/project_architecture.md`.
+
+```text
+lib/
+├─ core/
+│  ├─ design_system/
+│  ├─ dev_tools/
+│  ├─ di/
+│  ├─ domain/
+│  ├─ foundation/
+│  ├─ infra/
+│  ├─ platform/
+│  ├─ presentation/
+│  └─ runtime/
+├─ features/
+└─ navigation/
+```
+
 ## Agent Verification (required)
 
 Agents must verify changes before claiming completion (when feasible). Use native commands:
@@ -75,20 +96,22 @@ Minimum checks (pick what’s relevant to what you changed):
 
 - Lint checks: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
-- Codegen (if touching Freezed/JSON/build config): `dart run build_runner build --delete-conflicting-outputs`
+- Codegen (if touching Freezed/JSON/build config): `dart run build_runner build`
 - Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
 - Small-helper duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers`
 - Presentation duplication harness (targeted, not default): `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation`
 - AGENTS project-map drift: `dart run mobile_core_kit_cli:mobilekit project-map verify`
 
-Full pipeline (preferred for non-trivial changes):
+Verification profiles:
 
-- `dart run mobile_core_kit_cli:mobilekit verify --env dev`
+- Fast inner loop: `dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev`
+- Full pipeline (required for non-trivial changes): `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`
 
 Notes:
 
 - For non-trivial Dart/code changes, duplication checks are expected as part of verification.
-- `dart run mobile_core_kit_cli:mobilekit verify --env dev` is the preferred way to satisfy that requirement.
+- `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev` is the preferred way to satisfy that requirement.
+- The legacy `verify --env <env>` form remains a compatibility alias for `full`; do not use skip flags as completion evidence.
 - Docs-only changes can skip duplication checks.
 - `dart run mobile_core_kit_cli:mobilekit duplication check --profile presentation` remains a targeted self-review tool for presentation-heavy work, not a default per-change check.
 

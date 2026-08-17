@@ -32,7 +32,7 @@ dart run mobile_core_kit_cli:mobilekit lint
 The canonical gate also runs them:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 ## What Is Enforced

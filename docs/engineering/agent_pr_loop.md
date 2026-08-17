@@ -53,7 +53,7 @@ During implementation:
 Canonical local gate for non-trivial work:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 Targeted checks when the full gate is unnecessary or too expensive:

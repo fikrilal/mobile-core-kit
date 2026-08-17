@@ -101,14 +101,8 @@ jobs:
           strict-env-schema: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
           install-dependencies: "true"
 
-      - name: Lint plugin tests
-        working-directory: packages/mobile_core_kit_lints
-        run: |
-          dart pub get
-          dart test
-
-      - name: Verify (canonical)
-        run: dart run mobile_core_kit_cli:mobilekit verify --env prod --check-codegen
+      - name: Verify (canonical CI profile)
+        run: dart run mobile_core_kit_cli:mobilekit verify --profile ci --env prod
 
       - name: Prepare upload keystore
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
@@ -232,14 +226,8 @@ jobs:
           strict-env-schema: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
           install-dependencies: "true"
 
-      - name: Lint plugin tests
-        working-directory: packages/mobile_core_kit_lints
-        run: |
-          dart pub get
-          dart test
-
-      - name: Verify (canonical)
-        run: dart run mobile_core_kit_cli:mobilekit verify --env prod --check-codegen
+      - name: Verify (canonical CI profile)
+        run: dart run mobile_core_kit_cli:mobilekit verify --profile ci --env prod
 
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign -t lib/main_prod.dart --dart-define=ENV=prod

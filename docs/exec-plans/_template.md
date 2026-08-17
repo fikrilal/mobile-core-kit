@@ -38,7 +38,7 @@ List exact commands and outcomes.
 
 ```bash
 # example
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 Additional targeted checks when relevant:

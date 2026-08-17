@@ -301,7 +301,7 @@ Recommended use:
 - run the harness during self-review when the change touches shared or repeated
   patterns
 - expect the core profile and small-helper profile to run during
-  `dart run mobile_core_kit_cli:mobilekit verify --env dev`
+  `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`
 - review the output before opening/updating the PR
 - if a duplicate is acceptable, record it explicitly
 - if it is debt, either fix it now or call it out as follow-up debt

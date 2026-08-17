@@ -14,6 +14,7 @@ import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/codegen_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/environment_schema_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/fix_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
@@ -70,9 +71,18 @@ class MobilekitCli {
       'verify' => _runWorkflow(
         command: 'verify',
         arguments: arguments.skip(1).toList(),
-        usage: 'Usage: mobilekit verify [options]',
-        workflow: (context) =>
-            VerifyWorkflow(context).run(arguments.skip(1).toList()),
+        usage:
+            'Usage: mobilekit verify '
+            '[--profile <fast|full|runtime|ci>] [options]',
+        workflow: (context) => VerifyWorkflow(
+          context,
+          runtimeVerification: (runtimeArguments) => RuntimeEvidenceWorkflow(
+            rootDirectory: context.rootDirectory,
+            platform: _platform,
+            output: _output,
+            errorOutput: _errorOutput,
+          ).run(runtimeArguments),
+        ).run(arguments.skip(1).toList()),
       ),
       'lint' => _runWorkflow(
         command: 'lint',
@@ -127,6 +137,14 @@ class MobilekitCli {
         usage: 'Usage: mobilekit project-map verify',
         workflow: (context, workflowArguments) =>
             ProjectMapWorkflow(context).run(workflowArguments),
+      ),
+      'knowledge' => _runGroupedWorkflow(
+        group: 'knowledge',
+        subcommand: 'verify',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit knowledge verify',
+        workflow: (context, workflowArguments) =>
+            KnowledgeWorkflow(context).run(workflowArguments),
       ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
@@ -345,7 +363,11 @@ class MobilekitCli {
 
     final execute =
         _commandExecutor ??
-        CommandRunner(rootDirectory: root, platform: _platform).run;
+        CommandRunner(
+          rootDirectory: root,
+          platform: _platform,
+          output: _output,
+        ).run;
     final runner = DuplicationRunner(
       rootDirectory: root,
       execute: execute,
@@ -376,7 +398,11 @@ class MobilekitCli {
   }) async {
     final execute =
         _commandExecutor ??
-        CommandRunner(rootDirectory: root, platform: _platform).run;
+        CommandRunner(
+          rootDirectory: root,
+          platform: _platform,
+          output: _output,
+        ).run;
     final context = WorkflowContext(
       rootDirectory: root,
       execute: execute,
@@ -501,6 +527,9 @@ class MobilekitCli {
     output.writeln('  codegen   Verify generated-code freshness.');
     output.writeln('  l10n      Verify untranslated localization messages.');
     output.writeln('  project-map  Verify AGENTS project-map drift.');
+    output.writeln(
+      '  knowledge Verify project-map, links, and plan lifecycle.',
+    );
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
     output.writeln('  runtime   Manage runtime evidence and log sessions.');

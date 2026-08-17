@@ -163,9 +163,89 @@ void main() {
     ).run(['verify', '--help']);
 
     expect(result, 0);
-    expect(output.toString(), contains('Usage: mobilekit verify [options]'));
+    expect(
+      output.toString(),
+      contains('Usage: mobilekit verify [--profile <fast|full|runtime|ci>]'),
+    );
     expect(invoked, isFalse);
   });
+
+  test('explicit profiles reject legacy weakening flags', () async {
+    final tempDirectory = await Directory.systemTemp.createTemp(
+      'mobile_core_kit_cli_profile_test_',
+    );
+    addTearDown(() => tempDirectory.delete(recursive: true));
+    File(
+      p.join(tempDirectory.path, 'pubspec.yaml'),
+    ).writeAsStringSync('name: test_repository\n');
+    File(
+      p.join(tempDirectory.path, '.git'),
+    ).writeAsStringSync('gitdir: test\n');
+    final errors = StringBuffer();
+    var invoked = false;
+
+    final result = await MobilekitCli(
+      currentDirectory: tempDirectory,
+      commandExecutor: (_) async {
+        invoked = true;
+        return 0;
+      },
+      errorOutput: errors,
+    ).run(['verify', '--profile', 'full', '--skip-tests']);
+
+    expect(result, 2);
+    expect(errors.toString(), contains('cannot be weakened'));
+    expect(invoked, isFalse);
+  });
+
+  test('runtime profile requires an explicit device', () async {
+    final tempDirectory = await Directory.systemTemp.createTemp(
+      'mobile_core_kit_cli_runtime_profile_test_',
+    );
+    addTearDown(() => tempDirectory.delete(recursive: true));
+    File(
+      p.join(tempDirectory.path, 'pubspec.yaml'),
+    ).writeAsStringSync('name: test_repository\n');
+    File(
+      p.join(tempDirectory.path, '.git'),
+    ).writeAsStringSync('gitdir: test\n');
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: tempDirectory,
+      errorOutput: errors,
+    ).run(['verify', '--profile', 'runtime']);
+
+    expect(result, 2);
+    expect(errors.toString(), contains('--device is required'));
+  });
+
+  test(
+    'verification failure includes stable step id and remediation',
+    () async {
+      final tempDirectory = await Directory.systemTemp.createTemp(
+        'mobile_core_kit_cli_failure_test_',
+      );
+      addTearDown(() => tempDirectory.delete(recursive: true));
+      File(
+        p.join(tempDirectory.path, 'pubspec.yaml'),
+      ).writeAsStringSync('name: test_repository\n');
+      File(
+        p.join(tempDirectory.path, '.git'),
+      ).writeAsStringSync('gitdir: test\n');
+      final errors = StringBuffer();
+
+      final result = await MobilekitCli(
+        currentDirectory: tempDirectory,
+        commandExecutor: (_) async => 9,
+        errorOutput: errors,
+      ).run(['verify', '--profile', 'fast']);
+
+      expect(result, 9);
+      expect(errors.toString(), contains('FAIL [verify.dependencies]'));
+      expect(errors.toString(), contains('Remediation:'));
+    },
+  );
 
   test('rejects an unknown grouped command', () async {
     final errors = StringBuffer();

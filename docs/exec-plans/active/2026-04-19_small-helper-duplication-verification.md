@@ -1,5 +1,11 @@
 # Small Helper Duplication Detection And Verification Integration
 
+Date: 2026-04-19
+Owner: Dante
+Status: active (implementation complete, awaiting review)
+Risk class: medium
+Related issue/PR: N/A
+
 ## Goal
 
 Improve the duplication harness so it catches the highest-pain duplication class in this repository:

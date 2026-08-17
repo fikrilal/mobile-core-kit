@@ -26,7 +26,6 @@ class CodegenWorkflow {
       'run',
       'build_runner',
       'build',
-      '--delete-conflicting-outputs',
     ]);
   }
 
@@ -80,9 +79,7 @@ Future<int> _verifyGeneratedFilesClean(
   }
   errorOutput.writeln('');
   errorOutput.writeln('Fix:');
-  errorOutput.writeln(
-    '  dart run build_runner build --delete-conflicting-outputs',
-  );
+  errorOutput.writeln('  dart run build_runner build');
   return 1;
 }
 

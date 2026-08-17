@@ -18,11 +18,17 @@ class ResolvedCommand {
 }
 
 class CommandRunner {
-  CommandRunner({required this.rootDirectory, CommandPlatform? platform})
-    : platform = platform ?? CommandPlatform.host();
+  CommandRunner({
+    required this.rootDirectory,
+    CommandPlatform? platform,
+    StringSink? output,
+  }) : platform = platform ?? CommandPlatform.host(),
+       _output = output ?? stdout;
 
   final Directory rootDirectory;
   final CommandPlatform platform;
+  final StringSink _output;
+  final Set<String> _reportedToolchains = {};
 
   ResolvedCommand resolve(String executable) {
     if (executable == 'dart' || executable == 'flutter') {
@@ -39,6 +45,7 @@ class CommandRunner {
     if (command.isEmpty) return 0;
 
     final resolved = resolve(command.first);
+    _reportToolchain(command.first, resolved);
     final executable =
         platform == CommandPlatform.windows && command.first == 'npx'
         ? 'cmd.exe'
@@ -54,6 +61,21 @@ class CommandRunner {
       mode: ProcessStartMode.inheritStdio,
     );
     return process.exitCode;
+  }
+
+  void _reportToolchain(String requested, ResolvedCommand resolved) {
+    if (requested != 'dart' && requested != 'flutter') return;
+    if (!_reportedToolchains.add(requested)) return;
+    _output.writeln(toolchainDiagnostic(requested, resolved));
+  }
+
+  String toolchainDiagnostic(String requested, ResolvedCommand resolved) {
+    if (resolved.isPinned) {
+      return 'Toolchain [$requested]: pinned checkout SDK '
+          '(${p.relative(resolved.executable, from: rootDirectory.path)}).';
+    }
+    return 'WARN [toolchain.path-fallback] `$requested` resolved from PATH '
+        'because `.fvm/flutter_sdk/bin/$requested` is unavailable.';
   }
 
   String _pinnedExecutable(String executable) {

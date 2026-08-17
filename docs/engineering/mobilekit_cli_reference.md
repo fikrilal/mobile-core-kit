@@ -26,13 +26,14 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit customize` | Review or update template lifecycle state. |
 | `mobilekit doctor` | Read-only tooling, template-policy, and external-setup diagnostics. |
 | `mobilekit lint` | Run Flutter analyzer and custom lint rules. |
-| `mobilekit verify` | Run the canonical repository quality gate. |
+| `mobilekit verify` | Run a typed fast, full, runtime, or CI verification profile. |
 | `mobilekit fix` | Preview or apply safe Dart fixes and formatting. |
 | `mobilekit config generate` | Generate build configuration from `.env/*.yaml`. |
 | `mobilekit env verify` | Validate environment schema files. |
 | `mobilekit codegen verify` | Verify generated-code freshness. |
 | `mobilekit l10n verify` | Verify the generated untranslated-message report. |
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
+| `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
 | `mobilekit runtime logs` | Manage background Flutter log sessions. |
@@ -122,22 +123,40 @@ accepts no workflow-specific options.
 ### `verify`
 
 ```bash
-mobilekit verify --env dev
+mobilekit verify --profile fast --env dev
+mobilekit verify --profile full --env dev
+mobilekit verify --profile runtime --env dev --device emulator-5554
+mobilekit verify --profile ci --env prod
 ```
 
 Options:
 
+- `--profile <fast|full|runtime|ci>` — explicit evidence profile; omitted means
+  the legacy compatibility default, `full`.
 - `--env, -e <dev|staging|prod>` — environment; defaults to `dev`.
-- `--apply-fixes` — apply the supported `directives_ordering` fix before the
-  remaining checks.
-- `--check-codegen` — verify generated-code freshness.
-- `--skip-duplication` — skip core and small-helper duplication profiles.
-- `--skip-format` — skip the final formatting check.
-- `--skip-tests` — skip Flutter tests.
+- `--test-path <path>` — repeatable focused application test for `fast`.
+- `--device`, `--target`, `--artifacts-dir`,
+  `--no-example-env-fallback`, and `--google-services-json` — runtime-profile
+  options delegated to the existing evidence owner.
 
-The gate also generates build configuration and localization output, validates
-environment and project-map state, runs lint/guardrail checks, and returns on
-the first failing step.
+The profiles are intentionally different:
+
+- `fast` runs dependency/environment preflight, generated config and
+  localization, knowledge validation, formatting, analyzer/custom lints, both
+  harness-package test suites, and optional focused application tests;
+- `full` adds generated-output freshness, advisory core/small-helper
+  duplication reports, and every root application test;
+- `runtime` delegates selected integration targets to the device evidence
+  workflow and requires `--device`;
+- `ci` has the same repository proof sequence as `full`; GitHub Actions adds
+  independent platform, coverage, golden, dependency, and secret-scanning
+  lanes around it.
+
+Every profile is fail-fast and reports stable step identifiers plus remediation.
+Explicit profiles reject weakening skip flags and file-mutating fixes. The old
+`--apply-fixes`, `--check-codegen`, `--skip-duplication`, `--skip-format`, and
+`--skip-tests` flags remain only for compatibility when `--profile` is omitted;
+their output is not sufficient completion evidence.
 
 ### `fix`
 
@@ -172,7 +191,14 @@ mobilekit env verify --all --strict
 mobilekit codegen verify
 mobilekit l10n verify
 mobilekit project-map verify
+mobilekit knowledge verify
 ```
+
+`knowledge verify` is the normal aggregate. It requires the compact
+`AGENTS.md` core map, checks normative repository-local Markdown links, and
+validates active/queued execution-plan metadata against directory lifecycle.
+`project-map verify` remains a focused compatibility command and now fails
+when the required map is absent instead of skipping successfully.
 
 `env verify` accepts repeatable `--env, -e <dev|staging|prod>`, `--all`, and
 `--strict`. Strict checks enforce production invariants for `prod`.

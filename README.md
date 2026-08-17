@@ -84,7 +84,7 @@ for the backend-core-kit integration.
 
 3. **Run code generation (Freezed + JSON)**
    ```bash
-   dart run build_runner build --delete-conflicting-outputs
+   dart run build_runner build
    ```
 
 4. **Run the app (dev flavor)**
@@ -108,7 +108,7 @@ for the backend-core-kit integration.
 This repo uses `custom_lint` to enforce architecture import boundaries in both IDEs and CI:
 
 - Rules config: `lint/architecture_lints.yaml`
-- Run locally: `dart run mobile_core_kit_cli:mobilekit lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --env dev`)
+- Run locally: `dart run mobile_core_kit_cli:mobilekit lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev`)
 - Guardrails index: `docs/engineering/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`
@@ -119,7 +119,7 @@ This repo uses `custom_lint` to enforce architecture import boundaries in both I
 Run all checks (config generation + analyze + custom lint + tests + format check):
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 See `docs/engineering/guardrails.md` for the full list of guardrails (lints +

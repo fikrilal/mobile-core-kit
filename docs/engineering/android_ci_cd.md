@@ -153,7 +153,7 @@ Canonical verification now runs:
 dart run mobile_core_kit_cli:mobilekit env verify --all
 ```
 
-When running production verification (`mobilekit verify --env prod`), strict production invariants are enforced:
+When running production CI verification (`mobilekit verify --profile ci --env prod`), strict production invariants are enforced:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit env verify --all --strict

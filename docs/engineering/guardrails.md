@@ -29,10 +29,11 @@ Safe auto-fix:
 dart run mobile_core_kit_cli:mobilekit fix --apply
 ```
 
-Canonical quality gate:
+Fast inner loop and canonical full gate:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit verify --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev
+dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
 Targeted checks:
@@ -42,6 +43,7 @@ dart run mobile_core_kit_cli:mobilekit lint
 fvm flutter test
 dart run mobile_core_kit_cli:mobilekit codegen verify
 dart run mobile_core_kit_cli:mobilekit project-map verify
+dart run mobile_core_kit_cli:mobilekit knowledge verify
 ```
 
 When using a globally activated checkout-local CLI, refresh the activation if

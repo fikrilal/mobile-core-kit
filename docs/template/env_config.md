@@ -88,6 +88,6 @@ Typical template defaults:
 
 Use the canonical mobilekit verification command:
 
-`dart run mobile_core_kit_cli:mobilekit verify --env dev`
+`dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`
 
 This runs config generation + analyze + tests, and will fail if `.env/<env>.yaml` is missing/empty.
