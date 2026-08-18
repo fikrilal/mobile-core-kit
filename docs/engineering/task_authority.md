@@ -66,3 +66,8 @@ that invokes the canonical risk-selected profile; see
 Do not edit authority metadata in place after `task begin`. If scope or action
 authority must change, make the human decision explicit and establish a new
 baseline. Never delete or rewrite unrelated dirty work to make preflight pass.
+
+When a task workspace is prepared, its canonical path becomes part of the
+authority evidence. Controlled actions from the primary or another worktree
+fail; state/status remains shared and rediscoverable. See
+`docs/engineering/current_agent_workspaces.md`.

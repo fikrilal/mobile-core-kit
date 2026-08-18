@@ -55,6 +55,8 @@
     report-only `mobilekit task preflight` for each controlled action
   - for a controller-managed task, use `mobilekit task verify`; after failure,
     repair with normal agent tools and record it with `mobilekit task repair`
+  - when a task workspace is prepared, continue the same agent session from
+    that exact path; cancellation never terminates the host agent
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
   - CLI verification workflow

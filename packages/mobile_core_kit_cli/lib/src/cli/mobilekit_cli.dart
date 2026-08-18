@@ -155,6 +155,7 @@ class MobilekitCli {
             'task preflight --task <id> [--action <action>] | '
             'task verify --task <id> [--env <env>] | '
             'task repair --task <id> | '
+            'task workspace <prepare|status|cancel|cleanup> --task <id> | '
             'task status --task <id>',
         workflow: (context) =>
             TaskWorkflow(context).run(arguments.skip(1).toList()),

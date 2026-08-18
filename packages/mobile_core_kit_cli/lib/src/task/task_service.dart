@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:mobile_core_kit_cli/src/policy/risk_classifier.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
+import 'package:mobile_core_kit_cli/src/task/git_worktree_client.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/task/task_state.dart';
 import 'package:path/path.dart' as p;
@@ -133,6 +134,7 @@ class TaskService {
     required TaskAction action,
   }) async {
     final state = stateStore.read(taskId);
+    _assertWorkspace(state);
     final plan = _loadPlan(state.planPath);
     if (plan.status != TaskPlanStatus.active ||
         plan.taskId != state.taskId ||
@@ -219,6 +221,24 @@ class TaskService {
       classification: classification,
       taskFingerprint: taskFingerprint,
     );
+  }
+
+  void _assertWorkspace(TaskState state) {
+    final workspace = state.workspace;
+    if (workspace == null) return;
+    if (workspace.lifecycle != TaskWorkspaceLifecycle.prepared) {
+      throw TaskControlError(
+        'workspace.lifecycle-invalid',
+        'Task workspace is ${workspace.lifecycle.name}; controlled actions are disabled.',
+      );
+    }
+    if (canonicalWorkspacePath(root.path) !=
+        canonicalWorkspacePath(workspace.path)) {
+      throw const TaskControlError(
+        'workspace.checkout-mismatch',
+        'Run controlled task actions from the owned task workspace.',
+      );
+    }
   }
 
   Future<RiskClassification> classifyCurrent({String? planPath}) async {

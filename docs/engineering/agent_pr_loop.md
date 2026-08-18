@@ -41,6 +41,11 @@ Before verification, commit, push, or draft-PR work, run report-only preflight
 for that exact action. An allowed edit does not authorize external mutation.
 The full contract is in `docs/engineering/task_authority.md`.
 
+When isolation is requested, prepare the current-agent workspace from the
+primary checkout and continue the same session from the reported path. Follow
+`docs/engineering/current_agent_workspaces.md`; do not copy dirty primary files
+or interpret cancellation as permission to terminate the host agent.
+
 Risk classes:
 - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact
 - `medium`: feature behavior change, navigation change, data mapping/API usage changes

@@ -210,6 +210,10 @@ mobilekit task status --task <task-id>
 mobilekit task preflight --task <task-id> --action verify
 mobilekit task verify --task <task-id> --env dev
 mobilekit task repair --task <task-id>
+mobilekit task workspace prepare --task <task-id>
+mobilekit task workspace status --task <task-id>
+mobilekit task workspace cancel --task <task-id>
+mobilekit task workspace cleanup --task <task-id>
 mobilekit risk classify
 mobilekit risk classify --plan docs/exec-plans/active/<plan>.md
 ```
@@ -228,6 +232,12 @@ After the conversational agent changes code, `task repair` records whether the
 candidate fingerprint meaningfully changed; it never edits code itself. See
 `docs/engineering/task_authority.md` and
 `docs/engineering/controlled_verification_loop.md`.
+
+`task workspace prepare` creates a deterministic `agent/<task-id>` branch and
+linked worktree from the recorded base without copying dirty primary files.
+Task state is shared and rediscoverable from either checkout. Cancellation is
+state-only; cleanup requires an exact, cancelled, clean owned worktree and
+preserves the branch. See `docs/engineering/current_agent_workspaces.md`.
 
 Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
 They are independent grants. Automated path and impact classification can

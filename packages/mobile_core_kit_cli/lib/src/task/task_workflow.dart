@@ -1,36 +1,54 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/process/deadline_command_runner.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
+import 'package:mobile_core_kit_cli/src/task/task_control_root.dart';
 import 'package:mobile_core_kit_cli/src/task/task_controller.dart';
 import 'package:mobile_core_kit_cli/src/task/task_episode.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/task/task_service.dart';
 import 'package:mobile_core_kit_cli/src/task/task_state.dart';
+import 'package:mobile_core_kit_cli/src/task/task_workspace_manager.dart';
 import 'package:mobile_core_kit_cli/src/verification/verification_result.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 
 class TaskWorkflow {
-  TaskWorkflow(this.context) {
-    stateStore = FileTaskStateStore(context.rootDirectory);
+  TaskWorkflow(this.context);
+
+  final WorkflowContext context;
+  late final Directory controlRoot;
+  late final TaskStateStore stateStore;
+  late final TaskService service;
+  late final TaskController controller;
+  late final TaskWorkspaceManager workspaceManager;
+
+  Future<void> _initialize() async {
+    controlRoot = await const TaskControlRootLocator().locate(
+      context.rootDirectory,
+    );
+    stateStore = FileTaskStateStore(controlRoot);
     service = TaskService(root: context.rootDirectory, stateStore: stateStore);
     controller = TaskController(
       service: service,
       stateStore: stateStore,
-      episodeStore: FileTaskEpisodeStore(context.rootDirectory),
+      episodeStore: FileTaskEpisodeStore(controlRoot),
+    );
+    workspaceManager = TaskWorkspaceManager(
+      checkoutRoot: context.rootDirectory,
+      controlRoot: controlRoot,
+      service: service,
+      stateStore: stateStore,
     );
   }
 
-  final WorkflowContext context;
-  late final TaskStateStore stateStore;
-  late final TaskService service;
-  late final TaskController controller;
-
   Future<int> run(List<String> arguments) async {
+    await _initialize();
     if (arguments.isEmpty) {
       context.errorOutput.writeln(
         'ERROR: Expected `task begin`, `task preflight`, `task verify`, '
-        '`task repair`, or `task status`.',
+        '`task repair`, `task workspace`, or `task status`.',
       );
       return 2;
     }
@@ -40,6 +58,7 @@ class TaskWorkflow {
         'preflight' => _preflight(arguments.skip(1).toList()),
         'verify' => _verify(arguments.skip(1).toList()),
         'repair' => _repair(arguments.skip(1).toList()),
+        'workspace' => _workspace(arguments.skip(1).toList()),
         'status' => _status(arguments.skip(1).toList()),
         _ => _unknown(arguments.first),
       };
@@ -230,6 +249,44 @@ class TaskWorkflow {
             !result.candidateChanged
         ? 1
         : 0;
+  }
+
+  Future<int> _workspace(List<String> arguments) async {
+    if (arguments.isEmpty) {
+      throw const FormatException(
+        'Expected workspace prepare, status, cancel, or cleanup.',
+      );
+    }
+    final parser = ArgParser()..addOption('task');
+    final parsed = parser.parse(arguments.skip(1).toList());
+    _rejectRest(parsed.rest);
+    final taskId = parsed.option('task');
+    if (taskId == null || taskId.isEmpty) {
+      throw const FormatException('--task is required.');
+    }
+    final result = switch (arguments.first) {
+      'prepare' => await workspaceManager.prepare(taskId),
+      'status' => workspaceManager.status(taskId),
+      'cancel' => workspaceManager.cancel(taskId),
+      'cleanup' => await workspaceManager.cleanup(taskId),
+      _ => throw FormatException(
+        "Unknown workspace command '${arguments.first}'.",
+      ),
+    };
+    context.output.writeln('Task workspace: ${result.taskId}');
+    context.output.writeln('Lifecycle: ${result.workspace.lifecycle.name}');
+    context.output.writeln('Path: ${result.workspace.path}');
+    context.output.writeln('Branch: ${result.workspace.branch}');
+    context.output.writeln('Base revision: ${result.workspace.baseRevision}');
+    if (arguments.first == 'prepare') {
+      context.output.writeln(
+        'Continue the current agent session from the workspace path above.',
+      );
+    }
+    if (arguments.first == 'cancel') {
+      context.output.writeln('The host coding agent was not terminated.');
+    }
+    return 0;
   }
 
   int _unknown(String command) {

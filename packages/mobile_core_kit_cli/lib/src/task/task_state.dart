@@ -22,6 +22,77 @@ enum TaskLifecycle {
   );
 }
 
+enum TaskWorkspaceLifecycle {
+  prepared,
+  cancelled,
+  cleaned;
+
+  static TaskWorkspaceLifecycle parse(String value) => values.firstWhere(
+    (candidate) => candidate.name == value,
+    orElse: () => throw const TaskControlError(
+      'task.state-invalid',
+      'Task workspace lifecycle is unsupported.',
+    ),
+  );
+}
+
+class TaskWorkspace {
+  const TaskWorkspace({
+    required this.controlRoot,
+    required this.path,
+    required this.branch,
+    required this.baseRevision,
+    required this.lifecycle,
+  });
+
+  final String controlRoot;
+  final String path;
+  final String branch;
+  final String baseRevision;
+  final TaskWorkspaceLifecycle lifecycle;
+
+  Map<String, Object?> toJson() => {
+    'controlRoot': controlRoot,
+    'path': path,
+    'branch': branch,
+    'baseRevision': baseRevision,
+    'lifecycle': lifecycle.name,
+  };
+
+  factory TaskWorkspace.fromJson(Map<String, Object?> json) {
+    final controlRoot = _requiredString(json, 'controlRoot');
+    final path = _requiredString(json, 'path');
+    final branch = _requiredString(json, 'branch');
+    final baseRevision = _requiredString(json, 'baseRevision');
+    if (!p.isAbsolute(controlRoot) ||
+        !p.isAbsolute(path) ||
+        !_workspaceBranch.hasMatch(branch) ||
+        !_revision.hasMatch(baseRevision)) {
+      throw const TaskControlError(
+        'task.state-invalid',
+        'Task workspace ownership is invalid.',
+      );
+    }
+    return TaskWorkspace(
+      controlRoot: p.normalize(controlRoot),
+      path: p.normalize(path),
+      branch: branch,
+      baseRevision: baseRevision,
+      lifecycle: TaskWorkspaceLifecycle.parse(
+        _requiredString(json, 'lifecycle'),
+      ),
+    );
+  }
+
+  TaskWorkspace withLifecycle(TaskWorkspaceLifecycle next) => TaskWorkspace(
+    controlRoot: controlRoot,
+    path: path,
+    branch: branch,
+    baseRevision: baseRevision,
+    lifecycle: next,
+  );
+}
+
 class PreexistingChange {
   const PreexistingChange({
     required this.path,
@@ -187,9 +258,10 @@ class TaskState {
     this.lastTaskFingerprint,
     this.failure,
     this.escalationReason,
+    this.workspace,
   });
 
-  static const schemaVersion = 2;
+  static const schemaVersion = 3;
 
   final String taskId;
   final TaskLifecycle lifecycle;
@@ -211,6 +283,7 @@ class TaskState {
   final String? lastTaskFingerprint;
   final TaskFailureRecord? failure;
   final String? escalationReason;
+  final TaskWorkspace? workspace;
 
   String get status => lifecycle.name;
 
@@ -225,6 +298,7 @@ class TaskState {
     Object? lastTaskFingerprint = _unchanged,
     Object? failure = _unchanged,
     Object? escalationReason = _unchanged,
+    Object? workspace = _unchanged,
   }) {
     final nextTransitions = [
       ...transitions,
@@ -260,6 +334,9 @@ class TaskState {
       escalationReason: identical(escalationReason, _unchanged)
           ? this.escalationReason
           : escalationReason as String?,
+      workspace: identical(workspace, _unchanged)
+          ? this.workspace
+          : workspace as TaskWorkspace?,
     );
   }
 
@@ -289,18 +366,32 @@ class TaskState {
     if (lastTaskFingerprint != null) 'lastTaskFingerprint': lastTaskFingerprint,
     if (failure != null) 'failure': failure!.toJson(),
     if (escalationReason != null) 'escalationReason': escalationReason,
+    if (workspace != null) 'workspace': workspace!.toJson(),
   };
 
   factory TaskState.fromJson(Map<String, Object?> json) {
     final version = json['schemaVersion'];
     if (version == 1) return _fromV1(json);
+    if (version == 2) return _fromModern(json, workspace: null);
     if (version != schemaVersion) {
       throw const TaskControlError(
         'task.state-invalid',
         'Task state schema is unsupported.',
       );
     }
-    return _fromV2(json);
+    final workspace = json['workspace'];
+    if (workspace != null && workspace is! Map) {
+      throw const TaskControlError(
+        'task.state-invalid',
+        'Task workspace state is malformed.',
+      );
+    }
+    return _fromModern(
+      json,
+      workspace: workspace == null
+          ? null
+          : TaskWorkspace.fromJson((workspace as Map).cast<String, Object?>()),
+    );
   }
 
   static TaskState _fromV1(Map<String, Object?> json) {
@@ -346,8 +437,30 @@ class TaskState {
     );
   }
 
-  static TaskState _fromV2(Map<String, Object?> json) {
+  static TaskState _fromModern(
+    Map<String, Object?> json, {
+    required TaskWorkspace? workspace,
+  }) {
     final common = _common(json);
+    if (workspace != null) {
+      final expectedPath = p.normalize(
+        p.join(
+          workspace.controlRoot,
+          '.tmp',
+          'mobilekit',
+          'worktrees',
+          common.taskId,
+        ),
+      );
+      if (workspace.path != expectedPath ||
+          workspace.branch != 'agent/${common.taskId}' ||
+          workspace.baseRevision != common.baseRevision) {
+        throw const TaskControlError(
+          'task.state-invalid',
+          'Task workspace ownership does not match task identity.',
+        );
+      }
+    }
     final startedAt = DateTime.tryParse(_requiredString(json, 'startedAt'));
     final updatedAt = DateTime.tryParse(_requiredString(json, 'updatedAt'));
     final attempts = json['attemptCount'];
@@ -410,6 +523,7 @@ class TaskState {
               (failure as Map).cast<String, Object?>(),
             ),
       escalationReason: escalation as String?,
+      workspace: workspace,
     );
   }
 }
@@ -591,3 +705,4 @@ final _taskId = RegExp(r'^[a-z0-9][a-z0-9-]{2,79}$');
 final _revision = RegExp(r'^[0-9a-f]{40,64}$');
 final _sha256 = RegExp(r'^[0-9a-f]{64}$');
 final _boundary = RegExp(r'^[a-z][a-z0-9._-]{1,79}$');
+final _workspaceBranch = RegExp(r'^agent/[a-z0-9][a-z0-9-]{2,79}$');

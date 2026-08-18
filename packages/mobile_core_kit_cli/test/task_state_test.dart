@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/task/task_state.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
@@ -18,6 +19,23 @@ void main() {
     expect(restored.taskId, state.taskId);
     expect(restored.boundaries.allowedPaths, state.boundaries.allowedPaths);
     expect(restored.preexistingChanges.single.path, 'user.txt');
+
+    final withWorkspace = restored.transition(
+      TaskLifecycle.authorized,
+      at: DateTime.utc(2026, 8, 11, 1),
+      reason: 'workspace-prepared',
+      workspace: TaskWorkspace(
+        controlRoot: root.path,
+        path: p.join(root.path, '.tmp/mobilekit/worktrees/test-task-authority'),
+        branch: 'agent/test-task-authority',
+        baseRevision: restored.baseRevision,
+        lifecycle: TaskWorkspaceLifecycle.prepared,
+      ),
+    );
+    store.write(withWorkspace);
+    final workspace = store.read(state.taskId).workspace!;
+    expect(workspace.branch, 'agent/test-task-authority');
+    expect(workspace.lifecycle, TaskWorkspaceLifecycle.prepared);
   });
 
   test('rejects duplicate state creation and unsupported schema', () async {

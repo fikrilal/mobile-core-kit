@@ -70,3 +70,6 @@ schemas fail closed.
 Use `mobilekit task status --task <task-id>` after interruption or context
 compaction. A state left in `verifying` is ambiguous and escalates on the next
 controlled verification rather than assuming that the prior command passed.
+
+After `task workspace prepare`, run this loop from the exact linked worktree.
+The controller rejects verification from the primary checkout.
