@@ -21,6 +21,8 @@ void main() {
       expect(steps, contains(VerificationStep.applicationTests));
       expect(steps, contains(VerificationStep.codegen));
       expect(steps, contains(VerificationStep.lint));
+      expect(steps, contains(VerificationStep.oracles));
+      expect(steps, contains(VerificationStep.contracts));
     }
   });
 

@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/contracts/openapi_contract_workflow.dart';
 import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
@@ -147,6 +149,15 @@ class MobilekitCli {
         workflow: (context, workflowArguments) =>
             KnowledgeWorkflow(context).run(workflowArguments),
       ),
+      'oracle' => _runGroupedWorkflow(
+        group: 'oracle',
+        subcommand: 'verify',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit oracle verify',
+        workflow: (context, workflowArguments) =>
+            OracleWorkflow(context).run(workflowArguments),
+      ),
+      'contract' => _runContract(arguments.skip(1).toList()),
       'task' => _runWorkflow(
         command: 'task',
         arguments: arguments.skip(1).toList(),
@@ -184,6 +195,35 @@ class MobilekitCli {
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
+  }
+
+  Future<int> _runContract(List<String> arguments) async {
+    const usage =
+        'Usage: mobilekit contract openapi verify | '
+        'contract openapi sync --source <path> '
+        '--source-revision <revision> --accept';
+    if (arguments.isEmpty) {
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    if (_isHelp(arguments.first)) {
+      _writeCommandUsage(_output, usage);
+      return 0;
+    }
+    if (arguments.first != 'openapi') {
+      _errorOutput.writeln(
+        "ERROR: Unknown contract command '${arguments.first}'.",
+      );
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    return _runWorkflow(
+      command: 'contract openapi',
+      arguments: arguments.skip(1).toList(),
+      usage: usage,
+      workflow: (context) =>
+          OpenApiContractWorkflow(context).run(arguments.skip(1).toList()),
+    );
   }
 
   Future<int> _runTemplateLifecycle({
@@ -551,6 +591,8 @@ class MobilekitCli {
     output.writeln(
       '  knowledge Verify project-map, links, and plan lifecycle.',
     );
+    output.writeln('  oracle    Verify registered behavioral oracles.');
+    output.writeln('  contract  Verify or explicitly sync pinned contracts.');
     output.writeln(
       '  task      Manage current-agent task authority and state.',
     );

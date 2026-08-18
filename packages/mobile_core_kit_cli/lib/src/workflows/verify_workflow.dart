@@ -1,5 +1,7 @@
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/contracts/openapi_contract_workflow.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/verification/verification_profile.dart';
 import 'package:mobile_core_kit_cli/src/verification/verification_result.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
@@ -216,6 +218,10 @@ class VerifyWorkflow {
         context,
       ).run(const []),
       VerificationStep.knowledge => KnowledgeWorkflow(context).run(const []),
+      VerificationStep.oracles => OracleWorkflow(context).run(const []),
+      VerificationStep.contracts => OpenApiContractWorkflow(
+        context,
+      ).run(const ['verify']),
       VerificationStep.format => context.execute(const [
         'dart',
         'format',

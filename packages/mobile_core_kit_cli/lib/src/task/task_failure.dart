@@ -51,6 +51,14 @@ const verificationFailureTaxonomy = <VerificationStep, TaskFailureDefinition>{
     boundary: 'knowledge.repository',
     category: TaskFailureCategory.knowledge,
   ),
+  VerificationStep.oracles: TaskFailureDefinition(
+    boundary: 'policy.behavioral_oracles',
+    category: TaskFailureCategory.policy,
+  ),
+  VerificationStep.contracts: TaskFailureDefinition(
+    boundary: 'policy.api_contracts',
+    category: TaskFailureCategory.policy,
+  ),
   VerificationStep.format: TaskFailureDefinition(
     boundary: 'format.dart',
     category: TaskFailureCategory.formatting,
