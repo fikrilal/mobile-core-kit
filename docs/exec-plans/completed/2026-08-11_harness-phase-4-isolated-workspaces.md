@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-4-isolated-workspaces
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 4 locally; no agent launch or external mutation
@@ -76,14 +76,14 @@ worktree files, then cancel or clean it safely under explicit lifecycle rules.
 
 ## Implementation Checklist
 
-- [ ] Add shared controller-root and worktree discovery.
-- [ ] Extend state with validated workspace ownership and lifecycle.
-- [ ] Implement repository mutation lock and deterministic prepare.
-- [ ] Make preflight/verify workspace-aware after preparation.
-- [ ] Implement status rediscovery and state-only cancellation.
-- [ ] Implement fail-closed clean-worktree cleanup with branch preservation.
-- [ ] Add native Git integration/negative tests and operating docs.
-- [ ] Exercise prepare/status/cancel/cleanup in an isolated fixture and verify.
+- [x] Add shared controller-root and worktree discovery.
+- [x] Extend state with validated workspace ownership and lifecycle.
+- [x] Implement repository mutation lock and deterministic prepare.
+- [x] Make preflight/verify workspace-aware after preparation.
+- [x] Implement status rediscovery and state-only cancellation.
+- [x] Implement fail-closed clean-worktree cleanup with branch preservation.
+- [x] Add native Git integration/negative tests and operating docs.
+- [x] Exercise prepare/status/cancel/cleanup in an isolated fixture and verify.
 
 ## Decision Log
 
@@ -103,6 +103,23 @@ dart analyze packages/mobile_core_kit_cli
 dart run mobile_core_kit_cli:mobilekit knowledge verify
 dart run mobile_core_kit_cli:mobilekit task verify --task mobile-harness-phase-4-isolated-workspaces --env dev
 ```
+
+Outcomes on 2026-08-11:
+
+- package analysis: passed with no issues;
+- CLI package tests: 136 passed;
+- native Git fixtures proved primary dirty-file isolation, deterministic
+  branch/base/path ownership, primary-root rediscovery from the linked
+  checkout, primary preflight rejection, workspace preflight success,
+  state-only cancellation, clean cleanup, and branch preservation;
+- negative fixtures proved dirty cleanup refusal and immediate lock contention;
+- knowledge verification: passed;
+- real high-risk `task verify`: selected `full` and passed fingerprint
+  `2f07590981d382b8f0544113d5591a07af1b2cc65150b87f1f5e0f09a44633be`
+  in 102702 ms;
+- final full lane passed codegen freshness, knowledge/format/architecture, 136
+  CLI tests, 11 custom-lint tests, unchanged advisory duplication baselines,
+  and 553 application tests.
 
 ## Runtime Evidence
 
@@ -131,8 +148,14 @@ inspection; do not delete them as part of rollback.
 
 ## Completion Notes
 
-Pending.
+Phase 4 added deterministic linked worktrees for the current conversational
+agent, not an agent launcher. Shared controller state is rediscoverable from
+the primary or linked checkout; after preparation, controlled work is accepted
+only from the exact owned path. Native worktree mutation is lock-protected,
+cancellation changes state only, cleanup refuses dirty or ambiguous ownership,
+and successful cleanup preserves the recovery branch. Device work remains
+single-flight.
 
 ## Follow-ups
 
-- [ ] Create Phase 5 only after Phase 4 evidence passes.
+- [x] Create Phase 5 only after Phase 4 evidence passes.
