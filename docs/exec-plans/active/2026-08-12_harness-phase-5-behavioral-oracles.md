@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 5 locally; no device mutation without an explicit runtime command and no external publication
-**Allowed paths:** packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/oracle/, packages/mobile_core_kit_cli/lib/src/contracts/, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/verification/, packages/mobile_core_kit_cli/lib/src/workflows/verify_workflow.dart, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/, harness/, docs/contracts/, integration_test/, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/
+**Allowed paths:** packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/oracle/, packages/mobile_core_kit_cli/lib/src/contracts/, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/verification/, packages/mobile_core_kit_cli/lib/src/workflows/verify_workflow.dart, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/, harness/, docs/contracts/, integration_test/, .github/pull_request_template.md, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/
 **Allowed actions:** edit, verify, commit
 **Maximum risk:** high
 **Repair limit:** 2
