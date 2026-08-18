@@ -34,6 +34,8 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit l10n verify` | Verify the generated untranslated-message report. |
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
 | `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
+| `mobilekit oracle verify` | Validate registered oracle targets and active-plan coverage. |
+| `mobilekit contract openapi` | Verify or explicitly sync the pinned backend OpenAPI snapshot. |
 | `mobilekit task` | Establish authority and run bounded task verification/repair. |
 | `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
@@ -202,6 +204,23 @@ validates active/queued execution-plan metadata against directory lifecycle.
 `project-map verify` remains a focused compatibility command and now fails
 when the required map is absent instead of skipping successfully.
 
+### Behavioral oracles and API contract
+
+```bash
+mobilekit oracle verify
+mobilekit contract openapi verify
+mobilekit contract openapi sync \
+  --source <path-to-openapi.yaml> \
+  --source-revision <full-backend-git-revision> \
+  --accept
+```
+
+`oracle verify` validates `harness/oracles.yaml`, every registered target, and
+the impact coverage of active/queued V2 plans. `contract openapi verify`
+validates OpenAPI 3 structure and the locked SHA-256 digest. Sync validates
+before writing, records no source path, and requires explicit acceptance. See
+`docs/engineering/behavioral_oracles.md`.
+
 ### Task authority and risk
 
 ```bash
@@ -283,15 +302,21 @@ arguments. Runtime log artifacts default to `_artifacts/runtime_logs/`.
 ### Evidence
 
 ```bash
-mobilekit runtime evidence --device emulator-5554
-mobilekit runtime evidence --device emulator-5554 --target integration_test/auth_happy_path_test.dart
-mobilekit runtime evidence --device emulator-5554 --flavor dev --google-services-json /secure/google-services.json
+mobilekit runtime evidence --task <task-id> --device emulator-5554
+mobilekit runtime evidence --task <task-id> --device emulator-5554 \
+  --target integration_test/auth_happy_path_test.dart
+mobilekit runtime evidence --task <task-id> --device emulator-5554 \
+  --flavor dev --google-services-json <secure-path>/google-services.json
 ```
 
-Options include repeatable `--target`, `--flavor dev|staging|prod`,
+The task must already be verified at its exact current fingerprint and must
+select registered integration-test oracles. Options include required `--task`
+and `--device`, repeatable registered `--target`, `--flavor dev|staging|prod`,
 `--artifacts-dir`, `--no-example-env-fallback`, and
-`--google-services-json`. Evidence artifacts default to
-`_artifacts/mobile/<timestamp>/`.
+`--google-services-json`. Evidence defaults to
+`_artifacts/mobile/<timestamp>/evidence.json`; raw logs are bounded, ignored,
+owner-restricted local diagnostics. See
+`docs/engineering/mobile_runtime_harness.md`.
 
 ## Exit codes
 

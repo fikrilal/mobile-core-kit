@@ -42,15 +42,17 @@ Additional checks:
 - [ ] Screenshots/video attached (UI changes)
 - [ ] Logs/error traces attached (runtime or failure-path changes)
 - [ ] Mobile runtime evidence attached for medium/high UI/runtime PRs (see `docs/engineering/mobile_runtime_harness.md`)
+- [ ] Runtime evidence fingerprint matches the final reviewed candidate
 - [ ] No speculative refactor mixed into this PR
 
 Links/artifacts:
 -
 
 Runtime evidence details (if applicable):
-- Device ID:
+- Task fingerprint:
+- Device identifier hash:
 - Flavor:
-- Integration targets:
+- Registered oracle results:
 - Evidence artifact paths:
 
 ## Safety And Rollback

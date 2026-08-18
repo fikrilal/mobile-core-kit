@@ -14,6 +14,8 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   - structured task authority and preflight: `docs/engineering/task_authority.md`
   - bounded task verification and repair: `docs/engineering/controlled_verification_loop.md`
   - isolated current-agent worktrees: `docs/engineering/current_agent_workspaces.md`
+  - registered independent acceptance evidence: `docs/engineering/behavioral_oracles.md`
+  - task-bound sanitized device evidence: `docs/engineering/mobile_runtime_harness.md`
   - duplication harness overview, profiles, and commands: `docs/engineering/duplication_harness.md`
 - `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, and backend integration).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).

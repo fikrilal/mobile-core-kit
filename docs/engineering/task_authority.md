@@ -11,12 +11,19 @@ A non-trivial task starts from one active V2 plan. Its metadata declares:
 - the stable task identity, owner, status, and human-readable authority;
 - allowed repository paths and separately allowed actions;
 - declared and maximum risk, repair budget, and wall-clock timeout;
-- mobile-specific impact areas and observable acceptance scenarios.
+- mobile-specific impact areas and observable acceptance scenarios;
+- registered behavioral oracle IDs for medium/high-risk impacts.
 
 Allowed paths are normalized and reject absolute paths, traversal, globs,
 repository-root grants, `.git`, duplicates, and symlink escapes. The active
 plan must include itself in scope. `edit`, `verify`, `commit`, `push`, and
 `draft-pr` are distinct actions; no action implies another.
+
+Oracle IDs resolve from `harness/oracles.yaml`, participate in the immutable
+authority hash, and persist in versioned task state. Missing, unknown, or
+impact-incompatible selections fail at `task begin` and preflight. Older
+completed V2 plans remain readable, but new medium/high-risk tasks cannot omit
+the field. See `docs/engineering/behavioral_oracles.md`.
 
 ## Local baseline
 

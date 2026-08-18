@@ -1,147 +1,115 @@
 # Mobile Runtime Harness
 
-This document explains how to collect machine-checkable runtime evidence for mobile changes.
+The runtime harness produces completion-grade device evidence for an exact
+controlled task candidate. It does not replace Codex, Claude Code, or the
+normal chat workflow; the current agent invokes it after static verification.
 
-Use this document when the question is:
-- how do I prove a mobile/runtime change on a device or emulator?
-- what evidence is expected for medium/high-risk behavior?
-
-Use `docs/engineering/agent_pr_loop.md` for the overall PR delivery loop.
-
-## Purpose
-
-The runtime harness closes the gap between:
-- code that passes static checks
-- behavior that is actually proven on device
-
-It is most useful when static analysis and tests are not enough to prove correctness.
-
-## When Runtime Evidence Is Expected
-
-Collect runtime evidence for changes such as:
-- medium/high-risk mobile UI behavior
-- startup/navigation/deep-link flows
-- auth/session/runtime orchestration
-- push/permissions/device integrations
-- bugs that require a real device or emulator to reproduce confidently
+Use it when unit/static checks cannot credibly prove user-visible runtime
+behavior: auth/session, startup/navigation/deep links, permissions, Firebase,
+push, platform integrations, or medium/high-risk UI interactions.
 
 ## Preconditions
 
-1. A device or emulator is available.
-2. The selected environment config exists or can be bootstrapped.
-3. Required platform config exists for the selected flavor.
+1. The V2 plan selects one or more registered `integration-test` oracle IDs.
+2. `mobilekit task verify --task <id> --env <env>` passed for the exact current
+   fingerprint.
+3. One device or emulator is available. Device execution is single-flight.
+4. Environment and platform configuration exists, or the explicit temporary
+   preparation options can supply it.
 
-If Firebase or similar platform configuration is missing, fail early with an actionable message instead of continuing blindly.
+An arbitrary `integration_test` path is not completion evidence. Register and
+authorize the oracle first; see `docs/engineering/behavioral_oracles.md`.
 
-## Two Evidence Lanes
+## Deterministic evidence lane
 
-### Lane A: Deterministic CLI evidence
-
-Use this as the default runtime-evidence path.
-
-Primary command:
-
-```bash
-dart run mobile_core_kit_cli:mobilekit runtime evidence \
-  --device <device-id> --flavor dev
-```
-
-Example with explicit platform config:
+Run all integration targets selected by the task:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --task <task-id> \
   --device <device-id> \
-  --flavor dev \
-  --google-services-json /secure/path/google-services.json
+  --flavor dev
 ```
 
-Optional single-target run:
+Narrow the run to one already selected target:
 
 ```bash
 dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --task <task-id> \
   --device <device-id> \
   --target integration_test/auth_happy_path_test.dart
 ```
 
-Expected artifacts typically include:
-- `_artifacts/mobile/<timestamp>/summary.md`
-- `_artifacts/mobile/<timestamp>/logs/*.log`
-
-### Lane B: Interactive validation
-
-Use this when deterministic tests are not enough and the agent needs to inspect or drive the UI interactively.
-
-Typical loop:
-1. enumerate devices
-2. launch app
-3. inspect UI state
-4. interact with controls
-5. capture after-state evidence
-6. attach evidence paths to the PR
-
-Use this lane for:
-- layout regressions
-- interaction bugs not covered by integration tests
-- flaky/context-sensitive runtime behavior
-
-## Live Log Capture
-
-Use the CLI log bridge when continuous runtime logs help debug or prove
-behavior.
-
-Examples:
+Use an explicit Firebase input transactionally when required:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit runtime logs start \
-  --session emulator --mode logs --device emulator-5554
-```
-
-```bash
-dart run mobile_core_kit_cli:mobilekit runtime logs start \
-  --session dev-run \
-  --mode run \
-  --device emulator-5554 \
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --task <task-id> \
+  --device <device-id> \
   --flavor dev \
-  --target lib/main_dev.dart
+  --google-services-json <secure-path>/google-services.json
 ```
 
+The command rejects an unverified/stale task fingerprint, unselected target,
+or artifact directory outside the repository. Example environment fallback,
+Firebase copying, and generated build config are restored on success and on
+every failure path; runtime preparation must not become a candidate change.
+
+## Evidence contract
+
+Artifacts default to `_artifacts/mobile/<timestamp>/`:
+
+- `evidence.json` — schema-versioned durable evidence;
+- `summary.md` — sanitized human-readable result;
+- `logs/*.log` — ignored local diagnostic logs, not PR evidence.
+
+The durable manifest binds:
+
+- task ID, plan path/hash, authority hash, base and candidate revisions;
+- exact task fingerprint and selected oracle IDs;
+- hashed device identifier, flavor, start/end/duration, outcome, exit code,
+  and stable failure boundary;
+- oracle/target results and repository-relative artifact paths, sizes, hashes;
+- environment/Firebase preparation modes and log-retention policy.
+
+It intentionally excludes raw device IDs, absolute repository paths,
+environment values, credentials, authorization headers, request/response
+bodies, raw trace contents, and full logs. Each local log is capped at 1 MiB,
+created with owner-only permissions on POSIX, and ignored by Git. Do not upload
+raw logs without a separate security/privacy review.
+
+Only an `evidence.json` whose fingerprint equals the final reviewed candidate
+is eligible for handoff. Any candidate change requires `task repair`, another
+controlled verification, and refreshed runtime evidence.
+
+## Interactive/manual lane
+
+When automation cannot prove layout or context-sensitive interaction, select
+the registered manual-review oracle and follow its procedure. Record only
+sanitized screenshots/observations and the exact task fingerprint. Manual
+review does not authorize an agent to weaken or bypass the deterministic gate.
+
+## Live diagnostic logs
+
+The separate log bridge is diagnostic, not completion evidence:
+
 ```bash
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
+  --session emulator --mode logs --device <device-id>
 dart run mobile_core_kit_cli:mobilekit runtime logs tail \
   --session emulator --lines 200
+dart run mobile_core_kit_cli:mobilekit runtime logs stop --session emulator
 ```
 
-```bash
-dart run mobile_core_kit_cli:mobilekit runtime logs status \
-  --session emulator
-dart run mobile_core_kit_cli:mobilekit runtime logs stop \
-  --session emulator
-```
+## Failure promotion
 
-Typical artifacts:
-- `_artifacts/runtime_logs/<session>/stream.log`
-- `_artifacts/runtime_logs/<session>/metadata.env`
+If the same runtime failure or setup gap appears twice, promote it into a
+registered regression/integration oracle, a stable metric assertion, a CLI
+preflight, or this operating guide. Do not rely on agent memory.
 
-## Minimum Evidence To Attach
+## Related docs
 
-For runtime-sensitive PRs, attach at least:
-1. device/emulator ID
-2. flavor
-3. executed target(s)
-4. artifact path(s)
-5. relevant log lines or screenshots when they help prove behavior
-
-## Failure -> Harness Upgrade Rule
-
-If runtime evidence repeatedly fails for the same reason, improve the harness instead of relying on repeated manual work.
-
-Typical upgrades:
-- add or strengthen integration tests
-- add better assertions to the CLI evidence workflow
-- improve logging/metrics exposure
-- update this document with the stable workflow
-
-## Related Docs
-
+- `docs/engineering/behavioral_oracles.md`
+- `docs/engineering/task_authority.md`
 - `docs/engineering/agent_pr_loop.md`
-- `docs/engineering/guardrails.md`
 - `docs/engineering/mobilekit_cli_reference.md`

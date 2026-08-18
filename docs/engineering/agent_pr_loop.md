@@ -114,12 +114,10 @@ Runtime evidence is expected for:
 Collect runtime evidence using:
 - `docs/engineering/mobile_runtime_harness.md`
 
-Typical evidence includes:
-- device/emulator ID
-- flavor
-- executed integration target(s)
-- artifact paths
-- relevant log snippets
+Attach the sanitized `evidence.json` and summary for the exact final task
+fingerprint. Record the hashed device identifier, flavor, registered oracle
+results, and repository-relative artifact paths. Do not attach raw device IDs,
+credentials, request/response bodies, trace contents, or local raw logs.
 
 ### 5. Self-review
 
@@ -153,6 +151,7 @@ For substantive follow-up changes:
 - rerun the relevant checks
 - rerun the full gate if the change materially affects behavior or risk
 - refresh runtime evidence when the reviewed behavior changed
+- reject stale evidence whose task fingerprint differs from the reviewed candidate
 
 ### 8. Merge policy
 

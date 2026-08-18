@@ -53,6 +53,8 @@
   - `docs/exec-plans/active/`
   - use a V2 plan, run `mobilekit task begin` before editing, and run
     report-only `mobilekit task preflight` for each controlled action
+  - medium/high-risk plans must select impact-compatible IDs from
+    `harness/oracles.yaml`; arbitrary new tests are not independent evidence
   - for a controller-managed task, use `mobilekit task verify`; after failure,
     repair with normal agent tools and record it with `mobilekit task repair`
   - when a task workspace is prepared, continue the same agent session from
@@ -155,9 +157,10 @@ Runtime evidence guidance:
 ## Documentation & Best Practices
 
 - Start here: `docs/README.md` (docs index + navigation).
-- Backend contract source of truth (for any API/network/auth/users work): `/mnt/c/Development/_CORE/backend-core-kit`
-  - OpenAPI: `/mnt/c/Development/_CORE/backend-core-kit/docs/openapi/openapi.yaml`
-  - Standards: `/mnt/c/Development/_CORE/backend-core-kit/docs/standards/`
+- Mobile-owned API contract: `docs/contracts/openapi/backend.openapi.yaml`
+  - Verify it with `mobilekit contract openapi verify`.
+  - An available backend checkout may be used only as an explicit reviewed
+    sync input; clean clones and CI must not depend on its absolute path.
 - For dependency/package changes:
   - Read upstream docs/changelogs; if web access is needed, ask before guessing.
   - Use `flutter pub outdated` to review version constraints and plan safe upgrades.

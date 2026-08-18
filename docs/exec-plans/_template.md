@@ -11,6 +11,7 @@
 **Maximum risk:** low | medium | high
 **Repair limit:** <non-negative integer>
 **Task timeout:** <positive duration, for example 90m or 6h>
+**Oracle IDs:** <comma-separated IDs from harness/oracles.yaml; required for medium/high risk>
 
 Date: YYYY-MM-DD
 Related issue/PR: <link or N/A>

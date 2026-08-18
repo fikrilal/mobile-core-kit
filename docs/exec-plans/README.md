@@ -35,6 +35,7 @@ Examples:
 - task objective and constraints
 - acceptance criteria
 - risk class and impact area
+- registered oracle IDs for every declared medium/high-risk impact
 - implementation checklist
 - decision log
 - verification evidence
@@ -45,6 +46,8 @@ be narrow, repository-relative, and include the plan itself. Actions are
 explicit; permission to edit does not imply permission to commit, push, or
 open a draft PR. Automated classification can raise the effective risk but
 cannot lower the risk declared by the human-approved plan.
+Oracle IDs resolve through `harness/oracles.yaml` and are authority-bearing;
+changing them after `task begin` requires a fresh baseline.
 
 ## What Does Not Belong Here
 
