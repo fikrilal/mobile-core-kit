@@ -184,6 +184,7 @@ Future<_ControllerFixture> _fixture({
     root: root,
     repository: repository,
     stateStore: store,
+    validateOracles: (_) {},
     now: clock,
   );
   await service.begin(_planPath);

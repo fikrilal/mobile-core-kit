@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_registry.dart';
 import 'package:mobile_core_kit_cli/src/policy/risk_classifier.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/task/git_worktree_client.dart';
@@ -48,18 +49,24 @@ class TaskService {
     required this.root,
     GitRepository? repository,
     TaskStateStore? stateStore,
+    void Function(TaskPlan plan)? validateOracles,
     DateTime Function()? now,
   }) : repository = repository ?? NativeGitRepository(root),
        stateStore = stateStore ?? FileTaskStateStore(root),
+       _oracleValidator =
+           validateOracles ??
+           ((plan) => OracleRegistry.load(root).validatePlan(plan)),
        now = now ?? DateTime.now;
 
   final Directory root;
   final GitRepository repository;
   final TaskStateStore stateStore;
+  final void Function(TaskPlan plan) _oracleValidator;
   final DateTime Function() now;
 
   Future<TaskBeginResult> begin(String planPath) async {
     final plan = _loadPlan(planPath);
+    _validateOracles(plan);
     if (plan.status != TaskPlanStatus.active ||
         !plan.path.startsWith('docs/exec-plans/active/')) {
       throw const TaskControlError(
@@ -103,6 +110,7 @@ class TaskService {
         declaredRisk: plan.risk,
         boundaries: plan.boundaries,
         impacts: plan.impacts,
+        oracleIds: plan.oracleIds,
         preexistingChanges: List.unmodifiable(preexisting),
         attemptCount: 0,
         repairCount: 0,
@@ -144,6 +152,7 @@ class TaskService {
         'Authority-bearing plan metadata changed after task begin.',
       );
     }
+    _validateOracles(plan);
     try {
       assertActionAllowed(plan.boundaries, action);
     } on TaskPlanError catch (error) {
@@ -268,6 +277,14 @@ class TaskService {
       throw TaskControlError(error.code, error.message);
     } on FileSystemException catch (error) {
       throw TaskControlError('task.plan-unreadable', error.message);
+    }
+  }
+
+  void _validateOracles(TaskPlan plan) {
+    try {
+      _oracleValidator(plan);
+    } on OracleRegistryError catch (error) {
+      throw TaskControlError(error.code, error.message);
     }
   }
 }

@@ -5,6 +5,7 @@ String taskPlanFixture({
   String maximumRisk = 'high',
   String allowedPaths = 'docs/exec-plans/active/test.md, lib/features/example/',
   String allowedActions = 'edit, verify',
+  String oracleIds = 'ui.human-review',
   String impacts = validImpactFixture,
   String extra = '',
 }) =>
@@ -22,6 +23,7 @@ String taskPlanFixture({
 **Maximum risk:** $maximumRisk
 **Repair limit:** 2
 **Task timeout:** 90m
+**Oracle IDs:** $oracleIds
 $extra
 Date: 2026-08-11
 Related issue/PR: N/A

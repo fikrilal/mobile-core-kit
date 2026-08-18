@@ -11,7 +11,7 @@
 **Maximum risk:** high
 **Repair limit:** 2
 **Task timeout:** 8h
-**Oracle IDs:** harness.full, contract.openapi.snapshot
+**Oracle IDs:** harness.full, contract.openapi.snapshot, runtime.mobile-evidence
 
 Date: 2026-08-12
 Related issue/PR: Approved `_WIP/2026-08-10_mobile-loop-engineering-proposal.md`

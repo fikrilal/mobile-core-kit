@@ -249,6 +249,7 @@ class TaskState {
     required this.declaredRisk,
     required this.boundaries,
     required this.impacts,
+    this.oracleIds = const [],
     required this.preexistingChanges,
     required this.attemptCount,
     required this.repairCount,
@@ -261,7 +262,7 @@ class TaskState {
     this.workspace,
   });
 
-  static const schemaVersion = 3;
+  static const schemaVersion = 4;
 
   final String taskId;
   final TaskLifecycle lifecycle;
@@ -274,6 +275,7 @@ class TaskState {
   final TaskRisk declaredRisk;
   final TaskBoundaries boundaries;
   final TaskImpactAreas impacts;
+  final List<String> oracleIds;
   final List<PreexistingChange> preexistingChanges;
   final int attemptCount;
   final int repairCount;
@@ -319,6 +321,7 @@ class TaskState {
       declaredRisk: declaredRisk,
       boundaries: boundaries,
       impacts: impacts,
+      oracleIds: oracleIds,
       preexistingChanges: preexistingChanges,
       attemptCount: attemptCount ?? this.attemptCount,
       repairCount: repairCount ?? this.repairCount,
@@ -353,6 +356,7 @@ class TaskState {
     'declaredRisk': declaredRisk.name,
     'boundaries': boundaries.toJson(),
     'impacts': impacts.toJson(),
+    'oracleIds': oracleIds,
     'preexistingChanges': preexistingChanges
         .map((change) => change.toJson())
         .toList(),
@@ -372,7 +376,27 @@ class TaskState {
   factory TaskState.fromJson(Map<String, Object?> json) {
     final version = json['schemaVersion'];
     if (version == 1) return _fromV1(json);
-    if (version == 2) return _fromModern(json, workspace: null);
+    if (version == 2) {
+      return _fromModern(json, workspace: null, oracleIds: const []);
+    }
+    if (version == 3) {
+      final workspace = json['workspace'];
+      if (workspace != null && workspace is! Map) {
+        throw const TaskControlError(
+          'task.state-invalid',
+          'Task workspace state is malformed.',
+        );
+      }
+      return _fromModern(
+        json,
+        workspace: workspace == null
+            ? null
+            : TaskWorkspace.fromJson(
+                (workspace as Map).cast<String, Object?>(),
+              ),
+        oracleIds: const [],
+      );
+    }
     if (version != schemaVersion) {
       throw const TaskControlError(
         'task.state-invalid',
@@ -391,6 +415,7 @@ class TaskState {
       workspace: workspace == null
           ? null
           : TaskWorkspace.fromJson((workspace as Map).cast<String, Object?>()),
+      oracleIds: _oracleIds(json),
     );
   }
 
@@ -421,6 +446,7 @@ class TaskState {
       declaredRisk: common.declaredRisk,
       boundaries: common.boundaries,
       impacts: common.impacts,
+      oracleIds: const [],
       preexistingChanges: common.preexistingChanges,
       attemptCount: 0,
       repairCount: 0,
@@ -440,6 +466,7 @@ class TaskState {
   static TaskState _fromModern(
     Map<String, Object?> json, {
     required TaskWorkspace? workspace,
+    required List<String> oracleIds,
   }) {
     final common = _common(json);
     if (workspace != null) {
@@ -504,6 +531,7 @@ class TaskState {
       declaredRisk: common.declaredRisk,
       boundaries: common.boundaries,
       impacts: common.impacts,
+      oracleIds: oracleIds,
       preexistingChanges: common.preexistingChanges,
       attemptCount: attempts,
       repairCount: repairs,
@@ -688,6 +716,23 @@ String _requiredString(Map<String, Object?> json, String name) {
     );
   }
   return value;
+}
+
+List<String> _oracleIds(Map<String, Object?> json) {
+  final value = json['oracleIds'];
+  if (value is! List ||
+      value.any(
+        (id) =>
+            id is! String ||
+            !RegExp(r'^[a-z0-9][a-z0-9.-]{2,79}$').hasMatch(id),
+      ) ||
+      value.toSet().length != value.length) {
+    throw const TaskControlError(
+      'task.state-invalid',
+      'Task oracle IDs are invalid.',
+    );
+  }
+  return List.unmodifiable(value.cast<String>());
 }
 
 ChangeSource _changeSource(String value) {

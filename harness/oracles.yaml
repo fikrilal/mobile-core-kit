@@ -1,0 +1,30 @@
+schemaVersion: 1
+oracles:
+  harness.full:
+    kind: verification-profile
+    target: full
+    covers: [harness, database]
+  contract.openapi.snapshot:
+    kind: contract
+    target: docs/contracts/openapi/backend.openapi.yaml
+    covers: [api]
+  runtime.mobile-evidence:
+    kind: procedure
+    target: docs/engineering/mobile_runtime_harness.md
+    covers: [platform]
+  auth.integration:
+    kind: integration-test
+    target: integration_test/auth_happy_path_test.dart
+    covers: [auth]
+  startup.integration:
+    kind: integration-test
+    target: integration_test/startup_deep_link_resume_test.dart
+    covers: [navigation]
+  ui.human-review:
+    kind: manual-review
+    target: docs/engineering/mobile_runtime_harness.md
+    covers: [ui]
+  external.human-review:
+    kind: manual-review
+    target: docs/engineering/agent_pr_loop.md
+    covers: [external-systems]

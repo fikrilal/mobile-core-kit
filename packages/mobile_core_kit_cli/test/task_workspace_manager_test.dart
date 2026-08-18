@@ -43,6 +43,7 @@ void main() {
       final workspaceService = TaskService(
         root: workspaceRoot,
         stateStore: fixture.store,
+        validateOracles: (_) {},
       );
       final workspacePreflight = await workspaceService.preflight(
         _taskId,
@@ -137,7 +138,11 @@ Future<_NativeFixture> _nativeFixture({String taskId = _taskId}) async {
   final baseRevision = (await _git(root, ['rev-parse', 'HEAD'])).trim();
   File(p.join(root.path, 'user.txt')).writeAsStringSync('user-owned');
   final store = FileTaskStateStore(root);
-  final service = TaskService(root: root, stateStore: store);
+  final service = TaskService(
+    root: root,
+    stateStore: store,
+    validateOracles: (_) {},
+  );
   await service.begin(planPath);
   return _NativeFixture(
     root: root,

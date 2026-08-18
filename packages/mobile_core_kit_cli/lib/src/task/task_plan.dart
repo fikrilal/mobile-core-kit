@@ -192,6 +192,7 @@ class TaskPlan {
     required this.owner,
     required this.risk,
     required this.authority,
+    required this.oracleIds,
     required this.boundaries,
     required this.impacts,
     required this.sourceHash,
@@ -204,6 +205,7 @@ class TaskPlan {
   final String owner;
   final TaskRisk risk;
   final String authority;
+  final List<String> oracleIds;
   final TaskBoundaries boundaries;
   final TaskImpactAreas impacts;
   final String sourceHash;
@@ -254,6 +256,8 @@ TaskPlan parseTaskPlan(String path, String source) {
   final owner = _metadata(source, 'Owner');
   final risk = TaskRisk.parse(_metadata(source, 'Risk'));
   final authority = _metadata(source, 'Authority');
+  final oracleIds = _optionalMetadataList(source, 'Oracle IDs');
+  _assertUnique(oracleIds, 'Oracle IDs');
   final allowedPaths = _metadataList(
     source,
     'Allowed paths',
@@ -310,6 +314,7 @@ TaskPlan parseTaskPlan(String path, String source) {
     'owner': owner,
     'risk': risk.name,
     'authority': authority,
+    'oracleIds': oracleIds,
     'boundaries': boundaries.toJson(),
     'impacts': impacts.toJson(),
   });
@@ -320,6 +325,7 @@ TaskPlan parseTaskPlan(String path, String source) {
     owner: owner,
     risk: risk,
     authority: authority,
+    oracleIds: List.unmodifiable(oracleIds),
     boundaries: boundaries,
     impacts: impacts,
     sourceHash: sha256String(source),
@@ -485,6 +491,33 @@ List<String> _metadataList(String source, String name) {
   return values;
 }
 
+List<String> _optionalMetadataList(String source, String name) {
+  final matches = RegExp(
+    '^\\*\\*${RegExp.escape(name)}:\\*\\*\\s*(.+)\$',
+    multiLine: true,
+  ).allMatches(source).toList();
+  if (matches.isEmpty) return const [];
+  if (matches.length != 1) {
+    throw TaskPlanError(
+      'plan.metadata-cardinality',
+      "Plan must contain at most one non-empty '**$name:**' field.",
+    );
+  }
+  final values = matches.single
+      .group(1)!
+      .split(',')
+      .map((value) => value.trim())
+      .where((value) => value.isNotEmpty)
+      .toList();
+  if (values.isEmpty || values.any((id) => !_oracleId.hasMatch(id))) {
+    throw const TaskPlanError(
+      'plan.oracle-id-invalid',
+      'Oracle IDs must be comma-separated stable lowercase identifiers.',
+    );
+  }
+  return values;
+}
+
 int _wholeNumber(String value) {
   if (!RegExp(r'^\d+$').hasMatch(value)) {
     throw const TaskPlanError(
@@ -527,6 +560,8 @@ void _assertUnique(Iterable<Object> values, String label) {
     );
   }
 }
+
+final _oracleId = RegExp(r'^[a-z0-9][a-z0-9.-]{2,79}$');
 
 String _requiredString(Map<String, Object?> json, String name) {
   final value = json[name];

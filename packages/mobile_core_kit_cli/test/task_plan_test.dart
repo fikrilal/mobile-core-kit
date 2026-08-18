@@ -20,6 +20,7 @@ void main() {
     ]);
     expect(plan.boundaries.timeout, const Duration(minutes: 90));
     expect(plan.impacts.ui, isTrue);
+    expect(plan.oracleIds, ['ui.human-review']);
     expect(plan.sourceHash, hasLength(64));
     expect(plan.authorityHash, hasLength(64));
   });
@@ -36,6 +37,16 @@ void main() {
 
     expect(edited.authorityHash, original.authorityHash);
     expect(edited.sourceHash, isNot(original.sourceHash));
+  });
+
+  test('oracle edits change authority hash', () {
+    final original = parseTaskPlan('plan.md', taskPlanFixture());
+    final edited = parseTaskPlan(
+      'plan.md',
+      taskPlanFixture(oracleIds: 'ui.human-review, harness.full'),
+    );
+
+    expect(edited.authorityHash, isNot(original.authorityHash));
   });
 
   test('rejects duplicate authority metadata', () {

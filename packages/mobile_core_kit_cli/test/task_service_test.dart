@@ -139,6 +139,7 @@ const _planPath = 'docs/exec-plans/active/test.md';
 
 Future<_ServiceFixture> _serviceFixture({String? plan}) async {
   final root = await Directory.systemTemp.createTemp('mobilekit_service_');
+  _writeOracleRegistry(root);
   File(p.join(root.path, _planPath))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(plan ?? taskPlanFixture());
@@ -163,6 +164,22 @@ Future<_ServiceFixture> _serviceFixture({String? plan}) async {
       now: () => DateTime.utc(2026, 8, 11),
     ),
   );
+}
+
+void _writeOracleRegistry(Directory root) {
+  File(p.join(root.path, 'harness', 'oracles.yaml'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  ui.human-review:
+    kind: manual-review
+    target: docs/oracle.md
+    covers: [ui]
+''');
+  File(p.join(root.path, 'docs', 'oracle.md'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('procedure\n');
 }
 
 class _ServiceFixture {

@@ -53,7 +53,7 @@ class TaskWorkflow {
       return 2;
     }
     try {
-      return switch (arguments.first) {
+      return await switch (arguments.first) {
         'begin' => _begin(arguments.skip(1).toList()),
         'preflight' => _preflight(arguments.skip(1).toList()),
         'verify' => _verify(arguments.skip(1).toList()),
