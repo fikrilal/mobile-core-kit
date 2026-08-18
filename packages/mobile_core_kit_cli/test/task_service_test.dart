@@ -133,6 +133,18 @@ void main() {
       );
     },
   );
+
+  test('medium-risk begin rejects missing oracle authority', () async {
+    final fixture = await _serviceFixture(
+      plan: taskPlanFixture(oracleIds: null),
+    );
+    addTearDown(() => fixture.root.delete(recursive: true));
+
+    await expectLater(
+      fixture.service.begin(_planPath),
+      throwsA(_controlError('oracle.plan-empty')),
+    );
+  });
 }
 
 const _planPath = 'docs/exec-plans/active/test.md';

@@ -56,6 +56,16 @@ void main() {
       throwsA(_controlError('task.state-invalid')),
     );
   });
+
+  test('migrates schema three state without oracle authority', () {
+    final legacy = _state().toJson()
+      ..['schemaVersion'] = 3
+      ..remove('oracleIds');
+
+    final restored = TaskState.fromJson(legacy);
+
+    expect(restored.oracleIds, isEmpty);
+  });
 }
 
 TaskState _state() => TaskState(

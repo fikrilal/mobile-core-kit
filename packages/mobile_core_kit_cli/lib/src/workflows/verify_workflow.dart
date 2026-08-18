@@ -30,6 +30,7 @@ class VerifyWorkflow {
       )
       ..addOption('env', abbr: 'e', defaultsTo: 'dev')
       ..addMultiOption('test-path')
+      ..addOption('task')
       ..addOption('device')
       ..addOption('artifacts-dir')
       ..addMultiOption('target')
@@ -141,6 +142,7 @@ class VerifyWorkflow {
     }
 
     final hasRuntimeOptions =
+        args.option('task') != null ||
         args.option('device') != null ||
         args.option('artifacts-dir') != null ||
         args.multiOption('target').isNotEmpty ||
@@ -290,7 +292,13 @@ class VerifyWorkflow {
     if (device == null || device.isEmpty) {
       throw const FormatException('--device is required for runtime profile.');
     }
+    final taskId = args.option('task');
+    if (taskId == null || taskId.isEmpty) {
+      throw const FormatException('--task is required for runtime profile.');
+    }
     final runtimeArguments = <String>[
+      '--task',
+      taskId,
       '--device',
       device,
       '--flavor',

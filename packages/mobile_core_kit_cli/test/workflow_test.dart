@@ -148,6 +148,8 @@ void main() {
           'runtime',
           '--env',
           'staging',
+          '--task',
+          'runtime-task',
           '--device',
           'emulator-5554',
           '--target',
@@ -158,6 +160,8 @@ void main() {
 
     expect(result, 0);
     expect(arguments, [
+      '--task',
+      'runtime-task',
       '--device',
       'emulator-5554',
       '--flavor',
