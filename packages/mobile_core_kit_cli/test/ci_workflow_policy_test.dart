@@ -36,7 +36,15 @@ void main() {
   });
 
   test('required workflow and composite pin every external action', () {
-    final sources = [required, bootstrap];
+    final sources = [
+      required,
+      bootstrap,
+      ...Directory(p.join(root.path, '.github', 'workflows'))
+          .listSync()
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.yml'))
+          .map((file) => file.readAsStringSync()),
+    ];
     for (final source in sources) {
       for (final match in RegExp(
         r'^\s*uses:\s*(\S+)',

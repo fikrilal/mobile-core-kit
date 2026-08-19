@@ -38,20 +38,30 @@ class KnowledgeWorkflow {
 
 List<String> _validateCiProfileOwnership(Directory root) {
   final workflow = File(
-    p.join(root.path, '.github', 'workflows', 'android.yml'),
+    p.join(root.path, '.github', 'workflows', 'required.yml'),
   );
   if (!workflow.existsSync()) {
-    return const ['.github/workflows/android.yml is missing.'];
+    return const ['.github/workflows/required.yml is missing.'];
   }
 
   final content = workflow.readAsStringSync();
+  final errors = <String>[];
   if (!content.contains('mobilekit verify --profile ci')) {
-    return const [
-      '.github/workflows/android.yml does not delegate canonical verification '
-          'to `mobilekit verify --profile ci`.',
-    ];
+    errors.add(
+      '.github/workflows/required.yml does not delegate canonical verification '
+      'to `mobilekit verify --profile ci`.',
+    );
   }
-  return const [];
+  if (RegExp(
+        r'^    name: CI Required$',
+        multiLine: true,
+      ).allMatches(content).length !=
+      1) {
+    errors.add(
+      '.github/workflows/required.yml must expose exactly one `CI Required` job.',
+    );
+  }
+  return errors;
 }
 
 List<String> _validatePlanLifecycle(Directory root) {

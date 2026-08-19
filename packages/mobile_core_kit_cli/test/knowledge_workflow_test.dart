@@ -71,7 +71,7 @@ void main() {
     final fixture = await _fixture();
     addTearDown(() => fixture.delete(recursive: true));
     File(
-      p.join(fixture.path, '.github', 'workflows', 'android.yml'),
+      p.join(fixture.path, '.github', 'workflows', 'required.yml'),
     ).writeAsStringSync('run: flutter test\n');
     final errors = StringBuffer();
 
@@ -109,10 +109,13 @@ Future<Directory> _fixture() async {
   File(p.join(root.path, 'docs', 'exec-plans', 'active', 'task.md'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(_plan);
-  File(p.join(root.path, '.github', 'workflows', 'android.yml'))
+  File(p.join(root.path, '.github', 'workflows', 'required.yml'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(
-      'run: dart run mobile_core_kit_cli:mobilekit verify --profile ci\n',
+      'jobs:\n'
+      '  required:\n'
+      '    name: CI Required\n'
+      '    run: dart run mobile_core_kit_cli:mobilekit verify --profile ci\n',
     );
   return root;
 }
