@@ -36,6 +36,13 @@ Additional checks:
 # dart run mobile_core_kit_cli:mobilekit project-map verify
 ```
 
+Hosted checks:
+- [ ] `CI Risk` passed
+- [ ] `CI Full` passed
+- [ ] `CI Runtime` passed or was intentionally skipped by classification
+- [ ] `CI Governance` passed
+- [ ] Stable `CI Required` aggregate passed
+
 ## Evidence
 
 - [ ] Tests added/updated where behavior changed
@@ -44,6 +51,8 @@ Additional checks:
 - [ ] Mobile runtime evidence attached for medium/high UI/runtime PRs (see `docs/engineering/mobile_runtime_harness.md`)
 - [ ] Runtime evidence fingerprint matches the final reviewed candidate
 - [ ] No speculative refactor mixed into this PR
+- [ ] Handoff used fresh action-specific evidence and explicit publication authority
+- [ ] No force push, merge, deployment, signing, migration, or release was performed by the harness
 
 Links/artifacts:
 -

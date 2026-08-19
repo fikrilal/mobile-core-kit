@@ -19,6 +19,12 @@ repository-root grants, `.git`, duplicates, and symlink escapes. The active
 plan must include itself in scope. `edit`, `verify`, `commit`, `push`, and
 `draft-pr` are distinct actions; no action implies another.
 
+Event intake cannot add these grants. It may only activate one checked-in
+queued V2 plan whose full authority already exists. Handoff dry-run rechecks
+the relevant action and freshness but also does not grant permission; the
+mutating handoff requires a separate explicit user decision and one expiring
+action-specific challenge. See `docs/engineering/event_maintenance_handoff.md`.
+
 Oracle IDs resolve from `harness/oracles.yaml`, participate in the immutable
 authority hash, and persist in versioned task state. Missing, unknown, or
 impact-incompatible selections fail at `task begin` and preflight. Older

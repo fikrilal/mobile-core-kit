@@ -37,6 +37,10 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit oracle verify` | Validate registered oracle targets and active-plan coverage. |
 | `mobilekit contract openapi` | Verify or explicitly sync the pinned backend OpenAPI snapshot. |
 | `mobilekit task` | Establish authority and run bounded task verification/repair. |
+| `mobilekit event intake` | Activate one already-authorized queued V2 plan. |
+| `mobilekit maintenance run` | Run the fixed read-only maintenance registry once. |
+| `mobilekit ci classify` | Classify a clean base/head candidate for hosted CI. |
+| `mobilekit handoff` | Prepare or execute one fresh action-specific handoff. |
 | `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
@@ -261,6 +265,38 @@ preserves the branch. See `docs/engineering/current_agent_workspaces.md`.
 Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
 They are independent grants. Automated path and impact classification can
 raise risk and cannot lower the plan's declared risk.
+
+### Event intake and maintenance
+
+```bash
+mobilekit event intake --once
+mobilekit maintenance run --once
+mobilekit ci classify --base <revision> --head <revision>
+```
+
+Event intake accepts no payload fields. It selects and atomically activates one
+complete queued V2 plan, records a private idempotent receipt, and starts the
+normal task boundary. Maintenance accepts no command input and runs only its
+fixed registry; codegen is isolated and tracked source is checked before and
+after. CI classification reads the exact base/head Git revisions and changed
+V2 plans. See `docs/engineering/event_maintenance_handoff.md`.
+
+### Verified handoff
+
+```bash
+mobilekit handoff dry-run --task <task-id> --action commit
+mobilekit handoff dry-run --task <task-id> --action push
+mobilekit handoff dry-run --task <task-id> --action draft-pr
+```
+
+Dry-run verifies fresh candidate evidence, exact paths, branch, remote, and
+action authority without mutating Git/GitHub. A mutating command additionally
+requires the dry-run's unexpired one-time value in
+`MOBILEKIT_HANDOFF_APPROVAL` and separate explicit user authorization. Commit,
+push, and draft-PR approvals are not interchangeable. Merge, deploy, signing,
+migration, release, force push, and ready-for-review transitions are not
+supported. Full syntax and uncertain-outcome handling are documented in
+`docs/engineering/event_maintenance_handoff.md`.
 
 `env verify` accepts repeatable `--env, -e <dev|staging|prod>`, `--all`, and
 `--strict`. Strict checks enforce production invariants for `prod`.

@@ -46,6 +46,10 @@ primary checkout and continue the same session from the reported path. Follow
 `docs/engineering/current_agent_workspaces.md`; do not copy dirty primary files
 or interpret cancellation as permission to terminate the host agent.
 
+An internal event may activate only an already-complete queued V2 plan through
+`mobilekit event intake --once`; it cannot derive scope from issue/webhook
+text. See `docs/engineering/event_maintenance_handoff.md`.
+
 Risk classes:
 - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact
 - `medium`: feature behavior change, navigation change, data mapping/API usage changes
@@ -132,7 +136,19 @@ Before opening or updating the PR, verify:
   patterns, and any acceptable duplicates were reviewed explicitly rather than
   ignored informally
 
-### 6. Open PR with evidence
+### 6. Verified handoff and PR evidence
+
+Successful local verification means ready for review, not permission to
+commit, push, or create a PR. Use `mobilekit handoff dry-run` for the exact next
+action. Each mutating handoff requires fresh evidence, matching task paths,
+branch/remote identity, an unexpired one-time approval, and separate explicit
+user authorization. Approvals are action-specific. Ambiguous external results
+stop permanently for human reconciliation.
+
+The adapter supports normal commit, normal same-branch push, and draft PR only.
+It does not expose force push, merge, deploy, signing, migrations, or release.
+
+Then use:
 
 Use:
 - `.github/pull_request_template.md`
@@ -176,3 +192,4 @@ A PR is done only when:
 2. required checks pass
 3. risk-class review expectations are satisfied
 4. evidence is present when the change needs runtime proof
+5. the stable hosted `CI Required` aggregate passes for the reviewed commit

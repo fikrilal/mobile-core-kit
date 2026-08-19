@@ -59,6 +59,13 @@
     repair with normal agent tools and record it with `mobilekit task repair`
   - when a task workspace is prepared, continue the same agent session from
     that exact path; cancellation never terminates the host agent
+  - events may activate only an already-authorized queued V2 plan through
+    one-shot `mobilekit event intake --once`; event payloads never create scope
+  - scheduled `mobilekit maintenance run --once` is read-only; findings require
+    a separate authorized task before source mutation
+  - local verification is not publication authority; use action-specific
+    `mobilekit handoff dry-run`, then require fresh explicit user authorization
+    for commit, push, or draft PR independently
 - If the same failure, review comment, or workflow gap appears 2+ times, promote it into the harness instead of relying on memory:
   - lint rule
   - CLI verification workflow
@@ -137,6 +144,8 @@ Runtime evidence guidance:
 
 - For medium/high-risk mobile changes, follow `docs/engineering/mobile_runtime_harness.md`
 - PR delivery workflow and evidence expectations are defined in `docs/engineering/agent_pr_loop.md`
+- Hosted completion uses the stable `CI Required` aggregate; local task state
+  is never accepted as hosted CI evidence.
 
 ## Agent Preferences (Code Authoring)
 
@@ -176,6 +185,7 @@ Runtime evidence guidance:
   - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
   - Parallel coordination: `docs/engineering/parallel_agent_workflow.md`
   - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
+  - Event intake, maintenance, CI, and handoff: `docs/engineering/event_maintenance_handoff.md`
   - CLI command reference: `docs/engineering/mobilekit_cli_reference.md`
   - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.
