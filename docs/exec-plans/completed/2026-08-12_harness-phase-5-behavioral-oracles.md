@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-5-behavioral-oracles
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 5 locally; no device mutation without an explicit runtime command and no external publication
@@ -91,16 +91,16 @@ bind sanitized mobile runtime evidence to the exact controlled task candidate.
 
 ## Implementation Checklist
 
-- [ ] Add authority-bearing oracle IDs to task plans/state and migrate safely.
-- [ ] Add and validate the checked-in oracle registry.
-- [ ] Pin the backend OpenAPI snapshot and deterministic lock.
-- [ ] Add explicit OpenAPI verify and accepted sync workflows.
-- [ ] Bind runtime evidence to verified task identity and candidate state.
-- [ ] Sanitize/hash durable evidence and bound transient logs.
-- [ ] Make env/Firebase preparation transactional on success and failure.
-- [ ] Add positive, negative, clean-clone, and failure-path tests.
-- [ ] Update CI/profile integration and operating documentation.
-- [ ] Exercise the real Phase 5 task through controlled full verification.
+- [x] Add authority-bearing oracle IDs to task plans/state and migrate safely.
+- [x] Add and validate the checked-in oracle registry.
+- [x] Pin the backend OpenAPI snapshot and deterministic lock.
+- [x] Add explicit OpenAPI verify and accepted sync workflows.
+- [x] Bind runtime evidence to verified task identity and candidate state.
+- [x] Sanitize/hash durable evidence and bound transient logs.
+- [x] Make env/Firebase preparation transactional on success and failure.
+- [x] Add positive, negative, clean-clone, and failure-path tests.
+- [x] Update CI/profile integration and operating documentation.
+- [x] Exercise the real Phase 5 task through controlled full verification.
 
 ## Decision Log
 
@@ -122,12 +122,29 @@ dart run mobile_core_kit_cli:mobilekit knowledge verify
 dart run mobile_core_kit_cli:mobilekit task verify --task mobile-harness-phase-5-behavioral-oracles --env dev
 ```
 
+Outcomes on 2026-08-12:
+
+- package analysis passed with no issues;
+- 152 mobilekit CLI tests and 11 custom-lint tests passed;
+- 553 application tests passed;
+- `oracle verify` validated seven registered oracles and the active plan's
+  declared impact coverage;
+- `contract openapi verify` validated the pinned snapshot digest
+  `a11ba2c6bdaa706c7b41e80b4dead323ae8bb36ce700c2c9fa88e27b0c02c3e3`
+  at accepted backend revision `cd06b44b01b99a3ef667ff5fe2a1bff9cb76a3b6`;
+- existing advisory duplication baselines remained five core and 126
+  small-helper groups;
+- real controller-managed `full` verification passed at task fingerprint
+  `1d19deee469ed50ef0ff330703174b6f1a2d2137962197a7e6f1f5fab8c880c6`.
+
 ## Runtime Evidence
 
-No application behavior changes are planned. Native temporary fixtures will
-prove task binding, sanitization, artifact hashing, bounded logs, transactional
-configuration restoration, and clean-clone contract verification. A physical
-device run is not credible or necessary for these harness-only changes.
+No application behavior changed. Native temporary fixtures proved exact task
+binding, selected-oracle enforcement, sanitization, artifact hashing, live and
+final 1 MiB log bounds, POSIX owner-only log permissions, transactional
+configuration restoration on success/failure, and repository-local contract
+verification. A physical device run was neither necessary nor credible for
+this harness-only phase.
 
 ## Rollback
 
@@ -150,8 +167,14 @@ inspection rather than deleting unrelated runtime artifacts or task branches.
 
 ## Completion Notes
 
-Pending implementation and verification.
+Phase 5 makes oracle selection part of immutable task authority, validates
+impact coverage from a checked-in registry, and adds a mobile-owned locked
+OpenAPI snapshot to full/CI. Runtime evidence now requires an exact verified
+task and selected integration oracle, emits a sanitized hash-addressed
+manifest, confines raw logs, and restores temporary environment/Firebase/build
+configuration on every exit path. It remains a repository harness used by the
+current conversational agent, not a separate coding-agent product.
 
 ## Follow-ups
 
-- [ ] Create Phase 6 only after Phase 5 evidence passes.
+- [x] Create Phase 6 only after Phase 5 evidence passes.
