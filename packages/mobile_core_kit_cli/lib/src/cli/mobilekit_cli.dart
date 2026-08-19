@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:mobile_core_kit_cli/src/ci/ci_workflow.dart';
 import 'package:mobile_core_kit_cli/src/contracts/openapi_contract_workflow.dart';
 import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
@@ -186,6 +187,14 @@ class MobilekitCli {
         usage: 'Usage: mobilekit maintenance run --once',
         workflow: (context) =>
             MaintenanceWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'ci' => _runWorkflow(
+        command: 'ci',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit ci classify --base <revision> --head <revision>',
+        workflow: (context) =>
+            CiWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'risk' => _runWorkflow(
         command: 'risk',
@@ -616,6 +625,7 @@ class MobilekitCli {
     output.writeln(
       '  maintenance  Run fixed read-only repository observations.',
     );
+    output.writeln('  ci        Classify a clean base/head CI candidate.');
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');

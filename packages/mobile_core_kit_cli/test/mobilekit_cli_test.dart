@@ -25,6 +25,9 @@ void main() {
     expect(output.toString(), contains('lint'));
     expect(output.toString(), contains('runtime'));
     expect(output.toString(), contains('task'));
+    expect(output.toString(), contains('event'));
+    expect(output.toString(), contains('maintenance'));
+    expect(output.toString(), contains('ci'));
     expect(output.toString(), contains('risk'));
     expect(errors, isEmpty);
   });
@@ -63,6 +66,36 @@ void main() {
     expect(result, 0);
     expect(output.toString(), contains('Usage: mobilekit risk classify'));
     expect(errors, isEmpty);
+  });
+
+  test('prints loop command help without finding a repository', () async {
+    for (final command in [
+      (
+        arguments: ['event', '--help'],
+        usage: 'Usage: mobilekit event intake --once',
+      ),
+      (
+        arguments: ['maintenance', '--help'],
+        usage: 'Usage: mobilekit maintenance run --once',
+      ),
+      (
+        arguments: ['ci', '--help'],
+        usage:
+            'Usage: mobilekit ci classify --base <revision> --head <revision>',
+      ),
+    ]) {
+      final output = StringBuffer();
+      final errors = StringBuffer();
+      final result = await MobilekitCli(
+        currentDirectory: Directory.systemTemp,
+        output: output,
+        errorOutput: errors,
+      ).run(command.arguments);
+
+      expect(result, 0);
+      expect(output.toString(), contains(command.usage));
+      expect(errors, isEmpty);
+    }
   });
 
   test(
