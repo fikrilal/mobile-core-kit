@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 6 locally; do not push, create or update a pull request, merge, deploy, sign, migrate, release, or invoke any external publication adapter
-**Allowed paths:** packages/mobile_core_kit_cli/lib/src/ci/, packages/mobile_core_kit_cli/lib/src/events/, packages/mobile_core_kit_cli/lib/src/handoff/, packages/mobile_core_kit_cli/lib/src/maintenance/, packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/, harness/, .github/actions/, .github/workflows/, .github/pull_request_template.md, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/, ADR/records/
+**Allowed paths:** packages/mobile_core_kit_cli/lib/src/ci/, packages/mobile_core_kit_cli/lib/src/events/, packages/mobile_core_kit_cli/lib/src/handoff/, packages/mobile_core_kit_cli/lib/src/maintenance/, packages/mobile_core_kit_cli/lib/src/task/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/lib/src/workflows/knowledge_workflow.dart, packages/mobile_core_kit_cli/test/, harness/, .github/actions/, .github/workflows/, .github/pull_request_template.md, AGENTS.md, docs/README.md, docs/engineering/, docs/exec-plans/, ADR/records/
 **Allowed actions:** edit, verify, commit
 **Maximum risk:** high
 **Repair limit:** 2
@@ -127,6 +127,9 @@ handoff possible only through fresh action-specific approval.
   authority and the user requested a local-only result.
 - 2026-08-12: Use one mobile-owned CI workflow for the stable aggregate ->
   cross-workflow status composition is less deterministic for branch rules.
+- 2026-08-12: Add the exact knowledge-workflow owner after preflight rejected
+  its omission -> the new stable CI workflow must replace the old Android-only
+  ownership assertion, and authority is corrected rather than bypassed.
 
 ## Verification
 
