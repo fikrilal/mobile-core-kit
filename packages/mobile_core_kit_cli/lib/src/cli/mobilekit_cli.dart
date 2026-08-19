@@ -5,6 +5,7 @@ import 'package:mobile_core_kit_cli/src/contracts/openapi_contract_workflow.dart
 import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
+import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
 import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
@@ -170,6 +171,13 @@ class MobilekitCli {
             'task status --task <id>',
         workflow: (context) =>
             TaskWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'event' => _runWorkflow(
+        command: 'event',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit event intake --once',
+        workflow: (context) =>
+            EventWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'risk' => _runWorkflow(
         command: 'risk',
@@ -596,6 +604,7 @@ class MobilekitCli {
     output.writeln(
       '  task      Manage current-agent task authority and state.',
     );
+    output.writeln('  event     Activate one authorized queued V2 plan.');
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
