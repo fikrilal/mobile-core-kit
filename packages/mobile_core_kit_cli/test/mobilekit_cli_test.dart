@@ -83,6 +83,10 @@ void main() {
         usage:
             'Usage: mobilekit ci classify --base <revision> --head <revision>',
       ),
+      (
+        arguments: ['handoff', '--help'],
+        usage: 'Usage: mobilekit handoff dry-run --task <id>',
+      ),
     ]) {
       final output = StringBuffer();
       final errors = StringBuffer();

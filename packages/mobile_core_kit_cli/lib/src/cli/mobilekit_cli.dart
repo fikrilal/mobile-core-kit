@@ -7,6 +7,7 @@ import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
+import 'package:mobile_core_kit_cli/src/handoff/handoff_workflow.dart';
 import 'package:mobile_core_kit_cli/src/maintenance/maintenance_workflow.dart';
 import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
@@ -195,6 +196,18 @@ class MobilekitCli {
             'Usage: mobilekit ci classify --base <revision> --head <revision>',
         workflow: (context) =>
             CiWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'handoff' => _runWorkflow(
+        command: 'handoff',
+        arguments: arguments.skip(1).toList(),
+        usage:
+            'Usage: mobilekit handoff dry-run --task <id> '
+            '--action <commit|push|draft-pr> | '
+            'handoff commit --task <id> --message <message> | '
+            'handoff push --task <id> | '
+            'handoff draft-pr --task <id> --base <branch> --title <title>',
+        workflow: (context) =>
+            HandoffWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'risk' => _runWorkflow(
         command: 'risk',
@@ -626,6 +639,7 @@ class MobilekitCli {
       '  maintenance  Run fixed read-only repository observations.',
     );
     output.writeln('  ci        Classify a clean base/head CI candidate.');
+    output.writeln('  handoff   Prepare or execute a verified narrow handoff.');
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
