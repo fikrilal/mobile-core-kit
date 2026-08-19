@@ -6,6 +6,7 @@ import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
+import 'package:mobile_core_kit_cli/src/maintenance/maintenance_workflow.dart';
 import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
@@ -178,6 +179,13 @@ class MobilekitCli {
         usage: 'Usage: mobilekit event intake --once',
         workflow: (context) =>
             EventWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'maintenance' => _runWorkflow(
+        command: 'maintenance',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit maintenance run --once',
+        workflow: (context) =>
+            MaintenanceWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'risk' => _runWorkflow(
         command: 'risk',
@@ -605,6 +613,9 @@ class MobilekitCli {
       '  task      Manage current-agent task authority and state.',
     );
     output.writeln('  event     Activate one authorized queued V2 plan.');
+    output.writeln(
+      '  maintenance  Run fixed read-only repository observations.',
+    );
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');

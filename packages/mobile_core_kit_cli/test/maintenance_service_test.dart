@@ -1,0 +1,168 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:mobile_core_kit_cli/src/maintenance/maintenance_service.dart';
+import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
+import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
+
+void main() {
+  test(
+    'fixed registry runs once and writes a sanitized private report',
+    () async {
+      final fixture = _fixture();
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      final calls = <List<String>>[];
+      final service = MaintenanceService(
+        root: fixture.root,
+        controlRoot: fixture.root,
+        runCommand: (workingDirectory, command, timeout) async {
+          calls.add(command);
+          expect(timeout, lessThanOrEqualTo(const Duration(minutes: 15)));
+          return 0;
+        },
+        now: () => DateTime.utc(2026, 8, 12),
+      );
+
+      final result = await service.runOnce();
+
+      expect(result.passed, isTrue);
+      expect(result.steps.map((step) => step.id), MaintenanceStepId.values);
+      expect(
+        calls,
+        contains(
+          equals(['flutter', 'pub', 'outdated', '--no-dev-dependencies']),
+        ),
+      );
+      expect(
+        calls,
+        contains(
+          equals([
+            'dart',
+            'run',
+            'mobile_core_kit_cli:mobilekit',
+            'codegen',
+            'verify',
+          ]),
+        ),
+      );
+      final report = File(p.join(fixture.root.path, result.reportPath));
+      final decoded = (jsonDecode(report.readAsStringSync()) as Map)
+          .cast<String, Object?>();
+      expect(decoded.keys, {
+        'schemaVersion',
+        'startedAt',
+        'completedAt',
+        'outcome',
+        'steps',
+        'observations',
+      });
+      final observations = (decoded['observations'] as Map)
+          .cast<String, Object?>();
+      expect(observations['activeV2Plans'], ['docs/exec-plans/active/test.md']);
+      expect(observations['runtimeEvidenceCount'], 1);
+      expect(observations['staleRuntimeEvidence'], [
+        '_artifacts/mobile/old/evidence.json',
+      ]);
+      expect(report.readAsStringSync(), isNot(contains(fixture.root.path)));
+      if (!Platform.isWindows) {
+        expect(FileStat.statSync(report.path).mode & 0x1ff, 0x180); // 0600
+      }
+    },
+  );
+
+  test('records fixed step failures without accepting command input', () async {
+    final fixture = _fixture();
+    addTearDown(() => fixture.root.deleteSync(recursive: true));
+    final service = MaintenanceService(
+      root: fixture.root,
+      controlRoot: fixture.root,
+      runCommand: (_, command, __) async =>
+          command.contains('outdated') ? 7 : 0,
+      now: () => DateTime.utc(2026, 8, 12),
+    );
+
+    final result = await service.runOnce();
+
+    expect(result.passed, isFalse);
+    expect(
+      result.steps
+          .singleWhere((step) => step.id == MaintenanceStepId.dependencies)
+          .status,
+      'failed',
+    );
+    expect(
+      maintenanceRegistry
+          .expand((step) => step.commands)
+          .every(
+            (command) => const {'dart', 'flutter'}.contains(command.first),
+          ),
+      isTrue,
+    );
+  });
+
+  test(
+    'fails closed if any maintenance command changes repository state',
+    () async {
+      final fixture = _fixture();
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      var mutated = false;
+      final service = MaintenanceService(
+        root: fixture.root,
+        controlRoot: fixture.root,
+        steps: [maintenanceRegistry.first],
+        runCommand: (_, __, ___) async {
+          if (!mutated) {
+            mutated = true;
+            File(
+              p.join(fixture.root.path, 'tracked.txt'),
+            ).writeAsStringSync('changed\n');
+          }
+          return 0;
+        },
+      );
+
+      await expectLater(
+        service.runOnce(),
+        throwsA(_controlError('maintenance.source-mutated')),
+      );
+    },
+  );
+}
+
+_MaintenanceFixture _fixture() {
+  final root = Directory.systemTemp.createTempSync('mobilekit_maintenance_');
+  File(
+    p.join(root.path, '.gitignore'),
+  ).writeAsStringSync('.tmp/\n_artifacts/\n');
+  File(p.join(root.path, 'tracked.txt')).writeAsStringSync('baseline\n');
+  File(p.join(root.path, 'docs/exec-plans/active/test.md'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('**Plan version:** 2\n');
+  File(p.join(root.path, '_artifacts/mobile/old/evidence.json'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('{}\n')
+    ..setLastModifiedSync(DateTime.utc(2026, 6, 1));
+  _git(root, ['init', '--quiet']);
+  _git(root, ['config', 'user.email', 'fixture@example.test']);
+  _git(root, ['config', 'user.name', 'Fixture']);
+  _git(root, ['add', '--', '.gitignore', 'tracked.txt', 'docs']);
+  _git(root, ['commit', '--quiet', '-m', 'fixture']);
+  return _MaintenanceFixture(root);
+}
+
+void _git(Directory root, List<String> arguments) {
+  final result = Process.runSync('git', arguments, workingDirectory: root.path);
+  if (result.exitCode != 0) {
+    throw StateError('git ${arguments.first} failed: ${result.stderr}');
+  }
+}
+
+Matcher _controlError(String code) =>
+    isA<TaskControlError>().having((error) => error.code, 'code', code);
+
+class _MaintenanceFixture {
+  const _MaintenanceFixture(this.root);
+
+  final Directory root;
+}
