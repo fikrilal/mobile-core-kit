@@ -235,10 +235,16 @@ class MaintenanceService {
   }
 
   String _sandboxTool(String executable) {
-    final fileName = Platform.isWindows ? '$executable.bat' : executable;
-    final pinned = File(
-      p.join(root.path, '.fvm', 'flutter_sdk', 'bin', fileName),
-    );
+    final relativePath = executable == 'dart'
+        ? p.join(
+            'bin',
+            'cache',
+            'dart-sdk',
+            'bin',
+            Platform.isWindows ? 'dart.exe' : 'dart',
+          )
+        : p.join('bin', Platform.isWindows ? 'flutter.bat' : 'flutter');
+    final pinned = File(p.join(root.path, '.fvm', 'flutter_sdk', relativePath));
     return pinned.existsSync() ? pinned.path : executable;
   }
 
