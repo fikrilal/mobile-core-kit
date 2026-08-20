@@ -146,7 +146,7 @@ class MaintenanceService {
           for (final command in step.commands) {
             exitCode = await runCommand(
               root,
-              command,
+              _maintenanceCommand(command),
               const Duration(minutes: 15),
             );
             if (exitCode != 0) break;
@@ -235,6 +235,31 @@ class MaintenanceService {
         : p.join('bin', Platform.isWindows ? 'flutter.bat' : 'flutter');
     final pinned = File(p.join(root.path, '.fvm', 'flutter_sdk', relativePath));
     return pinned.existsSync() ? pinned.path : executable;
+  }
+
+  List<String> _maintenanceCommand(List<String> command) {
+    if (command.first != 'flutter') return command;
+    final flutter = _sandboxTool('flutter');
+    if (Platform.isWindows) {
+      return [
+        'powershell.exe',
+        '-NoLogo',
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        r'& $args[0] $args[1..($args.Length - 1)]; exit $LASTEXITCODE',
+        flutter,
+        ...command.skip(1),
+      ];
+    }
+    return [
+      '/bin/bash',
+      '-c',
+      '"\$1" "\${@:2}"',
+      'mobilekit-flutter',
+      flutter,
+      ...command.skip(1),
+    ];
   }
 
   List<String> _sandboxCodegenCommand() {

@@ -40,9 +40,15 @@ void main() {
       expect(result.passed, isTrue);
       expect(result.steps.map((step) => step.id), MaintenanceStepId.values);
       expect(
-        calls,
+        calls.singleWhere((command) => command.contains('outdated')),
         contains(
-          equals(['flutter', 'pub', 'outdated', '--no-dev-dependencies']),
+          p.join(
+            fixture.root.path,
+            '.fvm',
+            'flutter_sdk',
+            'bin',
+            Platform.isWindows ? 'flutter.bat' : 'flutter',
+          ),
         ),
       );
       expect(codegenOutputDirectoryPrepared, isTrue);
