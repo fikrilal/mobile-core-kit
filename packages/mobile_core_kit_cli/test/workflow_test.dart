@@ -198,9 +198,14 @@ lib/
 └─ navigation/
 ```
 ''');
-  File(p.join(repository.path, '.github/workflows/android.yml'))
+  File(p.join(repository.path, '.github/workflows/required.yml'))
     ..parent.createSync(recursive: true)
-    ..writeAsStringSync('mobilekit verify --profile ci\n');
+    ..writeAsStringSync('''
+jobs:
+  required:
+    name: CI Required
+    run: mobilekit verify --profile ci
+''');
   File(
     p.join(repository.path, '.tmp/untranslated_messages.json'),
   ).writeAsStringSync('{}\n');
