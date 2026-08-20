@@ -191,10 +191,7 @@ class MaintenanceService {
   }
 
   Future<int> _runCodegenSandbox() async {
-    final parent = Directory(
-      p.join(controlRoot.path, '.tmp', 'mobilekit', 'maintenance', 'sandboxes'),
-    )..createSync(recursive: true);
-    final sandbox = parent.createTempSync('codegen-');
+    final sandbox = Directory.systemTemp.createTempSync('mobilekit-codegen-');
     final checkout = Directory(p.join(sandbox.path, 'checkout'));
     try {
       var exitCode = await runCommand(root, [

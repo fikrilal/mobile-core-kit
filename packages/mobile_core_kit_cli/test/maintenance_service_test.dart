@@ -14,6 +14,7 @@ void main() {
       addTearDown(() => fixture.root.deleteSync(recursive: true));
       final calls = <List<String>>[];
       var codegenOutputDirectoryPrepared = false;
+      var codegenCheckoutIsExternal = false;
       final service = MaintenanceService(
         root: fixture.root,
         controlRoot: fixture.root,
@@ -23,6 +24,10 @@ void main() {
             codegenOutputDirectoryPrepared = Directory(
               p.join(workingDirectory.path, '.tmp'),
             ).existsSync();
+            codegenCheckoutIsExternal = !p.isWithin(
+              fixture.root.path,
+              workingDirectory.path,
+            );
           }
           expect(timeout, lessThanOrEqualTo(const Duration(minutes: 15)));
           return 0;
@@ -41,6 +46,7 @@ void main() {
         ),
       );
       expect(codegenOutputDirectoryPrepared, isTrue);
+      expect(codegenCheckoutIsExternal, isTrue);
       expect(
         calls,
         contains(
