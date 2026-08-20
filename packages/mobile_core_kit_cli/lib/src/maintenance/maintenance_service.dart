@@ -53,6 +53,14 @@ const maintenanceRegistry = <MaintenanceStep>[
     ],
   ),
   MaintenanceStep(
+    id: MaintenanceStepId.harnessHonesty,
+    title: 'Harness and gate-honesty fixtures',
+    commands: [
+      ['dart', 'test', 'packages/mobile_core_kit_cli/test'],
+      ['dart', 'test', 'packages/mobile_core_kit_lints/test'],
+    ],
+  ),
+  MaintenanceStep(
     id: MaintenanceStepId.dependencies,
     title: 'Dependency drift observations',
     commands: [
@@ -64,14 +72,6 @@ const maintenanceRegistry = <MaintenanceStep>[
     title: 'Codegen drift in disposable checkout',
     commands: [],
     sandboxedCodegen: true,
-  ),
-  MaintenanceStep(
-    id: MaintenanceStepId.harnessHonesty,
-    title: 'Harness and gate-honesty fixtures',
-    commands: [
-      ['dart', 'test', 'packages/mobile_core_kit_cli/test'],
-      ['dart', 'test', 'packages/mobile_core_kit_lints/test'],
-    ],
   ),
 ];
 
@@ -292,7 +292,7 @@ class MaintenanceService {
   }
 
   Future<String> _trackedState() async {
-    final result = await Process.run(
+    final result = Process.runSync(
       'git',
       const ['status', '--porcelain=v1', '-z', '--untracked-files=all'],
       workingDirectory: root.path,

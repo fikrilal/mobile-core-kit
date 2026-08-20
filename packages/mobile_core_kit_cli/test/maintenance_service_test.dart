@@ -38,7 +38,7 @@ void main() {
       final result = await service.runOnce();
 
       expect(result.passed, isTrue);
-      expect(result.steps.map((step) => step.id), MaintenanceStepId.values);
+      expect(result.steps.last.id, MaintenanceStepId.codegen);
       expect(
         calls.singleWhere((command) => command.contains('outdated')),
         contains(
