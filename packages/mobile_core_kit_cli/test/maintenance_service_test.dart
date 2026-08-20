@@ -45,7 +45,13 @@ void main() {
         calls,
         contains(
           equals([
-            'dart',
+            p.join(
+              fixture.root.path,
+              '.fvm',
+              'flutter_sdk',
+              'bin',
+              Platform.isWindows ? 'dart.bat' : 'dart',
+            ),
             'run',
             'mobile_core_kit_cli:mobilekit',
             'codegen',
@@ -143,6 +149,19 @@ _MaintenanceFixture _fixture() {
     p.join(root.path, '.gitignore'),
   ).writeAsStringSync('.tmp/\n_artifacts/\n');
   File(p.join(root.path, 'tracked.txt')).writeAsStringSync('baseline\n');
+  for (final executable in ['dart', 'flutter']) {
+    File(
+        p.join(
+          root.path,
+          '.fvm',
+          'flutter_sdk',
+          'bin',
+          Platform.isWindows ? '$executable.bat' : executable,
+        ),
+      )
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('fixture\n');
+  }
   File(p.join(root.path, 'docs/exec-plans/active/test.md'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('**Plan version:** 2\n');

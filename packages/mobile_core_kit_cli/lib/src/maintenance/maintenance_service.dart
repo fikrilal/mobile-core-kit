@@ -217,13 +217,13 @@ class MaintenanceService {
       if (exitCode != 0) return exitCode;
       Directory(p.join(checkout.path, '.tmp')).createSync(recursive: true);
       exitCode = await runCommand(checkout, [
-        'flutter',
+        _sandboxTool('flutter'),
         'pub',
         'get',
       ], const Duration(minutes: 10));
       if (exitCode != 0) return exitCode;
       return runCommand(checkout, [
-        'dart',
+        _sandboxTool('dart'),
         'run',
         'mobile_core_kit_cli:mobilekit',
         'codegen',
@@ -232,6 +232,14 @@ class MaintenanceService {
     } finally {
       if (sandbox.existsSync()) sandbox.deleteSync(recursive: true);
     }
+  }
+
+  String _sandboxTool(String executable) {
+    final fileName = Platform.isWindows ? '$executable.bat' : executable;
+    final pinned = File(
+      p.join(root.path, '.fvm', 'flutter_sdk', 'bin', fileName),
+    );
+    return pinned.existsSync() ? pinned.path : executable;
   }
 
   Future<String> _trackedState() async {
