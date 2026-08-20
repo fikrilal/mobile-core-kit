@@ -45,6 +45,7 @@ void main() {
         calls,
         contains(
           equals([
+            if (!Platform.isWindows) '/usr/bin/env',
             p.join(
               fixture.root.path,
               '.fvm',
