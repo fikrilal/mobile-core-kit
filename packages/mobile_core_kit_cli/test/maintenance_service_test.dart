@@ -20,7 +20,7 @@ void main() {
         controlRoot: fixture.root,
         runCommand: (workingDirectory, command, timeout) async {
           calls.add(command);
-          if (command.contains('codegen')) {
+          if (command.any((value) => value.contains('codegen verify'))) {
             codegenOutputDirectoryPrepared = Directory(
               p.join(workingDirectory.path, '.tmp'),
             ).existsSync();
@@ -29,7 +29,7 @@ void main() {
               workingDirectory.path,
             );
           }
-          expect(timeout, lessThanOrEqualTo(const Duration(minutes: 15)));
+          expect(timeout, lessThanOrEqualTo(const Duration(minutes: 25)));
           return 0;
         },
         now: () => DateTime.utc(2026, 8, 12),
@@ -47,26 +47,38 @@ void main() {
       );
       expect(codegenOutputDirectoryPrepared, isTrue);
       expect(codegenCheckoutIsExternal, isTrue);
+      final codegenCommand = calls.singleWhere(
+        (command) => command.any((value) => value.contains('codegen verify')),
+      );
       expect(
-        calls,
+        codegenCommand.first,
+        Platform.isWindows ? 'powershell.exe' : '/bin/bash',
+      );
+      expect(
+        codegenCommand,
         contains(
-          equals([
-            if (!Platform.isWindows) '/usr/bin/env',
-            p.join(
-              fixture.root.path,
-              '.fvm',
-              'flutter_sdk',
-              'bin',
-              'cache',
-              'dart-sdk',
-              'bin',
-              Platform.isWindows ? 'dart.exe' : 'dart',
-            ),
-            'run',
-            'mobile_core_kit_cli:mobilekit',
-            'codegen',
-            'verify',
-          ]),
+          p.join(
+            fixture.root.path,
+            '.fvm',
+            'flutter_sdk',
+            'bin',
+            Platform.isWindows ? 'flutter.bat' : 'flutter',
+          ),
+        ),
+      );
+      expect(
+        codegenCommand,
+        contains(
+          p.join(
+            fixture.root.path,
+            '.fvm',
+            'flutter_sdk',
+            'bin',
+            'cache',
+            'dart-sdk',
+            'bin',
+            Platform.isWindows ? 'dart.exe' : 'dart',
+          ),
         ),
       );
       final report = File(p.join(fixture.root.path, result.reportPath));

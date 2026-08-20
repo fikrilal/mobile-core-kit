@@ -213,21 +213,10 @@ class MaintenanceService {
       ], const Duration(minutes: 2));
       if (exitCode != 0) return exitCode;
       Directory(p.join(checkout.path, '.tmp')).createSync(recursive: true);
-      exitCode = await runCommand(checkout, [
-        _sandboxTool('flutter'),
-        'pub',
-        'get',
-      ], const Duration(minutes: 10));
-      if (exitCode != 0) return exitCode;
       return runCommand(
         checkout,
-        _sandboxDartCommand([
-          'run',
-          'mobile_core_kit_cli:mobilekit',
-          'codegen',
-          'verify',
-        ]),
-        const Duration(minutes: 15),
+        _sandboxCodegenCommand(),
+        const Duration(minutes: 25),
       );
     } finally {
       if (sandbox.existsSync()) sandbox.deleteSync(recursive: true);
@@ -248,11 +237,33 @@ class MaintenanceService {
     return pinned.existsSync() ? pinned.path : executable;
   }
 
-  List<String> _sandboxDartCommand(List<String> arguments) {
+  List<String> _sandboxCodegenCommand() {
+    final flutter = _sandboxTool('flutter');
     final dart = _sandboxTool('dart');
-    return Platform.isWindows
-        ? [dart, ...arguments]
-        : ['/usr/bin/env', dart, ...arguments];
+    if (Platform.isWindows) {
+      return [
+        'powershell.exe',
+        '-NoLogo',
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        r'& $args[0] pub get; '
+            r'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; '
+            r'& $args[1] run mobile_core_kit_cli:mobilekit codegen verify; '
+            r'exit $LASTEXITCODE',
+        flutter,
+        dart,
+      ];
+    }
+    return [
+      '/bin/bash',
+      '-c',
+      '"\$1" pub get && "\$2" run '
+          'mobile_core_kit_cli:mobilekit codegen verify',
+      'mobilekit-codegen',
+      flutter,
+      dart,
+    ];
   }
 
   Future<String> _trackedState() async {
