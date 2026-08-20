@@ -13,11 +13,17 @@ void main() {
       final fixture = _fixture();
       addTearDown(() => fixture.root.deleteSync(recursive: true));
       final calls = <List<String>>[];
+      var codegenOutputDirectoryPrepared = false;
       final service = MaintenanceService(
         root: fixture.root,
         controlRoot: fixture.root,
         runCommand: (workingDirectory, command, timeout) async {
           calls.add(command);
+          if (command.contains('codegen')) {
+            codegenOutputDirectoryPrepared = Directory(
+              p.join(workingDirectory.path, '.tmp'),
+            ).existsSync();
+          }
           expect(timeout, lessThanOrEqualTo(const Duration(minutes: 15)));
           return 0;
         },
@@ -34,6 +40,7 @@ void main() {
           equals(['flutter', 'pub', 'outdated', '--no-dev-dependencies']),
         ),
       );
+      expect(codegenOutputDirectoryPrepared, isTrue);
       expect(
         calls,
         contains(

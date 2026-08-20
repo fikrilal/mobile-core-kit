@@ -215,6 +215,7 @@ class MaintenanceService {
         'HEAD',
       ], const Duration(minutes: 2));
       if (exitCode != 0) return exitCode;
+      Directory(p.join(checkout.path, '.tmp')).createSync(recursive: true);
       exitCode = await runCommand(checkout, [
         'flutter',
         'pub',
