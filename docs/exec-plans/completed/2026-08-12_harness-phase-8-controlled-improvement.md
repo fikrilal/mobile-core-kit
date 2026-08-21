@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-8-controlled-improvement
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 8 locally; create only an empty improvement ledger and do not add a hypothesis, alter harness enforcement, push, create or update a pull request, merge, deploy, sign, migrate, or release
@@ -85,12 +85,12 @@ evidence is eligible and never grants authority to change its own policy.
 
 ## Implementation Checklist
 
-- [ ] Add deterministic trend aggregation and strict improvement-ledger parsing.
-- [ ] Add hypothesis/plan/invariant validation and shadow evaluation.
-- [ ] Add the empty ledger, CLI check/analyze/shadow commands, and tests.
-- [ ] Integrate improvement integrity with repository knowledge verification.
-- [ ] Update engineering docs, ADR, CLI reference, and docs index.
-- [ ] Run the real Phase 8 task through controlled full verification.
+- [x] Add deterministic trend aggregation and strict improvement-ledger parsing.
+- [x] Add hypothesis/plan/invariant validation and shadow evaluation.
+- [x] Add the empty ledger, CLI check/analyze/shadow commands, and tests.
+- [x] Integrate improvement integrity with repository knowledge verification.
+- [x] Update engineering docs, ADR, CLI reference, and docs index.
+- [x] Run the real Phase 8 task through controlled full verification.
 
 ## Decision Log
 
@@ -114,6 +114,17 @@ dart run mobile_core_kit_cli:mobilekit oracle verify
 dart run mobile_core_kit_cli:mobilekit contract openapi verify
 dart run mobile_core_kit_cli:mobilekit task verify --task mobile-harness-phase-8-controlled-improvement --env dev
 ```
+
+Results on the final candidate:
+
+- controller-managed full verification passed on attempt 1;
+- 205 CLI tests, 11 custom-lint tests, and 553 application tests passed;
+- analyzer, custom lint, formatting, knowledge/evidence/improvement, oracles,
+  OpenAPI, codegen, and both required duplication profiles passed;
+- real analysis and shadow commands stayed disabled against the empty ledger,
+  emitted no recommendation, and made no mutation;
+- fixtures proved eligible trends, inconclusive windows, keep/revert decisions,
+  terminal recomputation, plan/invariant/privacy/path/risk, and concurrency rules.
 
 ## Runtime Evidence
 
@@ -140,8 +151,13 @@ and documentation. Preserve Phase 7 operating evidence unchanged.
 
 ## Completion Notes
 
-Pending.
+Established deterministic, read-only, human-terminal harness improvement. The
+checked-in ledger remains empty and the real loop remains disabled because no
+operating record yet satisfies the independent review and hosted-CI contract.
+No hypothesis, policy change, agent runtime, publication, or external action
+was introduced.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+- [x] No unresolved implementation debt; evidence collection and any future
+  hypothesis are deliberately separate reviewed operating work.
