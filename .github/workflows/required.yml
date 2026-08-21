@@ -60,8 +60,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Prepare non-secret dev environment
-        run: cp .env/dev.example.yaml .env/dev.yaml
+      - name: Prepare non-secret environments
+        run: |
+          cp .env/dev.example.yaml .env/dev.yaml
+          cp .env/staging.example.yaml .env/staging.yaml
+          cp .env/prod.example.yaml .env/prod.yaml
 
       - name: Bootstrap pinned Flutter and generated config
         uses: ./.github/actions/flutter-bootstrap

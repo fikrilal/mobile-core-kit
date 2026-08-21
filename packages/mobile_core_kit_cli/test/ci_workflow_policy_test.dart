@@ -35,6 +35,21 @@ void main() {
     expect(required, contains('mobilekit ci classify'));
   });
 
+  test('CI Full prepares every environment validated by the CI profile', () {
+    final fullLane = RegExp(
+      r'^  full:$([\s\S]*?)^  runtime:$',
+      multiLine: true,
+    ).firstMatch(required)!.group(1)!;
+
+    for (final environment in ['dev', 'staging', 'prod']) {
+      expect(
+        fullLane,
+        contains('cp .env/$environment.example.yaml .env/$environment.yaml'),
+        reason: environment,
+      );
+    }
+  });
+
   test('required workflow and composite pin every external action', () {
     final sources = [
       required,

@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** ci-clean-env-preparation
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** fix PR 38 clean-runner environment preparation, verify the fix, commit it, and push it to the existing feature branch; do not merge, deploy, release, or change PR review state
@@ -57,10 +57,10 @@ the canonical CI verification profile from a clean checkout.
 
 ## Implementation Checklist
 
-- [ ] Prepare all required non-secret environment files in CI Full.
-- [ ] Add the workflow-policy regression assertion.
-- [ ] Run targeted, full, and clean-checkout verification.
-- [ ] Complete the plan, commit, push, and inspect PR checks.
+- [x] Prepare all required non-secret environment files in CI Full.
+- [x] Add the workflow-policy regression assertion.
+- [x] Run targeted, full, and clean-checkout verification.
+- [x] Record completion evidence and prepare the focused publication.
 
 ## Decision Log
 
@@ -69,7 +69,16 @@ the canonical CI verification profile from a clean checkout.
 
 ## Verification
 
-Pending.
+- `dart test packages/mobile_core_kit_cli/test/ci_workflow_policy_test.dart`
+  passed with 4 tests.
+- Controller attempt 1 stopped at Dart formatting; the candidate was formatted
+  and the repair was recorded within the 2-repair limit.
+- `mobilekit task verify --task ci-clean-env-preparation --env dev` attempt 2
+  passed the full profile with 206 CLI tests, 11 lint-package tests, 553 Flutter
+  tests, and both duplication profiles.
+- A disposable detached worktree containing only tracked files plus this patch
+  copied all three tracked example environments and passed
+  `mobilekit verify --profile ci --env dev`.
 
 ## Runtime Evidence
 
@@ -89,8 +98,10 @@ Revert the focused CI-fix commit to restore the prior workflow and test.
 
 ## Completion Notes
 
-Pending.
+CI Full now prepares every environment that the canonical CI profile validates.
+The workflow-policy test binds those exact clean-checkout inputs so the mismatch
+cannot recur silently.
 
 ## Follow-ups
 
-- [ ] State whether any follow-up debt remains.
+- [x] No follow-up debt remains.
