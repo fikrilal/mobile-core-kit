@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-6-event-maintenance-handoff
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 6 locally; do not push, create or update a pull request, merge, deploy, sign, migrate, release, or invoke any external publication adapter
@@ -107,15 +107,15 @@ handoff possible only through fresh action-specific approval.
 
 ## Implementation Checklist
 
-- [ ] Add queued-plan event activation, strict receipts, recovery, and tests.
-- [ ] Add the fixed read-only maintenance registry, report, and tests.
-- [ ] Add clean base/head CI classification and output rendering.
-- [ ] Add fresh action-specific handoff approval and narrow adapters.
-- [ ] Add the independent stable required CI workflow and policy checks.
-- [ ] Pin required CI actions and document security/retention boundaries.
-- [ ] Update CLI routing, harness docs, ADRs, AGENTS, and PR guidance.
-- [ ] Exercise negative authority/freshness/ambiguity fixtures.
-- [ ] Run the real Phase 6 task through controlled full verification.
+- [x] Add queued-plan event activation, strict receipts, recovery, and tests.
+- [x] Add the fixed read-only maintenance registry, report, and tests.
+- [x] Add clean base/head CI classification and output rendering.
+- [x] Add fresh action-specific handoff approval and narrow adapters.
+- [x] Add the independent stable required CI workflow and policy checks.
+- [x] Pin required CI actions and document security/retention boundaries.
+- [x] Update CLI routing, harness docs, ADRs, AGENTS, and PR guidance.
+- [x] Exercise negative authority/freshness/ambiguity fixtures.
+- [x] Run the real Phase 6 task through controlled full verification.
 
 ## Decision Log
 
@@ -130,6 +130,10 @@ handoff possible only through fresh action-specific approval.
 - 2026-08-12: Add the exact knowledge-workflow owner after preflight rejected
   its omission -> the new stable CI workflow must replace the old Android-only
   ownership assertion, and authority is corrected rather than bypassed.
+- 2026-08-12: Bundle dependency and disposable-checkout codegen observations
+  into the final fixed maintenance process -> this Flutter SDK leaves the
+  parent Dart process unable to reliably spawn later asynchronous children;
+  one bounded source-owned process preserves truthful observation and cleanup.
 
 ## Verification
 
@@ -141,6 +145,15 @@ dart run mobile_core_kit_cli:mobilekit oracle verify
 dart run mobile_core_kit_cli:mobilekit contract openapi verify
 dart run mobile_core_kit_cli:mobilekit task verify --task mobile-harness-phase-6-event-maintenance-handoff --env dev
 ```
+
+Results on the final candidate:
+
+- controller full verification passed on attempt 3;
+- 175 CLI tests, 11 custom-lint tests, and 553 application tests passed;
+- analyzer, custom lint, formatting, knowledge, oracles, OpenAPI, codegen, and
+  both required duplication profiles passed;
+- real `mobilekit maintenance run --once` passed in 131.5 seconds and proved
+  tracked-source non-mutation; its private report remains ignored local state.
 
 ## Runtime Evidence
 
@@ -173,8 +186,13 @@ an ambiguous external outcome automatically.
 
 ## Completion Notes
 
-Pending.
+Implemented the one-shot event selector, fixed maintenance registry,
+independent five-job required CI workflow, and action-specific verified
+handoff. No push, PR creation, merge, deployment, signing, migration, or
+release action was invoked. Hosted CI and external publication remain pending
+separate user authority; local policy fixtures do not claim that evidence.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+- [x] No new unresolved implementation debt; hosted CI evidence is an explicit
+  publication-stage limitation rather than local debt.
