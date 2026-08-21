@@ -29,6 +29,7 @@ void main() {
     expect(output.toString(), contains('maintenance'));
     expect(output.toString(), contains('ci'));
     expect(output.toString(), contains('evidence'));
+    expect(output.toString(), contains('improve'));
     expect(output.toString(), contains('risk'));
     expect(errors, isEmpty);
   });
@@ -47,6 +48,24 @@ void main() {
     expect(
       output.toString(),
       contains('Usage: mobilekit evidence <verify|report|mutation-pilot>'),
+    );
+    expect(errors, isEmpty);
+  });
+
+  test('prints improve command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['improve', '--help']);
+
+    expect(result, 0);
+    expect(
+      output.toString(),
+      contains('Usage: mobilekit improve <check|analyze|shadow>'),
     );
     expect(errors, isEmpty);
   });

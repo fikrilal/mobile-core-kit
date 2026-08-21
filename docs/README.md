@@ -18,6 +18,7 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   - task-bound sanitized device evidence: `docs/engineering/mobile_runtime_harness.md`
   - queued event intake, read-only maintenance, independent CI, and verified handoff: `docs/engineering/event_maintenance_handoff.md`
   - calibrated sanitized operating evidence and gate-honesty policy: `docs/engineering/harness_operating_evidence.md`
+  - deterministic, human-terminal harness improvement: `docs/engineering/controlled_harness_improvement.md`
   - duplication harness overview, profiles, and commands: `docs/engineering/duplication_harness.md`
 - `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, and backend integration).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).

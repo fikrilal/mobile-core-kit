@@ -36,6 +36,7 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
 | `mobilekit oracle verify` | Validate registered oracle targets and active-plan coverage. |
 | `mobilekit evidence` | Verify/report sanitized operating evidence or run its mutation pilot. |
+| `mobilekit improve` | Validate and read-only analyze controlled harness improvements. |
 | `mobilekit contract openapi` | Verify or explicitly sync the pinned backend OpenAPI snapshot. |
 | `mobilekit task` | Establish authority and run bounded task verification/repair. |
 | `mobilekit event intake` | Activate one already-authorized queued V2 plan. |
@@ -243,6 +244,21 @@ policy. The non-default mutation pilot proves three representative eligibility
 weakening errors are detected. Promotion remains a separately authorized,
 independently reviewed source edit; the CLI does not ingest agent telemetry or
 self-assert review. See `docs/engineering/harness_operating_evidence.md`.
+
+### Controlled harness improvement
+
+```bash
+mobilekit improve check
+mobilekit improve analyze
+mobilekit improve shadow
+```
+
+`improve check` validates the strict hypothesis ledger. `analyze` aggregates
+only categorical reviewed evidence. `shadow` evaluates one approved hypothesis
+against its disjoint later evidence window and makes no mutation. The loop is
+disabled while operating evidence is insufficient; eligibility grants no task
+or publication authority. See
+`docs/engineering/controlled_harness_improvement.md`.
 
 ### Task authority and risk
 

@@ -9,6 +9,7 @@ import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
 import 'package:mobile_core_kit_cli/src/evidence/evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/handoff/handoff_workflow.dart';
+import 'package:mobile_core_kit_cli/src/improvement/improvement_workflow.dart';
 import 'package:mobile_core_kit_cli/src/maintenance/maintenance_workflow.dart';
 import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
@@ -168,6 +169,13 @@ class MobilekitCli {
         usage: 'Usage: mobilekit evidence <verify|report|mutation-pilot>',
         workflow: (context) =>
             EvidenceWorkflow(context).run(arguments.skip(1).toList()),
+      ),
+      'improve' => _runWorkflow(
+        command: 'improve',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit improve <check|analyze|shadow>',
+        workflow: (context) =>
+            ImprovementWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'contract' => _runContract(arguments.skip(1).toList()),
       'task' => _runWorkflow(
@@ -640,6 +648,9 @@ class MobilekitCli {
     output.writeln('  oracle    Verify registered behavioral oracles.');
     output.writeln(
       '  evidence  Verify and report sanitized operating evidence.',
+    );
+    output.writeln(
+      '  improve   Analyze evidence and evaluate approved hypotheses.',
     );
     output.writeln('  contract  Verify or explicitly sync pinned contracts.');
     output.writeln(
