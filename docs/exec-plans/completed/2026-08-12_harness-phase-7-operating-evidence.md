@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** mobile-harness-phase-7-operating-evidence
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** implement, verify, and commit Phase 7 locally; create only an empty checked-in operating ledger and do not promote task outcomes, push, create or update a pull request, merge, deploy, sign, migrate, or release
@@ -83,12 +83,12 @@ after independent review and hosted CI reproduction.
 
 ## Implementation Checklist
 
-- [ ] Add the strict operating-ledger model, validator, report, and tests.
-- [ ] Add the empty checked-in ledger and calibrated observation policy.
-- [ ] Add consolidated gate-honesty fixtures and a narrow mutation pilot.
-- [ ] Include evidence integrity in full and hosted CI verification.
-- [ ] Update CLI help, engineering docs, ADR, and documentation index.
-- [ ] Run the real Phase 7 task through controlled full verification.
+- [x] Add the strict operating-ledger model, validator, report, and tests.
+- [x] Add the empty checked-in ledger and calibrated observation policy.
+- [x] Add consolidated gate-honesty fixtures and a narrow mutation pilot.
+- [x] Include evidence integrity in full and hosted CI verification.
+- [x] Update CLI help, engineering docs, ADR, and documentation index.
+- [x] Run the real Phase 7 task through controlled full verification.
 
 ## Decision Log
 
@@ -112,6 +112,15 @@ dart run mobile_core_kit_cli:mobilekit oracle verify
 dart run mobile_core_kit_cli:mobilekit contract openapi verify
 dart run mobile_core_kit_cli:mobilekit task verify --task mobile-harness-phase-7-operating-evidence --env dev
 ```
+
+Results on the final candidate:
+
+- controller-managed full verification passed on attempt 1;
+- 190 CLI tests, 11 custom-lint tests, and 553 application tests passed;
+- analyzer, custom lint, formatting, knowledge/evidence, oracles, OpenAPI,
+  codegen, and both required duplication profiles passed;
+- the checked-in ledger contains zero records and reports `insufficient`;
+- the non-default mutation pilot killed all 3 representative policy mutants.
 
 ## Runtime Evidence
 
@@ -139,8 +148,13 @@ tests, and documentation. Local task episodes remain private and unchanged.
 
 ## Completion Notes
 
-Pending.
+Established calibrated, strict, sanitized operating evidence as repository
+knowledge policy. No task outcome was promoted because independent human
+review and hosted clean-checkout CI evidence are not yet available. No agent
+telemetry, automatic policy mutation, publication, or external action was
+introduced.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+- [x] No unresolved implementation debt; collecting qualifying real operating
+  records is an explicit future operating condition, not missing Phase 7 code.
