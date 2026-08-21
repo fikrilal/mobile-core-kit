@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mobile_core_kit_cli/src/evidence/evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
@@ -17,6 +18,10 @@ class KnowledgeWorkflow {
 
     final projectMapResult = await ProjectMapWorkflow(context).run(const []);
     if (projectMapResult != 0) return projectMapResult;
+    final evidenceResult = await EvidenceWorkflow(
+      context,
+    ).run(const ['verify']);
+    if (evidenceResult != 0) return evidenceResult;
 
     final errors = <String>[
       ..._validatePlanLifecycle(context.rootDirectory),

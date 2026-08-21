@@ -7,6 +7,7 @@ import 'package:mobile_core_kit_cli/src/doctor/doctor.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_runner.dart';
 import 'package:mobile_core_kit_cli/src/events/event_workflow.dart';
+import 'package:mobile_core_kit_cli/src/evidence/evidence_workflow.dart';
 import 'package:mobile_core_kit_cli/src/handoff/handoff_workflow.dart';
 import 'package:mobile_core_kit_cli/src/maintenance/maintenance_workflow.dart';
 import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
@@ -160,6 +161,13 @@ class MobilekitCli {
         usage: 'Usage: mobilekit oracle verify',
         workflow: (context, workflowArguments) =>
             OracleWorkflow(context).run(workflowArguments),
+      ),
+      'evidence' => _runWorkflow(
+        command: 'evidence',
+        arguments: arguments.skip(1).toList(),
+        usage: 'Usage: mobilekit evidence <verify|report|mutation-pilot>',
+        workflow: (context) =>
+            EvidenceWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'contract' => _runContract(arguments.skip(1).toList()),
       'task' => _runWorkflow(
@@ -630,6 +638,9 @@ class MobilekitCli {
       '  knowledge Verify project-map, links, and plan lifecycle.',
     );
     output.writeln('  oracle    Verify registered behavioral oracles.');
+    output.writeln(
+      '  evidence  Verify and report sanitized operating evidence.',
+    );
     output.writeln('  contract  Verify or explicitly sync pinned contracts.');
     output.writeln(
       '  task      Manage current-agent task authority and state.',

@@ -8,6 +8,8 @@ import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'evidence_fixture.dart';
+
 void main() {
   test(
     'lint runs analyzer and custom lint through the shared executor',
@@ -209,6 +211,7 @@ jobs:
   File(
     p.join(repository.path, '.tmp/untranslated_messages.json'),
   ).writeAsStringSync('{}\n');
+  writeEvidenceFixture(repository);
 
   for (final environment in ['dev', 'staging', 'prod']) {
     File(p.join(repository.path, '.env/$environment.yaml'))

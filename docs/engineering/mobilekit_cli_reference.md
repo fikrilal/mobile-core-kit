@@ -35,6 +35,7 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit project-map verify` | Check AGENTS project-map drift. |
 | `mobilekit knowledge verify` | Check project-map, normative links, and plan lifecycle. |
 | `mobilekit oracle verify` | Validate registered oracle targets and active-plan coverage. |
+| `mobilekit evidence` | Verify/report sanitized operating evidence or run its mutation pilot. |
 | `mobilekit contract openapi` | Verify or explicitly sync the pinned backend OpenAPI snapshot. |
 | `mobilekit task` | Establish authority and run bounded task verification/repair. |
 | `mobilekit event intake` | Activate one already-authorized queued V2 plan. |
@@ -153,7 +154,8 @@ The profiles are intentionally different:
   localization, knowledge validation, formatting, analyzer/custom lints, both
   harness-package test suites, and optional focused application tests;
 - `full` adds generated-output freshness, advisory core/small-helper
-  duplication reports, and every root application test;
+  duplication reports, operating-evidence integrity, and every root
+  application test;
 - `runtime` delegates selected integration targets to the device evidence
   workflow and requires `--device`;
 - `ci` has the same repository proof sequence as `full`; GitHub Actions adds
@@ -224,6 +226,23 @@ the impact coverage of active/queued V2 plans. `contract openapi verify`
 validates OpenAPI 3 structure and the locked SHA-256 digest. Sync validates
 before writing, records no source path, and requires explicit acceptance. See
 `docs/engineering/behavioral_oracles.md`.
+
+### Operating evidence
+
+```bash
+mobilekit evidence verify
+mobilekit evidence report
+mobilekit evidence mutation-pilot
+```
+
+`evidence verify` checks the strict checked-in ledger and calibration sources;
+repository knowledge validation includes it in fast, full, and CI profiles.
+`report` emits deterministic aggregate
+counts, observations, and missing eligibility categories without changing
+policy. The non-default mutation pilot proves three representative eligibility
+weakening errors are detected. Promotion remains a separately authorized,
+independently reviewed source edit; the CLI does not ingest agent telemetry or
+self-assert review. See `docs/engineering/harness_operating_evidence.md`.
 
 ### Task authority and risk
 

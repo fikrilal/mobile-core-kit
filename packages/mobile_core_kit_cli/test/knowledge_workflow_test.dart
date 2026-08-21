@@ -5,6 +5,8 @@ import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'evidence_fixture.dart';
+
 void main() {
   test('accepts an aligned map, valid plan, and valid local links', () async {
     final fixture = await _fixture();
@@ -117,6 +119,7 @@ Future<Directory> _fixture() async {
       '    name: CI Required\n'
       '    run: dart run mobile_core_kit_cli:mobilekit verify --profile ci\n',
     );
+  writeEvidenceFixture(root);
   return root;
 }
 
