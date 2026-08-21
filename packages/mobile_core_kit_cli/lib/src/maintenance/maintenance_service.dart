@@ -63,9 +63,7 @@ const maintenanceRegistry = <MaintenanceStep>[
   MaintenanceStep(
     id: MaintenanceStepId.dependencies,
     title: 'Dependency drift observations',
-    commands: [
-      ['flutter', 'pub', 'outdated', '--no-dev-dependencies'],
-    ],
+    commands: [],
   ),
   MaintenanceStep(
     id: MaintenanceStepId.codegen,
@@ -138,6 +136,7 @@ class MaintenanceService {
       final results = <MaintenanceStepResult>[];
       var passed = true;
       for (final step in steps) {
+        if (step.id == MaintenanceStepId.dependencies) continue;
         final stopwatch = Stopwatch()..start();
         var exitCode = 0;
         if (step.sandboxedCodegen) {
@@ -146,7 +145,7 @@ class MaintenanceService {
           for (final command in step.commands) {
             exitCode = await runCommand(
               root,
-              _maintenanceCommand(command),
+              command,
               const Duration(minutes: 15),
             );
             if (exitCode != 0) break;
@@ -154,6 +153,15 @@ class MaintenanceService {
         }
         stopwatch.stop();
         if (exitCode != 0) passed = false;
+        if (step.sandboxedCodegen) {
+          results.add(
+            MaintenanceStepResult(
+              id: MaintenanceStepId.dependencies,
+              status: exitCode == 0 ? 'passed' : 'failed',
+              durationMs: stopwatch.elapsedMilliseconds,
+            ),
+          );
+        }
         results.add(
           MaintenanceStepResult(
             id: step.id,
@@ -194,29 +202,10 @@ class MaintenanceService {
     final sandbox = Directory.systemTemp.createTempSync('mobilekit-codegen-');
     final checkout = Directory(p.join(sandbox.path, 'checkout'));
     try {
-      var exitCode = await runCommand(root, [
-        'git',
-        'clone',
-        '--quiet',
-        '--shared',
-        '--no-checkout',
-        root.path,
-        checkout.path,
-      ], const Duration(minutes: 2));
-      if (exitCode != 0) return exitCode;
-      exitCode = await runCommand(checkout, [
-        'git',
-        'checkout',
-        '--quiet',
-        '--detach',
-        'HEAD',
-      ], const Duration(minutes: 2));
-      if (exitCode != 0) return exitCode;
-      Directory(p.join(checkout.path, '.tmp')).createSync(recursive: true);
       return runCommand(
-        checkout,
-        _sandboxCodegenCommand(),
-        const Duration(minutes: 25),
+        root,
+        _maintenanceBundleCommand(checkout),
+        const Duration(minutes: 30),
       );
     } finally {
       if (sandbox.existsSync()) sandbox.deleteSync(recursive: true);
@@ -237,32 +226,7 @@ class MaintenanceService {
     return pinned.existsSync() ? pinned.path : executable;
   }
 
-  List<String> _maintenanceCommand(List<String> command) {
-    if (command.first != 'flutter') return command;
-    final flutter = _sandboxTool('flutter');
-    if (Platform.isWindows) {
-      return [
-        'powershell.exe',
-        '-NoLogo',
-        '-NoProfile',
-        '-NonInteractive',
-        '-Command',
-        r'& $args[0] $args[1..($args.Length - 1)]; exit $LASTEXITCODE',
-        flutter,
-        ...command.skip(1),
-      ];
-    }
-    return [
-      '/bin/bash',
-      '-c',
-      '"\$1" "\${@:2}"',
-      'mobilekit-flutter',
-      flutter,
-      ...command.skip(1),
-    ];
-  }
-
-  List<String> _sandboxCodegenCommand() {
+  List<String> _maintenanceBundleCommand(Directory checkout) {
     final flutter = _sandboxTool('flutter');
     final dart = _sandboxTool('dart');
     if (Platform.isWindows) {
@@ -272,22 +236,46 @@ class MaintenanceService {
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        r'& $args[0] pub get; '
+        r'$dependencyExit = 0; '
+            r'& $args[0] pub outdated --no-dev-dependencies; '
+            r'if ($LASTEXITCODE -ne 0) { $dependencyExit = $LASTEXITCODE }; '
+            r'git clone --quiet --shared --no-checkout $args[2] $args[3]; '
             r'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; '
+            r'git -C $args[3] checkout --quiet --detach HEAD; '
+            r'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; '
+            r'New-Item -ItemType Directory -Force -Path '
+            r"(Join-Path $args[3] '.tmp') | Out-Null; "
+            r'Push-Location $args[3]; '
+            r'& $args[0] pub get; $codegenExit = $LASTEXITCODE; '
+            r'if ($codegenExit -eq 0) { '
             r'& $args[1] run mobile_core_kit_cli:mobilekit codegen verify; '
-            r'exit $LASTEXITCODE',
+            r'$codegenExit = $LASTEXITCODE }; Pop-Location; '
+            r'if ($dependencyExit -ne 0 -or $codegenExit -ne 0) { exit 1 }',
         flutter,
         dart,
+        root.path,
+        checkout.path,
       ];
     }
     return [
       '/bin/bash',
       '-c',
-      '"\$1" pub get && "\$2" run '
-          'mobile_core_kit_cli:mobilekit codegen verify',
-      'mobilekit-codegen',
+      r'dependency_exit=0; '
+          '"\$1" pub outdated --no-dev-dependencies || dependency_exit=\$?; '
+          'git clone --quiet --shared --no-checkout "\$3" "\$4" && '
+          'git -C "\$4" checkout --quiet --detach HEAD && '
+          'mkdir -p "\$4/.tmp" || exit \$?; '
+          r'codegen_exit=0; '
+          '(cd "\$4" && "\$1" pub get && '
+          '"\$2" run mobile_core_kit_cli:mobilekit codegen verify) || '
+          r'codegen_exit=$?; '
+          'if [ "\$dependency_exit" -ne 0 ] || [ "\$codegen_exit" -ne 0 ]; '
+          r'then exit 1; fi',
+      'mobilekit-maintenance',
       flutter,
       dart,
+      root.path,
+      checkout.path,
     ];
   }
 

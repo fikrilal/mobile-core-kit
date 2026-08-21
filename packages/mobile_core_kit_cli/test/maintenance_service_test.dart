@@ -21,15 +21,14 @@ void main() {
         runCommand: (workingDirectory, command, timeout) async {
           calls.add(command);
           if (command.any((value) => value.contains('codegen verify'))) {
-            codegenOutputDirectoryPrepared = Directory(
-              p.join(workingDirectory.path, '.tmp'),
-            ).existsSync();
-            codegenCheckoutIsExternal = !p.isWithin(
-              fixture.root.path,
-              workingDirectory.path,
+            codegenOutputDirectoryPrepared = command.any(
+              (value) => value.contains('.tmp'),
             );
+            codegenCheckoutIsExternal = command
+                .where(p.isAbsolute)
+                .any((value) => !p.isWithin(fixture.root.path, value));
           }
-          expect(timeout, lessThanOrEqualTo(const Duration(minutes: 25)));
+          expect(timeout, lessThanOrEqualTo(const Duration(minutes: 30)));
           return 0;
         },
         now: () => DateTime.utc(2026, 8, 12),
@@ -40,7 +39,9 @@ void main() {
       expect(result.passed, isTrue);
       expect(result.steps.last.id, MaintenanceStepId.codegen);
       expect(
-        calls.singleWhere((command) => command.contains('outdated')),
+        calls.singleWhere(
+          (command) => command.any((value) => value.contains('outdated')),
+        ),
         contains(
           p.join(
             fixture.root.path,
@@ -119,7 +120,7 @@ void main() {
       root: fixture.root,
       controlRoot: fixture.root,
       runCommand: (_, command, __) async =>
-          command.contains('outdated') ? 7 : 0,
+          command.any((value) => value.contains('outdated')) ? 7 : 0,
       now: () => DateTime.utc(2026, 8, 12),
     );
 
