@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** ci-runtime-firebase-fixture
-**Status:** active
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** fix PR 38 CI Runtime Android assembly by adding and using a non-secret build-only Firebase fixture, verify, commit, and push; do not use real credentials, merge, deploy, or release
@@ -61,10 +61,11 @@ configuration.
 
 ## Implementation Checklist
 
-- [ ] Add the non-secret package-matched Firebase build fixture.
-- [ ] Prepare it only in CI Runtime.
-- [ ] Add workflow-policy regression assertions.
-- [ ] Run targeted, full, clean-build, and hosted verification.
+- [x] Add the non-secret package-matched Firebase build fixture.
+- [x] Prepare it only in CI Runtime.
+- [x] Add workflow-policy regression assertions.
+- [x] Run targeted, full, and clean-build verification; hosted verification
+  follows publication of the exact commit.
 
 ## Decision Log
 
@@ -73,7 +74,18 @@ configuration.
 
 ## Verification
 
-Pending.
+- `dart test packages/mobile_core_kit_cli/test/ci_workflow_policy_test.dart`
+  passed with 5 tests.
+- A disposable clean checkout copied the synthetic fixture and successfully
+  ran `flutter build apk --debug --flavor dev -t lib/main_dev.dart
+  --dart-define=ENV=dev`, producing `app-dev-debug.apk`.
+- The first fixture draft was intentionally rejected by the real Gradle plugin
+  because it lacked `current_key`; the final literal is explicitly
+  `ci-build-only-not-a-credential` and the policy test rejects Firebase-shaped
+  `AIza` keys.
+- `mobilekit task verify --task ci-runtime-firebase-fixture --env dev` passed
+  on attempt 1 with 207 CLI tests, 11 lint-package tests, 553 Flutter tests,
+  and the canonical duplication profiles.
 
 ## Runtime Evidence
 
@@ -93,8 +105,10 @@ Revert the focused fixture/workflow commit.
 
 ## Completion Notes
 
-Pending.
+CI Runtime now supplies a package-matched synthetic Google Services input only
+for credential-free Android assembly. Production and developer Firebase inputs
+remain unchanged and ignored.
 
 ## Follow-ups
 
-- [ ] State whether any follow-up debt remains.
+- [x] No follow-up debt remains.

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -10,6 +11,9 @@ void main() {
   ).readAsStringSync();
   final bootstrap = File(
     p.join(root.path, '.github', 'actions', 'flutter-bootstrap', 'action.yml'),
+  ).readAsStringSync();
+  final firebaseFixture = File(
+    p.join(root.path, 'harness', 'fixtures', 'google-services.ci.json'),
   ).readAsStringSync();
 
   test('required workflow exposes one stable aggregate over four lanes', () {
@@ -48,6 +52,33 @@ void main() {
         reason: environment,
       );
     }
+  });
+
+  test('CI Runtime installs a synthetic package-matched Firebase fixture', () {
+    final runtimeLane = RegExp(
+      r'^  runtime:$([\s\S]*?)^  governance:$',
+      multiLine: true,
+    ).firstMatch(required)!.group(1)!;
+    expect(
+      runtimeLane,
+      contains(
+        'cp harness/fixtures/google-services.ci.json '
+        'android/app/google-services.json',
+      ),
+    );
+
+    final fixture = jsonDecode(firebaseFixture) as Map<String, dynamic>;
+    final project = fixture['project_info'] as Map<String, dynamic>;
+    final clients = fixture['client'] as List<dynamic>;
+    final client = clients.single as Map<String, dynamic>;
+    final clientInfo = client['client_info'] as Map<String, dynamic>;
+    final android = clientInfo['android_client_info'] as Map<String, dynamic>;
+    final apiKeys = client['api_key'] as List<dynamic>;
+    final apiKey = apiKeys.single as Map<String, dynamic>;
+    expect(project['project_id'], 'mobile-core-kit-ci-only');
+    expect(android['package_name'], 'dev.fikril.mobile.corekit.dev');
+    expect(apiKey['current_key'], 'ci-build-only-not-a-credential');
+    expect(firebaseFixture, isNot(contains('AIza')));
   });
 
   test('required workflow and composite pin every external action', () {

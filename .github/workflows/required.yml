@@ -95,6 +95,9 @@ jobs:
       - name: Prepare non-secret dev environment
         run: cp .env/dev.example.yaml .env/dev.yaml
 
+      - name: Prepare CI-only Firebase build fixture
+        run: cp harness/fixtures/google-services.ci.json android/app/google-services.json
+
       - name: Bootstrap pinned Flutter and generated config
         uses: ./.github/actions/flutter-bootstrap
         with:
