@@ -164,7 +164,7 @@ environment:
       ..writeAsStringSync('''
 schema: 1
 template: mobile_core_kit
-version: 2026-08-01
+version: 2026-08-16
 ''');
 
     final marker = TemplateMarker.fromFile(markerFile);

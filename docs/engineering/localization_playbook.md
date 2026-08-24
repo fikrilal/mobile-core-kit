@@ -17,6 +17,24 @@ Example:
 AppButton(text: context.l10n.commonConfirm, onPressed: ...)
 ```
 
+The `hardcoded_ui_strings` custom lint rejects direct fixed copy at registered
+Flutter, accessibility, and design-system sinks. It is also valid to localize
+at a page boundary and pass the resulting `String` into a smaller widget or
+presentation model.
+
+For a repo-owned presentation API that stores visible copy before rendering,
+register its exact arguments under the rule instead of relying on reviewers:
+
+```yaml
+- hardcoded_ui_strings:
+  sinks:
+    - target: MoodChartItem
+      named_arguments: [label]
+```
+
+Do not register generic names globally. Target-and-argument matching prevents
+analytics identifiers and protocol values from being mistaken for UI copy.
+
 ### Don’t localize inside Domain
 
 Domain code should stay framework‑free and should not import Flutter or generated l10n types.

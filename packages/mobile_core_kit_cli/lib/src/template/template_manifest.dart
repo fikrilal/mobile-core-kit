@@ -6,7 +6,7 @@ const templateMarkerRelativePath = '.mobilekit/template.yaml';
 const projectManifestRelativePath = '.mobilekit/project.yaml';
 const supportedTemplateId = 'mobile_core_kit';
 const currentTemplateSchema = 1;
-const currentTemplateVersion = '2026-08-01';
+const currentTemplateVersion = '2026-08-16';
 
 const defaultManagedSurfaces = <String>[
   'application_package',
