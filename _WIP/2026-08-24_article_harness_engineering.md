@@ -90,7 +90,7 @@ Untuk mengatasi ini, architecture ngga boleh lagi dijaga lewat dokumen guide ata
 
 - **Boundary & layer lints**: Mengunci arah dependency dan batas antar layer secara mekanis, misalnya custom AST lints di mobile, eslint boundaries di frontend, atau dependency-cruiser di backend. Linter ini otomatis melempar error jika ada layer UI yang memanggil database langsung, atau modul fitur yang saling silang import tanpa lewat core.
 - **Design token & UI governance**: Melarang hardcoded nilai mentah. Linter otomatis menolak hardcoded hex color (`#1E293B`), penggunaan raw widget (`Text` instead `AppText` ← component dari design system), atau string UI tanpa i18n/localization. Kita harus memaksa AI untuk memakai design token dan variable yang sudah disediakan oleh design system.
-- **Duplication sensors (`jscpd`)**: Memasang code-duplication scanner untuk mendeteksi duplikasi. Kalau AI males cari utility yang sudah ada dan malah bikin fungsi helper baru, sensor ini akan mengembalikan duplication-report saat perintah verify dijalankan.
+- **Type-safety & anti-escape hatch**: Mengunci strict typing dan melarang jalan pintas. Linter otomatis menolak penggunaan `any` (`@typescript-eslint/no-explicit-any`) di TypeScript atau `dynamic` di Dart, serta melarang *suppression comments* seperti `// @ts-ignore` atau `// ignore_for_file`. AI dipaksa memetakan interface dan generic type secara presisi alih-alih melakukan bypass tipe data saat menemui error.
 
 Menariknya, ngga seperti kita manusia atau entitas dengan username github `@kahfismith` yang malah mendisable lints ketika ada warning, agent akan secara happy mengikuti aturan lints tersebut dan malah menjadi multiplier. Sekali aturan di-encode, agent akan menerapkannya di mana saja secara bersamaan.
 
@@ -457,7 +457,7 @@ To prevent this, architecture can no longer be protected through text guides or 
 
 - **Boundary & layer lints**: Mechanically locking dependency directions and layer boundaries (e.g. custom AST lints in mobile, ESLint boundaries in frontend, or Dependency-Cruiser in backend). These linters immediately fail if a UI layer calls a database directly, or if feature modules cross-import without going through core.
 - **Design token & UI governance**: Banning raw hardcoded values. Linters automatically reject raw hex colors (`#1E293B`), using raw primitives (`Text` instead of `AppText` from the design system), or UI strings without i18n/localization. We force the AI to use existing tokens and variables provided by the design system.
-- **Duplication sensors (`jscpd`)**: Running structural code-duplication scanners. If the AI gets lazy and writes duplicate helpers, the sensor returns a duplication report during the verification phase.
+- **Type-safety & anti-escape hatch**: Enforcing strict typing and prohibiting lazy shortcuts. Linters reject `any` (`@typescript-eslint/no-explicit-any`) in TypeScript or `dynamic` in Dart, as well as suppression comments like `// @ts-ignore` or `// ignore_for_file`. Agents are forced to model exact interfaces and generic types instead of bypassing type checkers when encountering errors.
 
 Interestingly, unlike human developers or entities like `@kahfismith` on GitHub who disable lints whenever a warning appears, AI agents happily follow lint rules and become multipliers. Once a rule is encoded, the agent applies it everywhere simultaneously.
 
