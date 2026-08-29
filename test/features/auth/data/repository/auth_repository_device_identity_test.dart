@@ -10,8 +10,8 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_mo
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
@@ -63,10 +63,9 @@ void main() {
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
+    final credentials = _validRegistrationCredentials();
 
-    final result = await repo.register(
-      const RegisterRequestEntity(email: 'user@example.com', password: 'pass'),
-    );
+    final result = await repo.register(credentials);
 
     expect(result.isRight(), true);
 
@@ -137,6 +136,16 @@ LoginCredentials _validLoginCredentials() {
   return LoginCredentials.create(
     email: 'user@example.com',
     password: 'pass',
+  ).match(
+    (_) => throw StateError('Expected valid test credentials.'),
+    (credentials) => credentials,
+  );
+}
+
+RegistrationCredentials _validRegistrationCredentials() {
+  return RegistrationCredentials.create(
+    email: 'user@example.com',
+    password: 'password123',
   ).match(
     (_) => throw StateError('Expected valid test credentials.'),
     (credentials) => credentials,

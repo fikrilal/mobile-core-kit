@@ -5,12 +5,13 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.d
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart';
+import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/register_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_effect.dart';
@@ -25,9 +26,7 @@ class _MockAnalyticsTracker extends Mock implements AnalyticsTracker {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(
-      const RegisterRequestEntity(email: 'e', password: 'p'),
-    );
+    registerFallbackValue(const RegisterInput(email: 'e', password: 'p'));
     registerFallbackValue(
       const AuthSessionEntity(
         tokens: AuthTokensEntity(
@@ -111,7 +110,7 @@ void main() {
       final emitted = <RegisterState>[];
       final sub = cubit.stream.listen(emitted.add);
 
-      cubit.emailChanged('user@example.com');
+      cubit.emailChanged(' user@example.com ');
       cubit.passwordChanged('password123');
       await cubit.submit();
       await pumpEventQueue();
@@ -122,9 +121,9 @@ void main() {
 
       final captured = verify(() => registerUser(captureAny())).captured;
       expect(captured.length, 1);
-      final request = captured.single as RegisterRequestEntity;
-      expect(request.email, 'user@example.com');
-      expect(request.password, 'password123');
+      final input = captured.single as RegisterInput;
+      expect(input.email, ' user@example.com ');
+      expect(input.password, 'password123');
 
       verify(() => sessionManager.login(session)).called(1);
 
@@ -171,5 +170,42 @@ void main() {
         await cubit.close();
       },
     );
+
+    test('maps server validation errors back to fields', () async {
+      const failure = AuthFailure.validation([
+        ValidationError(
+          field: 'email',
+          message: '',
+          code: ValidationErrorCodes.invalidEmail,
+        ),
+        ValidationError(
+          field: 'password',
+          message: '',
+          code: ValidationErrorCodes.passwordTooShort,
+        ),
+      ]);
+      when(() => registerUser(any())).thenAnswer((_) async => left(failure));
+
+      final cubit = RegisterCubit(registerUser, sessionManager, analytics);
+      final effects = <RegisterEffect>[];
+      final effectSub = cubit.effects.listen(effects.add);
+
+      cubit.emailChanged('user@example.com');
+      cubit.passwordChanged('password123');
+      await cubit.submit();
+      await pumpEventQueue();
+
+      expect(cubit.state.status, RegisterStatus.failure);
+      expect(cubit.state.emailError?.code, ValidationErrorCodes.invalidEmail);
+      expect(
+        cubit.state.passwordError?.code,
+        ValidationErrorCodes.passwordTooShort,
+      );
+      expect(effects.single, isA<RegisterFailureEffect>());
+      verifyNever(() => sessionManager.login(any()));
+
+      await effectSub.cancel();
+      await cubit.close();
+    });
   });
 }

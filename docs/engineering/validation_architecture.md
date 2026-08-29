@@ -12,7 +12,8 @@ Goals:
 
 - Source of truth: domain Value Objects (VOs) encapsulate validation rules.
 - Two gates: presentation (Bloc/Cubit) for real‑time feedback, and use case for the final validation before repositories.
-- Clean boundaries: presentation depends on domain; repositories never receive invalid data.
+- Clean boundaries: presentation depends on domain; repository contracts accept
+  only validated domain types.
 - User‑friendly errors: map failures to localized strings close to domain.
 
 ## 2) Folder Structure (recap)
@@ -49,11 +50,16 @@ See also: `docs/engineering/project_architecture.md`.
   - Prefer storing `ValidationError` (field + code) rather than raw strings; localize in UI.
 
 - Use Case (final gate)
-  - Re‑validate inputs using the same VOs (or a small helper) before calling repositories.
-  - On success, build request entities and call repository; on failure, return a domain failure with friendly message.
+  - Accept a raw application input type such as `LoginInput` or `RegisterInput`.
+  - Validate it through an aggregate factory such as `LoginCredentials.create()`
+    or `RegistrationCredentials.create()` before calling repositories.
+  - On failure, return a domain validation failure; on success, pass the
+    validated aggregate to the repository.
 
 - Repository / Data Sources
-  - Do not perform client‑side validation; trust the use case.
+  - Accept validated domain aggregates rather than raw form primitives.
+  - Unwrap Value Objects into request-model primitives only in the data layer.
+  - Do not repeat client-side validation.
   - Map server‑side validation payloads to domain failures to surface inline field errors when applicable.
 
 ## 4) Error Messages & Localization
@@ -70,10 +76,15 @@ See also: `docs/engineering/project_architecture.md`.
 Typical flow for a form field:
 - On change: Bloc/Cubit handles `FieldChanged` event → calls `VO.create(value)` → state carries `errorText` → UI shows inline error.
 - On submit: Bloc/Cubit ensures no field errors and required inputs present, then invokes the use case.
-- Use case (final gate): re‑validates with VOs (or helper) → on failure returns a domain failure; on success calls repository.
-- Repository: executes remote/local; maps server validation messages to domain failures.
+- Use case (final gate): creates a validated aggregate from raw input → on
+  failure returns a domain failure; on success calls the typed repository.
+- Repository: receives only the validated aggregate, maps it to a request
+  model, executes remote/local work, and maps server validation failures.
 
 This gives fast feedback without compromising correctness if UI code is bypassed.
+
+The template-level rationale and applicability boundary are recorded in
+[ADR 0016](../../ADR/records/0016-validated-form-boundaries.md).
 
 ### Error Display: touched‑aware (recommended)
 
@@ -103,9 +114,11 @@ Practical pattern:
   - Bind `errorText` from state; dispatch events on `onChanged`.
   - Do not duplicate regex/logic; always call `VO.create()`.
 
-- Use‑case aggregation (final gate)
-  - Compose VO validations in a helper or inline in the use case.
-  - Return a specific validation failure (or list) with UI‑friendly messages.
+- Aggregate factory (final gate)
+  - Compose field VOs in a privately constructed domain aggregate.
+  - Return `Either<List<ValidationError>, Aggregate>` so multi-field forms can
+    report all deterministic errors in one pass.
+  - Invoke the factory from the use case; do not expose an unchecked constructor.
 
 ## 7) Conventions
 
@@ -126,14 +139,17 @@ Practical pattern:
 ## 8) Adding a New Validated Field — Checklist
 
 1) Create a Value Object in `domain/value/` with `create(String)`.
-2) Add or reuse a `ValueFailure` variant and a `userMessage` mapping if needed.
+2) Add or reuse a `ValueFailure` variant and stable error-code mapping if needed.
 3) In presentation (Bloc/Cubit):
    - Add `FieldChanged` event/handler; call `VO.create()`; store `ValidationError?` on state (stable `code`).
    - Wire `onChanged: (v) => context.read<FormBloc>().add(FieldChanged(v))` and `errorText: messageForValidationError(state.fieldError, l10n)` (touched‑aware) in the page.
-4) In the use case (final gate):
-   - Re‑validate with VOs; build request entities only if all inputs are valid.
-5) In repository/data sources: no client‑side validation; map server responses only.
-6) Add unit tests:
+4) Add or extend a validated aggregate with a private constructor and a factory
+   that collects field VO failures.
+5) In the use case (final gate), convert raw input into that aggregate and stop
+   on validation failure.
+6) Make the repository accept the validated aggregate; unwrap it only while
+   building the data-layer request model.
+7) Add unit tests:
    - VO tests for `create()` happy/sad paths.
    - Use case tests for validation branches (fail fast vs call repository).
 
@@ -151,6 +167,12 @@ Practical pattern:
   - `lib/features/auth/domain/value/password.dart:1`
   - `lib/features/auth/domain/value/confirm_password.dart:1`
   - `lib/features/auth/domain/value/display_name.dart:1`
+  - `lib/features/auth/domain/value/login_credentials.dart:1`
+  - `lib/features/auth/domain/value/registration_credentials.dart:1`
+
+- Raw form inputs
+  - `lib/features/auth/domain/input/login_input.dart:1`
+  - `lib/features/auth/domain/input/register_input.dart:1`
 
 - Use cases (final gate location)
   - `lib/features/auth/domain/usecase/login_user_usecase.dart:1`
@@ -161,8 +183,8 @@ Practical pattern:
   - `lib/core/domain/auth/auth_failure.dart:1`
 
 - Bloc/Cubit patterns (real‑time validation)
-  - `lib/features/auth/presentation/cubit/login/login_cubit.dart:1`
-  - `lib/features/auth/presentation/pages/sign_in_page.dart:1`
+  - `lib/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart:1`
+  - `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart:1`
 
 - UI state guide (complementary)
   - `docs/engineering/ui_state_architecture.md:1`
@@ -173,7 +195,8 @@ Practical pattern:
 ## 11) Anti‑Patterns to Avoid
 
 - Duplicating regex or validation logic directly in widgets.
-- Skipping use‑case validation because the Bloc/Cubit already validated.
+- Skipping the aggregate factory in the use case because the Bloc/Cubit already validated.
+- Letting repository contracts accept raw `String` form fields.
 - Returning raw backend messages directly without mapping to domain failures.
 - Putting request/DTO logic into presentation or VOs.
 

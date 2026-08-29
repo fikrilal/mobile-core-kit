@@ -4,8 +4,8 @@ Portable, Bloc-first patterns for layered validation using Domain Value Objects 
 
 Contents
 - Domain primitives: ValueFailure and Value Objects
-- Aggregated validation helper
-- Use cases (submit-time validation) and repository contract
+- Raw input and privately constructed validated aggregates
+- Use cases (submit-time final gate) and typed repository contracts
 - Controller patterns (real-time validation) with confirm password VO
 - UI wiring examples
 
@@ -35,7 +35,30 @@ class ValueFailure with _$ValueFailure {
   const factory ValueFailure.longName(String failedValue) = LongName;
 }
 
+class ValidationError {
+  const ValidationError({
+    required this.field,
+    required this.message,
+    required this.code,
+  });
+
+  final String field;
+  final String message;
+  final String code;
+}
+
 extension ValueFailureX on ValueFailure {
+  String get code => when(
+    empty: (_) => 'required',
+    invalidPhone: (_) => 'invalid_phone',
+    invalidEmail: (_) => 'invalid_email',
+    shortPassword: (_) => 'password_too_short',
+    weakPassword: (reason) => 'weak_password_$reason',
+    passwordsDoNotMatch: (_) => 'passwords_do_not_match',
+    shortName: (_) => 'name_too_short',
+    longName: (_) => 'name_too_long',
+  );
+
   String get userMessage => when(
     empty: (_) => 'Field cannot be empty',
     invalidPhone: (_) => 'Enter a valid phone number',
@@ -178,118 +201,108 @@ class EmailAddress {
 
 ---
 
-## 3) Domain — Aggregated Validation Helper
+## 3) Domain — Raw Input and Validated Aggregate
+
+Raw application input is deliberately allowed to be invalid. A privately
+constructed aggregate represents the successful transition to validated domain
+values.
 
 ```dart
-// domain/value/auth_validation_helper.dart (example for sign-in/sign-up)
-import 'package:fpdart/fpdart.dart';
-import 'display_name.dart';
-import 'phone_number.dart';
-import 'password.dart';
-import 'strong_password.dart';
-import 'confirm_password.dart';
-import '../failure/value_failure.dart';
+// domain/input/login_input.dart
+class LoginInput {
+  const LoginInput({required this.email, required this.password});
 
-class AuthValidationHelper {
-  static Either<List<ValueFailure>, (PhoneNumber, Password)> validateSignIn({
-    required String phone,
-    required String password,
-  }) {
-    final a = PhoneNumber.create(phone);
-    final b = Password.create(password);
-    final fails = <ValueFailure>[];
-    a.fold(fails.add, (_) {});
-    b.fold(fails.add, (_) {});
-    return fails.isNotEmpty ? left(fails) : right((a.getRight().toNullable()!, b.getRight().toNullable()!));
-  }
-
-  static Either<List<ValueFailure>, (DisplayName, PhoneNumber, StrongPassword)> validateSignUp({
-    required String fullname,
-    required String phone,
-    required String password,
-  }) {
-    final dn = DisplayName.create(fullname);
-    final pn = PhoneNumber.create(phone);
-    final sp = StrongPassword.create(password);
-    final fails = <ValueFailure>[];
-    dn.fold(fails.add, (_) {});
-    pn.fold(fails.add, (_) {});
-    sp.fold(fails.add, (_) {});
-    return fails.isNotEmpty
-        ? left(fails)
-        : right((dn.getRight().toNullable()!, pn.getRight().toNullable()!, sp.getRight().toNullable()!));
-  }
-
-  static String firstError(List<ValueFailure> failures) => failures.isEmpty ? '' : failures.first.userMessage;
+  final String email;
+  final String password;
 }
 ```
+
+```dart
+// domain/value/login_credentials.dart
+class LoginCredentials {
+  const LoginCredentials._({required this.email, required this.password});
+
+  final EmailAddress email;
+  final Password password;
+
+  static Either<List<ValidationError>, LoginCredentials> create({
+    required String email,
+    required String password,
+  }) {
+    final emailResult = EmailAddress.create(email);
+    final passwordResult = Password.create(password);
+    final errors = <ValidationError>[];
+    EmailAddress? validEmail;
+    Password? validPassword;
+
+    emailResult.fold(
+      (failure) => errors.add(
+        ValidationError(field: 'email', message: '', code: failure.code),
+      ),
+      (value) => validEmail = value,
+    );
+    passwordResult.fold(
+      (failure) => errors.add(
+        ValidationError(field: 'password', message: '', code: failure.code),
+      ),
+      (value) => validPassword = value,
+    );
+
+    if (errors.isNotEmpty) return left(errors);
+    return right(
+      LoginCredentials._(email: validEmail!, password: validPassword!),
+    );
+  }
+}
+```
+
+For a larger form, add its cohesive fields and field VOs to one flow-specific
+aggregate. Do not introduce a separate architecture for simple and complex
+forms, and do not return positional records that erase field meaning.
 
 ---
 
-## 4) Domain — Repository Contract and Use Cases
+## 4) Domain — Repository Contract and Use Case
+
+The use case owns the final deterministic gate. The repository accepts only the
+validated aggregate.
 
 ```dart
-// domain/repository/auth_repository.dart (minimal contract)
-import 'package:fpdart/fpdart.dart';
-
-class SignInRequest { final String phone; final String password; const SignInRequest(this.phone, this.password); }
-class SignUpRequest { final String fullname; final String phone; final String password; final int coopId; const SignUpRequest(this.fullname, this.phone, this.password, this.coopId); }
-
-class SignInData { const SignInData(); /* add fields as needed */ }
-
-sealed class AuthFailure { const AuthFailure(); }
-class NetworkFailure extends AuthFailure { const NetworkFailure(); }
-class ValidationFailure extends AuthFailure { final String message; const ValidationFailure(this.message); }
-class ServerFailure extends AuthFailure { final String? message; const ServerFailure([this.message]); }
-
 abstract class AuthRepository {
-  Future<Either<AuthFailure, SignInData>> signIn(SignInRequest request);
-  Future<Either<AuthFailure, SignInData>> signUp(SignUpRequest request);
+  Future<Either<AuthFailure, AuthSessionEntity>> login(
+    LoginCredentials credentials,
+  );
 }
 ```
 
 ```dart
-// domain/usecase/sign_in_usecase.dart
-import 'package:fpdart/fpdart.dart';
-import '../repository/auth_repository.dart';
-import '../value/auth_validation_helper.dart';
+class LoginUserUseCase {
+  LoginUserUseCase(this._repository);
 
-class SignInUseCase {
-  final AuthRepository _repo;
-  SignInUseCase(this._repo);
+  final AuthRepository _repository;
 
-  Future<Either<AuthFailure, SignInData>> call(String phone, String password) async {
-    final v = AuthValidationHelper.validateSignIn(phone: phone, password: password);
-    return v.fold(
-      (fails) => left(ValidationFailure(AuthValidationHelper.firstError(fails))),
-      (ok) => _repo.signIn(SignInRequest(ok.$1.value, ok.$2.value)),
+  Future<Either<AuthFailure, AuthSessionEntity>> call(LoginInput input) async {
+    final credentials = LoginCredentials.create(
+      email: input.email,
+      password: input.password,
+    );
+
+    return credentials.match(
+      (errors) async => left(AuthFailure.validation(errors)),
+      _repository.login,
     );
   }
 }
 ```
 
+The data layer then unwraps the aggregate into a wire model:
+
 ```dart
-// domain/usecase/sign_up_usecase.dart
-import 'package:fpdart/fpdart.dart';
-import '../repository/auth_repository.dart';
-import '../value/auth_validation_helper.dart';
-
-class SignUpUseCase {
-  final AuthRepository _repo;
-  SignUpUseCase(this._repo);
-
-  Future<Either<AuthFailure, SignInData>> call({
-    required String fullname,
-    required String phone,
-    required String password,
-    required int coopId,
-  }) async {
-    final v = AuthValidationHelper.validateSignUp(fullname: fullname, phone: phone, password: password);
-    return v.fold(
-      (fails) => left(ValidationFailure(AuthValidationHelper.firstError(fails))),
-      (ok) => _repo.signUp(SignUpRequest(ok.$1.value, ok.$2.value, ok.$3.value, coopId)),
-    );
-  }
+factory LoginRequestModel.fromCredentials(LoginCredentials credentials) {
+  return LoginRequestModel(
+    email: credentials.email.value,
+    password: credentials.password.value,
+  );
 }
 ```
 
@@ -419,13 +432,22 @@ TextField(
 
 ## 7) Integration Tips
 
-- Keep all validation logic in domain VOs; controllers should only call VO.create and display `userMessage`.
-- Revalidate in use cases before building request entities; repositories should not do client-side validation.
+- Keep validation rules in domain field VOs; controllers call `VO.create()` and
+  store stable field errors for presentation to localize.
+- Invoke the validated aggregate factory in the use case even when presentation
+  already performed pre-flight validation.
+- Make form repository contracts accept validated aggregates; unwrap primitives
+  only in data-layer request models.
 - Consider adding tests for:
   - VO create() happy/sad paths
-  - Use case early-return on invalid input
-  - Controller mapping from VO failures to error strings
+  - aggregate error collection and normalization
+  - use case early-return on invalid raw input
+  - request-model mapping from the aggregate
+  - Controller mapping from VO failures to field errors
 
 ---
 
 This cookbook is intentionally self-contained so you can reuse it across projects without referencing project-specific paths.
+
+See [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md) for when
+this boundary is required and when a simpler repository call remains appropriate.

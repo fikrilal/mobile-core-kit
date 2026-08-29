@@ -22,7 +22,8 @@ Guidelines:
 ## 2. Naming & Layout
 
 - Mirror `lib/` paths under `test/`.  
-  Example: `lib/features/auth/presentation/cubit/login` → `test/features/auth/presentation/cubit/login`.
+  Example: `lib/features/auth/subfeatures/sign_in/presentation/cubit/login` →
+  `test/features/auth/subfeatures/sign_in/presentation/cubit/login`.
 - File names are `*_test.dart`. Multiple `group`s per file are fine if they target the same class or slice.
 - Describe behavior, not implementation details:
 
@@ -43,14 +44,15 @@ group('LoginUserUseCase', () {
 Each VO (e.g. `EmailAddress`, `Password`, `ResetToken`) gets a suite covering:
 
 - Happy path (returns `Right(value)` with normalized output).
-- Every failure case (`Left(ValueFailure...)`) with the expected `userMessage`.
+- Every failure case (`Left(ValueFailure...)`) with the expected stable `code`.
 
 ### Use Cases
 
 - Stub repositories with `mocktail` or simple fakes.
 - Assert:
   1. Validation failures short-circuit before the repository call (`verifyNever`).
-  2. Successful inputs invoke the repository with normalized entities (trimmed email/token/password, etc.).
+  2. Successful form inputs invoke the repository with a validated aggregate
+     containing normalized Value Objects.
   3. Repository failures bubble up unchanged (e.g., `AuthFailure.network` remains intact).
 
 Example:
@@ -61,7 +63,7 @@ test('rejects invalid email', () async {
   final usecase = LoginUserUseCase(repo);
 
   final result = await usecase(
-    LoginRequestEntity(email: 'bad', password: 'Secret1'),
+    const LoginInput(email: 'bad', password: 'Secret1'),
   );
 
   expect(result.isLeft(), true);
@@ -93,7 +95,9 @@ blocTest<LoginCubit, LoginState>(
 
 Tips:
 - Seed the bloc/cubit with specific state using `seed: () => initialState.copyWith(...)`.
-- Use `verify` to ensure the expected use case was called with normalized data.
+- Use `verify` to ensure presentation submits the unchanged raw `XInput`.
+- In use-case tests, capture the repository argument and assert its Value
+  Objects contain the expected normalized values.
 
 ---
 
@@ -230,7 +234,7 @@ void main() {
 
   test('short-circuits when rating invalid', () async {
     final res = await usecase(
-      CreateBookReviewRequestEntity(
+      CreateBookReviewInput(
         workId: 'w',
         editionId: 'e',
         rating: 0,

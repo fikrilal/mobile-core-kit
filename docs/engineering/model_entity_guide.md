@@ -154,7 +154,10 @@ Use them when the backend payload shape matters.
 Typical rules:
 - mirror the backend payload exactly
 - use `toJson()` for request bodies
-- use `fromEntity(...)` only when it improves clarity and the domain request shape differs from the wire shape
+- for validated forms, provide a factory from the validated domain aggregate
+  and unwrap Value Objects there (for example, `fromCredentials(...)`)
+- use `fromEntity(...)` when a genuine domain entity already owns valid input
+  and the conversion improves clarity
 - add `@JsonSerializable(includeIfNull: false)` when omitted vs null fields matter for the backend contract
 
 Pattern:
@@ -176,6 +179,8 @@ abstract class UpdateProfileRequestModel with _$UpdateProfileRequestModel {
 
 Guideline:
 - if omitted fields and `null` have different backend meaning, document that in the model file
+- do not make a request model extend a domain entity or aggregate; wire and
+  domain types have different ownership
 
 ## 6. Local Models
 
@@ -307,6 +312,11 @@ When adding a new type:
 2. Is this an API payload or request body?
 - make it a remote model in `data/model/remote/`
 
+If it comes from a validated form:
+- accept raw values in an `XInput`
+- validate them into a privately constructed domain aggregate in the use case
+- make the request model unwrap that aggregate in the data layer
+
 3. Is this a cache/database row?
 - make it a local model in `data/model/local/`
 
@@ -324,4 +334,5 @@ When adding a new type:
 - `docs/engineering/data_domain_guide.md`
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/validation_architecture.md`
+- [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md)
 - `lib/core/domain/README.md`

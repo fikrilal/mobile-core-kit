@@ -50,27 +50,37 @@ Notes:
 
 ## Pattern — Data Layer (VO-driven, typed)
 
-Request model (DTO) extends the domain request entity and serializes to JSON:
+For a validated form, the request model maps from a validated domain aggregate.
+It does not extend the aggregate and remains the sole owner of JSON:
 ```dart
 // data/model/remote/create_book_review_request_model.dart
-class CreateBookReviewRequestModel extends CreateBookReviewRequestEntity {
+class CreateBookReviewRequestModel {
   const CreateBookReviewRequestModel({
-    required super.workId,
-    required super.editionId,
-    required super.rating,
-    required super.reviewText,
-    required super.visibility,
-    required super.isSpoiler,
+    required this.workId,
+    required this.editionId,
+    required this.rating,
+    required this.reviewText,
+    required this.visibility,
+    required this.isSpoiler,
   });
 
-  factory CreateBookReviewRequestModel.fromEntity(CreateBookReviewRequestEntity e) =>
+  final String workId;
+  final String editionId;
+  final int rating;
+  final String reviewText;
+  final ReviewVisibility visibility;
+  final bool isSpoiler;
+
+  factory CreateBookReviewRequestModel.fromSubmission(
+    BookReviewSubmission submission,
+  ) =>
       CreateBookReviewRequestModel(
-        workId: e.workId,
-        editionId: e.editionId,
-        rating: e.rating,
-        reviewText: e.reviewText,
-        visibility: e.visibility,
-        isSpoiler: e.isSpoiler,
+        workId: submission.workId.value,
+        editionId: submission.editionId.value,
+        rating: submission.rating.value,
+        reviewText: submission.reviewText.value,
+        visibility: submission.visibility,
+        isSpoiler: submission.isSpoiler,
       );
 
   Map<String, dynamic> toJson() => {
@@ -102,10 +112,10 @@ Repository orchestrates, maps `ApiResponse` → `Either`, and converts DTO → E
 ```dart
 // data/repository/review_repository_impl.dart
 Future<Either<DiscoverFailure, ReviewCommentEntity>> createBookReview(
-  CreateBookReviewRequestEntity request,
+  BookReviewSubmission submission,
 ) async {
   try {
-    final model = CreateBookReviewRequestModel.fromEntity(request);
+    final model = CreateBookReviewRequestModel.fromSubmission(submission);
     final resp = await _remote.createBookReview(requestModel: model);
 
     final either = resp
@@ -141,33 +151,40 @@ switch (f.statusCode) {
 
 ## Pattern — Domain Layer (Final Gate)
 
-Use Value Objects (VOs) for client-side rules; the use case revalidates (final gate) before hitting the repository:
+Use Value Objects (VOs) for client-side rules. The use case converts raw form
+input into a validated aggregate as the final gate before the repository:
 ```dart
 // domain/usecase/create_book_review_usecase.dart
-Future<Either<DiscoverFailure, ReviewCommentEntity>> call(CreateBookReviewRequestEntity request) async {
-  if (request.workId.trim().isEmpty) {
-    return left(const DiscoverFailure.validation('Missing work identifier'));
-  }
-  if (request.editionId.trim().isEmpty) {
-    return left(const DiscoverFailure.validation('Missing edition identifier'));
-  }
+Future<Either<DiscoverFailure, ReviewCommentEntity>> call(
+  CreateBookReviewInput input,
+) async {
+  final submission = BookReviewSubmission.create(
+    workId: input.workId,
+    editionId: input.editionId,
+    rating: input.rating,
+    reviewText: input.reviewText,
+    visibility: input.visibility,
+    isSpoiler: input.isSpoiler,
+  );
 
-  final r = ReviewRating.create(request.rating);
-  final t = ReviewText.create(request.reviewText);
-  final rErr = r.swap().toOption().toNullable();
-  if (rErr != null) return left(DiscoverFailure.validation(rErr.userMessage));
-  final tErr = t.swap().toOption().toNullable();
-  if (tErr != null) return left(DiscoverFailure.validation(tErr.userMessage));
-
-  return _repository.createBookReview(request);
+  return submission.match(
+    (errors) async => left(mapReviewValidationFailure(errors)),
+    _repository.createBookReview,
+  );
 }
 ```
+
+`CreateBookReviewInput` may be invalid. `BookReviewSubmission` has a private
+constructor, contains the field VOs, and collects deterministic field errors.
+The repository contract accepts only `BookReviewSubmission`.
 
 ## Pattern — Presentation (Forms with Cubit)
 
 - Keep a single immutable state with a `FormStatus` enum (`idle`, `submitting`, `success`, `failure`).
-- On field changes, call VO `create(...)`, store `errorText` in state; do not perform side effects in `build`.
-- On submit, re-validate (VOs + required IDs), call the use case, and emit one-shot effects via a single-subscription `Stream<Effect>`.
+- On field changes, call VO `create(...)`, store a stable field error in state,
+  and localize it in presentation; do not perform side effects in `build`.
+- On submit, perform presentation pre-flight validation, pass the unchanged raw
+  input to the use case, and emit one-shot effects through `Stream<Effect>`.
 
 ```dart
 // presentation/cubit/create_book_review_cubit.dart
@@ -225,7 +242,8 @@ final resp = await _apiHelper.postPaginated<ItemModel>(
 
 ## Validation & Error Handling
 
-- Client (VOs): fast feedback in Cubit state; final gate in use case.
+- Client: field VOs provide fast Cubit feedback; the use case creates a
+  validated aggregate as the final deterministic gate.
 - Server: map 400/422 to `DiscoverFailure.validation(message)`; prefer specific field messages where available.
 - Generic failures: map -1 → network, 404 → notFound, 429 → rate limit, 5xx → server/service.
 
@@ -255,7 +273,8 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 
 ## Migration Checklist
 
-- Use VO-driven DTOs; keep model→entity mapping in model files.
+- For validated forms, map a domain aggregate into the request model and keep
+  JSON ownership in the data layer.
 - Replace manual error parsing with `toEitherWithFallback()` + failure mapping.
 - Prefer `post` with typed `parser`. Use `postFlexible` only when payloads vary significantly.
 - For lists with cursor pagination, use `postPaginated` and consume `nextCursor` / `limit`.
@@ -267,3 +286,4 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - data_domain_guide.md — Layer responsibilities and canonical patterns.
 - ui_state_architecture.md — State + effects patterns for presentation.
 - validation_architecture.md — VO-driven validation and final gate.
+- [ADR 0016](../../../ADR/records/0016-validated-form-boundaries.md) — Applicability and trade-offs for validated form repository boundaries.

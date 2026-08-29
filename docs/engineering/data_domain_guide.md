@@ -333,7 +333,10 @@ Typical examples:
 
 Rule:
 - a request model mirrors the backend payload shape
-- if the backend payload differs from the domain request shape, that conversion happens in data/repository or via `Model.fromEntity(...)`
+- for validated forms, map the validated domain aggregate via a focused factory
+  such as `Model.fromCredentials(...)`
+- for non-form operations, `Model.fromEntity(...)` remains appropriate when a
+  genuine domain entity owns the input shape
 
 ### Mapper in `data/mapper/`
 
@@ -355,8 +358,9 @@ Preferred flow:
 7. Presentation consumes domain output only
 
 Example:
-- request entity: `LoginRequest`
-- request model: `LoginRequestModel.fromEntity(...)`
+- raw application input: `LoginInput`
+- validated domain aggregate: `LoginCredentials`
+- request model: `LoginRequestModel.fromCredentials(...)`
 - datasource: `AuthRemoteDataSource.login(...)`
 - repository: `AuthRepositoryImpl.login(...)`
 - output: `Either<AuthFailure, AuthSession>`
@@ -423,8 +427,9 @@ Do NOT add a use case that is a pure pass-through:
 - If `call(...)` just forwards to a repository method with no added logic,
   the presentation layer should call the repository directly (cubit → repository).
 - This was applied across the template: profile draft/avatar use cases and
-  logout/login pass-throughs were removed; cubits now depend on repositories
-  directly.
+  pure pass-through use cases were removed where no domain logic remained.
+  Login and registration retain use cases because they own the final
+  raw-input-to-validated-aggregate transition.
 
 When a use case exists:
 - depend on the repository interface
@@ -435,6 +440,11 @@ A use case may be thin. That is acceptable, as long as it is not a pure
 forwarder.
 
 Do not add use cases only for ceremony.
+
+For validated forms, follow
+[ADR 0016](../../ADR/records/0016-validated-form-boundaries.md): presentation
+submits raw `XInput`, the use case creates a validated aggregate, and the
+repository accepts that aggregate rather than unchecked primitives.
 
 ## 12. Testing Rules
 
@@ -499,4 +509,5 @@ When adding new code, ask:
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/api/api_error_handling_contract.md`
 - `docs/engineering/api/api_pagination_cursor_support.md`
+- [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md)
 - `lib/core/domain/README.md`
