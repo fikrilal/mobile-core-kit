@@ -27,9 +27,9 @@ import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
@@ -257,7 +257,7 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> verifyEmail(
-    VerifyEmailRequestEntity request,
+    EmailVerificationToken token,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

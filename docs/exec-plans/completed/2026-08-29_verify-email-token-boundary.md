@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** verify-email-token-boundary
-**Status:** queued
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** Refactor only email verification so the use case accepts one raw token String, validates it into EmailVerificationToken, and the repository accepts that VO directly, preserving deep-link/navigation behavior, token normalization, backend payload, and failure handling.
@@ -59,12 +59,12 @@ creating a redundant one-field aggregate around `EmailVerificationToken`.
 
 ## Implementation Checklist
 
-- [ ] Migrate presentation/use-case input to one raw token `String`.
-- [ ] Migrate repository and request-model mappings to `EmailVerificationToken`.
-- [ ] Remove the old request entity and generated source.
-- [ ] Update focused, Cubit, redirect, and integration tests.
-- [ ] Run controlled full verification and collect auth/startup runtime evidence where supported.
-- [ ] Complete and archive this plan.
+- [x] Migrate presentation/use-case input to one raw token `String`.
+- [x] Migrate repository and request-model mappings to `EmailVerificationToken`.
+- [x] Remove the old request entity and generated source.
+- [x] Update focused, Cubit, redirect, and integration tests.
+- [x] Run controlled full verification and collect auth/startup runtime evidence where supported.
+- [x] Complete and archive this plan.
 
 ## Decision Log
 
@@ -80,10 +80,17 @@ dart run mobile_core_kit_cli:mobilekit task verify --task verify-email-token-bou
 Run focused use-case, mapper, Cubit, redirect, and integration tests during the
 inner loop.
 
+Result: `task verify` passed with profile full on attempt 1, including 563
+application tests, analyzer and custom lints, codegen freshness, knowledge
+validation, and the duplication advisory.
+
 ## Runtime Evidence
 
-Exercise a verification deep link and invalid token on a supported target.
-Record sanitized auth/startup evidence or the exact environment limitation.
+Not collected. No mobile device or emulator is attached to this environment
+(`flutter devices` reports only linux/chrome hosts), so the `auth.integration`
+and `startup.integration` oracles could not be exercised on a target. Deep-link
+route ingestion remains covered by the redirect and navigation tests updated in
+this change set.
 
 ## Rollback
 
@@ -97,8 +104,15 @@ signatures. No external contract rollback is required.
 
 ## Completion Notes
 
-Pending.
+`VerifyEmailUseCase` now accepts one raw token `String`,
+`EmailVerificationToken` is the validated state, and
+`AuthRepository.verifyEmail` accepts that VO directly.
+`VerifyEmailRequestModel.fromToken` owns the wire mapping and the primitive
+request entity is removed. Presentation submits the unchanged raw scalar; the
+VO owns trimming. Deep-link ingestion, redirect behavior, and the
+`{token: ...}` payload are unchanged. A request-model test was added because
+none existed for this mapper before.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+None. No unresolved debt recorded in `docs/exec-plans/tech_debt_tracker.md`.

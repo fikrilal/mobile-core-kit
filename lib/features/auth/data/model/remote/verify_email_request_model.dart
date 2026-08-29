@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
 
 part 'verify_email_request_model.freezed.dart';
 part 'verify_email_request_model.g.dart';
@@ -17,6 +17,6 @@ abstract class VerifyEmailRequestModel with _$VerifyEmailRequestModel {
   factory VerifyEmailRequestModel.fromJson(Map<String, dynamic> json) =>
       _$VerifyEmailRequestModelFromJson(json);
 
-  factory VerifyEmailRequestModel.fromEntity(VerifyEmailRequestEntity entity) =>
-      VerifyEmailRequestModel(token: entity.token);
+  factory VerifyEmailRequestModel.fromToken(EmailVerificationToken token) =>
+      VerifyEmailRequestModel(token: token.value);
 }

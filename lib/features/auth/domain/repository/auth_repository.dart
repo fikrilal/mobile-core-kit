@@ -5,8 +5,8 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.da
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
@@ -36,9 +36,7 @@ abstract class AuthRepository {
   /// Verifies a user email using a one-time token sent via email.
   ///
   /// Backend: `POST /v1/auth/email/verify` (204 No Content, does not require auth).
-  Future<Either<AuthFailure, Unit>> verifyEmail(
-    VerifyEmailRequestEntity request,
-  );
+  Future<Either<AuthFailure, Unit>> verifyEmail(EmailVerificationToken token);
 
   /// Resends the verification email for the current user (rate limited).
   ///
