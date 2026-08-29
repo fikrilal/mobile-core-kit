@@ -29,7 +29,6 @@ import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
@@ -37,6 +36,7 @@ import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
@@ -280,7 +280,7 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   ) async {
     return right(
       AuthSessionEntity(

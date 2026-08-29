@@ -4,11 +4,11 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.d
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 
 abstract class AuthRepository {
   Future<Either<AuthFailure, AuthSessionEntity>> register(
@@ -16,7 +16,7 @@ abstract class AuthRepository {
   );
 
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   );
 
   Future<Either<AuthFailure, AuthTokensEntity>> refreshToken(

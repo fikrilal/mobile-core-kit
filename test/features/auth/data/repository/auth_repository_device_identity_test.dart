@@ -10,8 +10,8 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/login_request_mo
 import 'package:mobile_core_kit/features/auth/data/model/remote/oidc_exchange_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/repository/auth_repository_impl.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
@@ -91,10 +91,9 @@ void main() {
     );
 
     final repo = AuthRepositoryImpl(remote, google, device);
+    final credentials = _validLoginCredentials();
 
-    final result = await repo.login(
-      const LoginRequestEntity(email: 'user@example.com', password: 'pass'),
-    );
+    final result = await repo.login(credentials);
 
     expect(result.isRight(), true);
 
@@ -132,4 +131,14 @@ void main() {
     expect(request.deviceId, 'device-123');
     expect(request.deviceName, 'Pixel 7');
   });
+}
+
+LoginCredentials _validLoginCredentials() {
+  return LoginCredentials.create(
+    email: 'user@example.com',
+    password: 'pass',
+  ).match(
+    (_) => throw StateError('Expected valid test credentials.'),
+    (credentials) => credentials,
+  );
 }

@@ -21,12 +21,12 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
@@ -65,11 +65,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   ) async {
     final device = await _deviceIdentity.get();
-    final apiRequest = LoginRequestModel.fromEntity(
-      request,
+    final apiRequest = LoginRequestModel.fromCredentials(
+      credentials,
     ).copyWith(deviceId: device.id, deviceName: device.name);
 
     try {
