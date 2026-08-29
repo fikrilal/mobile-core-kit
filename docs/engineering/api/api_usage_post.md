@@ -50,8 +50,11 @@ Notes:
 
 ## Pattern — Data Layer (VO-driven, typed)
 
-For a validated form, the request model maps from a validated domain aggregate.
-It does not extend the aggregate and remains the sole owner of JSON:
+For a multi-field form with deterministic invariants, the request model maps
+from a validated domain aggregate. A single validated field maps from its VO;
+an invariant-free request may map from a scalar or named command. In every
+case, the request model remains the sole owner of JSON and does not extend the
+source type:
 ```dart
 // data/model/remote/create_book_review_request_model.dart
 class CreateBookReviewRequestModel {
@@ -273,7 +276,8 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 
 ## Migration Checklist
 
-- For validated forms, map a domain aggregate into the request model and keep
+- Map one validated field from its VO, several cohesive invariants from an
+  aggregate, or an invariant-free request from its scalar/input/command. Keep
   JSON ownership in the data layer.
 - Replace manual error parsing with `toEitherWithFallback()` + failure mapping.
 - Prefer `post` with typed `parser`. Use `postFlexible` only when payloads vary significantly.
@@ -286,4 +290,4 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - data_domain_guide.md — Layer responsibilities and canonical patterns.
 - ui_state_architecture.md — State + effects patterns for presentation.
 - validation_architecture.md — VO-driven validation and final gate.
-- [ADR 0016](../../../ADR/records/0016-validated-form-boundaries.md) — Applicability and trade-offs for validated form repository boundaries.
+- [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md) — Cardinality, cohesion, and invariant policy for request boundaries.

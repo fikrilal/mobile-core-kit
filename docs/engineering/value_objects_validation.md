@@ -24,7 +24,8 @@ Password note: this template preserves the password string as entered (no trimmi
 ## Why Use VOs?
 
 - Single source of truth for rules: no duplicated regex in UI and services.
-- Safety at the boundary: repositories never receive invalid data.
+- Safety at the boundary: repositories never receive invalid data when a
+  deterministic invariant exists.
 - Better UX: the same rules drive real‑time form errors via Bloc/Cubit state.
 - Testability: small, deterministic units to unit‑test.
 
@@ -39,9 +40,10 @@ We validate in two layers for both correctness and UX:
 
 2) Submit‑level (Use Case, final gate)
 
-- Use cases convert raw `XInput` into a privately constructed validated aggregate.
-- Repository methods accept that aggregate, so their signatures cannot be
-  called with unchecked form primitives.
+- Use cases convert one raw field into its VO, or several cohesive raw fields
+  in `XInput` into a privately constructed validated aggregate.
+- Repository methods accept that VO or aggregate, so their signatures cannot
+  be called with unchecked values that have deterministic invariants.
 - Prevents bypasses (e.g., programmatic calls or stale UI state).
 - Returns all deterministic field failures before the repository is called.
 
@@ -56,7 +58,7 @@ This is compatible with Clean Architecture: outer layers (presentation) may depe
 - On each `onChanged`, handlers call `VO.create()` and retain the stable field
   and error code; presentation localizes it.
 - On submit, re‑validate and short‑circuit if there are errors; otherwise call the use case.
-- The use case still invokes the aggregate factory as the final gate.
+- The use case still invokes the field VO or aggregate factory as the final gate.
 
 Pros:
 
@@ -82,8 +84,25 @@ Pros: reduces direct VO usage in presentation; Cons: extra mapping logic and tig
 - Localized messages: `ValidationError` codes are mapped in presentation.
 - Real-time validation:
   `lib/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart`
-- Submit-time: use cases create validated aggregates as the final gate;
-  repositories accept only those aggregates and map server validation failures.
+- Submit-time: use cases create field VOs or validated aggregates as the final
+  gate; repositories accept those validated types and map server failures.
+
+## Choosing Input And Validation Types
+
+`XInput` and a validated type solve different problems. `XInput` groups a
+cohesive application submission; a VO or aggregate proves invariants.
+
+| Shape | Recommended type |
+| --- | --- |
+| One value, no invariant | Scalar, enum, identifier, or existing domain type |
+| One raw value with an invariant | Raw scalar -> field VO |
+| Several cohesive values, no invariants | Named `XInput`/command when grouping improves the signature |
+| Several cohesive values with invariants | Raw `XInput` -> private validated aggregate |
+| Already-valid domain value | Pass the VO/entity directly |
+
+Parameter count is only a heuristic. Prefer a named input when several values
+form one submission or a long signature would be unstable. Do not create a VO
+or aggregate when no deterministic invariant exists.
 
 ## Code Snippets
 
@@ -134,16 +153,18 @@ return credentials.match(
 Do
 
 - Use VOs for both real‑time and submit‑time validation
-- Keep raw application input separate from validated domain aggregates
+- Keep raw application input separate from validated domain types when
+  deterministic invariants exist
 - Localize stable `ValidationError` codes in presentation
 - Keep Blocs/Cubits thin; map VO results to field errors in state
-- Make form repository contracts accept validated aggregates
+- Make repository contracts accept a field VO for one invariant or a validated
+  aggregate for several cohesive invariants
 
 Don’t
 
 - Duplicate regex/logic in the UI
 - Trust UI only; keep the domain gate in use cases
-- Pass raw form primitives through repository contracts
+- Pass raw primitives with deterministic invariants through repository contracts
 - Leak DTOs into UI; prefer domain entities/VOs
 
 ## FAQ
@@ -158,9 +179,15 @@ A: No. Presentation depends on domain (outer → inner) which is allowed. VOs ar
 
 Q: Do all repository operations need a validated aggregate?
 
-A: No. Use this pattern for user-controlled form values with deterministic
-invariants. Parameterless operations, already-valid domain objects, and simple
-pass-throughs should not gain aggregate types merely for ceremony.
+A: No. A single validated field should normally use its VO directly. Use an
+aggregate for several cohesive field/cross-field invariants. Parameterless,
+invariant-free, already-valid, and pass-through operations should not gain one.
+
+Q: Do all use cases need an `XInput`?
+
+A: No. Use a raw scalar for one field. Use `XInput` when multiple cohesive
+values benefit from a named submission and stable signature. `XInput` may also
+group values that have no VO; it does not prove validity.
 
 Q: What about input normalization?
 
@@ -168,5 +195,5 @@ A: Normalization belongs in the field VO. The data layer unwraps the already
 normalized value while building the request model; passwords and other
 byte-sensitive values must remain unchanged when their VO policy requires it.
 
-See [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md) for the
-decision boundary and trade-offs.
+See [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+for the decision boundary and trade-offs.

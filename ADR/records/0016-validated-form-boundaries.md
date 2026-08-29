@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0017
 date: 2026-08-29
 decision-makers: [Core kit maintainer]
 consulted: [Codex]
@@ -7,6 +7,7 @@ informed: []
 scope: template
 tags: [architecture, validation, value-objects, forms, repositories]
 tracking: docs/exec-plans/completed/2026-08-29_register-validated-domain-boundary.md
+superseded-by: ADR/records/0017-input-cardinality-and-validation-boundaries.md
 ---
 
 # Use validated domain aggregates at form repository boundaries

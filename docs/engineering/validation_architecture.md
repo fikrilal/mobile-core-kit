@@ -13,7 +13,7 @@ Goals:
 - Source of truth: domain Value Objects (VOs) encapsulate validation rules.
 - Two gates: presentation (Bloc/Cubit) for real‑time feedback, and use case for the final validation before repositories.
 - Clean boundaries: presentation depends on domain; repository contracts accept
-  only validated domain types.
+  validated domain types whenever deterministic invariants exist.
 - User‑friendly errors: map failures to localized strings close to domain.
 
 ## 2) Folder Structure (recap)
@@ -50,14 +50,18 @@ See also: `docs/engineering/project_architecture.md`.
   - Prefer storing `ValidationError` (field + code) rather than raw strings; localize in UI.
 
 - Use Case (final gate)
-  - Accept a raw application input type such as `LoginInput` or `RegisterInput`.
-  - Validate it through an aggregate factory such as `LoginCredentials.create()`
-    or `RegistrationCredentials.create()` before calling repositories.
-  - On failure, return a domain validation failure; on success, pass the
+  - Accept a raw scalar for one field or a named application input such as
+    `LoginInput` when several cohesive fields need grouping.
+  - Validate one field into its VO, or several field/cross-field invariants
+    through an aggregate factory such as `LoginCredentials.create()`.
+  - On failure, return a domain validation failure; on success, pass the VO or
     validated aggregate to the repository.
 
 - Repository / Data Sources
-  - Accept validated domain aggregates rather than raw form primitives.
+  - Accept a field VO for one validated value or a validated aggregate for
+    several cohesive invariants.
+  - Primitive or named command input is acceptable when no deterministic
+    invariant needs proof.
   - Unwrap Value Objects into request-model primitives only in the data layer.
   - Do not repeat client-side validation.
   - Map server‑side validation payloads to domain failures to surface inline field errors when applicable.
@@ -76,15 +80,32 @@ See also: `docs/engineering/project_architecture.md`.
 Typical flow for a form field:
 - On change: Bloc/Cubit handles `FieldChanged` event → calls `VO.create(value)` → state carries `errorText` → UI shows inline error.
 - On submit: Bloc/Cubit ensures no field errors and required inputs present, then invokes the use case.
-- Use case (final gate): creates a validated aggregate from raw input → on
-  failure returns a domain failure; on success calls the typed repository.
-- Repository: receives only the validated aggregate, maps it to a request
-  model, executes remote/local work, and maps server validation failures.
+- Use case (final gate): creates a field VO or validated aggregate from raw
+  input → on failure returns a domain failure; on success calls the typed repository.
+- Repository: receives that validated domain type, maps it to a request model,
+  executes remote/local work, and maps server validation failures.
 
 This gives fast feedback without compromising correctness if UI code is bypassed.
 
-The template-level rationale and applicability boundary are recorded in
-[ADR 0016](../../ADR/records/0016-validated-form-boundaries.md).
+The template-level decision matrix and applicability boundary are recorded in
+[ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md).
+
+### Choosing the smallest useful boundary
+
+Grouping and validation are separate decisions. Parameter count is a heuristic;
+cohesion and deterministic invariants decide the final shape.
+
+| Input shape | Invariants | Recommended boundary |
+| --- | --- | --- |
+| No parameters | None | No input/aggregate |
+| One value | None | Scalar, enum, identifier, or existing domain type |
+| One raw value | Present | Raw scalar -> use case -> VO -> repository |
+| Multiple cohesive values | None | Named `XInput`/command; no validated aggregate |
+| Multiple cohesive values | Present | `XInput` -> validated aggregate -> repository |
+| Already-valid value | Enforced by type | Pass its VO/entity directly |
+
+Use named parameters or split responsibilities when multiple values are not a
+cohesive submission. Do not create an aggregate merely to shorten a signature.
 
 ### Error Display: touched‑aware (recommended)
 
@@ -114,7 +135,7 @@ Practical pattern:
   - Bind `errorText` from state; dispatch events on `onChanged`.
   - Do not duplicate regex/logic; always call `VO.create()`.
 
-- Aggregate factory (final gate)
+- Aggregate factory (final gate for several cohesive invariants)
   - Compose field VOs in a privately constructed domain aggregate.
   - Return `Either<List<ValidationError>, Aggregate>` so multi-field forms can
     report all deterministic errors in one pass.
@@ -143,12 +164,14 @@ Practical pattern:
 3) In presentation (Bloc/Cubit):
    - Add `FieldChanged` event/handler; call `VO.create()`; store `ValidationError?` on state (stable `code`).
    - Wire `onChanged: (v) => context.read<FormBloc>().add(FieldChanged(v))` and `errorText: messageForValidationError(state.fieldError, l10n)` (touched‑aware) in the page.
-4) Add or extend a validated aggregate with a private constructor and a factory
-   that collects field VO failures.
-5) In the use case (final gate), convert raw input into that aggregate and stop
-   on validation failure.
-6) Make the repository accept the validated aggregate; unwrap it only while
-   building the data-layer request model.
+4) For one validated field, pass its VO directly to the repository. For several
+   cohesive field/cross-field invariants, add or extend a validated aggregate
+   with a private constructor that collects failures.
+5) In the use case (final gate), convert the raw scalar or `XInput` into the VO
+   or aggregate and stop on validation failure.
+6) Make the repository accept that validated type; unwrap it only while
+   building the data-layer request model. If no deterministic invariant exists,
+   use the smallest cohesive scalar/input/command instead.
 7) Add unit tests:
    - VO tests for `create()` happy/sad paths.
    - Use case tests for validation branches (fail fast vs call repository).
@@ -195,8 +218,10 @@ Practical pattern:
 ## 11) Anti‑Patterns to Avoid
 
 - Duplicating regex or validation logic directly in widgets.
-- Skipping the aggregate factory in the use case because the Bloc/Cubit already validated.
-- Letting repository contracts accept raw `String` form fields.
+- Skipping the VO/aggregate factory in the use case because the Bloc/Cubit
+  already validated raw values with deterministic invariants.
+- Letting repository contracts accept raw primitives when those primitives
+  have deterministic invariants that should be proven before the call.
 - Returning raw backend messages directly without mapping to domain failures.
 - Putting request/DTO logic into presentation or VOs.
 

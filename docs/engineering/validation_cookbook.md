@@ -4,7 +4,7 @@ Portable, Bloc-first patterns for layered validation using Domain Value Objects 
 
 Contents
 - Domain primitives: ValueFailure and Value Objects
-- Raw input and privately constructed validated aggregates
+- Choosing scalar, raw input, VO, command, or validated aggregate
 - Use cases (submit-time final gate) and typed repository contracts
 - Controller patterns (real-time validation) with confirm password VO
 - UI wiring examples
@@ -201,7 +201,44 @@ class EmailAddress {
 
 ---
 
-## 3) Domain — Raw Input and Validated Aggregate
+## 3) Domain — Choose The Boundary First
+
+Grouping and validation are independent. Use the smallest shape that records
+the operation's actual semantics.
+
+| Input shape | Default |
+| --- | --- |
+| One value, no invariant | Scalar, enum, identifier, or existing domain type |
+| One raw value with an invariant | Raw scalar -> field VO -> repository |
+| Several cohesive values, no invariants | Named input/command; no aggregate or VOs required |
+| Several cohesive values with invariants | Raw input -> private validated aggregate -> repository |
+| Already-valid value | Pass its VO/entity directly |
+
+For example, a single reset email does not need `PasswordResetInput` plus a
+one-field aggregate:
+
+```dart
+Future<Either<AuthFailure, Unit>> call(String rawEmail) async {
+  return EmailAddress.create(rawEmail).match(
+    (failure) async => left(
+      AuthFailure.validation([
+        ValidationError(field: 'email', message: '', code: failure.code),
+      ]),
+    ),
+    _repository.requestPasswordReset,
+  );
+}
+
+abstract class AuthRepository {
+  Future<Either<AuthFailure, Unit>> requestPasswordReset(EmailAddress email);
+}
+```
+
+Several cohesive values with no deterministic invariant may still use a named
+input/command to avoid a long signature. That type groups values; it does not
+claim they are validated and does not require ceremonial VOs.
+
+### Multi-field input with invariants
 
 Raw application input is deliberately allowed to be invalid. A privately
 constructed aggregate represents the successful transition to validated domain
@@ -256,16 +293,17 @@ class LoginCredentials {
 }
 ```
 
-For a larger form, add its cohesive fields and field VOs to one flow-specific
-aggregate. Do not introduce a separate architecture for simple and complex
-forms, and do not return positional records that erase field meaning.
+For a larger form with deterministic invariants, add its cohesive fields and
+field VOs to one flow-specific aggregate. Do not return positional records that
+erase field meaning. If those fields have no deterministic invariants, a named
+input/command alone is sufficient.
 
 ---
 
 ## 4) Domain — Repository Contract and Use Case
 
-The use case owns the final deterministic gate. The repository accepts only the
-validated aggregate.
+The use case owns the final deterministic gate. The repository accepts a field
+VO for one invariant or a validated aggregate for several cohesive invariants.
 
 ```dart
 abstract class AuthRepository {
@@ -295,7 +333,7 @@ class LoginUserUseCase {
 }
 ```
 
-The data layer then unwraps the aggregate into a wire model:
+The data layer then unwraps the validated type into a wire model:
 
 ```dart
 factory LoginRequestModel.fromCredentials(LoginCredentials credentials) {
@@ -434,13 +472,14 @@ TextField(
 
 - Keep validation rules in domain field VOs; controllers call `VO.create()` and
   store stable field errors for presentation to localize.
-- Invoke the validated aggregate factory in the use case even when presentation
+- Invoke the field VO or aggregate factory in the use case even when presentation
   already performed pre-flight validation.
-- Make form repository contracts accept validated aggregates; unwrap primitives
-  only in data-layer request models.
+- Make repository contracts accept a VO for one validated field or an aggregate
+  for several cohesive invariants. Use a scalar/input/command when no invariant
+  needs proof.
 - Consider adding tests for:
   - VO create() happy/sad paths
-  - aggregate error collection and normalization
+  - aggregate error collection and normalization when several invariants exist
   - use case early-return on invalid raw input
   - request-model mapping from the aggregate
   - Controller mapping from VO failures to field errors
@@ -449,5 +488,5 @@ TextField(
 
 This cookbook is intentionally self-contained so you can reuse it across projects without referencing project-specific paths.
 
-See [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md) for when
-this boundary is required and when a simpler repository call remains appropriate.
+See [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+for the cardinality, cohesion, and invariant decision policy.

@@ -333,8 +333,10 @@ Typical examples:
 
 Rule:
 - a request model mirrors the backend payload shape
-- for validated forms, map the validated domain aggregate via a focused factory
-  such as `Model.fromCredentials(...)`
+- for one validated field, map its VO; for several cohesive invariants, map the
+  validated aggregate via a focused factory such as `Model.fromCredentials(...)`
+- when no deterministic invariant exists, map the smallest cohesive scalar,
+  input, command, or entity without inventing VOs
 - for non-form operations, `Model.fromEntity(...)` remains appropriate when a
   genuine domain entity owns the input shape
 
@@ -441,10 +443,11 @@ forwarder.
 
 Do not add use cases only for ceremony.
 
-For validated forms, follow
-[ADR 0016](../../ADR/records/0016-validated-form-boundaries.md): presentation
-submits raw `XInput`, the use case creates a validated aggregate, and the
-repository accepts that aggregate rather than unchecked primitives.
+For request boundaries, follow
+[ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md):
+use a raw scalar -> VO for one invariant, `XInput` -> validated aggregate for
+several cohesive invariants, or a scalar/input/command when no invariant needs
+proof. Grouping and validation are separate decisions.
 
 ## 12. Testing Rules
 
@@ -509,5 +512,5 @@ When adding new code, ask:
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/api/api_error_handling_contract.md`
 - `docs/engineering/api/api_pagination_cursor_support.md`
-- [ADR 0016](../../ADR/records/0016-validated-form-boundaries.md)
+- [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 - `lib/core/domain/README.md`

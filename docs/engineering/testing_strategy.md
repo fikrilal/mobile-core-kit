@@ -95,9 +95,11 @@ blocTest<LoginCubit, LoginState>(
 
 Tips:
 - Seed the bloc/cubit with specific state using `seed: () => initialState.copyWith(...)`.
-- Use `verify` to ensure presentation submits the unchanged raw `XInput`.
-- In use-case tests, capture the repository argument and assert its Value
-  Objects contain the expected normalized values.
+- Use `verify` to ensure presentation submits the unchanged raw scalar for a
+  one-field flow or unchanged `XInput` for a cohesive multi-field flow.
+- In use-case tests, capture the repository argument and assert its field VO or
+  validated aggregate contains the expected normalized values. For an
+  invariant-free command, assert grouping/mapping without inventing VO checks.
 
 ---
 
