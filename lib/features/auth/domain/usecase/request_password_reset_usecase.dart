@@ -2,7 +2,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 
@@ -11,29 +10,14 @@ class RequestPasswordResetUseCase {
 
   RequestPasswordResetUseCase(this._repository);
 
-  Future<Either<AuthFailure, Unit>> call(
-    PasswordResetRequestEntity request,
-  ) async {
-    // Final gate validation: email format.
-    final email = EmailAddress.create(request.email);
-
-    final errors = <ValidationError>[];
-    String normalizedEmail = request.email.trim();
-
-    email.fold(
-      (ValueFailure f) => errors.add(
-        ValidationError(field: 'email', message: '', code: f.code),
+  Future<Either<AuthFailure, Unit>> call(String rawEmail) async {
+    return EmailAddress.create(rawEmail).match(
+      (failure) async => left(
+        AuthFailure.validation([
+          ValidationError(field: 'email', message: '', code: failure.code),
+        ]),
       ),
-      (_) {},
-    );
-    email.match((_) {}, (value) => normalizedEmail = value.value);
-
-    if (errors.isNotEmpty) {
-      return left<AuthFailure, Unit>(AuthFailure.validation(errors));
-    }
-
-    return _repository.requestPasswordReset(
-      PasswordResetRequestEntity(email: normalizedEmail),
+      _repository.requestPasswordReset,
     );
   }
 }

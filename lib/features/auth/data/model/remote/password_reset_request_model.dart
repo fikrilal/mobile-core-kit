@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 
 part 'password_reset_request_model.freezed.dart';
 part 'password_reset_request_model.g.dart';
@@ -17,7 +17,6 @@ abstract class PasswordResetRequestModel with _$PasswordResetRequestModel {
   factory PasswordResetRequestModel.fromJson(Map<String, dynamic> json) =>
       _$PasswordResetRequestModelFromJson(json);
 
-  factory PasswordResetRequestModel.fromEntity(
-    PasswordResetRequestEntity entity,
-  ) => PasswordResetRequestModel(email: entity.email);
+  factory PasswordResetRequestModel.fromEmail(EmailAddress email) =>
+      PasswordResetRequestModel(email: email.value);
 }

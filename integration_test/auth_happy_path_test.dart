@@ -30,11 +30,11 @@ import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
@@ -42,6 +42,7 @@ import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/p
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
+
 import 'support/integration_test_app.dart';
 
 void main() {
@@ -328,7 +329,7 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
+    EmailAddress email,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

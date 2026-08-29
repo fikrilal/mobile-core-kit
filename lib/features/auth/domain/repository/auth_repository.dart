@@ -5,8 +5,8 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.da
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
@@ -57,9 +57,7 @@ abstract class AuthRepository {
   /// Request a password reset email (no account enumeration).
   ///
   /// Backend: `POST /v1/auth/password/reset/request` (204 No Content, public).
-  Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
-  );
+  Future<Either<AuthFailure, Unit>> requestPasswordReset(EmailAddress email);
 
   /// Confirm a password reset using a one-time token.
   ///

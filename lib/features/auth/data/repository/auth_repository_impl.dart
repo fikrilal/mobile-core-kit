@@ -22,9 +22,9 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/register_request
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
@@ -220,9 +220,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
+    EmailAddress email,
   ) async {
-    final apiRequest = PasswordResetRequestModel.fromEntity(request);
+    final apiRequest = PasswordResetRequestModel.fromEmail(email);
     try {
       final apiResponse = await _remote.requestPasswordReset(apiRequest);
       return apiResponse
