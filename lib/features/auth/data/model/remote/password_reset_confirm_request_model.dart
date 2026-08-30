@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_reset_credentials.dart';
 
 part 'password_reset_confirm_request_model.freezed.dart';
 part 'password_reset_confirm_request_model.g.dart';
@@ -21,10 +21,10 @@ abstract class PasswordResetConfirmRequestModel
     Map<String, dynamic> json,
   ) => _$PasswordResetConfirmRequestModelFromJson(json);
 
-  factory PasswordResetConfirmRequestModel.fromEntity(
-    PasswordResetConfirmRequestEntity entity,
+  factory PasswordResetConfirmRequestModel.fromCredentials(
+    PasswordResetCredentials credentials,
   ) => PasswordResetConfirmRequestModel(
-    token: entity.token,
-    newPassword: entity.newPassword,
+    token: credentials.token.value,
+    newPassword: credentials.newPassword.value,
   );
 }

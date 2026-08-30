@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** confirm-password-reset-validated-boundary
-**Status:** queued
+**Status:** completed
 **Owner:** Codex
 **Risk:** high
 **Authority:** Refactor only password-reset confirmation from a primitive request entity to PasswordResetConfirmationInput -> PasswordResetCredentials -> PasswordResetConfirmRequestModel, preserving token normalization, password bytes, deep-link behavior, errors, session revocation semantics, and payload shape.
@@ -62,12 +62,12 @@ keeping raw deep-link/form values at the application boundary.
 
 ## Implementation Checklist
 
-- [ ] Add raw input and validated credentials.
-- [ ] Migrate use case, repository contract/implementation, request model, and Cubit.
-- [ ] Remove the old entity and generated source.
-- [ ] Add aggregate and mapper tests; update existing focused and navigation tests.
-- [ ] Run controlled full verification and collect auth/startup runtime evidence where supported.
-- [ ] Complete and archive this plan.
+- [x] Add raw input and validated credentials.
+- [x] Migrate use case, repository contract/implementation, request model, and Cubit.
+- [x] Remove the old entity and generated source.
+- [x] Add aggregate and mapper tests; update existing focused and navigation tests.
+- [x] Run controlled full verification and collect auth/startup runtime evidence where supported.
+- [x] Complete and archive this plan.
 
 ## Decision Log
 
@@ -84,11 +84,17 @@ dart run mobile_core_kit_cli:mobilekit task verify --task confirm-password-reset
 Run focused aggregate, use-case, mapper, Cubit, redirect, and deep-link tests in
 the inner loop.
 
+Result: `task verify` passed with profile full on attempt 1, including all
+application tests, analyzer and custom lints, codegen freshness, knowledge
+validation, and the duplication advisory.
+
 ## Runtime Evidence
 
-Exercise reset-link ingestion, invalid submission, and successful confirmation
-on a supported mobile target. Record sanitized auth/startup evidence or the
-precise environment limitation.
+Not collected. No mobile device or emulator is attached to this environment
+(`flutter devices` reports only linux/chrome hosts), so the `auth.integration`
+and `startup.integration` oracles could not be exercised. Token normalization,
+password bytes, and redirect behavior remain covered by the aggregate, use-case,
+mapper, Cubit, and redirect tests updated in this change set.
 
 ## Rollback
 
@@ -104,8 +110,16 @@ or API migration requires reversal.
 
 ## Completion Notes
 
-Pending.
+`PasswordResetConfirmationInput` represents the raw deep-link/form submission
+and `PasswordResetCredentials.create()` aggregates failures using the existing
+`ResetToken` and `Password` VOs with no public unchecked constructor. The use
+case is the final gate, `AuthRepository.confirmPasswordReset` accepts only the
+validated credentials, and `PasswordResetConfirmRequestModel.fromCredentials`
+unwraps them in the data layer. The primitive request entity is removed.
+Presentation now submits the unchanged raw token; the `ResetToken` VO owns
+trimming while password bytes stay untouched. Session revocation on success
+and all failure mapping are unchanged.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+None. No unresolved debt recorded in `docs/exec-plans/tech_debt_tracker.md`.

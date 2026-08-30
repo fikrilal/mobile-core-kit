@@ -4,7 +4,7 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/password_reset_confirmation_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_effect.dart';
@@ -19,7 +19,7 @@ class _MockSessionManager extends Mock implements SessionManager {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const PasswordResetConfirmRequestEntity(
+      const PasswordResetConfirmationInput(
         token: 't',
         newPassword: '1234567890',
       ),
@@ -94,13 +94,9 @@ void main() {
         () => confirmPasswordReset(captureAny()),
       ).captured;
       expect(captured.length, 1);
-      expect(
-        captured.single,
-        const PasswordResetConfirmRequestEntity(
-          token: 'token',
-          newPassword: 'newpassword123',
-        ),
-      );
+      final input = captured.single as PasswordResetConfirmationInput;
+      expect(input.token, ' token ');
+      expect(input.newPassword, 'newpassword123');
 
       verify(() => sessionManager.logout(reason: 'password_reset')).called(1);
 

@@ -3,9 +3,10 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/password_reset_confirmation_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_reset_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
@@ -13,10 +14,10 @@ class _MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const PasswordResetConfirmRequestEntity(
+      PasswordResetCredentials.create(
         token: 't',
         newPassword: '1234567890',
-      ),
+      ).getOrElse((_) => throw StateError('')),
     );
   });
 
@@ -28,7 +29,7 @@ void main() {
         final usecase = ConfirmPasswordResetUseCase(repo);
 
         final result = await usecase(
-          const PasswordResetConfirmRequestEntity(
+          const PasswordResetConfirmationInput(
             token: ' ',
             newPassword: '1234567890',
           ),
@@ -59,7 +60,7 @@ void main() {
         final usecase = ConfirmPasswordResetUseCase(repo);
 
         final result = await usecase(
-          const PasswordResetConfirmRequestEntity(
+          const PasswordResetConfirmationInput(
             token: 'token',
             newPassword: 'short',
           ),
@@ -83,29 +84,33 @@ void main() {
       },
     );
 
-    test('normalizes token before calling repo', () async {
-      final repo = _MockAuthRepository();
-      when(
-        () => repo.confirmPasswordReset(any()),
-      ).thenAnswer((_) async => right(unit));
+    test(
+      'normalizes token before calling repo and preserves password',
+      () async {
+        final repo = _MockAuthRepository();
+        when(
+          () => repo.confirmPasswordReset(any()),
+        ).thenAnswer((_) async => right(unit));
 
-      final usecase = ConfirmPasswordResetUseCase(repo);
+        final usecase = ConfirmPasswordResetUseCase(repo);
 
-      final result = await usecase(
-        const PasswordResetConfirmRequestEntity(
-          token: ' token ',
-          newPassword: '1234567890',
-        ),
-      );
+        final result = await usecase(
+          const PasswordResetConfirmationInput(
+            token: ' token ',
+            newPassword: ' 1234567890 ',
+          ),
+        );
 
-      expect(result.isRight(), true);
+        expect(result.isRight(), true);
 
-      final captured = verify(
-        () => repo.confirmPasswordReset(captureAny()),
-      ).captured;
-      expect(captured.length, 1);
-      final request = captured.single as PasswordResetConfirmRequestEntity;
-      expect(request.token, 'token');
-    });
+        final captured = verify(
+          () => repo.confirmPasswordReset(captureAny()),
+        ).captured;
+        expect(captured.length, 1);
+        final credentials = captured.single as PasswordResetCredentials;
+        expect(credentials.token.value, 'token');
+        expect(credentials.newPassword.value, ' 1234567890 ');
+      },
+    );
   });
 }
