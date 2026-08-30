@@ -9,11 +9,11 @@ import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/complete_profile_image_upload_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/create_profile_image_upload_plan_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_image_upload_plan_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/upload_profile_image_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/input/profile_image_upload_input.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_image_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/validated_profile_image_upload.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockProfileImageRepository extends Mock
@@ -24,10 +24,10 @@ class _MockCurrentUserFetcher extends Mock implements CurrentUserFetcher {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const CreateProfileImageUploadPlanRequestEntity(
+      ValidatedProfileImageUpload.create(
+        bytes: Uint8List.fromList([1]),
         contentType: 'image/jpeg',
-        sizeBytes: 1,
-      ),
+      ).getOrElse((_) => throw StateError('')),
     );
     registerFallbackValue(
       const CompleteProfileImageUploadRequestEntity(fileId: 'f1'),
@@ -55,7 +55,7 @@ void main() {
         final usecase = UploadProfileImageUseCase(repo, fetcher);
 
         final result = await usecase(
-          UploadProfileImageRequestEntity(
+          ProfileImageUploadInput(
             bytes: Uint8List.fromList([1, 2, 3]),
             contentType: 'image/gif',
           ),
@@ -92,8 +92,8 @@ void main() {
       final usecase = UploadProfileImageUseCase(repo, fetcher);
 
       final result = await usecase(
-        UploadProfileImageRequestEntity(
-          bytes: Uint8List(UploadProfileImageUseCase.maxSizeBytes + 1),
+        ProfileImageUploadInput(
+          bytes: Uint8List(ValidatedProfileImageUpload.maxSizeBytes + 1),
           contentType: 'image/png',
         ),
       );
@@ -156,7 +156,7 @@ void main() {
 
       final bytes = Uint8List.fromList([1, 2, 3, 4]);
       final result = await usecase(
-        UploadProfileImageRequestEntity(
+        ProfileImageUploadInput(
           bytes: bytes,
           contentType: 'image/jpg',
           idempotencyKey: 'idem-1',
@@ -169,11 +169,11 @@ void main() {
         () => repo.createUploadPlan(captureAny()),
       ).captured;
       expect(capturedCreate.length, 1);
-      final createReq =
-          capturedCreate.single as CreateProfileImageUploadPlanRequestEntity;
-      expect(createReq.contentType, 'image/jpeg');
-      expect(createReq.sizeBytes, bytes.lengthInBytes);
-      expect(createReq.idempotencyKey, 'idem-1');
+      final createUpload = capturedCreate.single as ValidatedProfileImageUpload;
+      expect(createUpload.contentType, 'image/jpeg');
+      expect(createUpload.sizeBytes, bytes.lengthInBytes);
+      expect(createUpload.idempotencyKey, 'idem-1');
+      expect(createUpload.bytes, bytes);
 
       verifyInOrder([
         () => repo.uploadToPresignedUrl(
@@ -212,7 +212,7 @@ void main() {
       final usecase = UploadProfileImageUseCase(repo, fetcher);
 
       final result = await usecase(
-        UploadProfileImageRequestEntity(
+        ProfileImageUploadInput(
           bytes: Uint8List.fromList([1, 2, 3]),
           contentType: 'image/jpeg',
         ),
@@ -264,7 +264,7 @@ void main() {
       final usecase = UploadProfileImageUseCase(repo, fetcher);
 
       final result = await usecase(
-        UploadProfileImageRequestEntity(
+        ProfileImageUploadInput(
           bytes: Uint8List.fromList([1, 2, 3]),
           contentType: 'image/jpeg',
         ),

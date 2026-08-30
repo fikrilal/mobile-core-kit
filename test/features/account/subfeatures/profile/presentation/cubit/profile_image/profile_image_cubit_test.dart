@@ -10,7 +10,7 @@ import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_avatar_cache_entry_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/upload_profile_image_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/input/profile_image_upload_input.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_avatar_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
@@ -33,10 +33,7 @@ class _MockProfileAvatarRepository extends Mock
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      UploadProfileImageRequestEntity(
-        bytes: Uint8List(0),
-        contentType: 'image/png',
-      ),
+      ProfileImageUploadInput(bytes: Uint8List(0), contentType: 'image/png'),
     );
     registerFallbackValue(const ClearProfileImageRequestEntity());
   });

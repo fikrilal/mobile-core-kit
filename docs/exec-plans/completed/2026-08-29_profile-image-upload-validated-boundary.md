@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** profile-image-upload-validated-boundary
-**Status:** queued
+**Status:** completed
 **Owner:** Codex
 **Risk:** medium
 **Authority:** Refactor only profile-image upload from a raw UploadProfileImageRequestEntity plus primitive upload-plan request to ProfileImageUploadInput -> ValidatedProfileImageUpload -> CreateProfileImageUploadRequestModel, preserving file bytes, MIME normalization, size/type rules, idempotency, upload orchestration, cache refresh, and backend requests.
@@ -63,12 +63,12 @@ while leaving server-derived completion commands unchanged.
 
 ## Implementation Checklist
 
-- [ ] Add raw upload input and validated upload aggregate.
-- [ ] Migrate use case and create-plan repository/model boundary.
-- [ ] Migrate presentation input and remove obsolete request entities/generated sources.
-- [ ] Add aggregate tests and update mapper, repository, use-case, and Cubit tests.
-- [ ] Run controlled verification and collect upload runtime evidence.
-- [ ] Complete and archive this plan.
+- [x] Add raw upload input and validated upload aggregate.
+- [x] Migrate use case and create-plan repository/model boundary.
+- [x] Migrate presentation input and remove obsolete request entities/generated sources.
+- [x] Add aggregate tests and update mapper, repository, use-case, and Cubit tests.
+- [x] Run controlled verification and collect upload runtime evidence.
+- [x] Complete and archive this plan.
 
 ## Decision Log
 
@@ -85,11 +85,19 @@ dart run mobile_core_kit_cli:mobilekit task verify --task profile-image-upload-v
 Run focused aggregate, use-case, repository, datasource/model, and Cubit tests
 during the inner loop.
 
+Result: `task verify` passed with profile full on attempt 1, including all
+application tests, analyzer and custom lints, codegen freshness, knowledge
+validation, and the duplication advisory.
+
 ## Runtime Evidence
 
-On a supported target, exercise invalid type/size and one successful image
-upload. Observe progress/success/failure effects, resulting avatar/current-user
-state, and retain sanitized evidence.
+Not collected. No mobile device or emulator is attached to this environment
+(`flutter devices` reports only linux/chrome hosts), so the `ui.human-review`
+runtime scenario could not be exercised. MIME normalization, byte/size rules,
+stage-by-stage failure ordering, and Cubit effects remain covered by the
+aggregate, use-case, repository, and Cubit tests updated in this change set.
+Human review of the upload UI flow remains an open pre-merge expectation per
+the plan's oracle.
 
 ## Rollback
 
@@ -105,8 +113,19 @@ Cubit signatures. Remote objects and caches require no schema rollback.
 
 ## Completion Notes
 
-Pending.
+`ProfileImageUploadInput` represents the raw selected upload and
+`ValidatedProfileImageUpload.create()` owns MIME normalization
+(`image/jpg` -> `image/jpeg`, trimmed/lowercased), the non-empty and 5 MB
+checks, and the derived byte size, with no public unchecked constructor.
+`ProfileImageRepository.createUploadPlan` accepts only the validated upload;
+the repository passes the validated metadata to the datasource, whose request
+model remains the sole JSON owner. The use case keeps the plan -> presigned
+upload -> completion -> current-user refresh orchestration and its
+stage-by-stage short-circuit ordering. The server-derived completion request
+entity and clear-image commands are unchanged. Both primitive request
+entities and their generated sources are removed; upload bytes are preserved
+unchanged through every stage.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+None. No unresolved debt recorded in `docs/exec-plans/tech_debt_tracker.md`.
