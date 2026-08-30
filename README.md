@@ -1,3 +1,5 @@
+
+
 # mobile-core-kit
 Reusable, opinionated boilerplate for Flutter mobile apps with core services, networking, theming, and shared UI components.
 
@@ -89,7 +91,7 @@ for the backend-core-kit integration.
 
 4. **Run the app (dev flavor)**
    ```bash
-   fvm flutter run -t lib/main_dev.dart --dart-define=ENV=dev
+   fvm flutter run --flavor dev -t lib/main_dev.dart --dart-define=ENV=dev
    ```
 
 5. **Analyze & format**
