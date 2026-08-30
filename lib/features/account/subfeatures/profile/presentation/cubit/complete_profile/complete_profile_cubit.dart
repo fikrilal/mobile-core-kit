@@ -7,8 +7,8 @@ import 'package:mobile_core_kit/core/foundation/validation/find_first_validation
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_draft_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/input/profile_update_input.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/family_name.dart';
@@ -125,7 +125,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     final userId = _currentUserId;
 
     final result = await _patchMeProfile(
-      PatchMeProfileRequestEntity(
+      ProfileUpdateInput(
         givenName: state.givenName,
         familyName: state.familyName,
       ),

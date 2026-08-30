@@ -20,13 +20,13 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_r
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_reset_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
@@ -38,11 +38,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> register(
-    RegisterRequestEntity request,
+    RegistrationCredentials credentials,
   ) async {
     final device = await _deviceIdentity.get();
-    final apiRequest = RegisterRequestModel.fromEntity(
-      request,
+    final apiRequest = RegisterRequestModel.fromCredentials(
+      credentials,
     ).copyWith(deviceId: device.id, deviceName: device.name);
 
     try {
@@ -65,11 +65,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   ) async {
     final device = await _deviceIdentity.get();
-    final apiRequest = LoginRequestModel.fromEntity(
-      request,
+    final apiRequest = LoginRequestModel.fromCredentials(
+      credentials,
     ).copyWith(deviceId: device.id, deviceName: device.name);
 
     try {
@@ -160,9 +160,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> verifyEmail(
-    VerifyEmailRequestEntity request,
+    EmailVerificationToken token,
   ) async {
-    final apiRequest = VerifyEmailRequestModel.fromEntity(request);
+    final apiRequest = VerifyEmailRequestModel.fromToken(token);
     try {
       final apiResponse = await _remote.verifyEmail(apiRequest);
       return apiResponse
@@ -197,9 +197,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> changePassword(
-    ChangePasswordRequestEntity request,
+    PasswordChangeCredentials credentials,
   ) async {
-    final apiRequest = ChangePasswordRequestModel.fromEntity(request);
+    final apiRequest = ChangePasswordRequestModel.fromCredentials(credentials);
     try {
       final apiResponse = await _remote.changePassword(apiRequest);
       return apiResponse
@@ -220,9 +220,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
+    EmailAddress email,
   ) async {
-    final apiRequest = PasswordResetRequestModel.fromEntity(request);
+    final apiRequest = PasswordResetRequestModel.fromEmail(email);
     try {
       final apiResponse = await _remote.requestPasswordReset(apiRequest);
       return apiResponse
@@ -243,9 +243,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> confirmPasswordReset(
-    PasswordResetConfirmRequestEntity request,
+    PasswordResetCredentials credentials,
   ) async {
-    final apiRequest = PasswordResetConfirmRequestModel.fromEntity(request);
+    final apiRequest = PasswordResetConfirmRequestModel.fromCredentials(
+      credentials,
+    );
     try {
       final apiResponse = await _remote.confirmPasswordReset(apiRequest);
       return apiResponse

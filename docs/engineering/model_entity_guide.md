@@ -154,7 +154,13 @@ Use them when the backend payload shape matters.
 Typical rules:
 - mirror the backend payload exactly
 - use `toJson()` for request bodies
-- use `fromEntity(...)` only when it improves clarity and the domain request shape differs from the wire shape
+- for one validated field, provide a factory from its VO; for several cohesive
+  invariants, provide a factory from the validated aggregate and unwrap Value
+  Objects there (for example, `fromCredentials(...)`)
+- for invariant-free requests, map the smallest cohesive scalar/input/command;
+  do not add VOs or an aggregate solely for the request-model factory
+- use `fromEntity(...)` when a genuine domain entity already owns valid input
+  and the conversion improves clarity
 - add `@JsonSerializable(includeIfNull: false)` when omitted vs null fields matter for the backend contract
 
 Pattern:
@@ -176,6 +182,8 @@ abstract class UpdateProfileRequestModel with _$UpdateProfileRequestModel {
 
 Guideline:
 - if omitted fields and `null` have different backend meaning, document that in the model file
+- do not make a request model extend a domain entity or aggregate; wire and
+  domain types have different ownership
 
 ## 6. Local Models
 
@@ -307,6 +315,15 @@ When adding a new type:
 2. Is this an API payload or request body?
 - make it a remote model in `data/model/remote/`
 
+If raw values require deterministic validation:
+- use a raw scalar for one field or `XInput` for several cohesive fields
+- validate one field into its VO or several invariants into a private aggregate
+- make the request model unwrap that validated type in the data layer
+
+If no deterministic invariant exists:
+- use a scalar, named input/command, or genuine entity based on cohesion
+- do not create ceremonial VOs or a validated aggregate
+
 3. Is this a cache/database row?
 - make it a local model in `data/model/local/`
 
@@ -324,4 +341,5 @@ When adding a new type:
 - `docs/engineering/data_domain_guide.md`
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/validation_architecture.md`
+- [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 - `lib/core/domain/README.md`

@@ -28,20 +28,21 @@ import 'package:mobile_core_kit/core/runtime/navigation/pending_deep_link_contro
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_reset_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart';
 import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
+
 import 'support/integration_test_app.dart';
 
 void main() {
@@ -268,7 +269,7 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> verifyEmail(
-    VerifyEmailRequestEntity request,
+    EmailVerificationToken token,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
@@ -280,7 +281,7 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   ) async {
     return right(
       AuthSessionEntity(
@@ -314,28 +315,28 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, AuthSessionEntity>> register(
-    RegisterRequestEntity request,
+    RegistrationCredentials credentials,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
   @override
   Future<Either<AuthFailure, Unit>> changePassword(
-    ChangePasswordRequestEntity request,
+    PasswordChangeCredentials credentials,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
   @override
   Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
+    EmailAddress email,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }
 
   @override
   Future<Either<AuthFailure, Unit>> confirmPasswordReset(
-    PasswordResetConfirmRequestEntity request,
+    PasswordResetCredentials credentials,
   ) async {
     return left(const AuthFailure.unexpected(message: 'not implemented'));
   }

@@ -13,10 +13,10 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/data/model/
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/model/remote/profile_image_url_model.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/complete_profile_image_upload_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/create_profile_image_upload_plan_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_image_upload_plan_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_image_url_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_image_repository.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/validated_profile_image_upload.dart';
 
 class ProfileImageRepositoryImpl implements ProfileImageRepository {
   ProfileImageRepositoryImpl(this._remote, this._upload);
@@ -26,13 +26,13 @@ class ProfileImageRepositoryImpl implements ProfileImageRepository {
 
   @override
   Future<Either<AuthFailure, ProfileImageUploadPlanEntity>> createUploadPlan(
-    CreateProfileImageUploadPlanRequestEntity request,
+    ValidatedProfileImageUpload upload,
   ) async {
     try {
       final apiResponse = await _remote.createUploadPlan(
-        contentType: request.contentType,
-        sizeBytes: request.sizeBytes,
-        idempotencyKey: request.idempotencyKey,
+        contentType: upload.contentType,
+        sizeBytes: upload.sizeBytes,
+        idempotencyKey: upload.idempotencyKey,
       );
 
       return apiResponse

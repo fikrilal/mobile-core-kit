@@ -9,7 +9,7 @@ import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/login_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_cubit.dart';
@@ -28,7 +28,7 @@ class _MockAnalyticsTracker extends Mock implements AnalyticsTracker {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const LoginRequestEntity(email: 'e', password: 'p'));
+    registerFallbackValue(const LoginInput(email: 'e', password: 'p'));
     registerFallbackValue(
       const AuthSessionEntity(
         tokens: AuthTokensEntity(
@@ -124,7 +124,7 @@ void main() {
       final emitted = <LoginState>[];
       final sub = cubit.stream.listen(emitted.add);
 
-      cubit.emailChanged('user@example.com');
+      cubit.emailChanged(' user@example.com ');
       cubit.passwordChanged('password');
       await cubit.submit();
       await pumpEventQueue();
@@ -137,9 +137,9 @@ void main() {
 
       final captured = verify(() => loginUser(captureAny())).captured;
       expect(captured.length, 1);
-      final request = captured.single as LoginRequestEntity;
-      expect(request.email, 'user@example.com');
-      expect(request.password, 'password');
+      final input = captured.single as LoginInput;
+      expect(input.email, ' user@example.com ');
+      expect(input.password, 'password');
 
       verify(() => sessionManager.login(session)).called(1);
       verify(() => analytics.trackLogin(method: 'email_password')).called(1);

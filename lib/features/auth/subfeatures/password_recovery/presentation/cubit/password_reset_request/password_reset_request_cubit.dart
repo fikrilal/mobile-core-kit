@@ -5,7 +5,6 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_effect.dart';
@@ -69,9 +68,7 @@ class PasswordResetRequestCubit extends Cubit<PasswordResetRequestState> {
       ),
     );
 
-    final response = await _requestPasswordReset(
-      PasswordResetRequestEntity(email: state.email.trim()),
-    );
+    final response = await _requestPasswordReset(state.email);
 
     response.match((failure) => _handleFailure(failure), (_) {
       _effects.add(const PasswordResetRequestSuccessEffect());

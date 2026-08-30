@@ -3,7 +3,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_cubit.dart';
@@ -17,10 +16,6 @@ class _MockResendEmailVerificationUseCase extends Mock
     implements ResendEmailVerificationUseCase {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(const VerifyEmailRequestEntity(token: 'token'));
-  });
-
   group('EmailVerificationCubit', () {
     late _MockVerifyEmailUseCase verifyEmail;
     late _MockResendEmailVerificationUseCase resendEmailVerification;
@@ -78,9 +73,7 @@ void main() {
       expect(emitted[2].lastAction, EmailVerificationAction.verify);
       expect(emitted[2].tokenError, isNull);
 
-      verify(
-        () => verifyEmail(const VerifyEmailRequestEntity(token: 'token')),
-      ).called(1);
+      verify(() => verifyEmail(' token ')).called(1);
 
       await sub.cancel();
       await cubit.close();

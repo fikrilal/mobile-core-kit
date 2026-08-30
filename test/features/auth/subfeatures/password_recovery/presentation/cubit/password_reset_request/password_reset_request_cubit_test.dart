@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_request/password_reset_request_effect.dart';
@@ -13,10 +12,6 @@ class _MockRequestPasswordResetUseCase extends Mock
     implements RequestPasswordResetUseCase {}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(const PasswordResetRequestEntity(email: 't@t.com'));
-  });
-
   group('PasswordResetRequestCubit', () {
     late _MockRequestPasswordResetUseCase requestPasswordReset;
 
@@ -77,10 +72,7 @@ void main() {
         () => requestPasswordReset(captureAny()),
       ).captured;
       expect(captured.length, 1);
-      expect(
-        captured.single,
-        const PasswordResetRequestEntity(email: 'user@example.com'),
-      );
+      expect(captured.single, ' user@example.com ');
 
       await sub.cancel();
       await effectSub.cancel();

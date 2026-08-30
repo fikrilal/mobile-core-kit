@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
 
 part 'change_password_request_model.freezed.dart';
 part 'change_password_request_model.g.dart';
@@ -19,10 +19,12 @@ abstract class ChangePasswordRequestModel with _$ChangePasswordRequestModel {
   factory ChangePasswordRequestModel.fromJson(Map<String, dynamic> json) =>
       _$ChangePasswordRequestModelFromJson(json);
 
-  factory ChangePasswordRequestModel.fromEntity(ChangePasswordRequestEntity e) {
+  factory ChangePasswordRequestModel.fromCredentials(
+    PasswordChangeCredentials credentials,
+  ) {
     return ChangePasswordRequestModel(
-      currentPassword: e.currentPassword,
-      newPassword: e.newPassword,
+      currentPassword: credentials.currentPassword.value,
+      newPassword: credentials.newPassword.value,
     );
   }
 }

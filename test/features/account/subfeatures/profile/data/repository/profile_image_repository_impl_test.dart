@@ -14,8 +14,8 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/data/model/
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/repository/profile_image_repository_impl.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/clear_profile_image_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/complete_profile_image_upload_request_entity.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/create_profile_image_upload_plan_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_image_upload_plan_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/validated_profile_image_upload.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockProfileImageRemoteDataSource extends Mock
@@ -62,11 +62,11 @@ void main() {
       final repo = ProfileImageRepositoryImpl(remote, upload);
 
       final result = await repo.createUploadPlan(
-        const CreateProfileImageUploadPlanRequestEntity(
+        ValidatedProfileImageUpload.create(
+          bytes: Uint8List(123),
           contentType: 'image/jpeg',
-          sizeBytes: 123,
           idempotencyKey: 'idem',
-        ),
+        ).getOrElse((_) => throw StateError('expected valid upload')),
       );
 
       expect(result.isRight(), true);
@@ -112,10 +112,10 @@ void main() {
       final repo = ProfileImageRepositoryImpl(remote, upload);
 
       final result = await repo.createUploadPlan(
-        const CreateProfileImageUploadPlanRequestEntity(
+        ValidatedProfileImageUpload.create(
+          bytes: Uint8List(1),
           contentType: 'image/jpeg',
-          sizeBytes: 1,
-        ),
+        ).getOrElse((_) => throw StateError('expected valid upload')),
       );
 
       expect(result, left(const AuthFailure.unauthenticated()));

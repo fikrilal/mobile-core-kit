@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
 part 'register_request_model.freezed.dart';
 part 'register_request_model.g.dart';
@@ -22,7 +22,12 @@ abstract class RegisterRequestModel with _$RegisterRequestModel {
   factory RegisterRequestModel.fromJson(Map<String, dynamic> json) =>
       _$RegisterRequestModelFromJson(json);
 
-  factory RegisterRequestModel.fromEntity(RegisterRequestEntity entity) {
-    return RegisterRequestModel(email: entity.email, password: entity.password);
+  factory RegisterRequestModel.fromCredentials(
+    RegistrationCredentials credentials,
+  ) {
+    return RegisterRequestModel(
+      email: credentials.email.value,
+      password: credentials.password.value,
+    );
   }
 }

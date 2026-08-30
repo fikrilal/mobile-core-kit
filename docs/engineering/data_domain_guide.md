@@ -333,7 +333,12 @@ Typical examples:
 
 Rule:
 - a request model mirrors the backend payload shape
-- if the backend payload differs from the domain request shape, that conversion happens in data/repository or via `Model.fromEntity(...)`
+- for one validated field, map its VO; for several cohesive invariants, map the
+  validated aggregate via a focused factory such as `Model.fromCredentials(...)`
+- when no deterministic invariant exists, map the smallest cohesive scalar,
+  input, command, or entity without inventing VOs
+- for non-form operations, `Model.fromEntity(...)` remains appropriate when a
+  genuine domain entity owns the input shape
 
 ### Mapper in `data/mapper/`
 
@@ -355,8 +360,9 @@ Preferred flow:
 7. Presentation consumes domain output only
 
 Example:
-- request entity: `LoginRequest`
-- request model: `LoginRequestModel.fromEntity(...)`
+- raw application input: `LoginInput`
+- validated domain aggregate: `LoginCredentials`
+- request model: `LoginRequestModel.fromCredentials(...)`
 - datasource: `AuthRemoteDataSource.login(...)`
 - repository: `AuthRepositoryImpl.login(...)`
 - output: `Either<AuthFailure, AuthSession>`
@@ -423,8 +429,9 @@ Do NOT add a use case that is a pure pass-through:
 - If `call(...)` just forwards to a repository method with no added logic,
   the presentation layer should call the repository directly (cubit → repository).
 - This was applied across the template: profile draft/avatar use cases and
-  logout/login pass-throughs were removed; cubits now depend on repositories
-  directly.
+  pure pass-through use cases were removed where no domain logic remained.
+  Login and registration retain use cases because they own the final
+  raw-input-to-validated-aggregate transition.
 
 When a use case exists:
 - depend on the repository interface
@@ -435,6 +442,12 @@ A use case may be thin. That is acceptable, as long as it is not a pure
 forwarder.
 
 Do not add use cases only for ceremony.
+
+For request boundaries, follow
+[ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md):
+use a raw scalar -> VO for one invariant, `XInput` -> validated aggregate for
+several cohesive invariants, or a scalar/input/command when no invariant needs
+proof. Grouping and validation are separate decisions.
 
 ## 12. Testing Rules
 
@@ -499,4 +512,5 @@ When adding new code, ask:
 - `docs/engineering/project_architecture.md`
 - `docs/engineering/api/api_error_handling_contract.md`
 - `docs/engineering/api/api_pagination_cursor_support.md`
+- [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 - `lib/core/domain/README.md`

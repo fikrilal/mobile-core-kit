@@ -41,7 +41,7 @@ lib/
 │  └─ dev_tools/                  # dev-only tooling (guarded by env)
 ├─ features/
 │  └─ <feature>/
-│     ├─ data/                    # datasource, model, mapper, repository impl
+│     ├─ data/                    # datasource, model, repository impl
 │     │  ├─ datasource/
 │     │  │  ├─ remote/
 │     │  │  │  └─ <feature>_remote_datasource.dart
@@ -53,8 +53,6 @@ lib/
 │     │  │  └─ <feature>_error_codes.dart
 │     │  ├─ model/
 │     │  │  └─ <dto>.dart (+ generated *.g.dart)
-│     │  ├─ mapper/
-│     │  │  └─ <mapper>.dart
 │     │  └─ repository/
 │     │     └─ <feature>_repository_impl.dart
 │     ├─ domain/                  # entity, value, failure, repository (interfaces), usecase
@@ -120,8 +118,7 @@ Usage guide: `docs/template/current_user.md`
   - datasource/
     - remote/: API calls via the project's HTTP helper abstractions.
     - local/: sqflite DAOs, shared_prefs, caches if applicable.
-  - model/: DTOs and JSON serialization; Freezed/JSON generated code.
-  - mapper/: DTO ↔ entity mappers, query parameter mappers, pagination mappers.
+  - model/: DTOs and JSON serialization; Freezed/JSON generated code. Model-owned toEntity/fromEntity methods map DTOs ↔ domain entities.
   - repository/: concrete repository implementations (translate infra errors to domain Failures).
 - domain/
   - entity/: domain entities (Freezed preferred) — UI agnostic.
@@ -268,7 +265,7 @@ See also (validation):
 
 ## 4) Data Layer (per feature)
 
-Contains datasource/ (remote/local), model/ (DTOs), mapper/, and repository/ (impls).
+Contains datasource/ (remote/local), model/ (DTOs), and repository/ (impls).
 
 - DTOs map to/from domain entities — never leak DTOs outside the data layer.
 - Repositories glue data sources and translate infrastructure errors to domain Failures.

@@ -6,16 +6,17 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.da
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/login_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const LoginRequestEntity(email: 'e', password: 'p'));
+    registerFallbackValue(_validCredentials());
   });
 
   group('LoginUserUseCase', () {
@@ -26,7 +27,7 @@ void main() {
         final usecase = LoginUserUseCase(repo);
 
         final result = await usecase(
-          const LoginRequestEntity(email: 'not-an-email', password: '   '),
+          const LoginInput(email: 'not-an-email', password: '   '),
         );
 
         expect(result.isLeft(), true);
@@ -70,18 +71,15 @@ void main() {
         final usecase = LoginUserUseCase(repo);
 
         final result = await usecase(
-          const LoginRequestEntity(
-            email: ' user@example.com ',
-            password: ' password ',
-          ),
+          const LoginInput(email: ' user@example.com ', password: ' password '),
         );
 
         expect(result.isRight(), true);
         final captured = verify(() => repo.login(captureAny())).captured;
         expect(captured.length, 1);
-        final request = captured.single as LoginRequestEntity;
-        expect(request.email, 'user@example.com');
-        expect(request.password, ' password ');
+        final credentials = captured.single as LoginCredentials;
+        expect(credentials.email.value, 'user@example.com');
+        expect(credentials.password.value, ' password ');
       },
     );
 
@@ -92,7 +90,7 @@ void main() {
         final usecase = LoginUserUseCase(repo);
 
         final result = await usecase(
-          const LoginRequestEntity(email: 'not-an-email', password: 'password'),
+          const LoginInput(email: 'not-an-email', password: 'password'),
         );
 
         expect(result.isLeft(), true);
@@ -113,4 +111,14 @@ void main() {
       },
     );
   });
+}
+
+LoginCredentials _validCredentials() {
+  return LoginCredentials.create(
+    email: 'user@example.com',
+    password: 'password',
+  ).match(
+    (_) => throw StateError('Expected valid test credentials.'),
+    (credentials) => credentials,
+  );
 }

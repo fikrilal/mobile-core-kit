@@ -6,7 +6,7 @@ import 'package:mobile_core_kit/core/foundation/validation/find_first_validation
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/password_reset_confirmation_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/reset_token.dart';
@@ -122,8 +122,8 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
     );
 
     final result = await _confirmPasswordReset(
-      PasswordResetConfirmRequestEntity(
-        token: state.token.trim(),
+      PasswordResetConfirmationInput(
+        token: state.token,
         newPassword: state.newPassword,
       ),
     );

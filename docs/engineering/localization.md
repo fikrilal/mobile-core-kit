@@ -42,6 +42,53 @@ Determinism:
 - `mobilekit verify` runs `flutter gen-l10n` before `flutter analyze`.
 - CI runs `flutter gen-l10n` before `flutter analyze`.
 
+## Mechanical enforcement
+
+`hardcoded_ui_strings` is the static sensor for copy that never entered ARB.
+It reports non-empty direct string literals passed to registered user-visible
+or accessibility arguments in configured production UI paths. The baseline
+registry covers Flutter text, semantics, tooltip, input-decoration, and
+navigation APIs plus core design-system text, button, field, snackbar, search,
+and bottom-navigation APIs.
+
+Matching is target-and-argument aware. An unrelated API is not reported merely
+because it has a parameter named `label`, `message`, or `title`. Interpolations
+containing fixed prose are reported; interpolation-only expressions and values
+that have already been localized are accepted.
+
+This is intentionally not whole-program data-flow analysis. Copy stored in a
+variable or returned through another layer is outside the initial detector, so
+presentation APIs should accept already-localized values at their boundary.
+
+Consumer repositories can add their own presentation sinks without replacing
+the defaults:
+
+```yaml
+- hardcoded_ui_strings:
+  include:
+    - lib/features/**
+    - lib/navigation/**
+  sinks:
+    - target: MoodChartItem
+      named_arguments: [label]
+    - target: ProductCopy
+      positional_arguments: [1]
+```
+
+Sink configuration is closed and strict: `target` must be a Dart identifier,
+named arguments must be unique identifiers, positional arguments must be
+unique non-negative indexes, and duplicate targets are rejected. Use a
+line-level `// ignore: hardcoded_ui_strings` only for a reviewed exception; do
+not exclude production feature directories to migrate existing debt.
+
+This sensor complements rather than replaces generation checks:
+
+| Sensor | Invariant |
+| --- | --- |
+| `hardcoded_ui_strings` | Registered UI sinks do not receive fixed direct copy. |
+| `flutter gen-l10n` | ARB structure and generated APIs are valid. |
+| `mobilekit l10n verify` | Declared messages exist in required locale files. |
+
 ---
 
 ## Runtime wiring
@@ -95,3 +142,4 @@ Contract-level coverage:
 - `test/core/presentation/localization/pluralization_test.dart`
 - `test/core/runtime/localization/locale_controller_test.dart`
 - `test/core/infra/network/exceptions/api_failure_localizer_test.dart`
+- `packages/mobile_core_kit_lints/test/hardcoded_ui_strings_test.dart`

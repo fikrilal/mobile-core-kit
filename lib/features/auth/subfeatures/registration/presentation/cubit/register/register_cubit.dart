@@ -10,7 +10,7 @@ import 'package:mobile_core_kit/core/runtime/analytics/analytics_tracker.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_screens.dart';
 import 'package:mobile_core_kit/features/auth/analytics/auth_analytics_targets.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/register_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
@@ -104,10 +104,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(state.copyWith(status: RegisterStatus.submitting, failure: null));
 
     final result = await _registerUser(
-      RegisterRequestEntity(
-        email: state.email.trim(),
-        password: state.password,
-      ),
+      RegisterInput(email: state.email, password: state.password),
     );
 
     result.match(

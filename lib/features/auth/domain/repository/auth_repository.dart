@@ -3,20 +3,20 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_reset_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
 abstract class AuthRepository {
   Future<Either<AuthFailure, AuthSessionEntity>> register(
-    RegisterRequestEntity request,
+    RegistrationCredentials credentials,
   );
 
   Future<Either<AuthFailure, AuthSessionEntity>> login(
-    LoginRequestEntity request,
+    LoginCredentials credentials,
   );
 
   Future<Either<AuthFailure, AuthTokensEntity>> refreshToken(
@@ -36,9 +36,7 @@ abstract class AuthRepository {
   /// Verifies a user email using a one-time token sent via email.
   ///
   /// Backend: `POST /v1/auth/email/verify` (204 No Content, does not require auth).
-  Future<Either<AuthFailure, Unit>> verifyEmail(
-    VerifyEmailRequestEntity request,
-  );
+  Future<Either<AuthFailure, Unit>> verifyEmail(EmailVerificationToken token);
 
   /// Resends the verification email for the current user (rate limited).
   ///
@@ -51,15 +49,13 @@ abstract class AuthRepository {
   ///
   /// Note: Backend revokes other sessions but keeps the current session active.
   Future<Either<AuthFailure, Unit>> changePassword(
-    ChangePasswordRequestEntity request,
+    PasswordChangeCredentials credentials,
   );
 
   /// Request a password reset email (no account enumeration).
   ///
   /// Backend: `POST /v1/auth/password/reset/request` (204 No Content, public).
-  Future<Either<AuthFailure, Unit>> requestPasswordReset(
-    PasswordResetRequestEntity request,
-  );
+  Future<Either<AuthFailure, Unit>> requestPasswordReset(EmailAddress email);
 
   /// Confirm a password reset using a one-time token.
   ///
@@ -67,6 +63,6 @@ abstract class AuthRepository {
   ///
   /// Note: Backend revokes all sessions/refresh tokens on success.
   Future<Either<AuthFailure, Unit>> confirmPasswordReset(
-    PasswordResetConfirmRequestEntity request,
+    PasswordResetCredentials credentials,
   );
 }

@@ -3,7 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/change_password_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
@@ -16,7 +16,7 @@ class _MockChangePasswordUseCase extends Mock
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const ChangePasswordRequestEntity(
+      const ChangePasswordInput(
         currentPassword: 'oldpassword123',
         newPassword: 'newpassword123',
       ),
@@ -86,13 +86,9 @@ void main() {
 
       final captured = verify(() => changePassword(captureAny())).captured;
       expect(captured.length, 1);
-      expect(
-        captured.single,
-        const ChangePasswordRequestEntity(
-          currentPassword: 'oldpassword123',
-          newPassword: 'newpassword123',
-        ),
-      );
+      final input = captured.single as ChangePasswordInput;
+      expect(input.currentPassword, 'oldpassword123');
+      expect(input.newPassword, 'newpassword123');
 
       await sub.cancel();
       await effectSub.cancel();

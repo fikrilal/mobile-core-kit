@@ -5,7 +5,6 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/value_failure.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/verify_email_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
@@ -74,9 +73,7 @@ class EmailVerificationCubit extends Cubit<EmailVerificationState> {
       ),
     );
 
-    final response = await _verifyEmail(
-      VerifyEmailRequestEntity(token: state.token.trim()),
-    );
+    final response = await _verifyEmail(state.token);
 
     response.match(
       (failure) => _handleFailure(failure, EmailVerificationAction.verify),

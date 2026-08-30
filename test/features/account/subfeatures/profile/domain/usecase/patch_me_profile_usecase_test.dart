@@ -4,16 +4,21 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/input/profile_update_input.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/profile_details.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockProfileRepository extends Mock implements ProfileRepository {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const PatchMeProfileRequestEntity(givenName: 'x'));
+    registerFallbackValue(
+      ProfileDetails.create(
+        givenName: 'Jo',
+      ).getOrElse((_) => throw StateError('')),
+    );
   });
 
   group('PatchMeProfileUseCase', () {
@@ -24,7 +29,7 @@ void main() {
         final usecase = PatchMeProfileUseCase(repo);
 
         final result = await usecase(
-          const PatchMeProfileRequestEntity(
+          const ProfileUpdateInput(
             givenName: ' ',
             familyName: 'A',
             displayName: ' ',
@@ -66,7 +71,7 @@ void main() {
       final usecase = PatchMeProfileUseCase(repo);
 
       final result = await usecase(
-        const PatchMeProfileRequestEntity(
+        const ProfileUpdateInput(
           givenName: ' John ',
           familyName: ' Doe ',
           displayName: '  John Doe  ',
@@ -81,10 +86,10 @@ void main() {
 
       final captured = verify(() => repo.patchMeProfile(captureAny())).captured;
       expect(captured.length, 1);
-      final request = captured.single as PatchMeProfileRequestEntity;
-      expect(request.givenName, 'John');
-      expect(request.familyName, 'Doe');
-      expect(request.displayName, 'John Doe');
+      final details = captured.single as ProfileDetails;
+      expect(details.givenName.value, 'John');
+      expect(details.familyName?.value, 'Doe');
+      expect(details.displayName, 'John Doe');
     });
   });
 }

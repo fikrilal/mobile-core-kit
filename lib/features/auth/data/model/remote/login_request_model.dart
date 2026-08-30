@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:mobile_core_kit/features/auth/domain/entity/login_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
 
 part 'login_request_model.freezed.dart';
 part 'login_request_model.g.dart';
@@ -22,7 +22,10 @@ abstract class LoginRequestModel with _$LoginRequestModel {
   factory LoginRequestModel.fromJson(Map<String, dynamic> json) =>
       _$LoginRequestModelFromJson(json);
 
-  factory LoginRequestModel.fromEntity(LoginRequestEntity entity) {
-    return LoginRequestModel(email: entity.email, password: entity.password);
+  factory LoginRequestModel.fromCredentials(LoginCredentials credentials) {
+    return LoginRequestModel(
+      email: credentials.email.value,
+      password: credentials.password.value,
+    );
   }
 }

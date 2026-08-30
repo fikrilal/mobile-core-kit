@@ -3,9 +3,10 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/change_password_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
@@ -13,10 +14,10 @@ class _MockAuthRepository extends Mock implements AuthRepository {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      const ChangePasswordRequestEntity(
-        currentPassword: 'old-password',
-        newPassword: 'new-password',
-      ),
+      PasswordChangeCredentials.create(
+        currentPassword: 'oldpassword123',
+        newPassword: 'newpassword123',
+      ).getOrElse((_) => throw StateError('')),
     );
   });
 
@@ -28,7 +29,7 @@ void main() {
         final usecase = ChangePasswordUseCase(repo);
 
         final result = await usecase(
-          const ChangePasswordRequestEntity(
+          const ChangePasswordInput(
             currentPassword: '',
             newPassword: '123456789',
           ),
@@ -66,7 +67,7 @@ void main() {
 
         const password = 'samepassword';
         final result = await usecase(
-          const ChangePasswordRequestEntity(
+          const ChangePasswordInput(
             currentPassword: password,
             newPassword: password,
           ),
@@ -91,7 +92,7 @@ void main() {
       },
     );
 
-    test('calls repo when valid', () async {
+    test('calls repo with validated credentials when valid', () async {
       final repo = _MockAuthRepository();
       when(
         () => repo.changePassword(any()),
@@ -99,17 +100,19 @@ void main() {
 
       final usecase = ChangePasswordUseCase(repo);
 
-      const request = ChangePasswordRequestEntity(
+      const input = ChangePasswordInput(
         currentPassword: 'oldpassword123',
         newPassword: 'newpassword123',
       );
 
-      final result = await usecase(request);
+      final result = await usecase(input);
       expect(result.isRight(), true);
 
       final captured = verify(() => repo.changePassword(captureAny())).captured;
       expect(captured.length, 1);
-      expect(captured.single, request);
+      final credentials = captured.single as PasswordChangeCredentials;
+      expect(credentials.currentPassword.value, 'oldpassword123');
+      expect(credentials.newPassword.value, 'newpassword123');
     });
   });
 }

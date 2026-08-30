@@ -7,18 +7,17 @@ import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/domain/user/entity/user_profile_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/register_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/register_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(
-      const RegisterRequestEntity(email: 'e', password: 'password123'),
-    );
+    registerFallbackValue(_validCredentials());
   });
 
   group('RegisterUserUseCase', () {
@@ -29,7 +28,7 @@ void main() {
         final usecase = RegisterUserUseCase(repo);
 
         final result = await usecase(
-          const RegisterRequestEntity(email: 'not-an-email', password: 'short'),
+          const RegisterInput(email: 'not-an-email', password: 'short'),
         );
 
         expect(result.isLeft(), true);
@@ -77,7 +76,7 @@ void main() {
       final usecase = RegisterUserUseCase(repo);
 
       final result = await usecase(
-        const RegisterRequestEntity(
+        const RegisterInput(
           email: ' user@example.com ',
           password: ' stringstring ',
         ),
@@ -87,9 +86,19 @@ void main() {
 
       final captured = verify(() => repo.register(captureAny())).captured;
       expect(captured.length, 1);
-      final request = captured.single as RegisterRequestEntity;
-      expect(request.email, 'user@example.com');
-      expect(request.password, ' stringstring ');
+      final credentials = captured.single as RegistrationCredentials;
+      expect(credentials.email.value, 'user@example.com');
+      expect(credentials.password.value, ' stringstring ');
     });
   });
+}
+
+RegistrationCredentials _validCredentials() {
+  return RegistrationCredentials.create(
+    email: 'user@example.com',
+    password: 'password123',
+  ).match(
+    (_) => throw StateError('Expected valid test credentials.'),
+    (credentials) => credentials,
+  );
 }
