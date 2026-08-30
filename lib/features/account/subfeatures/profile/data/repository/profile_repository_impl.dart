@@ -6,8 +6,8 @@ import 'package:mobile_core_kit/core/infra/network/api/api_response_either.dart'
 import 'package:mobile_core_kit/features/account/data/error/account_auth_failure_mapper.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/datasource/remote/profile_remote_datasource.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/model/remote/patch_me_request_model.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_repository.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/profile_details.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   ProfileRepositoryImpl(this._remote);
@@ -16,15 +16,15 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<AuthFailure, UserEntity>> patchMeProfile(
-    PatchMeProfileRequestEntity request,
+    ProfileDetails details,
   ) async {
     try {
       final apiResponse = await _remote.patchMeProfile(
         request: PatchMeRequestModel(
           profile: PatchMeProfileModel(
-            displayName: request.displayName,
-            givenName: request.givenName,
-            familyName: request.familyName,
+            displayName: details.displayName,
+            givenName: details.givenName.value,
+            familyName: details.familyName?.value,
           ),
         ),
       );

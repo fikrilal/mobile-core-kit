@@ -7,8 +7,8 @@ import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.da
 import 'package:mobile_core_kit/core/domain/user/entity/user_entity.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error_codes.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/profile_draft_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/input/profile_update_input.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
@@ -26,7 +26,7 @@ class _MockSessionManager extends Mock implements SessionManager {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const PatchMeProfileRequestEntity(givenName: 'x'));
+    registerFallbackValue(const ProfileUpdateInput(givenName: 'x'));
     registerFallbackValue(
       ProfileDraftEntity(givenName: 'x', updatedAt: DateTime(2026)),
     );
@@ -123,9 +123,9 @@ void main() {
 
       final captured = verify(() => patchMeProfile(captureAny())).captured;
       expect(captured.length, 1);
-      final request = captured.single as PatchMeProfileRequestEntity;
-      expect(request.givenName, 'John');
-      expect(request.familyName, 'Doe');
+      final input = captured.single as ProfileUpdateInput;
+      expect(input.givenName, 'John');
+      expect(input.familyName, 'Doe');
 
       verify(() => sessionManager.setUser(user)).called(1);
 

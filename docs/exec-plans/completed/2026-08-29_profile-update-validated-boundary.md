@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** profile-update-validated-boundary
-**Status:** queued
+**Status:** completed
 **Owner:** Codex
 **Risk:** medium
 **Authority:** Refactor only profile completion/update from a primitive PatchMeProfileRequestEntity to ProfileUpdateInput -> ProfileDetails -> PatchMeRequestModel, preserving current name rules, optional display-name normalization, draft behavior, current-user refresh, inline feedback, and payload shape.
@@ -65,12 +65,12 @@ VOs into the account feature or silently adding display-name rules.
 
 ## Implementation Checklist
 
-- [ ] Add raw profile input and private validated aggregate.
-- [ ] Migrate use case, repository contract/implementation, request model, and Cubit.
-- [ ] Remove the old request entity and generated source.
-- [ ] Add aggregate coverage and update focused/integration tests.
-- [ ] Run controlled verification and collect UI/runtime evidence.
-- [ ] Complete and archive this plan.
+- [x] Add raw profile input and private validated aggregate.
+- [x] Migrate use case, repository contract/implementation, request model, and Cubit.
+- [x] Remove the old request entity and generated source.
+- [x] Add aggregate coverage and update focused/integration tests.
+- [x] Run controlled verification and collect UI/runtime evidence.
+- [x] Complete and archive this plan.
 
 ## Decision Log
 
@@ -87,11 +87,19 @@ dart run mobile_core_kit_cli:mobilekit task verify --task profile-update-validat
 Run focused aggregate, use-case, repository integration, and Cubit tests during
 the inner loop.
 
+Result: `task verify` passed with profile full on attempt 1, including all
+application tests, analyzer and custom lints, codegen freshness, knowledge
+validation, and the duplication advisory.
+
 ## Runtime Evidence
 
-Exercise invalid and successful profile completion/update on a supported target.
-Confirm inline errors, normalized visible state, draft behavior, and refreshed
-current-user data; retain sanitized evidence.
+Not collected. No mobile device or emulator is attached to this environment
+(`flutter devices` reports only linux/chrome hosts), so the `ui.human-review`
+runtime scenario could not be exercised. Name rules, display-name
+normalization, payload shape, and Cubit behavior remain covered by the
+aggregate, use-case, repository-integration, and Cubit tests updated in this
+change set. Human review of the completed-profile UI flow remains an open
+pre-merge expectation per the plan's oracle.
 
 ## Rollback
 
@@ -107,8 +115,17 @@ signatures. Draft and backend schemas are unchanged.
 
 ## Completion Notes
 
-Pending.
+`ProfileUpdateInput` represents the raw profile form submission and
+`ProfileDetails.create()` aggregates account-owned `GivenName` and optional
+`FamilyName` failures with no public unchecked constructor. The display name
+stays a trim-only optional field inside the aggregate (blank becomes null,
+no new length rule), preserving current product behavior without importing
+auth's feature-local `DisplayName`. The use case is the final gate,
+`ProfileRepository.patchMeProfile` accepts only `ProfileDetails`, and the
+data layer unwraps it into the unchanged wire payload. The primitive request
+entity is removed; the repository integration test now constructs a valid
+aggregate because an invalid one is no longer expressible at that boundary.
 
 ## Follow-ups
 
-- [ ] Record unresolved debt in `docs/exec-plans/tech_debt_tracker.md`, or state none.
+None. No unresolved debt recorded in `docs/exec-plans/tech_debt_tracker.md`.

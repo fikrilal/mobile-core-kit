@@ -7,7 +7,7 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart
 import 'package:mobile_core_kit/core/infra/network/endpoints/user_endpoint.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/datasource/remote/profile_remote_datasource.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/data/repository/profile_repository_impl.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/entity/patch_me_profile_request_entity.dart';
+import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/value/profile_details.dart';
 
 import '../../../../../../support/fixture_loader.dart';
 import '../../../../../../support/network_test_harness.dart';
@@ -58,11 +58,11 @@ void main() {
         });
 
         final result = await repository.patchMeProfile(
-          const PatchMeProfileRequestEntity(
+          ProfileDetails.create(
             givenName: 'Dante',
             familyName: 'A.',
             displayName: 'Dante A.',
-          ),
+          ).getOrElse((_) => throw StateError('expected valid details')),
         );
 
         result.match((failure) => fail('Expected Right, got $failure'), (user) {
@@ -86,7 +86,9 @@ void main() {
         });
 
         final result = await repository.patchMeProfile(
-          const PatchMeProfileRequestEntity(givenName: ''),
+          ProfileDetails.create(
+            givenName: 'Dante',
+          ).getOrElse((_) => throw StateError('expected valid details')),
         );
 
         result.match((failure) {
