@@ -3,11 +3,11 @@ import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_session_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/auth_tokens_entity.dart';
 import 'package:mobile_core_kit/core/domain/session/entity/refresh_request_entity.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
 abstract class AuthRepository {
@@ -49,7 +49,7 @@ abstract class AuthRepository {
   ///
   /// Note: Backend revokes other sessions but keeps the current session active.
   Future<Either<AuthFailure, Unit>> changePassword(
-    ChangePasswordRequestEntity request,
+    PasswordChangeCredentials credentials,
   );
 
   /// Request a password reset email (no account enumeration).

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
+import 'package:mobile_core_kit/features/auth/domain/input/change_password_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
@@ -125,7 +125,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     );
 
     final result = await _changePassword(
-      ChangePasswordRequestEntity(
+      ChangePasswordInput(
         currentPassword: state.currentPassword,
         newPassword: state.newPassword,
       ),

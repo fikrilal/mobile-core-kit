@@ -20,12 +20,12 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/password_reset_r
 import 'package:mobile_core_kit/features/auth/data/model/remote/refresh_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/register_request_model.dart';
 import 'package:mobile_core_kit/features/auth/data/model/remote/verify_email_request_model.dart';
-import 'package:mobile_core_kit/features/auth/domain/entity/change_password_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/entity/password_reset_confirm_request_entity.dart';
 import 'package:mobile_core_kit/features/auth/domain/repository/auth_repository.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_verification_token.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_credentials.dart';
+import 'package:mobile_core_kit/features/auth/domain/value/password_change_credentials.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/registration_credentials.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -197,9 +197,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<AuthFailure, Unit>> changePassword(
-    ChangePasswordRequestEntity request,
+    PasswordChangeCredentials credentials,
   ) async {
-    final apiRequest = ChangePasswordRequestModel.fromEntity(request);
+    final apiRequest = ChangePasswordRequestModel.fromCredentials(credentials);
     try {
       final apiResponse = await _remote.changePassword(apiRequest);
       return apiResponse
