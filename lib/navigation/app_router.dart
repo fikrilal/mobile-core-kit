@@ -30,6 +30,7 @@ import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes_list.dart';
+import 'package:mobile_core_kit/navigation/merchant_onboarding/merchant_onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/shell/app_shell_page.dart';
 
@@ -95,6 +96,7 @@ GoRouter createRouter() {
       ...authRoutes,
       ...onboardingRoutes,
       ...accountRoutes,
+      ...merchantOnboardingRoutes,
     ],
   );
 }
