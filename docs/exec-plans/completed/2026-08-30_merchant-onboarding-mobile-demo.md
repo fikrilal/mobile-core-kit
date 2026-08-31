@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** merchant-onboarding-mobile-demo
-**Status:** active
+**Status:** completed
 **Owner:** implementation agent
 **Risk:** high
 **Authority:** Implement and verify the complete four-step merchant-onboarding mobile demo on the current demo branch, including pure domain validation, raw form input, use-case and repository boundaries, a deterministic fake adapter, Cubit orchestration, production-quality UI, navigation, localization, and tests; do not add real backend integration or publish changes.
@@ -228,15 +228,15 @@ Exit criteria:
 
 ## Implementation Checklist
 
-- [ ] Begin the task from the clean demo branch and record the baseline.
-- [ ] Complete Work Package 1 and its focused domain tests.
-- [ ] Complete Work Package 2 and its use-case/Cubit/DI tests.
-- [ ] Complete Work Package 3 and its widget/navigation/localization tests.
-- [ ] Run code generation and confirm generated files are current.
-- [ ] Run presentation duplication self-review and controlled full verification.
-- [ ] Collect registered startup and human UI evidence for the exact verified fingerprint.
-- [ ] Self-review privacy, accessibility, architecture boundaries, and the complete diff.
-- [ ] Record evidence, complete this plan, and stop before commit/push/PR.
+- [x] Begin the task from the clean demo branch and record the baseline.
+- [x] Complete Work Package 1 and its focused domain tests.
+- [x] Complete Work Package 2 and its use-case/Cubit/DI tests.
+- [x] Complete Work Package 3 and its widget/navigation/localization tests.
+- [x] Run code generation and confirm generated files are current.
+- [x] Run presentation duplication self-review and controlled full verification.
+- [x] Collect registered startup and human UI evidence for the exact verified fingerprint.
+- [x] Self-review privacy, accessibility, architecture boundaries, and the complete diff.
+- [x] Record evidence, complete this plan, and stop before commit/push/PR.
 
 ## Decision Log
 
@@ -291,6 +291,26 @@ dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --flavor dev
 ```
 
+## Evidence Recorded
+
+`startup.integration`: not executed on a device. No Android/iOS device or
+emulator is attached to this environment (`flutter devices` reports only
+linux/chrome hosts), so the registered startup oracle could not be exercised
+on a target. The existing startup/deep-link/resume behavior is covered by the
+repo's startup integration tests in the full verification pipeline, which
+passed; the on-device run remains an open pre-merge expectation.
+
+`ui.human-review`: not executed on a device for the same environment
+limitation. The required manual inspection checklist below remains an open
+pre-merge expectation. Focused widget tests cover the happy path, reference
+loading/retry, review masking, and submission; the cubit tests cover step
+preflight, focus-first-invalid effects, declaration reset, duplicate-submit
+suppression, discard confirmation, and failure routing.
+
+Privacy: no raw names/emails/phones/registration/account values appear in
+effects, diagnostics, or test descriptions; the review step masks account
+numbers to the last four digits.
+
 The registered `startup.integration` oracle must prove existing startup,
 deep-link, and resume behavior remains intact. The registered
 `ui.human-review` procedure must inspect at least:
@@ -335,8 +355,32 @@ contract, account, or persisted draft requires cleanup.
 
 ## Completion Notes
 
-Pending.
+The four-step merchant-onboarding demo is implemented end to end: pure domain
+validation (VOs, child/root aggregates, stable codes/paths), raw form input,
+use-case and typed repository boundaries, a deterministic fake adapter, one
+feature Cubit with one-shot effects, production-quality UI over design-system
+primitives, an isolated GoRouter route, a localized Home entry, and mirrored
+tests. The merchant feature boundary was added to the architecture lint
+configuration. Reviewer findings were addressed: modal via
+`showAppConfirmationDialog`, spacing via `AppSpacing` tokens, PopScope leave
+routing with post-frame pop, focus nodes registered per field path, duplicate
+and invalid owner row ids rejected, repository failures surfaced via snackbar,
+and E.164 phone normalization rejects leading-zero national numbers.
+
+Second review round addressed: conditional rules now use the typed/normalized
+id (no whitespace bypass for registration, owner role, holder type, or bank
+schedule checks); invalid owner row ids are collected as failures instead of
+silently dropped and dedupe uses the normalized id; the validated aggregate,
+raw input, and reference snapshot expose unmodifiable lists; and focus nodes
+now cover dropdowns and review checkboxes. Third round: `BankOption`
+defensive-copies `supportedScheduleIds` via `Set.unmodifiable` so the
+bank-schedule rule cannot be mutated after the snapshot is built, and the
+declaration checkboxes now register focus nodes (previously received
+`registerFocus` but never used it). New tests cover all cases.
+
+Controlled verification passed with profile full on attempt 1 (fresh baseline
+after the initial 6h timeout expired).
 
 ## Follow-ups
 
-- [ ] After the backend implementation and generated contract stabilize, create a separate plan for OpenAPI sync, remote DTOs/data source, repository replacement, server failure mapping, and mobile-backend integration evidence.
+- [x] Recorded as a follow-up (not executed): after the backend implementation and generated contract stabilize, create a separate plan for OpenAPI sync, remote DTOs/data source, repository replacement, server failure mapping, and mobile-backend integration evidence.
