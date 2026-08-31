@@ -872,5 +872,12 @@
   "merchantOnboardingErrorDeclarationsInformationAccurateRequired": "⟪RTL⟫ Confirm the information is accurate.",
   "merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": "⟪RTL⟫ Confirm you are authorized to submit.",
   "merchantOnboardingErrorDeclarationsTermsAcceptedRequired": "⟪RTL⟫ Accept the demo terms to submit.",
-  "merchantOnboardingErrorDeclarationsTermsVersionStale": "⟪RTL⟫ The terms version changed. Review and accept again."
+  "merchantOnboardingErrorDeclarationsTermsVersionStale": "⟪RTL⟫ The terms version changed. Review and accept again.",
+  "merchantOnboardingErrorRegistrationConflict": "⟪RTL⟫ This registration number is already registered to another business.",
+  "merchantOnboardingErrorStaleReference": "⟪RTL⟫ Some options are no longer available. Please review your selections.",
+  "merchantOnboardingErrorStaleTerms": "⟪RTL⟫ The terms have been updated. Please review and accept them again.",
+  "merchantOnboardingErrorIdempotencyInProgress": "⟪RTL⟫ Your submission is still being processed. Please try again shortly.",
+  "merchantOnboardingErrorRetryable": "⟪RTL⟫ Something went wrong. Please try again.",
+  "merchantOnboardingErrorAlreadySubmitted": "⟪RTL⟫ An application has already been submitted for this account.",
+  "merchantOnboardingErrorUnauthorized": "⟪RTL⟫ You need to sign in again to continue."
 }

@@ -872,5 +872,12 @@
   "merchantOnboardingErrorDeclarationsInformationAccurateRequired": "Konfirmasikan bahwa informasi sudah akurat.",
   "merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": "Konfirmasikan bahwa Anda berwenang mengirim.",
   "merchantOnboardingErrorDeclarationsTermsAcceptedRequired": "Setujui ketentuan demo untuk mengirim.",
-  "merchantOnboardingErrorDeclarationsTermsVersionStale": "Versi ketentuan berubah. Tinjau dan setujui kembali."
+  "merchantOnboardingErrorDeclarationsTermsVersionStale": "Versi ketentuan berubah. Tinjau dan setujui kembali.",
+  "merchantOnboardingErrorRegistrationConflict": "Nomor registrasi ini sudah terdaftar untuk usaha lain.",
+  "merchantOnboardingErrorStaleReference": "Beberapa pilihan tidak lagi tersedia. Silakan tinjau kembali pilihan Anda.",
+  "merchantOnboardingErrorStaleTerms": "Ketentuan telah diperbarui. Silakan tinjau dan setujui kembali.",
+  "merchantOnboardingErrorIdempotencyInProgress": "Pengiriman Anda masih diproses. Silakan coba lagi sebentar lagi.",
+  "merchantOnboardingErrorRetryable": "Terjadi kesalahan. Silakan coba lagi.",
+  "merchantOnboardingErrorAlreadySubmitted": "Aplikasi sudah pernah dikirim untuk akun ini.",
+  "merchantOnboardingErrorUnauthorized": "Anda perlu masuk kembali untuk melanjutkan."
 }

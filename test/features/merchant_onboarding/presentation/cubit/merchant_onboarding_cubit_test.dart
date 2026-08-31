@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/data/repository/fake_merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/load_merchant_reference_data_usecase.dart';
@@ -15,6 +15,7 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/
 import 'package:mocktail/mocktail.dart';
 
 import '../../domain/merchant_test_fixtures.dart';
+import '../../support/fake_merchant_onboarding_repository.dart';
 
 class _MockMerchantOnboardingRepository extends Mock
     implements MerchantOnboardingRepository {}
@@ -293,6 +294,39 @@ void main() {
         'settlement.bankId',
       );
     });
+
+    test(
+      'server field validation routes to the owning step and focuses',
+      () async {
+        await walkToReview();
+        cubit.declarationInformationAccurateToggled(true);
+        cubit.declarationAuthorizedToSubmitToggled(true);
+        cubit.declarationTermsAcceptedToggled(true);
+        when(() => repo.submitApplication(any())).thenAnswer(
+          (_) async => left(
+            MerchantServerValidationFailure([
+              const MerchantValidationFailure(
+                code: 'minLength',
+                path: 'settlement.bankId',
+              ),
+            ]),
+          ),
+        );
+
+        await cubit.submitTapped();
+        await pumpEventQueue();
+
+        expect(cubit.state.step, MerchantOnboardingStep.settlement);
+        expect(
+          cubit.state.localFailures.any((f) => f.path == 'settlement.bankId'),
+          true,
+        );
+        expect(
+          effects.whereType<MerchantFocusFieldEffect>().last.path,
+          'settlement.bankId',
+        );
+      },
+    );
 
     test(
       'non-validation failures stay on review with a banner failure',

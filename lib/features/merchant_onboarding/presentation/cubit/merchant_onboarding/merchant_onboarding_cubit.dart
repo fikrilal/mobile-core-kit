@@ -366,8 +366,17 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
     result.match(
       (failure) {
-        if (failure is MerchantLocalValidationFailure) {
-          final failures = failure.failures;
+        // Local final-gate failures and recognized server field validation
+        // failures route to the owning step and focus the first invalid
+        // field. Server paths use backend field names, so normalize through
+        // the same path-based step routing.
+        if (failure is MerchantLocalValidationFailure ||
+            failure is MerchantServerValidationFailure) {
+          final failures = switch (failure) {
+            MerchantLocalValidationFailure(:final failures) => failures,
+            MerchantServerValidationFailure(:final failures) => failures,
+            _ => const <MerchantValidationFailure>[],
+          };
           final targetStep = _stepForPath(failures.first.path);
           emit(
             state.copyWith(

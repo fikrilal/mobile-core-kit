@@ -5,7 +5,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_scope.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/policies/navigation_policy.dart';
 import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/data/repository/fake_merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
@@ -19,6 +18,7 @@ import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../domain/merchant_test_fixtures.dart';
+import '../support/fake_merchant_onboarding_repository.dart';
 
 class _MockRepository extends Mock implements MerchantOnboardingRepository {}
 

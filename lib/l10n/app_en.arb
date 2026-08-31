@@ -1177,5 +1177,33 @@
   },
   "@merchantOnboardingErrorDeclarationsTermsVersionStale": {
     "description": "Merchant onboarding demo string: merchant Onboarding Error Declarations Terms Version Stale"
+  },
+  "merchantOnboardingErrorRegistrationConflict": "This registration number is already registered to another business.",
+  "@merchantOnboardingErrorRegistrationConflict": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorRegistrationConflict"
+  },
+  "merchantOnboardingErrorStaleReference": "Some options are no longer available. Please review your selections.",
+  "@merchantOnboardingErrorStaleReference": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorStaleReference"
+  },
+  "merchantOnboardingErrorStaleTerms": "The terms have been updated. Please review and accept them again.",
+  "@merchantOnboardingErrorStaleTerms": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorStaleTerms"
+  },
+  "merchantOnboardingErrorIdempotencyInProgress": "Your submission is still being processed. Please try again shortly.",
+  "@merchantOnboardingErrorIdempotencyInProgress": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorIdempotencyInProgress"
+  },
+  "merchantOnboardingErrorRetryable": "Something went wrong. Please try again.",
+  "@merchantOnboardingErrorRetryable": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorRetryable"
+  },
+  "merchantOnboardingErrorAlreadySubmitted": "An application has already been submitted for this account.",
+  "@merchantOnboardingErrorAlreadySubmitted": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorAlreadySubmitted"
+  },
+  "merchantOnboardingErrorUnauthorized": "You need to sign in again to continue.",
+  "@merchantOnboardingErrorUnauthorized": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorUnauthorized"
   }
 }

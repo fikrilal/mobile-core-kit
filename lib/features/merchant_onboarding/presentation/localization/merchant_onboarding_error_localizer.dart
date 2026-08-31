@@ -1,5 +1,30 @@
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
+
+/// Localized copy for repository-level submission outcomes. Only the
+/// documented backend outcomes have distinct copy; unknown failures fall
+/// back to the generic message.
+String messageForMerchantOnboardingFailure(
+  MerchantOnboardingFailure failure,
+  AppLocalizations l10n,
+) {
+  return switch (failure) {
+    MerchantUnauthenticatedFailure() =>
+      l10n.merchantOnboardingErrorUnauthorized,
+    MerchantRegistrationConflictFailure() =>
+      l10n.merchantOnboardingErrorRegistrationConflict,
+    MerchantStaleReferenceFailure() =>
+      l10n.merchantOnboardingErrorStaleReference,
+    MerchantStaleTermsFailure() => l10n.merchantOnboardingErrorStaleTerms,
+    MerchantIdempotencyInProgressFailure() =>
+      l10n.merchantOnboardingErrorIdempotencyInProgress,
+    MerchantRetryableFailure() => l10n.merchantOnboardingErrorRetryable,
+    MerchantDuplicateApplicationFailure() =>
+      l10n.merchantOnboardingErrorAlreadySubmitted,
+    _ => l10n.merchantOnboardingSubmitFailure,
+  };
+}
 
 /// Maps deterministic merchant-onboarding failure codes to localized
 /// messages. Unknown codes fall back to a generic form-level message.

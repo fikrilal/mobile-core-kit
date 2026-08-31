@@ -872,5 +872,12 @@
   "merchantOnboardingErrorDeclarationsInformationAccurateRequired": "أكّد أن المعلومات دقيقة.",
   "merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": "أكّد أنك مخول بالإرسال.",
   "merchantOnboardingErrorDeclarationsTermsAcceptedRequired": "اقبل شروط العرض التوضيحي للإرسال.",
-  "merchantOnboardingErrorDeclarationsTermsVersionStale": "تغير إصدار الشروط. راجع واقبل مرة أخرى."
+  "merchantOnboardingErrorDeclarationsTermsVersionStale": "تغير إصدار الشروط. راجع واقبل مرة أخرى.",
+  "merchantOnboardingErrorRegistrationConflict": "رقم التسجيل هذا مسجل بالفعل لنشاط تجاري آخر.",
+  "merchantOnboardingErrorStaleReference": "لم تعد بعض الخيارات متاحة. يرجى مراجعة اختياراتك.",
+  "merchantOnboardingErrorStaleTerms": "تم تحديث الشروط. يرجى مراجعتها وقبولها مرة أخرى.",
+  "merchantOnboardingErrorIdempotencyInProgress": "لا يزال طلبك قيد المعالجة. يرجى المحاولة بعد قليل.",
+  "merchantOnboardingErrorRetryable": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "merchantOnboardingErrorAlreadySubmitted": "تم إرسال طلب لهذا الحساب من قبل.",
+  "merchantOnboardingErrorUnauthorized": "يجب تسجيل الدخول مرة أخرى للمتابعة."
 }

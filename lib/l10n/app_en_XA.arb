@@ -872,5 +872,12 @@
   "merchantOnboardingErrorDeclarationsInformationAccurateRequired": "⟪Cǿnfīrm thḗ īnfǿrmåtīǿn īs åccūråtḗ.⟫",
   "merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": "⟪Cǿnfīrm yǿū årḗ åūthǿrīzḗd tǿ sūbmīt.⟫",
   "merchantOnboardingErrorDeclarationsTermsAcceptedRequired": "⟪Åccḗpt thḗ dḗmǿ tḗrms tǿ sūbmīt.⟫",
-  "merchantOnboardingErrorDeclarationsTermsVersionStale": "⟪Thḗ tḗrms vḗrsīǿn chångḗd. Rḗvīḗw ånd åccḗpt ågåīn.⟫"
+  "merchantOnboardingErrorDeclarationsTermsVersionStale": "⟪Thḗ tḗrms vḗrsīǿn chångḗd. Rḗvīḗw ånd åccḗpt ågåīn.⟫",
+  "merchantOnboardingErrorRegistrationConflict": "⟪This registration number is already registered to another business.⟫",
+  "merchantOnboardingErrorStaleReference": "⟪Some options are no longer available. Please review your selections.⟫",
+  "merchantOnboardingErrorStaleTerms": "⟪The terms have been updated. Please review and accept them again.⟫",
+  "merchantOnboardingErrorIdempotencyInProgress": "⟪Your submission is still being processed. Please try again shortly.⟫",
+  "merchantOnboardingErrorRetryable": "⟪Something went wrong. Please try again.⟫",
+  "merchantOnboardingErrorAlreadySubmitted": "⟪An application has already been submitted for this account.⟫",
+  "merchantOnboardingErrorUnauthorized": "⟪You need to sign in again to continue.⟫"
 }
