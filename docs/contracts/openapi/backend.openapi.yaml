@@ -1096,6 +1096,72 @@ paths:
         - UNAUTHORIZED
         - FORBIDDEN
         - INTERNAL
+  /v1/merchant-onboarding/reference-data:
+    get:
+      description: Returns the code-owned catalog snapshot (business types,
+        industries, monthly sales ranges, owner roles, banks, account holder
+        types, payout schedules) and the current terms version.
+      operationId: merchantOnboarding.referenceData.get
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchantReferenceDataEnvelopeDto"
+      security:
+        - access-token: []
+      summary: Get merchant onboarding reference data
+      tags: &a15
+        - MerchantOnboarding
+      x-error-codes:
+        - UNAUTHORIZED
+        - INTERNAL
+  /v1/merchant-onboarding/applications:
+    post:
+      description: "Creates the authenticated user's single merchant application.
+        Requires an Idempotency-Key; identical replays return the stored
+        response with Idempotency-Replayed: true."
+      operationId: merchantOnboarding.applications.submit
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: "Idempotency key for safe retries of write requests. Replays return
+            `Idempotency-Replayed: true`."
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+            description: "Opaque string (recommended: UUIDv4)."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MerchantOnboardingSubmitRequestDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchantSubmitEnvelopeDto"
+      security:
+        - access-token: []
+      summary: Submit a merchant onboarding application
+      tags: *a15
+      x-error-codes:
+        - VALIDATION_FAILED
+        - UNAUTHORIZED
+        - IDEMPOTENCY_IN_PROGRESS
+        - CONFLICT
+        - INTERNAL
+        - MERCHANT_ONBOARDING_APPLICATION_ALREADY_EXISTS
+        - MERCHANT_ONBOARDING_REGISTRATION_ALREADY_EXISTS
+        - MERCHANT_ONBOARDING_REFERENCE_DATA_STALE
+        - MERCHANT_ONBOARDING_TERMS_VERSION_STALE
 info:
   title: Backend Core Kit API
   description: Generated API contract (code-first).
@@ -1110,6 +1176,8 @@ tags:
     description: User profile endpoints.
   - name: Admin
     description: Administrative endpoints (RBAC-protected).
+  - name: MerchantOnboarding
+    description: Merchant onboarding case study endpoints.
 servers:
   - url: /
 components:
@@ -1125,7 +1193,7 @@ components:
       properties:
         provider:
           type: string
-          enum: &a15
+          enum: &a16
             - GOOGLE
           example: GOOGLE
         idToken:
@@ -1200,7 +1268,7 @@ components:
           description: Linked authentication methods on this account.
           items:
             type: string
-            enum: &a16
+            enum: &a17
               - PASSWORD
               - GOOGLE
         profile:
@@ -1246,7 +1314,7 @@ components:
       properties:
         provider:
           type: string
-          enum: *a15
+          enum: *a16
           example: GOOGLE
         idToken:
           type: string
@@ -1444,7 +1512,7 @@ components:
             refresh responses.
           items:
             type: string
-            enum: *a16
+            enum: *a17
       required:
         - id
         - email
@@ -1765,13 +1833,13 @@ components:
           example: 9d8c7b2a-2dd6-46a5-8f8e-3b5de8a5b0f0
         oldRole:
           type: string
-          enum: &a17
+          enum: &a18
             - USER
             - ADMIN
           example: USER
         newRole:
           type: string
-          enum: *a17
+          enum: *a18
           example: ADMIN
         traceId:
           type: string
@@ -1853,3 +1921,308 @@ components:
       required:
         - data
         - meta
+    MerchantBusinessTypeOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: private_company
+        label:
+          type: string
+          example: Private company
+        requiresRegistrationNumber:
+          type: boolean
+          example: true
+      required:
+        - id
+        - label
+        - requiresRegistrationNumber
+    MerchantLabeledOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: retail
+        label:
+          type: string
+          example: Retail
+      required:
+        - id
+        - label
+    MerchantOwnerRoleOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: owner
+        label:
+          type: string
+          example: Owner
+        contributesOwnership:
+          type: boolean
+          example: true
+      required:
+        - id
+        - label
+        - contributesOwnership
+    MerchantBankOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: demo_bank_alpha
+        label:
+          type: string
+          example: Demo Bank Alpha
+        supportedPayoutScheduleIds:
+          example:
+            - daily
+            - weekly
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - label
+        - supportedPayoutScheduleIds
+    MerchantAccountHolderTypeOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: owner
+        label:
+          type: string
+          example: Owner
+        requiresOwnerReference:
+          type: boolean
+          example: true
+      required:
+        - id
+        - label
+        - requiresOwnerReference
+    MerchantReferenceDataDto:
+      type: object
+      properties:
+        businessTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantBusinessTypeOptionDto"
+        industries:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantLabeledOptionDto"
+        monthlySalesRanges:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantLabeledOptionDto"
+        ownerRoles:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantOwnerRoleOptionDto"
+        banks:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantBankOptionDto"
+        accountHolderTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantAccountHolderTypeOptionDto"
+        payoutSchedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantLabeledOptionDto"
+        termsVersion:
+          type: string
+          example: 2026-08-30
+      required:
+        - businessTypes
+        - industries
+        - monthlySalesRanges
+        - ownerRoles
+        - banks
+        - accountHolderTypes
+        - payoutSchedules
+        - termsVersion
+    MerchantReferenceDataEnvelopeDto:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/MerchantReferenceDataDto"
+      required:
+        - data
+    MerchantBusinessInputDto:
+      type: object
+      properties:
+        legalName:
+          type: string
+          example: Acme Studio
+          maxLength: 256
+        businessTypeId:
+          type: string
+          example: private_company
+          maxLength: 64
+        registrationNumber:
+          type: string
+          example: REG-12345
+          nullable: true
+          maxLength: 64
+        industryId:
+          type: string
+          example: digital_services
+          maxLength: 64
+        monthlySalesRangeId:
+          type: string
+          example: 10m_to_50m_idr
+          maxLength: 64
+        contactEmail:
+          type: string
+          example: owner@example.com
+        contactPhone:
+          type: string
+          example: "+6281234567890"
+          maxLength: 32
+      required:
+        - legalName
+        - businessTypeId
+        - industryId
+        - monthlySalesRangeId
+        - contactEmail
+        - contactPhone
+    MerchantOwnerInputDto:
+      type: object
+      properties:
+        ownerRowId:
+          type: string
+          example: a4591876-9c0c-4f8d-9df5-8fdd11ef13d8
+        fullName:
+          type: string
+          example: Ari Example
+          maxLength: 256
+        roleId:
+          type: string
+          example: owner
+          maxLength: 64
+        ownershipBasisPoints:
+          type: integer
+          example: 10000
+          nullable: true
+        email:
+          type: string
+          example: owner@example.com
+        isPrimaryContact:
+          type: boolean
+          example: true
+      required:
+        - ownerRowId
+        - fullName
+        - roleId
+        - email
+        - isPrimaryContact
+    MerchantSettlementInputDto:
+      type: object
+      properties:
+        bankId:
+          type: string
+          example: demo_bank_alpha
+          maxLength: 64
+        accountHolderName:
+          type: string
+          example: Ari Example
+          maxLength: 256
+        accountNumber:
+          type: string
+          example: "0012345678"
+          maxLength: 256
+        holderTypeId:
+          type: string
+          example: owner
+          maxLength: 64
+        ownerRowId:
+          type: string
+          example: a4591876-9c0c-4f8d-9df5-8fdd11ef13d8
+          nullable: true
+        payoutScheduleId:
+          type: string
+          example: weekly
+          maxLength: 64
+      required:
+        - bankId
+        - accountHolderName
+        - accountNumber
+        - holderTypeId
+        - payoutScheduleId
+    MerchantDeclarationsInputDto:
+      type: object
+      properties:
+        informationAccurate:
+          type: boolean
+          example: true
+        authorizedToSubmit:
+          type: boolean
+          example: true
+        termsAccepted:
+          type: boolean
+          example: true
+        termsVersion:
+          type: string
+          example: 2026-08-30
+          maxLength: 64
+      required:
+        - informationAccurate
+        - authorizedToSubmit
+        - termsAccepted
+        - termsVersion
+    MerchantOnboardingSubmitRequestDto:
+      type: object
+      properties:
+        business:
+          $ref: "#/components/schemas/MerchantBusinessInputDto"
+        owners:
+          maxItems: 32
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantOwnerInputDto"
+        settlement:
+          $ref: "#/components/schemas/MerchantSettlementInputDto"
+        declarations:
+          $ref: "#/components/schemas/MerchantDeclarationsInputDto"
+      required:
+        - business
+        - owners
+        - settlement
+        - declarations
+    MerchantSubmitSettlementDto:
+      type: object
+      properties:
+        bankId:
+          type: string
+          example: demo_bank_alpha
+        accountNumberLast4:
+          type: string
+          example: "5678"
+      required:
+        - bankId
+        - accountNumberLast4
+    MerchantSubmitResultDto:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          example: a7a6ce74-f9aa-48a5-b39d-fcb44d349f33
+        submittedAt:
+          type: string
+          example: 2026-08-30T10:00:00.000Z
+        settlement:
+          $ref: "#/components/schemas/MerchantSubmitSettlementDto"
+      required:
+        - applicationId
+        - submittedAt
+        - settlement
+    MerchantSubmitEnvelopeDto:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/MerchantSubmitResultDto"
+      required:
+        - data
