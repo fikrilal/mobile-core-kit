@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-
+import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_reference_data_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
@@ -98,6 +98,58 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
   submitApplication(MerchantOnboardingApplication application) async {
     return right(
       const MerchantApplicationReceipt(applicationId: demoApplicationId),
+    );
+  }
+
+  /// Remote reference DTO mirroring [demoReferenceData] for repository tests.
+  static MerchantReferenceDataDto demoReferenceDataDto() {
+    final reference = demoReferenceData();
+    return MerchantReferenceDataDto(
+      businessTypes: [
+        for (final option in reference.businessTypes)
+          MerchantBusinessTypeOptionDto(
+            id: option.id,
+            label: option.label,
+            requiresRegistrationNumber: option.requiresRegistrationNumber,
+          ),
+      ],
+      industries: [
+        for (final option in reference.industries)
+          MerchantLabeledOptionDto(id: option.id, label: option.label),
+      ],
+      monthlySalesRanges: [
+        for (final option in reference.monthlySalesRanges)
+          MerchantLabeledOptionDto(id: option.id, label: option.label),
+      ],
+      ownerRoles: [
+        for (final option in reference.ownerRoles)
+          MerchantOwnerRoleOptionDto(
+            id: option.id,
+            label: option.label,
+            contributesOwnership: option.contributesOwnership,
+          ),
+      ],
+      banks: [
+        for (final option in reference.banks)
+          MerchantBankOptionDto(
+            id: option.id,
+            label: option.label,
+            supportedPayoutScheduleIds: option.supportedScheduleIds.toList(),
+          ),
+      ],
+      accountHolderTypes: [
+        for (final option in reference.holderTypes)
+          MerchantAccountHolderTypeOptionDto(
+            id: option.id,
+            label: option.label,
+            requiresOwnerReference: option.requiresOwnerReference,
+          ),
+      ],
+      payoutSchedules: [
+        for (final option in reference.payoutSchedules)
+          MerchantLabeledOptionDto(id: option.id, label: option.label),
+      ],
+      termsVersion: reference.termsVersion,
     );
   }
 }

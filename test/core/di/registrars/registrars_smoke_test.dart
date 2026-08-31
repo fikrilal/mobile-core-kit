@@ -14,6 +14,7 @@ import 'package:mobile_core_kit/core/runtime/navigation/navigation_service.dart'
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_startup_controller.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/data/datasource/remote/merchant_onboarding_remote_datasource.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
@@ -48,6 +49,7 @@ void main() {
     registerFeatureModules(locator);
     expect(locator.isRegistered<CurrentUserFetcher>(), isTrue);
     expect(locator.isRegistered<MerchantOnboardingRepository>(), isTrue);
+    expect(locator.isRegistered<MerchantOnboardingRemoteDataSource>(), isTrue);
     expect(locator.isRegistered<SubmitMerchantOnboardingUseCase>(), isTrue);
     expect(locator.isRegistered<MerchantOnboardingCubit>(), isTrue);
 
