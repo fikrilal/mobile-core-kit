@@ -7,8 +7,6 @@ import 'package:mobile_core_kit/core/design_system/widgets/button/app_button.dar
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 
-/// Shared shell for the four merchant-onboarding steps: progress header,
-/// scrollable step content, and Back/Next/Submit actions.
 class MerchantOnboardingStepShell extends StatelessWidget {
   const MerchantOnboardingStepShell({
     super.key,

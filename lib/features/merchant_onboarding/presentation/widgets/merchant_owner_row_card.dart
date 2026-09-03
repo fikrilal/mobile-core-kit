@@ -12,7 +12,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/locali
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_dropdown_field.dart';
 
-/// One dynamic owner row with stable keyed inputs and reorder/remove actions.
 class MerchantOwnerRowCard extends StatelessWidget {
   const MerchantOwnerRowCard({
     super.key,

@@ -7,7 +7,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onb
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/load_merchant_reference_data_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
@@ -48,7 +47,7 @@ void main() {
     );
 
     cubit = MerchantOnboardingCubit(
-      LoadMerchantReferenceDataUseCase(repo),
+      repo,
       SubmitMerchantOnboardingUseCase(repo),
     );
     effects = [];

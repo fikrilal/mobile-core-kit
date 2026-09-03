@@ -2,9 +2,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onb
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
-/// Localized copy for repository-level submission outcomes. Only the
-/// documented backend outcomes have distinct copy; unknown failures fall
-/// back to the generic message.
 String messageForMerchantOnboardingFailure(
   MerchantOnboardingFailure failure,
   AppLocalizations l10n,
@@ -26,8 +23,6 @@ String messageForMerchantOnboardingFailure(
   };
 }
 
-/// Maps deterministic merchant-onboarding failure codes to localized
-/// messages. Unknown codes fall back to a generic form-level message.
 String messageForMerchantValidationFailure(
   MerchantValidationFailure failure,
   AppLocalizations l10n,

@@ -7,35 +7,31 @@ import 'package:mobile_core_kit/core/infra/network/endpoints/merchant_onboarding
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_reference_data_models.dart';
 
-/// Authenticated remote datasource for the merchant-onboarding endpoints.
 class MerchantOnboardingRemoteDataSource {
   MerchantOnboardingRemoteDataSource(this._apiHelper);
 
   final String _tag = 'MerchantOnboardingRemoteDataSource';
   final ApiHelper _apiHelper;
 
-  Future<ApiResponse<MerchantReferenceDataDto>> fetchReferenceData() async {
+  Future<ApiResponse<MerchantReferenceDataModel>> fetchReferenceData() async {
     Log.info('Fetching merchant onboarding reference data', name: _tag);
 
-    return _apiHelper.getOne<MerchantReferenceDataDto>(
+    return _apiHelper.getOne<MerchantReferenceDataModel>(
       MerchantOnboardingEndpoint.referenceData,
       host: ApiHost.core,
       requiresAuth: true,
       throwOnError: false,
-      parser: MerchantReferenceDataDto.fromJson,
+      parser: MerchantReferenceDataModel.fromJson,
     );
   }
 
-  /// Submits a validated application. One non-empty idempotency key is
-  /// generated per invocation; Dio automatic retries reuse the same request
-  /// headers, so an ambiguous retry cannot create a second application.
-  Future<ApiResponse<MerchantSubmitResultDto>> submitApplication({
-    required MerchantOnboardingSubmitRequestDto request,
+  Future<ApiResponse<MerchantSubmitResultModel>> submitApplication({
+    required MerchantOnboardingSubmitRequestModel request,
     String? idempotencyKey,
   }) async {
     Log.info('Submitting merchant onboarding application', name: _tag);
 
-    return _apiHelper.post<MerchantSubmitResultDto>(
+    return _apiHelper.post<MerchantSubmitResultModel>(
       MerchantOnboardingEndpoint.applications,
       host: ApiHost.core,
       requiresAuth: true,
@@ -44,7 +40,7 @@ class MerchantOnboardingRemoteDataSource {
         'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
       },
       data: request.toJson(),
-      parser: MerchantSubmitResultDto.fromJson,
+      parser: MerchantSubmitResultModel.fromJson,
     );
   }
 }

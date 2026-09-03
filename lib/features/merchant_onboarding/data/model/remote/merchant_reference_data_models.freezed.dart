@@ -13,22 +13,22 @@ part of 'merchant_reference_data_models.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$MerchantReferenceDataDto {
+mixin _$MerchantReferenceDataModel {
 
- List<MerchantBusinessTypeOptionDto> get businessTypes; List<MerchantLabeledOptionDto> get industries; List<MerchantLabeledOptionDto> get monthlySalesRanges; List<MerchantOwnerRoleOptionDto> get ownerRoles; List<MerchantBankOptionDto> get banks; List<MerchantAccountHolderTypeOptionDto> get accountHolderTypes; List<MerchantLabeledOptionDto> get payoutSchedules; String get termsVersion;
-/// Create a copy of MerchantReferenceDataDto
+ List<MerchantBusinessTypeOptionModel> get businessTypes; List<MerchantLabeledOptionModel> get industries; List<MerchantLabeledOptionModel> get monthlySalesRanges; List<MerchantOwnerRoleOptionModel> get ownerRoles; List<MerchantBankOptionModel> get banks; List<MerchantAccountHolderTypeOptionModel> get accountHolderTypes; List<MerchantLabeledOptionModel> get payoutSchedules; String get termsVersion;
+/// Create a copy of MerchantReferenceDataModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantReferenceDataDtoCopyWith<MerchantReferenceDataDto> get copyWith => _$MerchantReferenceDataDtoCopyWithImpl<MerchantReferenceDataDto>(this as MerchantReferenceDataDto, _$identity);
+$MerchantReferenceDataModelCopyWith<MerchantReferenceDataModel> get copyWith => _$MerchantReferenceDataModelCopyWithImpl<MerchantReferenceDataModel>(this as MerchantReferenceDataModel, _$identity);
 
-  /// Serializes this MerchantReferenceDataDto to a JSON map.
+  /// Serializes this MerchantReferenceDataModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantReferenceDataDto&&const DeepCollectionEquality().equals(other.businessTypes, businessTypes)&&const DeepCollectionEquality().equals(other.industries, industries)&&const DeepCollectionEquality().equals(other.monthlySalesRanges, monthlySalesRanges)&&const DeepCollectionEquality().equals(other.ownerRoles, ownerRoles)&&const DeepCollectionEquality().equals(other.banks, banks)&&const DeepCollectionEquality().equals(other.accountHolderTypes, accountHolderTypes)&&const DeepCollectionEquality().equals(other.payoutSchedules, payoutSchedules)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantReferenceDataModel&&const DeepCollectionEquality().equals(other.businessTypes, businessTypes)&&const DeepCollectionEquality().equals(other.industries, industries)&&const DeepCollectionEquality().equals(other.monthlySalesRanges, monthlySalesRanges)&&const DeepCollectionEquality().equals(other.ownerRoles, ownerRoles)&&const DeepCollectionEquality().equals(other.banks, banks)&&const DeepCollectionEquality().equals(other.accountHolderTypes, accountHolderTypes)&&const DeepCollectionEquality().equals(other.payoutSchedules, payoutSchedules)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -37,18 +37,18 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'MerchantReferenceDataDto(businessTypes: $businessTypes, industries: $industries, monthlySalesRanges: $monthlySalesRanges, ownerRoles: $ownerRoles, banks: $banks, accountHolderTypes: $accountHolderTypes, payoutSchedules: $payoutSchedules, termsVersion: $termsVersion)';
+  return 'MerchantReferenceDataModel(businessTypes: $businessTypes, industries: $industries, monthlySalesRanges: $monthlySalesRanges, ownerRoles: $ownerRoles, banks: $banks, accountHolderTypes: $accountHolderTypes, payoutSchedules: $payoutSchedules, termsVersion: $termsVersion)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantReferenceDataDtoCopyWith<$Res>  {
-  factory $MerchantReferenceDataDtoCopyWith(MerchantReferenceDataDto value, $Res Function(MerchantReferenceDataDto) _then) = _$MerchantReferenceDataDtoCopyWithImpl;
+abstract mixin class $MerchantReferenceDataModelCopyWith<$Res>  {
+  factory $MerchantReferenceDataModelCopyWith(MerchantReferenceDataModel value, $Res Function(MerchantReferenceDataModel) _then) = _$MerchantReferenceDataModelCopyWithImpl;
 @useResult
 $Res call({
- List<MerchantBusinessTypeOptionDto> businessTypes, List<MerchantLabeledOptionDto> industries, List<MerchantLabeledOptionDto> monthlySalesRanges, List<MerchantOwnerRoleOptionDto> ownerRoles, List<MerchantBankOptionDto> banks, List<MerchantAccountHolderTypeOptionDto> accountHolderTypes, List<MerchantLabeledOptionDto> payoutSchedules, String termsVersion
+ List<MerchantBusinessTypeOptionModel> businessTypes, List<MerchantLabeledOptionModel> industries, List<MerchantLabeledOptionModel> monthlySalesRanges, List<MerchantOwnerRoleOptionModel> ownerRoles, List<MerchantBankOptionModel> banks, List<MerchantAccountHolderTypeOptionModel> accountHolderTypes, List<MerchantLabeledOptionModel> payoutSchedules, String termsVersion
 });
 
 
@@ -56,25 +56,25 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantReferenceDataDtoCopyWithImpl<$Res>
-    implements $MerchantReferenceDataDtoCopyWith<$Res> {
-  _$MerchantReferenceDataDtoCopyWithImpl(this._self, this._then);
+class _$MerchantReferenceDataModelCopyWithImpl<$Res>
+    implements $MerchantReferenceDataModelCopyWith<$Res> {
+  _$MerchantReferenceDataModelCopyWithImpl(this._self, this._then);
 
-  final MerchantReferenceDataDto _self;
-  final $Res Function(MerchantReferenceDataDto) _then;
+  final MerchantReferenceDataModel _self;
+  final $Res Function(MerchantReferenceDataModel) _then;
 
-/// Create a copy of MerchantReferenceDataDto
+/// Create a copy of MerchantReferenceDataModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? businessTypes = null,Object? industries = null,Object? monthlySalesRanges = null,Object? ownerRoles = null,Object? banks = null,Object? accountHolderTypes = null,Object? payoutSchedules = null,Object? termsVersion = null,}) {
   return _then(_self.copyWith(
 businessTypes: null == businessTypes ? _self.businessTypes : businessTypes // ignore: cast_nullable_to_non_nullable
-as List<MerchantBusinessTypeOptionDto>,industries: null == industries ? _self.industries : industries // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,monthlySalesRanges: null == monthlySalesRanges ? _self.monthlySalesRanges : monthlySalesRanges // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,ownerRoles: null == ownerRoles ? _self.ownerRoles : ownerRoles // ignore: cast_nullable_to_non_nullable
-as List<MerchantOwnerRoleOptionDto>,banks: null == banks ? _self.banks : banks // ignore: cast_nullable_to_non_nullable
-as List<MerchantBankOptionDto>,accountHolderTypes: null == accountHolderTypes ? _self.accountHolderTypes : accountHolderTypes // ignore: cast_nullable_to_non_nullable
-as List<MerchantAccountHolderTypeOptionDto>,payoutSchedules: null == payoutSchedules ? _self.payoutSchedules : payoutSchedules // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,termsVersion: null == termsVersion ? _self.termsVersion : termsVersion // ignore: cast_nullable_to_non_nullable
+as List<MerchantBusinessTypeOptionModel>,industries: null == industries ? _self.industries : industries // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,monthlySalesRanges: null == monthlySalesRanges ? _self.monthlySalesRanges : monthlySalesRanges // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,ownerRoles: null == ownerRoles ? _self.ownerRoles : ownerRoles // ignore: cast_nullable_to_non_nullable
+as List<MerchantOwnerRoleOptionModel>,banks: null == banks ? _self.banks : banks // ignore: cast_nullable_to_non_nullable
+as List<MerchantBankOptionModel>,accountHolderTypes: null == accountHolderTypes ? _self.accountHolderTypes : accountHolderTypes // ignore: cast_nullable_to_non_nullable
+as List<MerchantAccountHolderTypeOptionModel>,payoutSchedules: null == payoutSchedules ? _self.payoutSchedules : payoutSchedules // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,termsVersion: null == termsVersion ? _self.termsVersion : termsVersion // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -82,8 +82,8 @@ as String,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantReferenceDataDto].
-extension MerchantReferenceDataDtoPatterns on MerchantReferenceDataDto {
+/// Adds pattern-matching-related methods to [MerchantReferenceDataModel].
+extension MerchantReferenceDataModelPatterns on MerchantReferenceDataModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -96,10 +96,10 @@ extension MerchantReferenceDataDtoPatterns on MerchantReferenceDataDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantReferenceDataDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantReferenceDataModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto() when $default != null:
+case _MerchantReferenceDataModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -118,10 +118,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantReferenceDataDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantReferenceDataModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto():
+case _MerchantReferenceDataModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -139,10 +139,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantReferenceDataDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantReferenceDataModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto() when $default != null:
+case _MerchantReferenceDataModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -160,9 +160,9 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<MerchantBusinessTypeOptionDto> businessTypes,  List<MerchantLabeledOptionDto> industries,  List<MerchantLabeledOptionDto> monthlySalesRanges,  List<MerchantOwnerRoleOptionDto> ownerRoles,  List<MerchantBankOptionDto> banks,  List<MerchantAccountHolderTypeOptionDto> accountHolderTypes,  List<MerchantLabeledOptionDto> payoutSchedules,  String termsVersion)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<MerchantBusinessTypeOptionModel> businessTypes,  List<MerchantLabeledOptionModel> industries,  List<MerchantLabeledOptionModel> monthlySalesRanges,  List<MerchantOwnerRoleOptionModel> ownerRoles,  List<MerchantBankOptionModel> banks,  List<MerchantAccountHolderTypeOptionModel> accountHolderTypes,  List<MerchantLabeledOptionModel> payoutSchedules,  String termsVersion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto() when $default != null:
+case _MerchantReferenceDataModel() when $default != null:
 return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_that.ownerRoles,_that.banks,_that.accountHolderTypes,_that.payoutSchedules,_that.termsVersion);case _:
   return orElse();
 
@@ -181,9 +181,9 @@ return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<MerchantBusinessTypeOptionDto> businessTypes,  List<MerchantLabeledOptionDto> industries,  List<MerchantLabeledOptionDto> monthlySalesRanges,  List<MerchantOwnerRoleOptionDto> ownerRoles,  List<MerchantBankOptionDto> banks,  List<MerchantAccountHolderTypeOptionDto> accountHolderTypes,  List<MerchantLabeledOptionDto> payoutSchedules,  String termsVersion)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<MerchantBusinessTypeOptionModel> businessTypes,  List<MerchantLabeledOptionModel> industries,  List<MerchantLabeledOptionModel> monthlySalesRanges,  List<MerchantOwnerRoleOptionModel> ownerRoles,  List<MerchantBankOptionModel> banks,  List<MerchantAccountHolderTypeOptionModel> accountHolderTypes,  List<MerchantLabeledOptionModel> payoutSchedules,  String termsVersion)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto():
+case _MerchantReferenceDataModel():
 return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_that.ownerRoles,_that.banks,_that.accountHolderTypes,_that.payoutSchedules,_that.termsVersion);case _:
   throw StateError('Unexpected subclass');
 
@@ -201,9 +201,9 @@ return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<MerchantBusinessTypeOptionDto> businessTypes,  List<MerchantLabeledOptionDto> industries,  List<MerchantLabeledOptionDto> monthlySalesRanges,  List<MerchantOwnerRoleOptionDto> ownerRoles,  List<MerchantBankOptionDto> banks,  List<MerchantAccountHolderTypeOptionDto> accountHolderTypes,  List<MerchantLabeledOptionDto> payoutSchedules,  String termsVersion)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<MerchantBusinessTypeOptionModel> businessTypes,  List<MerchantLabeledOptionModel> industries,  List<MerchantLabeledOptionModel> monthlySalesRanges,  List<MerchantOwnerRoleOptionModel> ownerRoles,  List<MerchantBankOptionModel> banks,  List<MerchantAccountHolderTypeOptionModel> accountHolderTypes,  List<MerchantLabeledOptionModel> payoutSchedules,  String termsVersion)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantReferenceDataDto() when $default != null:
+case _MerchantReferenceDataModel() when $default != null:
 return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_that.ownerRoles,_that.banks,_that.accountHolderTypes,_that.payoutSchedules,_that.termsVersion);case _:
   return null;
 
@@ -215,54 +215,54 @@ return $default(_that.businessTypes,_that.industries,_that.monthlySalesRanges,_t
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantReferenceDataDto implements MerchantReferenceDataDto {
-  const _MerchantReferenceDataDto({required final  List<MerchantBusinessTypeOptionDto> businessTypes, required final  List<MerchantLabeledOptionDto> industries, required final  List<MerchantLabeledOptionDto> monthlySalesRanges, required final  List<MerchantOwnerRoleOptionDto> ownerRoles, required final  List<MerchantBankOptionDto> banks, required final  List<MerchantAccountHolderTypeOptionDto> accountHolderTypes, required final  List<MerchantLabeledOptionDto> payoutSchedules, required this.termsVersion}): _businessTypes = businessTypes,_industries = industries,_monthlySalesRanges = monthlySalesRanges,_ownerRoles = ownerRoles,_banks = banks,_accountHolderTypes = accountHolderTypes,_payoutSchedules = payoutSchedules;
-  factory _MerchantReferenceDataDto.fromJson(Map<String, dynamic> json) => _$MerchantReferenceDataDtoFromJson(json);
+class _MerchantReferenceDataModel extends MerchantReferenceDataModel {
+  const _MerchantReferenceDataModel({required final  List<MerchantBusinessTypeOptionModel> businessTypes, required final  List<MerchantLabeledOptionModel> industries, required final  List<MerchantLabeledOptionModel> monthlySalesRanges, required final  List<MerchantOwnerRoleOptionModel> ownerRoles, required final  List<MerchantBankOptionModel> banks, required final  List<MerchantAccountHolderTypeOptionModel> accountHolderTypes, required final  List<MerchantLabeledOptionModel> payoutSchedules, required this.termsVersion}): _businessTypes = businessTypes,_industries = industries,_monthlySalesRanges = monthlySalesRanges,_ownerRoles = ownerRoles,_banks = banks,_accountHolderTypes = accountHolderTypes,_payoutSchedules = payoutSchedules,super._();
+  factory _MerchantReferenceDataModel.fromJson(Map<String, dynamic> json) => _$MerchantReferenceDataModelFromJson(json);
 
- final  List<MerchantBusinessTypeOptionDto> _businessTypes;
-@override List<MerchantBusinessTypeOptionDto> get businessTypes {
+ final  List<MerchantBusinessTypeOptionModel> _businessTypes;
+@override List<MerchantBusinessTypeOptionModel> get businessTypes {
   if (_businessTypes is EqualUnmodifiableListView) return _businessTypes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_businessTypes);
 }
 
- final  List<MerchantLabeledOptionDto> _industries;
-@override List<MerchantLabeledOptionDto> get industries {
+ final  List<MerchantLabeledOptionModel> _industries;
+@override List<MerchantLabeledOptionModel> get industries {
   if (_industries is EqualUnmodifiableListView) return _industries;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_industries);
 }
 
- final  List<MerchantLabeledOptionDto> _monthlySalesRanges;
-@override List<MerchantLabeledOptionDto> get monthlySalesRanges {
+ final  List<MerchantLabeledOptionModel> _monthlySalesRanges;
+@override List<MerchantLabeledOptionModel> get monthlySalesRanges {
   if (_monthlySalesRanges is EqualUnmodifiableListView) return _monthlySalesRanges;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_monthlySalesRanges);
 }
 
- final  List<MerchantOwnerRoleOptionDto> _ownerRoles;
-@override List<MerchantOwnerRoleOptionDto> get ownerRoles {
+ final  List<MerchantOwnerRoleOptionModel> _ownerRoles;
+@override List<MerchantOwnerRoleOptionModel> get ownerRoles {
   if (_ownerRoles is EqualUnmodifiableListView) return _ownerRoles;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_ownerRoles);
 }
 
- final  List<MerchantBankOptionDto> _banks;
-@override List<MerchantBankOptionDto> get banks {
+ final  List<MerchantBankOptionModel> _banks;
+@override List<MerchantBankOptionModel> get banks {
   if (_banks is EqualUnmodifiableListView) return _banks;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_banks);
 }
 
- final  List<MerchantAccountHolderTypeOptionDto> _accountHolderTypes;
-@override List<MerchantAccountHolderTypeOptionDto> get accountHolderTypes {
+ final  List<MerchantAccountHolderTypeOptionModel> _accountHolderTypes;
+@override List<MerchantAccountHolderTypeOptionModel> get accountHolderTypes {
   if (_accountHolderTypes is EqualUnmodifiableListView) return _accountHolderTypes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_accountHolderTypes);
 }
 
- final  List<MerchantLabeledOptionDto> _payoutSchedules;
-@override List<MerchantLabeledOptionDto> get payoutSchedules {
+ final  List<MerchantLabeledOptionModel> _payoutSchedules;
+@override List<MerchantLabeledOptionModel> get payoutSchedules {
   if (_payoutSchedules is EqualUnmodifiableListView) return _payoutSchedules;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_payoutSchedules);
@@ -270,20 +270,20 @@ class _MerchantReferenceDataDto implements MerchantReferenceDataDto {
 
 @override final  String termsVersion;
 
-/// Create a copy of MerchantReferenceDataDto
+/// Create a copy of MerchantReferenceDataModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantReferenceDataDtoCopyWith<_MerchantReferenceDataDto> get copyWith => __$MerchantReferenceDataDtoCopyWithImpl<_MerchantReferenceDataDto>(this, _$identity);
+_$MerchantReferenceDataModelCopyWith<_MerchantReferenceDataModel> get copyWith => __$MerchantReferenceDataModelCopyWithImpl<_MerchantReferenceDataModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantReferenceDataDtoToJson(this, );
+  return _$MerchantReferenceDataModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantReferenceDataDto&&const DeepCollectionEquality().equals(other._businessTypes, _businessTypes)&&const DeepCollectionEquality().equals(other._industries, _industries)&&const DeepCollectionEquality().equals(other._monthlySalesRanges, _monthlySalesRanges)&&const DeepCollectionEquality().equals(other._ownerRoles, _ownerRoles)&&const DeepCollectionEquality().equals(other._banks, _banks)&&const DeepCollectionEquality().equals(other._accountHolderTypes, _accountHolderTypes)&&const DeepCollectionEquality().equals(other._payoutSchedules, _payoutSchedules)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantReferenceDataModel&&const DeepCollectionEquality().equals(other._businessTypes, _businessTypes)&&const DeepCollectionEquality().equals(other._industries, _industries)&&const DeepCollectionEquality().equals(other._monthlySalesRanges, _monthlySalesRanges)&&const DeepCollectionEquality().equals(other._ownerRoles, _ownerRoles)&&const DeepCollectionEquality().equals(other._banks, _banks)&&const DeepCollectionEquality().equals(other._accountHolderTypes, _accountHolderTypes)&&const DeepCollectionEquality().equals(other._payoutSchedules, _payoutSchedules)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -292,18 +292,18 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'MerchantReferenceDataDto(businessTypes: $businessTypes, industries: $industries, monthlySalesRanges: $monthlySalesRanges, ownerRoles: $ownerRoles, banks: $banks, accountHolderTypes: $accountHolderTypes, payoutSchedules: $payoutSchedules, termsVersion: $termsVersion)';
+  return 'MerchantReferenceDataModel(businessTypes: $businessTypes, industries: $industries, monthlySalesRanges: $monthlySalesRanges, ownerRoles: $ownerRoles, banks: $banks, accountHolderTypes: $accountHolderTypes, payoutSchedules: $payoutSchedules, termsVersion: $termsVersion)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantReferenceDataDtoCopyWith<$Res> implements $MerchantReferenceDataDtoCopyWith<$Res> {
-  factory _$MerchantReferenceDataDtoCopyWith(_MerchantReferenceDataDto value, $Res Function(_MerchantReferenceDataDto) _then) = __$MerchantReferenceDataDtoCopyWithImpl;
+abstract mixin class _$MerchantReferenceDataModelCopyWith<$Res> implements $MerchantReferenceDataModelCopyWith<$Res> {
+  factory _$MerchantReferenceDataModelCopyWith(_MerchantReferenceDataModel value, $Res Function(_MerchantReferenceDataModel) _then) = __$MerchantReferenceDataModelCopyWithImpl;
 @override @useResult
 $Res call({
- List<MerchantBusinessTypeOptionDto> businessTypes, List<MerchantLabeledOptionDto> industries, List<MerchantLabeledOptionDto> monthlySalesRanges, List<MerchantOwnerRoleOptionDto> ownerRoles, List<MerchantBankOptionDto> banks, List<MerchantAccountHolderTypeOptionDto> accountHolderTypes, List<MerchantLabeledOptionDto> payoutSchedules, String termsVersion
+ List<MerchantBusinessTypeOptionModel> businessTypes, List<MerchantLabeledOptionModel> industries, List<MerchantLabeledOptionModel> monthlySalesRanges, List<MerchantOwnerRoleOptionModel> ownerRoles, List<MerchantBankOptionModel> banks, List<MerchantAccountHolderTypeOptionModel> accountHolderTypes, List<MerchantLabeledOptionModel> payoutSchedules, String termsVersion
 });
 
 
@@ -311,25 +311,25 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantReferenceDataDtoCopyWithImpl<$Res>
-    implements _$MerchantReferenceDataDtoCopyWith<$Res> {
-  __$MerchantReferenceDataDtoCopyWithImpl(this._self, this._then);
+class __$MerchantReferenceDataModelCopyWithImpl<$Res>
+    implements _$MerchantReferenceDataModelCopyWith<$Res> {
+  __$MerchantReferenceDataModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantReferenceDataDto _self;
-  final $Res Function(_MerchantReferenceDataDto) _then;
+  final _MerchantReferenceDataModel _self;
+  final $Res Function(_MerchantReferenceDataModel) _then;
 
-/// Create a copy of MerchantReferenceDataDto
+/// Create a copy of MerchantReferenceDataModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? businessTypes = null,Object? industries = null,Object? monthlySalesRanges = null,Object? ownerRoles = null,Object? banks = null,Object? accountHolderTypes = null,Object? payoutSchedules = null,Object? termsVersion = null,}) {
-  return _then(_MerchantReferenceDataDto(
+  return _then(_MerchantReferenceDataModel(
 businessTypes: null == businessTypes ? _self._businessTypes : businessTypes // ignore: cast_nullable_to_non_nullable
-as List<MerchantBusinessTypeOptionDto>,industries: null == industries ? _self._industries : industries // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,monthlySalesRanges: null == monthlySalesRanges ? _self._monthlySalesRanges : monthlySalesRanges // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,ownerRoles: null == ownerRoles ? _self._ownerRoles : ownerRoles // ignore: cast_nullable_to_non_nullable
-as List<MerchantOwnerRoleOptionDto>,banks: null == banks ? _self._banks : banks // ignore: cast_nullable_to_non_nullable
-as List<MerchantBankOptionDto>,accountHolderTypes: null == accountHolderTypes ? _self._accountHolderTypes : accountHolderTypes // ignore: cast_nullable_to_non_nullable
-as List<MerchantAccountHolderTypeOptionDto>,payoutSchedules: null == payoutSchedules ? _self._payoutSchedules : payoutSchedules // ignore: cast_nullable_to_non_nullable
-as List<MerchantLabeledOptionDto>,termsVersion: null == termsVersion ? _self.termsVersion : termsVersion // ignore: cast_nullable_to_non_nullable
+as List<MerchantBusinessTypeOptionModel>,industries: null == industries ? _self._industries : industries // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,monthlySalesRanges: null == monthlySalesRanges ? _self._monthlySalesRanges : monthlySalesRanges // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,ownerRoles: null == ownerRoles ? _self._ownerRoles : ownerRoles // ignore: cast_nullable_to_non_nullable
+as List<MerchantOwnerRoleOptionModel>,banks: null == banks ? _self._banks : banks // ignore: cast_nullable_to_non_nullable
+as List<MerchantBankOptionModel>,accountHolderTypes: null == accountHolderTypes ? _self._accountHolderTypes : accountHolderTypes // ignore: cast_nullable_to_non_nullable
+as List<MerchantAccountHolderTypeOptionModel>,payoutSchedules: null == payoutSchedules ? _self._payoutSchedules : payoutSchedules // ignore: cast_nullable_to_non_nullable
+as List<MerchantLabeledOptionModel>,termsVersion: null == termsVersion ? _self.termsVersion : termsVersion // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -339,22 +339,22 @@ as String,
 
 
 /// @nodoc
-mixin _$MerchantBusinessTypeOptionDto {
+mixin _$MerchantBusinessTypeOptionModel {
 
  String get id; String get label; bool get requiresRegistrationNumber;
-/// Create a copy of MerchantBusinessTypeOptionDto
+/// Create a copy of MerchantBusinessTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantBusinessTypeOptionDtoCopyWith<MerchantBusinessTypeOptionDto> get copyWith => _$MerchantBusinessTypeOptionDtoCopyWithImpl<MerchantBusinessTypeOptionDto>(this as MerchantBusinessTypeOptionDto, _$identity);
+$MerchantBusinessTypeOptionModelCopyWith<MerchantBusinessTypeOptionModel> get copyWith => _$MerchantBusinessTypeOptionModelCopyWithImpl<MerchantBusinessTypeOptionModel>(this as MerchantBusinessTypeOptionModel, _$identity);
 
-  /// Serializes this MerchantBusinessTypeOptionDto to a JSON map.
+  /// Serializes this MerchantBusinessTypeOptionModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantBusinessTypeOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresRegistrationNumber, requiresRegistrationNumber) || other.requiresRegistrationNumber == requiresRegistrationNumber));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantBusinessTypeOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresRegistrationNumber, requiresRegistrationNumber) || other.requiresRegistrationNumber == requiresRegistrationNumber));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -363,15 +363,15 @@ int get hashCode => Object.hash(runtimeType,id,label,requiresRegistrationNumber)
 
 @override
 String toString() {
-  return 'MerchantBusinessTypeOptionDto(id: $id, label: $label, requiresRegistrationNumber: $requiresRegistrationNumber)';
+  return 'MerchantBusinessTypeOptionModel(id: $id, label: $label, requiresRegistrationNumber: $requiresRegistrationNumber)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantBusinessTypeOptionDtoCopyWith<$Res>  {
-  factory $MerchantBusinessTypeOptionDtoCopyWith(MerchantBusinessTypeOptionDto value, $Res Function(MerchantBusinessTypeOptionDto) _then) = _$MerchantBusinessTypeOptionDtoCopyWithImpl;
+abstract mixin class $MerchantBusinessTypeOptionModelCopyWith<$Res>  {
+  factory $MerchantBusinessTypeOptionModelCopyWith(MerchantBusinessTypeOptionModel value, $Res Function(MerchantBusinessTypeOptionModel) _then) = _$MerchantBusinessTypeOptionModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String label, bool requiresRegistrationNumber
@@ -382,14 +382,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantBusinessTypeOptionDtoCopyWithImpl<$Res>
-    implements $MerchantBusinessTypeOptionDtoCopyWith<$Res> {
-  _$MerchantBusinessTypeOptionDtoCopyWithImpl(this._self, this._then);
+class _$MerchantBusinessTypeOptionModelCopyWithImpl<$Res>
+    implements $MerchantBusinessTypeOptionModelCopyWith<$Res> {
+  _$MerchantBusinessTypeOptionModelCopyWithImpl(this._self, this._then);
 
-  final MerchantBusinessTypeOptionDto _self;
-  final $Res Function(MerchantBusinessTypeOptionDto) _then;
+  final MerchantBusinessTypeOptionModel _self;
+  final $Res Function(MerchantBusinessTypeOptionModel) _then;
 
-/// Create a copy of MerchantBusinessTypeOptionDto
+/// Create a copy of MerchantBusinessTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? requiresRegistrationNumber = null,}) {
   return _then(_self.copyWith(
@@ -403,8 +403,8 @@ as bool,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantBusinessTypeOptionDto].
-extension MerchantBusinessTypeOptionDtoPatterns on MerchantBusinessTypeOptionDto {
+/// Adds pattern-matching-related methods to [MerchantBusinessTypeOptionModel].
+extension MerchantBusinessTypeOptionModelPatterns on MerchantBusinessTypeOptionModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -417,10 +417,10 @@ extension MerchantBusinessTypeOptionDtoPatterns on MerchantBusinessTypeOptionDto
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantBusinessTypeOptionDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantBusinessTypeOptionModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto() when $default != null:
+case _MerchantBusinessTypeOptionModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -439,10 +439,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantBusinessTypeOptionDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantBusinessTypeOptionModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto():
+case _MerchantBusinessTypeOptionModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -460,10 +460,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantBusinessTypeOptionDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantBusinessTypeOptionModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto() when $default != null:
+case _MerchantBusinessTypeOptionModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -483,7 +483,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label,  bool requiresRegistrationNumber)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto() when $default != null:
+case _MerchantBusinessTypeOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
   return orElse();
 
@@ -504,7 +504,7 @@ return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label,  bool requiresRegistrationNumber)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto():
+case _MerchantBusinessTypeOptionModel():
 return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
   throw StateError('Unexpected subclass');
 
@@ -524,7 +524,7 @@ return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label,  bool requiresRegistrationNumber)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantBusinessTypeOptionDto() when $default != null:
+case _MerchantBusinessTypeOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
   return null;
 
@@ -536,28 +536,28 @@ return $default(_that.id,_that.label,_that.requiresRegistrationNumber);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantBusinessTypeOptionDto implements MerchantBusinessTypeOptionDto {
-  const _MerchantBusinessTypeOptionDto({required this.id, required this.label, required this.requiresRegistrationNumber});
-  factory _MerchantBusinessTypeOptionDto.fromJson(Map<String, dynamic> json) => _$MerchantBusinessTypeOptionDtoFromJson(json);
+class _MerchantBusinessTypeOptionModel implements MerchantBusinessTypeOptionModel {
+  const _MerchantBusinessTypeOptionModel({required this.id, required this.label, required this.requiresRegistrationNumber});
+  factory _MerchantBusinessTypeOptionModel.fromJson(Map<String, dynamic> json) => _$MerchantBusinessTypeOptionModelFromJson(json);
 
 @override final  String id;
 @override final  String label;
 @override final  bool requiresRegistrationNumber;
 
-/// Create a copy of MerchantBusinessTypeOptionDto
+/// Create a copy of MerchantBusinessTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantBusinessTypeOptionDtoCopyWith<_MerchantBusinessTypeOptionDto> get copyWith => __$MerchantBusinessTypeOptionDtoCopyWithImpl<_MerchantBusinessTypeOptionDto>(this, _$identity);
+_$MerchantBusinessTypeOptionModelCopyWith<_MerchantBusinessTypeOptionModel> get copyWith => __$MerchantBusinessTypeOptionModelCopyWithImpl<_MerchantBusinessTypeOptionModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantBusinessTypeOptionDtoToJson(this, );
+  return _$MerchantBusinessTypeOptionModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantBusinessTypeOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresRegistrationNumber, requiresRegistrationNumber) || other.requiresRegistrationNumber == requiresRegistrationNumber));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantBusinessTypeOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresRegistrationNumber, requiresRegistrationNumber) || other.requiresRegistrationNumber == requiresRegistrationNumber));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -566,15 +566,15 @@ int get hashCode => Object.hash(runtimeType,id,label,requiresRegistrationNumber)
 
 @override
 String toString() {
-  return 'MerchantBusinessTypeOptionDto(id: $id, label: $label, requiresRegistrationNumber: $requiresRegistrationNumber)';
+  return 'MerchantBusinessTypeOptionModel(id: $id, label: $label, requiresRegistrationNumber: $requiresRegistrationNumber)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantBusinessTypeOptionDtoCopyWith<$Res> implements $MerchantBusinessTypeOptionDtoCopyWith<$Res> {
-  factory _$MerchantBusinessTypeOptionDtoCopyWith(_MerchantBusinessTypeOptionDto value, $Res Function(_MerchantBusinessTypeOptionDto) _then) = __$MerchantBusinessTypeOptionDtoCopyWithImpl;
+abstract mixin class _$MerchantBusinessTypeOptionModelCopyWith<$Res> implements $MerchantBusinessTypeOptionModelCopyWith<$Res> {
+  factory _$MerchantBusinessTypeOptionModelCopyWith(_MerchantBusinessTypeOptionModel value, $Res Function(_MerchantBusinessTypeOptionModel) _then) = __$MerchantBusinessTypeOptionModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String label, bool requiresRegistrationNumber
@@ -585,17 +585,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantBusinessTypeOptionDtoCopyWithImpl<$Res>
-    implements _$MerchantBusinessTypeOptionDtoCopyWith<$Res> {
-  __$MerchantBusinessTypeOptionDtoCopyWithImpl(this._self, this._then);
+class __$MerchantBusinessTypeOptionModelCopyWithImpl<$Res>
+    implements _$MerchantBusinessTypeOptionModelCopyWith<$Res> {
+  __$MerchantBusinessTypeOptionModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantBusinessTypeOptionDto _self;
-  final $Res Function(_MerchantBusinessTypeOptionDto) _then;
+  final _MerchantBusinessTypeOptionModel _self;
+  final $Res Function(_MerchantBusinessTypeOptionModel) _then;
 
-/// Create a copy of MerchantBusinessTypeOptionDto
+/// Create a copy of MerchantBusinessTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? requiresRegistrationNumber = null,}) {
-  return _then(_MerchantBusinessTypeOptionDto(
+  return _then(_MerchantBusinessTypeOptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,requiresRegistrationNumber: null == requiresRegistrationNumber ? _self.requiresRegistrationNumber : requiresRegistrationNumber // ignore: cast_nullable_to_non_nullable
@@ -608,22 +608,22 @@ as bool,
 
 
 /// @nodoc
-mixin _$MerchantLabeledOptionDto {
+mixin _$MerchantLabeledOptionModel {
 
  String get id; String get label;
-/// Create a copy of MerchantLabeledOptionDto
+/// Create a copy of MerchantLabeledOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantLabeledOptionDtoCopyWith<MerchantLabeledOptionDto> get copyWith => _$MerchantLabeledOptionDtoCopyWithImpl<MerchantLabeledOptionDto>(this as MerchantLabeledOptionDto, _$identity);
+$MerchantLabeledOptionModelCopyWith<MerchantLabeledOptionModel> get copyWith => _$MerchantLabeledOptionModelCopyWithImpl<MerchantLabeledOptionModel>(this as MerchantLabeledOptionModel, _$identity);
 
-  /// Serializes this MerchantLabeledOptionDto to a JSON map.
+  /// Serializes this MerchantLabeledOptionModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantLabeledOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantLabeledOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -632,15 +632,15 @@ int get hashCode => Object.hash(runtimeType,id,label);
 
 @override
 String toString() {
-  return 'MerchantLabeledOptionDto(id: $id, label: $label)';
+  return 'MerchantLabeledOptionModel(id: $id, label: $label)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantLabeledOptionDtoCopyWith<$Res>  {
-  factory $MerchantLabeledOptionDtoCopyWith(MerchantLabeledOptionDto value, $Res Function(MerchantLabeledOptionDto) _then) = _$MerchantLabeledOptionDtoCopyWithImpl;
+abstract mixin class $MerchantLabeledOptionModelCopyWith<$Res>  {
+  factory $MerchantLabeledOptionModelCopyWith(MerchantLabeledOptionModel value, $Res Function(MerchantLabeledOptionModel) _then) = _$MerchantLabeledOptionModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String label
@@ -651,14 +651,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantLabeledOptionDtoCopyWithImpl<$Res>
-    implements $MerchantLabeledOptionDtoCopyWith<$Res> {
-  _$MerchantLabeledOptionDtoCopyWithImpl(this._self, this._then);
+class _$MerchantLabeledOptionModelCopyWithImpl<$Res>
+    implements $MerchantLabeledOptionModelCopyWith<$Res> {
+  _$MerchantLabeledOptionModelCopyWithImpl(this._self, this._then);
 
-  final MerchantLabeledOptionDto _self;
-  final $Res Function(MerchantLabeledOptionDto) _then;
+  final MerchantLabeledOptionModel _self;
+  final $Res Function(MerchantLabeledOptionModel) _then;
 
-/// Create a copy of MerchantLabeledOptionDto
+/// Create a copy of MerchantLabeledOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,}) {
   return _then(_self.copyWith(
@@ -671,8 +671,8 @@ as String,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantLabeledOptionDto].
-extension MerchantLabeledOptionDtoPatterns on MerchantLabeledOptionDto {
+/// Adds pattern-matching-related methods to [MerchantLabeledOptionModel].
+extension MerchantLabeledOptionModelPatterns on MerchantLabeledOptionModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -685,10 +685,10 @@ extension MerchantLabeledOptionDtoPatterns on MerchantLabeledOptionDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantLabeledOptionDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantLabeledOptionModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto() when $default != null:
+case _MerchantLabeledOptionModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -707,10 +707,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantLabeledOptionDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantLabeledOptionModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto():
+case _MerchantLabeledOptionModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -728,10 +728,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantLabeledOptionDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantLabeledOptionModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto() when $default != null:
+case _MerchantLabeledOptionModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -751,7 +751,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto() when $default != null:
+case _MerchantLabeledOptionModel() when $default != null:
 return $default(_that.id,_that.label);case _:
   return orElse();
 
@@ -772,7 +772,7 @@ return $default(_that.id,_that.label);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto():
+case _MerchantLabeledOptionModel():
 return $default(_that.id,_that.label);case _:
   throw StateError('Unexpected subclass');
 
@@ -792,7 +792,7 @@ return $default(_that.id,_that.label);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantLabeledOptionDto() when $default != null:
+case _MerchantLabeledOptionModel() when $default != null:
 return $default(_that.id,_that.label);case _:
   return null;
 
@@ -804,27 +804,27 @@ return $default(_that.id,_that.label);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantLabeledOptionDto implements MerchantLabeledOptionDto {
-  const _MerchantLabeledOptionDto({required this.id, required this.label});
-  factory _MerchantLabeledOptionDto.fromJson(Map<String, dynamic> json) => _$MerchantLabeledOptionDtoFromJson(json);
+class _MerchantLabeledOptionModel implements MerchantLabeledOptionModel {
+  const _MerchantLabeledOptionModel({required this.id, required this.label});
+  factory _MerchantLabeledOptionModel.fromJson(Map<String, dynamic> json) => _$MerchantLabeledOptionModelFromJson(json);
 
 @override final  String id;
 @override final  String label;
 
-/// Create a copy of MerchantLabeledOptionDto
+/// Create a copy of MerchantLabeledOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantLabeledOptionDtoCopyWith<_MerchantLabeledOptionDto> get copyWith => __$MerchantLabeledOptionDtoCopyWithImpl<_MerchantLabeledOptionDto>(this, _$identity);
+_$MerchantLabeledOptionModelCopyWith<_MerchantLabeledOptionModel> get copyWith => __$MerchantLabeledOptionModelCopyWithImpl<_MerchantLabeledOptionModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantLabeledOptionDtoToJson(this, );
+  return _$MerchantLabeledOptionModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantLabeledOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantLabeledOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -833,15 +833,15 @@ int get hashCode => Object.hash(runtimeType,id,label);
 
 @override
 String toString() {
-  return 'MerchantLabeledOptionDto(id: $id, label: $label)';
+  return 'MerchantLabeledOptionModel(id: $id, label: $label)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantLabeledOptionDtoCopyWith<$Res> implements $MerchantLabeledOptionDtoCopyWith<$Res> {
-  factory _$MerchantLabeledOptionDtoCopyWith(_MerchantLabeledOptionDto value, $Res Function(_MerchantLabeledOptionDto) _then) = __$MerchantLabeledOptionDtoCopyWithImpl;
+abstract mixin class _$MerchantLabeledOptionModelCopyWith<$Res> implements $MerchantLabeledOptionModelCopyWith<$Res> {
+  factory _$MerchantLabeledOptionModelCopyWith(_MerchantLabeledOptionModel value, $Res Function(_MerchantLabeledOptionModel) _then) = __$MerchantLabeledOptionModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String label
@@ -852,17 +852,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantLabeledOptionDtoCopyWithImpl<$Res>
-    implements _$MerchantLabeledOptionDtoCopyWith<$Res> {
-  __$MerchantLabeledOptionDtoCopyWithImpl(this._self, this._then);
+class __$MerchantLabeledOptionModelCopyWithImpl<$Res>
+    implements _$MerchantLabeledOptionModelCopyWith<$Res> {
+  __$MerchantLabeledOptionModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantLabeledOptionDto _self;
-  final $Res Function(_MerchantLabeledOptionDto) _then;
+  final _MerchantLabeledOptionModel _self;
+  final $Res Function(_MerchantLabeledOptionModel) _then;
 
-/// Create a copy of MerchantLabeledOptionDto
+/// Create a copy of MerchantLabeledOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,}) {
-  return _then(_MerchantLabeledOptionDto(
+  return _then(_MerchantLabeledOptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,
@@ -874,22 +874,22 @@ as String,
 
 
 /// @nodoc
-mixin _$MerchantOwnerRoleOptionDto {
+mixin _$MerchantOwnerRoleOptionModel {
 
  String get id; String get label; bool get contributesOwnership;
-/// Create a copy of MerchantOwnerRoleOptionDto
+/// Create a copy of MerchantOwnerRoleOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantOwnerRoleOptionDtoCopyWith<MerchantOwnerRoleOptionDto> get copyWith => _$MerchantOwnerRoleOptionDtoCopyWithImpl<MerchantOwnerRoleOptionDto>(this as MerchantOwnerRoleOptionDto, _$identity);
+$MerchantOwnerRoleOptionModelCopyWith<MerchantOwnerRoleOptionModel> get copyWith => _$MerchantOwnerRoleOptionModelCopyWithImpl<MerchantOwnerRoleOptionModel>(this as MerchantOwnerRoleOptionModel, _$identity);
 
-  /// Serializes this MerchantOwnerRoleOptionDto to a JSON map.
+  /// Serializes this MerchantOwnerRoleOptionModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantOwnerRoleOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.contributesOwnership, contributesOwnership) || other.contributesOwnership == contributesOwnership));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantOwnerRoleOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.contributesOwnership, contributesOwnership) || other.contributesOwnership == contributesOwnership));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -898,15 +898,15 @@ int get hashCode => Object.hash(runtimeType,id,label,contributesOwnership);
 
 @override
 String toString() {
-  return 'MerchantOwnerRoleOptionDto(id: $id, label: $label, contributesOwnership: $contributesOwnership)';
+  return 'MerchantOwnerRoleOptionModel(id: $id, label: $label, contributesOwnership: $contributesOwnership)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantOwnerRoleOptionDtoCopyWith<$Res>  {
-  factory $MerchantOwnerRoleOptionDtoCopyWith(MerchantOwnerRoleOptionDto value, $Res Function(MerchantOwnerRoleOptionDto) _then) = _$MerchantOwnerRoleOptionDtoCopyWithImpl;
+abstract mixin class $MerchantOwnerRoleOptionModelCopyWith<$Res>  {
+  factory $MerchantOwnerRoleOptionModelCopyWith(MerchantOwnerRoleOptionModel value, $Res Function(MerchantOwnerRoleOptionModel) _then) = _$MerchantOwnerRoleOptionModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String label, bool contributesOwnership
@@ -917,14 +917,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantOwnerRoleOptionDtoCopyWithImpl<$Res>
-    implements $MerchantOwnerRoleOptionDtoCopyWith<$Res> {
-  _$MerchantOwnerRoleOptionDtoCopyWithImpl(this._self, this._then);
+class _$MerchantOwnerRoleOptionModelCopyWithImpl<$Res>
+    implements $MerchantOwnerRoleOptionModelCopyWith<$Res> {
+  _$MerchantOwnerRoleOptionModelCopyWithImpl(this._self, this._then);
 
-  final MerchantOwnerRoleOptionDto _self;
-  final $Res Function(MerchantOwnerRoleOptionDto) _then;
+  final MerchantOwnerRoleOptionModel _self;
+  final $Res Function(MerchantOwnerRoleOptionModel) _then;
 
-/// Create a copy of MerchantOwnerRoleOptionDto
+/// Create a copy of MerchantOwnerRoleOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? contributesOwnership = null,}) {
   return _then(_self.copyWith(
@@ -938,8 +938,8 @@ as bool,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantOwnerRoleOptionDto].
-extension MerchantOwnerRoleOptionDtoPatterns on MerchantOwnerRoleOptionDto {
+/// Adds pattern-matching-related methods to [MerchantOwnerRoleOptionModel].
+extension MerchantOwnerRoleOptionModelPatterns on MerchantOwnerRoleOptionModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -952,10 +952,10 @@ extension MerchantOwnerRoleOptionDtoPatterns on MerchantOwnerRoleOptionDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantOwnerRoleOptionDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantOwnerRoleOptionModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto() when $default != null:
+case _MerchantOwnerRoleOptionModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -974,10 +974,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantOwnerRoleOptionDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantOwnerRoleOptionModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto():
+case _MerchantOwnerRoleOptionModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -995,10 +995,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantOwnerRoleOptionDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantOwnerRoleOptionModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto() when $default != null:
+case _MerchantOwnerRoleOptionModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -1018,7 +1018,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label,  bool contributesOwnership)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto() when $default != null:
+case _MerchantOwnerRoleOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.contributesOwnership);case _:
   return orElse();
 
@@ -1039,7 +1039,7 @@ return $default(_that.id,_that.label,_that.contributesOwnership);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label,  bool contributesOwnership)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto():
+case _MerchantOwnerRoleOptionModel():
 return $default(_that.id,_that.label,_that.contributesOwnership);case _:
   throw StateError('Unexpected subclass');
 
@@ -1059,7 +1059,7 @@ return $default(_that.id,_that.label,_that.contributesOwnership);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label,  bool contributesOwnership)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantOwnerRoleOptionDto() when $default != null:
+case _MerchantOwnerRoleOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.contributesOwnership);case _:
   return null;
 
@@ -1071,28 +1071,28 @@ return $default(_that.id,_that.label,_that.contributesOwnership);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantOwnerRoleOptionDto implements MerchantOwnerRoleOptionDto {
-  const _MerchantOwnerRoleOptionDto({required this.id, required this.label, required this.contributesOwnership});
-  factory _MerchantOwnerRoleOptionDto.fromJson(Map<String, dynamic> json) => _$MerchantOwnerRoleOptionDtoFromJson(json);
+class _MerchantOwnerRoleOptionModel implements MerchantOwnerRoleOptionModel {
+  const _MerchantOwnerRoleOptionModel({required this.id, required this.label, required this.contributesOwnership});
+  factory _MerchantOwnerRoleOptionModel.fromJson(Map<String, dynamic> json) => _$MerchantOwnerRoleOptionModelFromJson(json);
 
 @override final  String id;
 @override final  String label;
 @override final  bool contributesOwnership;
 
-/// Create a copy of MerchantOwnerRoleOptionDto
+/// Create a copy of MerchantOwnerRoleOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantOwnerRoleOptionDtoCopyWith<_MerchantOwnerRoleOptionDto> get copyWith => __$MerchantOwnerRoleOptionDtoCopyWithImpl<_MerchantOwnerRoleOptionDto>(this, _$identity);
+_$MerchantOwnerRoleOptionModelCopyWith<_MerchantOwnerRoleOptionModel> get copyWith => __$MerchantOwnerRoleOptionModelCopyWithImpl<_MerchantOwnerRoleOptionModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantOwnerRoleOptionDtoToJson(this, );
+  return _$MerchantOwnerRoleOptionModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantOwnerRoleOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.contributesOwnership, contributesOwnership) || other.contributesOwnership == contributesOwnership));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantOwnerRoleOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.contributesOwnership, contributesOwnership) || other.contributesOwnership == contributesOwnership));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1101,15 +1101,15 @@ int get hashCode => Object.hash(runtimeType,id,label,contributesOwnership);
 
 @override
 String toString() {
-  return 'MerchantOwnerRoleOptionDto(id: $id, label: $label, contributesOwnership: $contributesOwnership)';
+  return 'MerchantOwnerRoleOptionModel(id: $id, label: $label, contributesOwnership: $contributesOwnership)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantOwnerRoleOptionDtoCopyWith<$Res> implements $MerchantOwnerRoleOptionDtoCopyWith<$Res> {
-  factory _$MerchantOwnerRoleOptionDtoCopyWith(_MerchantOwnerRoleOptionDto value, $Res Function(_MerchantOwnerRoleOptionDto) _then) = __$MerchantOwnerRoleOptionDtoCopyWithImpl;
+abstract mixin class _$MerchantOwnerRoleOptionModelCopyWith<$Res> implements $MerchantOwnerRoleOptionModelCopyWith<$Res> {
+  factory _$MerchantOwnerRoleOptionModelCopyWith(_MerchantOwnerRoleOptionModel value, $Res Function(_MerchantOwnerRoleOptionModel) _then) = __$MerchantOwnerRoleOptionModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String label, bool contributesOwnership
@@ -1120,17 +1120,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantOwnerRoleOptionDtoCopyWithImpl<$Res>
-    implements _$MerchantOwnerRoleOptionDtoCopyWith<$Res> {
-  __$MerchantOwnerRoleOptionDtoCopyWithImpl(this._self, this._then);
+class __$MerchantOwnerRoleOptionModelCopyWithImpl<$Res>
+    implements _$MerchantOwnerRoleOptionModelCopyWith<$Res> {
+  __$MerchantOwnerRoleOptionModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantOwnerRoleOptionDto _self;
-  final $Res Function(_MerchantOwnerRoleOptionDto) _then;
+  final _MerchantOwnerRoleOptionModel _self;
+  final $Res Function(_MerchantOwnerRoleOptionModel) _then;
 
-/// Create a copy of MerchantOwnerRoleOptionDto
+/// Create a copy of MerchantOwnerRoleOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? contributesOwnership = null,}) {
-  return _then(_MerchantOwnerRoleOptionDto(
+  return _then(_MerchantOwnerRoleOptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,contributesOwnership: null == contributesOwnership ? _self.contributesOwnership : contributesOwnership // ignore: cast_nullable_to_non_nullable
@@ -1143,22 +1143,22 @@ as bool,
 
 
 /// @nodoc
-mixin _$MerchantBankOptionDto {
+mixin _$MerchantBankOptionModel {
 
  String get id; String get label; List<String> get supportedPayoutScheduleIds;
-/// Create a copy of MerchantBankOptionDto
+/// Create a copy of MerchantBankOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantBankOptionDtoCopyWith<MerchantBankOptionDto> get copyWith => _$MerchantBankOptionDtoCopyWithImpl<MerchantBankOptionDto>(this as MerchantBankOptionDto, _$identity);
+$MerchantBankOptionModelCopyWith<MerchantBankOptionModel> get copyWith => _$MerchantBankOptionModelCopyWithImpl<MerchantBankOptionModel>(this as MerchantBankOptionModel, _$identity);
 
-  /// Serializes this MerchantBankOptionDto to a JSON map.
+  /// Serializes this MerchantBankOptionModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantBankOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&const DeepCollectionEquality().equals(other.supportedPayoutScheduleIds, supportedPayoutScheduleIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantBankOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&const DeepCollectionEquality().equals(other.supportedPayoutScheduleIds, supportedPayoutScheduleIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1167,15 +1167,15 @@ int get hashCode => Object.hash(runtimeType,id,label,const DeepCollectionEqualit
 
 @override
 String toString() {
-  return 'MerchantBankOptionDto(id: $id, label: $label, supportedPayoutScheduleIds: $supportedPayoutScheduleIds)';
+  return 'MerchantBankOptionModel(id: $id, label: $label, supportedPayoutScheduleIds: $supportedPayoutScheduleIds)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantBankOptionDtoCopyWith<$Res>  {
-  factory $MerchantBankOptionDtoCopyWith(MerchantBankOptionDto value, $Res Function(MerchantBankOptionDto) _then) = _$MerchantBankOptionDtoCopyWithImpl;
+abstract mixin class $MerchantBankOptionModelCopyWith<$Res>  {
+  factory $MerchantBankOptionModelCopyWith(MerchantBankOptionModel value, $Res Function(MerchantBankOptionModel) _then) = _$MerchantBankOptionModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String label, List<String> supportedPayoutScheduleIds
@@ -1186,14 +1186,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantBankOptionDtoCopyWithImpl<$Res>
-    implements $MerchantBankOptionDtoCopyWith<$Res> {
-  _$MerchantBankOptionDtoCopyWithImpl(this._self, this._then);
+class _$MerchantBankOptionModelCopyWithImpl<$Res>
+    implements $MerchantBankOptionModelCopyWith<$Res> {
+  _$MerchantBankOptionModelCopyWithImpl(this._self, this._then);
 
-  final MerchantBankOptionDto _self;
-  final $Res Function(MerchantBankOptionDto) _then;
+  final MerchantBankOptionModel _self;
+  final $Res Function(MerchantBankOptionModel) _then;
 
-/// Create a copy of MerchantBankOptionDto
+/// Create a copy of MerchantBankOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? supportedPayoutScheduleIds = null,}) {
   return _then(_self.copyWith(
@@ -1207,8 +1207,8 @@ as List<String>,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantBankOptionDto].
-extension MerchantBankOptionDtoPatterns on MerchantBankOptionDto {
+/// Adds pattern-matching-related methods to [MerchantBankOptionModel].
+extension MerchantBankOptionModelPatterns on MerchantBankOptionModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -1221,10 +1221,10 @@ extension MerchantBankOptionDtoPatterns on MerchantBankOptionDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantBankOptionDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantBankOptionModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto() when $default != null:
+case _MerchantBankOptionModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -1243,10 +1243,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantBankOptionDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantBankOptionModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto():
+case _MerchantBankOptionModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -1264,10 +1264,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantBankOptionDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantBankOptionModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto() when $default != null:
+case _MerchantBankOptionModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -1287,7 +1287,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label,  List<String> supportedPayoutScheduleIds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto() when $default != null:
+case _MerchantBankOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
   return orElse();
 
@@ -1308,7 +1308,7 @@ return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label,  List<String> supportedPayoutScheduleIds)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto():
+case _MerchantBankOptionModel():
 return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
   throw StateError('Unexpected subclass');
 
@@ -1328,7 +1328,7 @@ return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label,  List<String> supportedPayoutScheduleIds)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantBankOptionDto() when $default != null:
+case _MerchantBankOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
   return null;
 
@@ -1340,9 +1340,9 @@ return $default(_that.id,_that.label,_that.supportedPayoutScheduleIds);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantBankOptionDto implements MerchantBankOptionDto {
-  const _MerchantBankOptionDto({required this.id, required this.label, required final  List<String> supportedPayoutScheduleIds}): _supportedPayoutScheduleIds = supportedPayoutScheduleIds;
-  factory _MerchantBankOptionDto.fromJson(Map<String, dynamic> json) => _$MerchantBankOptionDtoFromJson(json);
+class _MerchantBankOptionModel implements MerchantBankOptionModel {
+  const _MerchantBankOptionModel({required this.id, required this.label, required final  List<String> supportedPayoutScheduleIds}): _supportedPayoutScheduleIds = supportedPayoutScheduleIds;
+  factory _MerchantBankOptionModel.fromJson(Map<String, dynamic> json) => _$MerchantBankOptionModelFromJson(json);
 
 @override final  String id;
 @override final  String label;
@@ -1354,20 +1354,20 @@ class _MerchantBankOptionDto implements MerchantBankOptionDto {
 }
 
 
-/// Create a copy of MerchantBankOptionDto
+/// Create a copy of MerchantBankOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantBankOptionDtoCopyWith<_MerchantBankOptionDto> get copyWith => __$MerchantBankOptionDtoCopyWithImpl<_MerchantBankOptionDto>(this, _$identity);
+_$MerchantBankOptionModelCopyWith<_MerchantBankOptionModel> get copyWith => __$MerchantBankOptionModelCopyWithImpl<_MerchantBankOptionModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantBankOptionDtoToJson(this, );
+  return _$MerchantBankOptionModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantBankOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&const DeepCollectionEquality().equals(other._supportedPayoutScheduleIds, _supportedPayoutScheduleIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantBankOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&const DeepCollectionEquality().equals(other._supportedPayoutScheduleIds, _supportedPayoutScheduleIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1376,15 +1376,15 @@ int get hashCode => Object.hash(runtimeType,id,label,const DeepCollectionEqualit
 
 @override
 String toString() {
-  return 'MerchantBankOptionDto(id: $id, label: $label, supportedPayoutScheduleIds: $supportedPayoutScheduleIds)';
+  return 'MerchantBankOptionModel(id: $id, label: $label, supportedPayoutScheduleIds: $supportedPayoutScheduleIds)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantBankOptionDtoCopyWith<$Res> implements $MerchantBankOptionDtoCopyWith<$Res> {
-  factory _$MerchantBankOptionDtoCopyWith(_MerchantBankOptionDto value, $Res Function(_MerchantBankOptionDto) _then) = __$MerchantBankOptionDtoCopyWithImpl;
+abstract mixin class _$MerchantBankOptionModelCopyWith<$Res> implements $MerchantBankOptionModelCopyWith<$Res> {
+  factory _$MerchantBankOptionModelCopyWith(_MerchantBankOptionModel value, $Res Function(_MerchantBankOptionModel) _then) = __$MerchantBankOptionModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String label, List<String> supportedPayoutScheduleIds
@@ -1395,17 +1395,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantBankOptionDtoCopyWithImpl<$Res>
-    implements _$MerchantBankOptionDtoCopyWith<$Res> {
-  __$MerchantBankOptionDtoCopyWithImpl(this._self, this._then);
+class __$MerchantBankOptionModelCopyWithImpl<$Res>
+    implements _$MerchantBankOptionModelCopyWith<$Res> {
+  __$MerchantBankOptionModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantBankOptionDto _self;
-  final $Res Function(_MerchantBankOptionDto) _then;
+  final _MerchantBankOptionModel _self;
+  final $Res Function(_MerchantBankOptionModel) _then;
 
-/// Create a copy of MerchantBankOptionDto
+/// Create a copy of MerchantBankOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? supportedPayoutScheduleIds = null,}) {
-  return _then(_MerchantBankOptionDto(
+  return _then(_MerchantBankOptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,supportedPayoutScheduleIds: null == supportedPayoutScheduleIds ? _self._supportedPayoutScheduleIds : supportedPayoutScheduleIds // ignore: cast_nullable_to_non_nullable
@@ -1418,22 +1418,22 @@ as List<String>,
 
 
 /// @nodoc
-mixin _$MerchantAccountHolderTypeOptionDto {
+mixin _$MerchantAccountHolderTypeOptionModel {
 
  String get id; String get label; bool get requiresOwnerReference;
-/// Create a copy of MerchantAccountHolderTypeOptionDto
+/// Create a copy of MerchantAccountHolderTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MerchantAccountHolderTypeOptionDtoCopyWith<MerchantAccountHolderTypeOptionDto> get copyWith => _$MerchantAccountHolderTypeOptionDtoCopyWithImpl<MerchantAccountHolderTypeOptionDto>(this as MerchantAccountHolderTypeOptionDto, _$identity);
+$MerchantAccountHolderTypeOptionModelCopyWith<MerchantAccountHolderTypeOptionModel> get copyWith => _$MerchantAccountHolderTypeOptionModelCopyWithImpl<MerchantAccountHolderTypeOptionModel>(this as MerchantAccountHolderTypeOptionModel, _$identity);
 
-  /// Serializes this MerchantAccountHolderTypeOptionDto to a JSON map.
+  /// Serializes this MerchantAccountHolderTypeOptionModel to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantAccountHolderTypeOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresOwnerReference, requiresOwnerReference) || other.requiresOwnerReference == requiresOwnerReference));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MerchantAccountHolderTypeOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresOwnerReference, requiresOwnerReference) || other.requiresOwnerReference == requiresOwnerReference));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1442,15 +1442,15 @@ int get hashCode => Object.hash(runtimeType,id,label,requiresOwnerReference);
 
 @override
 String toString() {
-  return 'MerchantAccountHolderTypeOptionDto(id: $id, label: $label, requiresOwnerReference: $requiresOwnerReference)';
+  return 'MerchantAccountHolderTypeOptionModel(id: $id, label: $label, requiresOwnerReference: $requiresOwnerReference)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MerchantAccountHolderTypeOptionDtoCopyWith<$Res>  {
-  factory $MerchantAccountHolderTypeOptionDtoCopyWith(MerchantAccountHolderTypeOptionDto value, $Res Function(MerchantAccountHolderTypeOptionDto) _then) = _$MerchantAccountHolderTypeOptionDtoCopyWithImpl;
+abstract mixin class $MerchantAccountHolderTypeOptionModelCopyWith<$Res>  {
+  factory $MerchantAccountHolderTypeOptionModelCopyWith(MerchantAccountHolderTypeOptionModel value, $Res Function(MerchantAccountHolderTypeOptionModel) _then) = _$MerchantAccountHolderTypeOptionModelCopyWithImpl;
 @useResult
 $Res call({
  String id, String label, bool requiresOwnerReference
@@ -1461,14 +1461,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MerchantAccountHolderTypeOptionDtoCopyWithImpl<$Res>
-    implements $MerchantAccountHolderTypeOptionDtoCopyWith<$Res> {
-  _$MerchantAccountHolderTypeOptionDtoCopyWithImpl(this._self, this._then);
+class _$MerchantAccountHolderTypeOptionModelCopyWithImpl<$Res>
+    implements $MerchantAccountHolderTypeOptionModelCopyWith<$Res> {
+  _$MerchantAccountHolderTypeOptionModelCopyWithImpl(this._self, this._then);
 
-  final MerchantAccountHolderTypeOptionDto _self;
-  final $Res Function(MerchantAccountHolderTypeOptionDto) _then;
+  final MerchantAccountHolderTypeOptionModel _self;
+  final $Res Function(MerchantAccountHolderTypeOptionModel) _then;
 
-/// Create a copy of MerchantAccountHolderTypeOptionDto
+/// Create a copy of MerchantAccountHolderTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? requiresOwnerReference = null,}) {
   return _then(_self.copyWith(
@@ -1482,8 +1482,8 @@ as bool,
 }
 
 
-/// Adds pattern-matching-related methods to [MerchantAccountHolderTypeOptionDto].
-extension MerchantAccountHolderTypeOptionDtoPatterns on MerchantAccountHolderTypeOptionDto {
+/// Adds pattern-matching-related methods to [MerchantAccountHolderTypeOptionModel].
+extension MerchantAccountHolderTypeOptionModelPatterns on MerchantAccountHolderTypeOptionModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -1496,10 +1496,10 @@ extension MerchantAccountHolderTypeOptionDtoPatterns on MerchantAccountHolderTyp
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantAccountHolderTypeOptionDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MerchantAccountHolderTypeOptionModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto() when $default != null:
+case _MerchantAccountHolderTypeOptionModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -1518,10 +1518,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantAccountHolderTypeOptionDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MerchantAccountHolderTypeOptionModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto():
+case _MerchantAccountHolderTypeOptionModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -1539,10 +1539,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantAccountHolderTypeOptionDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MerchantAccountHolderTypeOptionModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto() when $default != null:
+case _MerchantAccountHolderTypeOptionModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -1562,7 +1562,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label,  bool requiresOwnerReference)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto() when $default != null:
+case _MerchantAccountHolderTypeOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
   return orElse();
 
@@ -1583,7 +1583,7 @@ return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label,  bool requiresOwnerReference)  $default,) {final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto():
+case _MerchantAccountHolderTypeOptionModel():
 return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
   throw StateError('Unexpected subclass');
 
@@ -1603,7 +1603,7 @@ return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label,  bool requiresOwnerReference)?  $default,) {final _that = this;
 switch (_that) {
-case _MerchantAccountHolderTypeOptionDto() when $default != null:
+case _MerchantAccountHolderTypeOptionModel() when $default != null:
 return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
   return null;
 
@@ -1615,28 +1615,28 @@ return $default(_that.id,_that.label,_that.requiresOwnerReference);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MerchantAccountHolderTypeOptionDto implements MerchantAccountHolderTypeOptionDto {
-  const _MerchantAccountHolderTypeOptionDto({required this.id, required this.label, required this.requiresOwnerReference});
-  factory _MerchantAccountHolderTypeOptionDto.fromJson(Map<String, dynamic> json) => _$MerchantAccountHolderTypeOptionDtoFromJson(json);
+class _MerchantAccountHolderTypeOptionModel implements MerchantAccountHolderTypeOptionModel {
+  const _MerchantAccountHolderTypeOptionModel({required this.id, required this.label, required this.requiresOwnerReference});
+  factory _MerchantAccountHolderTypeOptionModel.fromJson(Map<String, dynamic> json) => _$MerchantAccountHolderTypeOptionModelFromJson(json);
 
 @override final  String id;
 @override final  String label;
 @override final  bool requiresOwnerReference;
 
-/// Create a copy of MerchantAccountHolderTypeOptionDto
+/// Create a copy of MerchantAccountHolderTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MerchantAccountHolderTypeOptionDtoCopyWith<_MerchantAccountHolderTypeOptionDto> get copyWith => __$MerchantAccountHolderTypeOptionDtoCopyWithImpl<_MerchantAccountHolderTypeOptionDto>(this, _$identity);
+_$MerchantAccountHolderTypeOptionModelCopyWith<_MerchantAccountHolderTypeOptionModel> get copyWith => __$MerchantAccountHolderTypeOptionModelCopyWithImpl<_MerchantAccountHolderTypeOptionModel>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$MerchantAccountHolderTypeOptionDtoToJson(this, );
+  return _$MerchantAccountHolderTypeOptionModelToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantAccountHolderTypeOptionDto&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresOwnerReference, requiresOwnerReference) || other.requiresOwnerReference == requiresOwnerReference));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MerchantAccountHolderTypeOptionModel&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.requiresOwnerReference, requiresOwnerReference) || other.requiresOwnerReference == requiresOwnerReference));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1645,15 +1645,15 @@ int get hashCode => Object.hash(runtimeType,id,label,requiresOwnerReference);
 
 @override
 String toString() {
-  return 'MerchantAccountHolderTypeOptionDto(id: $id, label: $label, requiresOwnerReference: $requiresOwnerReference)';
+  return 'MerchantAccountHolderTypeOptionModel(id: $id, label: $label, requiresOwnerReference: $requiresOwnerReference)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MerchantAccountHolderTypeOptionDtoCopyWith<$Res> implements $MerchantAccountHolderTypeOptionDtoCopyWith<$Res> {
-  factory _$MerchantAccountHolderTypeOptionDtoCopyWith(_MerchantAccountHolderTypeOptionDto value, $Res Function(_MerchantAccountHolderTypeOptionDto) _then) = __$MerchantAccountHolderTypeOptionDtoCopyWithImpl;
+abstract mixin class _$MerchantAccountHolderTypeOptionModelCopyWith<$Res> implements $MerchantAccountHolderTypeOptionModelCopyWith<$Res> {
+  factory _$MerchantAccountHolderTypeOptionModelCopyWith(_MerchantAccountHolderTypeOptionModel value, $Res Function(_MerchantAccountHolderTypeOptionModel) _then) = __$MerchantAccountHolderTypeOptionModelCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String label, bool requiresOwnerReference
@@ -1664,17 +1664,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$MerchantAccountHolderTypeOptionDtoCopyWithImpl<$Res>
-    implements _$MerchantAccountHolderTypeOptionDtoCopyWith<$Res> {
-  __$MerchantAccountHolderTypeOptionDtoCopyWithImpl(this._self, this._then);
+class __$MerchantAccountHolderTypeOptionModelCopyWithImpl<$Res>
+    implements _$MerchantAccountHolderTypeOptionModelCopyWith<$Res> {
+  __$MerchantAccountHolderTypeOptionModelCopyWithImpl(this._self, this._then);
 
-  final _MerchantAccountHolderTypeOptionDto _self;
-  final $Res Function(_MerchantAccountHolderTypeOptionDto) _then;
+  final _MerchantAccountHolderTypeOptionModel _self;
+  final $Res Function(_MerchantAccountHolderTypeOptionModel) _then;
 
-/// Create a copy of MerchantAccountHolderTypeOptionDto
+/// Create a copy of MerchantAccountHolderTypeOptionModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? requiresOwnerReference = null,}) {
-  return _then(_MerchantAccountHolderTypeOptionDto(
+  return _then(_MerchantAccountHolderTypeOptionModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
 as String,requiresOwnerReference: null == requiresOwnerReference ? _self.requiresOwnerReference : requiresOwnerReference // ignore: cast_nullable_to_non_nullable

@@ -7,9 +7,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onb
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 
-/// The non-bypassable final local validation gate. Reconstructs the whole
-/// validated application from raw input plus the immutable reference
-/// snapshot on every submit; invalid input never reaches the repository.
 class SubmitMerchantOnboardingUseCase {
   SubmitMerchantOnboardingUseCase(this._repository);
 

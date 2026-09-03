@@ -5,9 +5,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merch
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
-/// Application boundary for the merchant-onboarding demo. The submit method
-/// accepts only a fully validated application; raw form primitives can never
-/// reach this contract.
 abstract class MerchantOnboardingRepository {
   Future<Either<MerchantOnboardingFailure, MerchantReferenceData>>
   loadReferenceData();

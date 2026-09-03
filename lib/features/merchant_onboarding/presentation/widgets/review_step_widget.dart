@@ -12,8 +12,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/locali
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
-/// Step 4: review (masked values, labels from the snapshot) plus declarations
-/// and the submit action handled by the shell.
 class ReviewStepWidget extends StatelessWidget {
   const ReviewStepWidget({
     super.key,
@@ -182,7 +180,6 @@ class ReviewStepWidget extends StatelessWidget {
     );
   }
 
-  /// Never render the raw account number; only the last four digits.
   String _maskAccountNumber(String raw, AppLocalizations l10n) {
     final digits = raw.replaceAll(' ', '');
     if (digits.isEmpty) return l10n.merchantOnboardingNotProvided;

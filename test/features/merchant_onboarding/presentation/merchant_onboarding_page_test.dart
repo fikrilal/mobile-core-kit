@@ -9,7 +9,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/me
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/load_merchant_reference_data_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
@@ -23,10 +22,7 @@ import '../support/fake_merchant_onboarding_repository.dart';
 class _MockRepository extends Mock implements MerchantOnboardingRepository {}
 
 MerchantOnboardingCubit buildCubit(MerchantOnboardingRepository repo) =>
-    MerchantOnboardingCubit(
-      LoadMerchantReferenceDataUseCase(repo),
-      SubmitMerchantOnboardingUseCase(repo),
-    );
+    MerchantOnboardingCubit(repo, SubmitMerchantOnboardingUseCase(repo));
 
 Widget wrap(MerchantOnboardingCubit cubit) {
   return MaterialApp(

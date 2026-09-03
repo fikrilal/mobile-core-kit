@@ -25,32 +25,32 @@ void main() {
   test(
     'fetchReferenceData uses core host, auth, and the reference parser',
     () async {
-      final dto = MerchantReferenceDataDto(
-        businessTypes: const [],
-        industries: const [],
-        monthlySalesRanges: const [],
-        ownerRoles: const [],
-        banks: const [],
-        accountHolderTypes: const [],
-        payoutSchedules: const [],
+      const model = MerchantReferenceDataModel(
+        businessTypes: [],
+        industries: [],
+        monthlySalesRanges: [],
+        ownerRoles: [],
+        banks: [],
+        accountHolderTypes: [],
+        payoutSchedules: [],
         termsVersion: '2026-08-30',
       );
       when(
-        () => apiHelper.getOne<MerchantReferenceDataDto>(
+        () => apiHelper.getOne<MerchantReferenceDataModel>(
           any(),
           parser: any(named: 'parser'),
           host: any(named: 'host'),
           requiresAuth: any(named: 'requiresAuth'),
           throwOnError: any(named: 'throwOnError'),
         ),
-      ).thenAnswer((_) async => ApiResponse.success(data: dto));
+      ).thenAnswer((_) async => ApiResponse.success(data: model));
 
       final response = await datasource.fetchReferenceData();
 
       expect(response.isSuccess, true);
       verify(
-        () => apiHelper.getOne<MerchantReferenceDataDto>(
-          '/v1/merchant-onboarding/reference-data',
+        () => apiHelper.getOne<MerchantReferenceDataModel>(
+          '/merchant-onboarding/reference-data',
           parser: any(named: 'parser'),
           host: any(named: 'host'),
           requiresAuth: true,
@@ -63,8 +63,8 @@ void main() {
   test(
     'submitApplication posts with one idempotency header and core host',
     () async {
-      final request = MerchantOnboardingSubmitRequestDto(
-        business: MerchantBusinessInputDto(
+      const request = MerchantOnboardingSubmitRequestModel(
+        business: MerchantBusinessInputModel(
           legalName: 'Kopi Nusantara',
           businessTypeId: 'sole_proprietorship',
           industryId: 'retail',
@@ -72,27 +72,27 @@ void main() {
           contactEmail: 'contact@kopinusantara.id',
           contactPhone: '+6281234567890',
         ),
-        owners: const [],
-        settlement: MerchantSettlementInputDto(
+        owners: [],
+        settlement: MerchantSettlementInputModel(
           bankId: 'demo_bank_alpha',
           accountHolderName: 'Budi Santoso',
           accountNumber: '0012345678',
           holderTypeId: 'business',
           payoutScheduleId: 'daily',
         ),
-        declarations: MerchantDeclarationsInputDto(
+        declarations: MerchantDeclarationsInputModel(
           informationAccurate: true,
           authorizedToSubmit: true,
           termsAccepted: true,
           termsVersion: '2026-08-30',
         ),
       );
-      final result = MerchantSubmitResultDto(
+      const result = MerchantSubmitResultModel(
         applicationId: 'app-1',
         submittedAt: '2026-08-31T00:00:00.000Z',
       );
       when(
-        () => apiHelper.post<MerchantSubmitResultDto>(
+        () => apiHelper.post<MerchantSubmitResultModel>(
           any(),
           data: any(named: 'data'),
           headers: any(named: 'headers'),
@@ -110,8 +110,8 @@ void main() {
 
       expect(response.isSuccess, true);
       verify(
-        () => apiHelper.post<MerchantSubmitResultDto>(
-          '/v1/merchant-onboarding/applications',
+        () => apiHelper.post<MerchantSubmitResultModel>(
+          '/merchant-onboarding/applications',
           data: any(named: 'data'),
           headers: any(
             named: 'headers',

@@ -5,9 +5,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_val
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
 
-/// Validated step-3 aggregate. Owns field rules plus the holder-type
-/// conditional owner reference and the bank/schedule compatibility check.
-/// Owner-existence is a cross-step rule owned by the root application.
 class SettlementAccount {
   const SettlementAccount._({
     required this.bankId,
@@ -23,7 +20,6 @@ class SettlementAccount {
   final BankAccountNumber accountNumber;
   final AccountHolderTypeId holderTypeId;
 
-  /// Non-null only when the holder type requires an owner reference.
   final OwnerRowId? ownerRowId;
   final PayoutScheduleId payoutScheduleId;
 

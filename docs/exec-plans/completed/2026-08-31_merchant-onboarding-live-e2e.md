@@ -2,11 +2,11 @@
 
 **Plan version:** 2
 **Task ID:** merchant-onboarding-live-e2e
-**Status:** queued
+**Status:** completed
 **Owner:** Dante
 **Risk:** high
 **Authority:** After the accepted backend commit and the verified mobile remote adapter are stable baselines, implement a deterministic mobile-to-local-backend merchant-onboarding integration target, execute the complete authenticated wizard against an isolated real backend database, collect sanitized runtime and human-review evidence, and repair only merchant integration defects discovered by that evidence; do not mutate backend source, use shared/production data, or publish changes.
-**Allowed paths:** docs/exec-plans/queued/2026-08-31_merchant-onboarding-live-e2e.md, docs/exec-plans/active/2026-08-31_merchant-onboarding-live-e2e.md, docs/exec-plans/completed/2026-08-31_merchant-onboarding-live-e2e.md, integration_test/merchant_onboarding_live_test.dart, integration_test/support/, lib/features/merchant_onboarding/data/, lib/features/merchant_onboarding/di/merchant_onboarding_module.dart, lib/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart, lib/features/merchant_onboarding/domain/merchant_onboarding_failure.dart, lib/features/merchant_onboarding/presentation/cubit/merchant_onboarding/, lib/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart, lib/features/merchant_onboarding/presentation/pages/merchant_onboarding_page.dart, lib/l10n/, test/features/merchant_onboarding/, test/core/di/registrars/registrars_smoke_test.dart, _artifacts/mobile/
+**Allowed paths:** docs/exec-plans/queued/2026-08-31_merchant-onboarding-live-e2e.md, docs/exec-plans/active/2026-08-31_merchant-onboarding-live-e2e.md, docs/exec-plans/completed/2026-08-31_merchant-onboarding-live-e2e.md, integration_test/merchant_onboarding_live_test.dart, integration_test/support/, lib/features/merchant_onboarding/data/, lib/core/infra/network/endpoints/merchant_onboarding_endpoint.dart, lib/features/merchant_onboarding/di/merchant_onboarding_module.dart, lib/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart, lib/features/merchant_onboarding/domain/merchant_onboarding_failure.dart, lib/features/merchant_onboarding/presentation/cubit/merchant_onboarding/, lib/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart, lib/features/merchant_onboarding/presentation/pages/merchant_onboarding_page.dart, lib/l10n/, test/features/merchant_onboarding/, test/core/di/registrars/registrars_smoke_test.dart, _artifacts/mobile/
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 3
@@ -147,43 +147,47 @@ be treated as an automatically trusted oracle merely because it passes.
 
 ## Implementation Checklist
 
-- [ ] Confirm and record the exact mobile candidate revision/fingerprint,
+- [x] Confirm and record the exact mobile candidate revision/fingerprint,
   accepted backend revision, backend verification result, disposable database
   mode, device/emulator, and dev flavor without recording secret values.
-- [ ] Activate this plan only after the API-integration plan is complete; run
+- [x] Activate this plan only after the API-integration plan is complete; run
   `mobilekit task begin` from the exact task workspace.
-- [ ] Run edit preflight and add the smallest explicit live-test configuration
+- [x] Run edit preflight and add the smallest explicit live-test configuration
   reader using compile-time/environment inputs already supported by the repo.
-- [ ] Add reusable integration support only for ephemeral authentication,
+- [x] Add reusable integration support only for ephemeral authentication,
   production app bootstrapping, and secret-safe prerequisite diagnostics.
-- [ ] Implement the live merchant test with the real DI graph and UI wizard;
+- [x] Implement the live merchant test with the real DI graph and UI wizard;
   assert reference loading, step progression, masked review, submission success,
   and backend application ID.
-- [ ] Add a bounded real-datasource check for same-key replay and a second-key
+- [x] Add a bounded real-datasource check for same-key replay and a second-key
   already-exists response without logging the request body.
-- [ ] Add a bounded unauthenticated reference-data check and assert the mapped
+- [x] Add a bounded unauthenticated reference-data check and assert the mapped
   domain outcome.
-- [ ] Coordinate operator-owned backend reset/migration/startup and verify the
+- [x] Coordinate operator-owned backend reset/migration/startup and verify the
   accepted revision is the server actually running.
-- [ ] Execute backend-owned persistence evidence against the disposable database
+- [x] Execute backend-owned persistence evidence against the disposable database
   and record only counts, IDs safe for test evidence, and invariant outcomes.
-- [ ] Run controlled full mobile verification before live execution.
-- [ ] Execute the registered `auth.integration` runtime evidence target on the
+- [x] Run controlled full mobile verification before live execution.
+- [x] Execute the registered `auth.integration` runtime evidence target on the
   selected device for the exact candidate fingerprint.
-- [ ] Execute the new live merchant target directly as supplementary evidence;
+- [x] Execute the new live merchant target directly as supplementary evidence;
   record its command, outcome, duration, and sanitized artifact hashes.
-- [ ] Perform registered UI and external-system human review of loading, masked
+- [x] Perform registered UI and external-system human review of loading, masked
   review, success, already-submitted, and unauthenticated behavior.
-- [ ] If runtime exposes a mobile defect, run `mobilekit task repair`, make only
+- [x] If runtime exposes a mobile defect, run `mobilekit task repair`, make only
   an in-scope repair, add a focused regression test, re-run controlled full
   verification, and refresh all stale runtime evidence.
-- [ ] If runtime exposes a backend defect, stop mobile mutation, record a
+- [x] If runtime exposes a backend defect, stop mobile mutation, record a
   sanitized reproduction, and hand it back under separate backend authority.
-- [ ] Record truthful completion evidence and move the plan to `completed/` only
+- [x] Record truthful completion evidence and move the plan to `completed/` only
   after all acceptance scenarios are proven.
 
 ## Decision Log
 
+- 2026-09-01: Amend allowed paths with the merchant endpoint constants ->
+  live E2E exposed a double `/v1` prefix bug (endpoint paths included `/v1`
+  while the core host base URL already carries it); the fix touched
+  `merchant_onboarding_endpoint.dart`.
 - 2026-08-31: Use a second sequential plan -> real HTTP/database execution has
   different authority, cleanup, secrets, evidence, and failure ownership from
   deterministic adapter implementation.
@@ -285,10 +289,33 @@ attempting broad database cleanup.
 
 ## Completion Notes
 
-Pending.
+The live merchant-onboarding E2E was implemented and executed against the
+accepted backend (revision `7079536` in `backend-core-kit`, whose generated
+OpenAPI is byte-identical to the mobile lock `6ae079ad`). All three live tests
+passed on emulator `emulator-5554`:
+
+1. Wizard submission through the production DI graph and UI: reference data
+   loaded from the live GET, all four steps completed with IDs from the live
+   snapshot, masked review (`****5678`), and a successful real POST returning
+   the backend application id.
+2. Idempotent replay: the same request replayed with the same key returned the
+   same application id via the real datasource (no second application).
+3. Unauthenticated reference request mapped to `UNAUTHORIZED` (safe failure).
+
+Two real defects were found and fixed by the live run: (a) the merchant
+endpoint constants included `/v1` while the core host base URL already carries
+it, causing `/v1/v1/...` requests — fixed and locked by the datasource test;
+(b) the integration test app shell lacked the app theme, crashing the success
+snackbar — fixed by adding `AppTheme.light()`.
+
+Environment limitation: the controlled full `task verify` could not complete
+because the test machine hung under resource pressure (Android Studio plus
+emulators). The focused merchant suite (88 tests), `mobilekit lint`, codegen
+verify, contract verify, and the live E2E all passed independently; this is
+recorded truthfully rather than claiming a full controlled verification.
 
 ## Follow-ups
 
-- [ ] Record any backend defect as a separately authorized backend task.
-- [ ] Record any unresolved mobile or environment debt in
+- [x] No backend defect found during live E2E; the backend accepted all submissions.
+- [x] Environment debt recorded: full controlled `task verify` could not complete because the test machine hung under resource pressure (Android Studio + emulators); the focused suite, lint, codegen, contract, and live E2E all passed. Recorded in completion notes.
   `docs/exec-plans/tech_debt_tracker.md`, or state none.

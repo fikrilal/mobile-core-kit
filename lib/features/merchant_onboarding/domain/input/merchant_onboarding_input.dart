@@ -1,6 +1,3 @@
-/// Raw, incomplete, and possibly inconsistent draft input for the whole
-/// merchant-onboarding flow. This type claims no domain validity; the
-/// validated aggregates own that transition.
 class MerchantOnboardingInput {
   MerchantOnboardingInput({
     this.business = const BusinessProfileInput(),
@@ -76,8 +73,6 @@ class BusinessProfileInput {
   }
 }
 
-/// One owners-step row. [ownerRowId] is generated when the row is added and
-/// must survive edits, reordering, and deletion of other rows.
 class OwnerInput {
   const OwnerInput({
     required this.ownerRowId,
@@ -173,7 +168,6 @@ class DeclarationsInput {
   final bool authorizedToSubmit;
   final bool termsAccepted;
 
-  /// The terms version the user accepted; must equal the snapshot version.
   final String termsVersion;
 
   DeclarationsInput copyWith({

@@ -6,44 +6,50 @@ part of 'merchant_reference_data_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_MerchantReferenceDataDto _$MerchantReferenceDataDtoFromJson(
+_MerchantReferenceDataModel _$MerchantReferenceDataModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantReferenceDataDto(
+) => _MerchantReferenceDataModel(
   businessTypes: (json['businessTypes'] as List<dynamic>)
       .map(
         (e) =>
-            MerchantBusinessTypeOptionDto.fromJson(e as Map<String, dynamic>),
+            MerchantBusinessTypeOptionModel.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
   industries: (json['industries'] as List<dynamic>)
-      .map((e) => MerchantLabeledOptionDto.fromJson(e as Map<String, dynamic>))
+      .map(
+        (e) => MerchantLabeledOptionModel.fromJson(e as Map<String, dynamic>),
+      )
       .toList(),
   monthlySalesRanges: (json['monthlySalesRanges'] as List<dynamic>)
-      .map((e) => MerchantLabeledOptionDto.fromJson(e as Map<String, dynamic>))
+      .map(
+        (e) => MerchantLabeledOptionModel.fromJson(e as Map<String, dynamic>),
+      )
       .toList(),
   ownerRoles: (json['ownerRoles'] as List<dynamic>)
       .map(
-        (e) => MerchantOwnerRoleOptionDto.fromJson(e as Map<String, dynamic>),
+        (e) => MerchantOwnerRoleOptionModel.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
   banks: (json['banks'] as List<dynamic>)
-      .map((e) => MerchantBankOptionDto.fromJson(e as Map<String, dynamic>))
+      .map((e) => MerchantBankOptionModel.fromJson(e as Map<String, dynamic>))
       .toList(),
   accountHolderTypes: (json['accountHolderTypes'] as List<dynamic>)
       .map(
-        (e) => MerchantAccountHolderTypeOptionDto.fromJson(
+        (e) => MerchantAccountHolderTypeOptionModel.fromJson(
           e as Map<String, dynamic>,
         ),
       )
       .toList(),
   payoutSchedules: (json['payoutSchedules'] as List<dynamic>)
-      .map((e) => MerchantLabeledOptionDto.fromJson(e as Map<String, dynamic>))
+      .map(
+        (e) => MerchantLabeledOptionModel.fromJson(e as Map<String, dynamic>),
+      )
       .toList(),
   termsVersion: json['termsVersion'] as String,
 );
 
-Map<String, dynamic> _$MerchantReferenceDataDtoToJson(
-  _MerchantReferenceDataDto instance,
+Map<String, dynamic> _$MerchantReferenceDataModelToJson(
+  _MerchantReferenceDataModel instance,
 ) => <String, dynamic>{
   'businessTypes': instance.businessTypes,
   'industries': instance.industries,
@@ -55,52 +61,52 @@ Map<String, dynamic> _$MerchantReferenceDataDtoToJson(
   'termsVersion': instance.termsVersion,
 };
 
-_MerchantBusinessTypeOptionDto _$MerchantBusinessTypeOptionDtoFromJson(
+_MerchantBusinessTypeOptionModel _$MerchantBusinessTypeOptionModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantBusinessTypeOptionDto(
+) => _MerchantBusinessTypeOptionModel(
   id: json['id'] as String,
   label: json['label'] as String,
   requiresRegistrationNumber: json['requiresRegistrationNumber'] as bool,
 );
 
-Map<String, dynamic> _$MerchantBusinessTypeOptionDtoToJson(
-  _MerchantBusinessTypeOptionDto instance,
+Map<String, dynamic> _$MerchantBusinessTypeOptionModelToJson(
+  _MerchantBusinessTypeOptionModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'label': instance.label,
   'requiresRegistrationNumber': instance.requiresRegistrationNumber,
 };
 
-_MerchantLabeledOptionDto _$MerchantLabeledOptionDtoFromJson(
+_MerchantLabeledOptionModel _$MerchantLabeledOptionModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantLabeledOptionDto(
+) => _MerchantLabeledOptionModel(
   id: json['id'] as String,
   label: json['label'] as String,
 );
 
-Map<String, dynamic> _$MerchantLabeledOptionDtoToJson(
-  _MerchantLabeledOptionDto instance,
+Map<String, dynamic> _$MerchantLabeledOptionModelToJson(
+  _MerchantLabeledOptionModel instance,
 ) => <String, dynamic>{'id': instance.id, 'label': instance.label};
 
-_MerchantOwnerRoleOptionDto _$MerchantOwnerRoleOptionDtoFromJson(
+_MerchantOwnerRoleOptionModel _$MerchantOwnerRoleOptionModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantOwnerRoleOptionDto(
+) => _MerchantOwnerRoleOptionModel(
   id: json['id'] as String,
   label: json['label'] as String,
   contributesOwnership: json['contributesOwnership'] as bool,
 );
 
-Map<String, dynamic> _$MerchantOwnerRoleOptionDtoToJson(
-  _MerchantOwnerRoleOptionDto instance,
+Map<String, dynamic> _$MerchantOwnerRoleOptionModelToJson(
+  _MerchantOwnerRoleOptionModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'label': instance.label,
   'contributesOwnership': instance.contributesOwnership,
 };
 
-_MerchantBankOptionDto _$MerchantBankOptionDtoFromJson(
+_MerchantBankOptionModel _$MerchantBankOptionModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantBankOptionDto(
+) => _MerchantBankOptionModel(
   id: json['id'] as String,
   label: json['label'] as String,
   supportedPayoutScheduleIds:
@@ -109,24 +115,24 @@ _MerchantBankOptionDto _$MerchantBankOptionDtoFromJson(
           .toList(),
 );
 
-Map<String, dynamic> _$MerchantBankOptionDtoToJson(
-  _MerchantBankOptionDto instance,
+Map<String, dynamic> _$MerchantBankOptionModelToJson(
+  _MerchantBankOptionModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'label': instance.label,
   'supportedPayoutScheduleIds': instance.supportedPayoutScheduleIds,
 };
 
-_MerchantAccountHolderTypeOptionDto
-_$MerchantAccountHolderTypeOptionDtoFromJson(Map<String, dynamic> json) =>
-    _MerchantAccountHolderTypeOptionDto(
+_MerchantAccountHolderTypeOptionModel
+_$MerchantAccountHolderTypeOptionModelFromJson(Map<String, dynamic> json) =>
+    _MerchantAccountHolderTypeOptionModel(
       id: json['id'] as String,
       label: json['label'] as String,
       requiresOwnerReference: json['requiresOwnerReference'] as bool,
     );
 
-Map<String, dynamic> _$MerchantAccountHolderTypeOptionDtoToJson(
-  _MerchantAccountHolderTypeOptionDto instance,
+Map<String, dynamic> _$MerchantAccountHolderTypeOptionModelToJson(
+  _MerchantAccountHolderTypeOptionModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'label': instance.label,

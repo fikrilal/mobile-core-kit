@@ -3,7 +3,6 @@ import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
-/// Labeled dropdown rendered from reference options; stores the selected id.
 class MerchantDropdownField extends StatelessWidget {
   const MerchantDropdownField({
     super.key,

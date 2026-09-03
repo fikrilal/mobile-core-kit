@@ -6,25 +6,27 @@ part of 'merchant_onboarding_submit_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_MerchantOnboardingSubmitRequestDto
-_$MerchantOnboardingSubmitRequestDtoFromJson(Map<String, dynamic> json) =>
-    _MerchantOnboardingSubmitRequestDto(
-      business: MerchantBusinessInputDto.fromJson(
+_MerchantOnboardingSubmitRequestModel
+_$MerchantOnboardingSubmitRequestModelFromJson(Map<String, dynamic> json) =>
+    _MerchantOnboardingSubmitRequestModel(
+      business: MerchantBusinessInputModel.fromJson(
         json['business'] as Map<String, dynamic>,
       ),
       owners: (json['owners'] as List<dynamic>)
-          .map((e) => MerchantOwnerInputDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => MerchantOwnerInputModel.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
-      settlement: MerchantSettlementInputDto.fromJson(
+      settlement: MerchantSettlementInputModel.fromJson(
         json['settlement'] as Map<String, dynamic>,
       ),
-      declarations: MerchantDeclarationsInputDto.fromJson(
+      declarations: MerchantDeclarationsInputModel.fromJson(
         json['declarations'] as Map<String, dynamic>,
       ),
     );
 
-Map<String, dynamic> _$MerchantOnboardingSubmitRequestDtoToJson(
-  _MerchantOnboardingSubmitRequestDto instance,
+Map<String, dynamic> _$MerchantOnboardingSubmitRequestModelToJson(
+  _MerchantOnboardingSubmitRequestModel instance,
 ) => <String, dynamic>{
   'business': instance.business,
   'owners': instance.owners,
@@ -32,9 +34,9 @@ Map<String, dynamic> _$MerchantOnboardingSubmitRequestDtoToJson(
   'declarations': instance.declarations,
 };
 
-_MerchantBusinessInputDto _$MerchantBusinessInputDtoFromJson(
+_MerchantBusinessInputModel _$MerchantBusinessInputModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantBusinessInputDto(
+) => _MerchantBusinessInputModel(
   legalName: json['legalName'] as String,
   businessTypeId: json['businessTypeId'] as String,
   registrationNumber: json['registrationNumber'] as String?,
@@ -44,8 +46,8 @@ _MerchantBusinessInputDto _$MerchantBusinessInputDtoFromJson(
   contactPhone: json['contactPhone'] as String,
 );
 
-Map<String, dynamic> _$MerchantBusinessInputDtoToJson(
-  _MerchantBusinessInputDto instance,
+Map<String, dynamic> _$MerchantBusinessInputModelToJson(
+  _MerchantBusinessInputModel instance,
 ) => <String, dynamic>{
   'legalName': instance.legalName,
   'businessTypeId': instance.businessTypeId,
@@ -56,9 +58,9 @@ Map<String, dynamic> _$MerchantBusinessInputDtoToJson(
   'contactPhone': instance.contactPhone,
 };
 
-_MerchantOwnerInputDto _$MerchantOwnerInputDtoFromJson(
+_MerchantOwnerInputModel _$MerchantOwnerInputModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantOwnerInputDto(
+) => _MerchantOwnerInputModel(
   ownerRowId: json['ownerRowId'] as String,
   fullName: json['fullName'] as String,
   roleId: json['roleId'] as String,
@@ -67,8 +69,8 @@ _MerchantOwnerInputDto _$MerchantOwnerInputDtoFromJson(
   isPrimaryContact: json['isPrimaryContact'] as bool,
 );
 
-Map<String, dynamic> _$MerchantOwnerInputDtoToJson(
-  _MerchantOwnerInputDto instance,
+Map<String, dynamic> _$MerchantOwnerInputModelToJson(
+  _MerchantOwnerInputModel instance,
 ) => <String, dynamic>{
   'ownerRowId': instance.ownerRowId,
   'fullName': instance.fullName,
@@ -78,9 +80,9 @@ Map<String, dynamic> _$MerchantOwnerInputDtoToJson(
   'isPrimaryContact': instance.isPrimaryContact,
 };
 
-_MerchantSettlementInputDto _$MerchantSettlementInputDtoFromJson(
+_MerchantSettlementInputModel _$MerchantSettlementInputModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantSettlementInputDto(
+) => _MerchantSettlementInputModel(
   bankId: json['bankId'] as String,
   accountHolderName: json['accountHolderName'] as String,
   accountNumber: json['accountNumber'] as String,
@@ -89,8 +91,8 @@ _MerchantSettlementInputDto _$MerchantSettlementInputDtoFromJson(
   payoutScheduleId: json['payoutScheduleId'] as String,
 );
 
-Map<String, dynamic> _$MerchantSettlementInputDtoToJson(
-  _MerchantSettlementInputDto instance,
+Map<String, dynamic> _$MerchantSettlementInputModelToJson(
+  _MerchantSettlementInputModel instance,
 ) => <String, dynamic>{
   'bankId': instance.bankId,
   'accountHolderName': instance.accountHolderName,
@@ -100,17 +102,17 @@ Map<String, dynamic> _$MerchantSettlementInputDtoToJson(
   'payoutScheduleId': instance.payoutScheduleId,
 };
 
-_MerchantDeclarationsInputDto _$MerchantDeclarationsInputDtoFromJson(
+_MerchantDeclarationsInputModel _$MerchantDeclarationsInputModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantDeclarationsInputDto(
+) => _MerchantDeclarationsInputModel(
   informationAccurate: json['informationAccurate'] as bool,
   authorizedToSubmit: json['authorizedToSubmit'] as bool,
   termsAccepted: json['termsAccepted'] as bool,
   termsVersion: json['termsVersion'] as String,
 );
 
-Map<String, dynamic> _$MerchantDeclarationsInputDtoToJson(
-  _MerchantDeclarationsInputDto instance,
+Map<String, dynamic> _$MerchantDeclarationsInputModelToJson(
+  _MerchantDeclarationsInputModel instance,
 ) => <String, dynamic>{
   'informationAccurate': instance.informationAccurate,
   'authorizedToSubmit': instance.authorizedToSubmit,
@@ -118,35 +120,35 @@ Map<String, dynamic> _$MerchantDeclarationsInputDtoToJson(
   'termsVersion': instance.termsVersion,
 };
 
-_MerchantSubmitResultDto _$MerchantSubmitResultDtoFromJson(
+_MerchantSubmitResultModel _$MerchantSubmitResultModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantSubmitResultDto(
+) => _MerchantSubmitResultModel(
   applicationId: json['applicationId'] as String,
   submittedAt: json['submittedAt'] as String,
   settlement: json['settlement'] == null
       ? null
-      : MerchantSubmitSettlementDto.fromJson(
+      : MerchantSubmitSettlementModel.fromJson(
           json['settlement'] as Map<String, dynamic>,
         ),
 );
 
-Map<String, dynamic> _$MerchantSubmitResultDtoToJson(
-  _MerchantSubmitResultDto instance,
+Map<String, dynamic> _$MerchantSubmitResultModelToJson(
+  _MerchantSubmitResultModel instance,
 ) => <String, dynamic>{
   'applicationId': instance.applicationId,
   'submittedAt': instance.submittedAt,
   'settlement': instance.settlement,
 };
 
-_MerchantSubmitSettlementDto _$MerchantSubmitSettlementDtoFromJson(
+_MerchantSubmitSettlementModel _$MerchantSubmitSettlementModelFromJson(
   Map<String, dynamic> json,
-) => _MerchantSubmitSettlementDto(
+) => _MerchantSubmitSettlementModel(
   bankId: json['bankId'] as String,
   accountNumberLast4: json['accountNumberLast4'] as String,
 );
 
-Map<String, dynamic> _$MerchantSubmitSettlementDtoToJson(
-  _MerchantSubmitSettlementDto instance,
+Map<String, dynamic> _$MerchantSubmitSettlementModelToJson(
+  _MerchantSubmitSettlementModel instance,
 ) => <String, dynamic>{
   'bankId': instance.bankId,
   'accountNumberLast4': instance.accountNumberLast4,

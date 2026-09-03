@@ -5,9 +5,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_val
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
 
-/// Validated step-1 aggregate. Owns the conditional registration-number rule:
-/// required when the selected business type demands it, validated-but-optional
-/// otherwise, and never silently discarded.
 class BusinessProfile {
   const BusinessProfile._({
     required this.legalName,

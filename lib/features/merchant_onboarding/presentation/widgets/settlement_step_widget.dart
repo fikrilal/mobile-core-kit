@@ -10,7 +10,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/locali
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_dropdown_field.dart';
 
-/// Step 3: settlement account.
 class SettlementStepWidget extends StatelessWidget {
   const SettlementStepWidget({
     super.key,

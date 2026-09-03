@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/data/mapper/merchant_onboarding_submit_mapper.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 
-import '../../domain/merchant_test_fixtures.dart';
+import '../../../domain/merchant_test_fixtures.dart';
 
 void main() {
   final reference = buildReferenceData();
 
   test(
-    'maps a validated application losslessly to basis points and strings',
+    'maps a validated application losslessly to basis points and strings via fromApplication',
     () {
       final application = MerchantOnboardingApplication.create(
         input: validInput(
@@ -33,7 +33,7 @@ void main() {
         reference: reference,
       ).getRight().toNullable()!;
 
-      final request = merchantOnboardingSubmitRequestFromApplication(
+      final request = MerchantOnboardingSubmitRequestModel.fromApplication(
         application,
       );
 
@@ -86,7 +86,7 @@ void main() {
         reference: reference,
       ).getRight().toNullable()!;
 
-      final request = merchantOnboardingSubmitRequestFromApplication(
+      final request = MerchantOnboardingSubmitRequestModel.fromApplication(
         application,
       );
 

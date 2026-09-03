@@ -16,8 +16,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widget
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/review_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/settlement_step_widget.dart';
 
-/// Route-owned page: loads reference data on entry and renders the four-step
-/// wizard driven by the feature Cubit.
 class MerchantOnboardingPage extends StatefulWidget {
   const MerchantOnboardingPage({super.key});
 
@@ -53,8 +51,6 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
     super.dispose();
   }
 
-  /// Registers (or reuses) a [FocusNode] for a field path so focus effects
-  /// can target it after a failed step preflight or submit.
   FocusNode registerFocus(String path) =>
       _focusRequests.putIfAbsent(path, FocusNode.new);
 
@@ -73,8 +69,7 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
         unawaited(_showDiscardDialog());
       case MerchantLeaveEffect():
         _leaveRequested = true;
-        // PopScope canPop flips only after a rebuild; navigate after the
-        // frame so the pop is not blocked and cannot recurse.
+
         setState(() {});
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.pop();
@@ -129,7 +124,6 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
           final step = state.step;
           final failures = state.localFailures;
 
-          // Surface repository-level submission failures the user can see.
           if (state.submissionFailure != null &&
               state.submissionStatus == MerchantSubmissionStatus.failure &&
               !_submissionFailureShown) {

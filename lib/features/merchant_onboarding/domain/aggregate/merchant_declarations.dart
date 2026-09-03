@@ -5,8 +5,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_val
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
 
-/// Validated step-4 aggregate. All three declarations must be accepted and
-/// the terms version must equal the reference snapshot version.
 class MerchantDeclarations {
   const MerchantDeclarations._({
     required this.informationAccurate,

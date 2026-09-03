@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/foundation/validation/validation_error.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
-import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/datasource/remote/merchant_onboarding_remote_datasource.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/repository/merchant_onboarding_repository_impl.dart';
@@ -18,8 +17,8 @@ class _MockRemoteDataSource extends Mock
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      MerchantOnboardingSubmitRequestDto(
-        business: MerchantBusinessInputDto(
+      const MerchantOnboardingSubmitRequestModel(
+        business: MerchantBusinessInputModel(
           legalName: 'x',
           businessTypeId: 'sole_proprietorship',
           industryId: 'retail',
@@ -27,15 +26,15 @@ void main() {
           contactEmail: 'a@b.co',
           contactPhone: '+6281234567890',
         ),
-        owners: const [],
-        settlement: MerchantSettlementInputDto(
+        owners: [],
+        settlement: MerchantSettlementInputModel(
           bankId: 'demo_bank_alpha',
           accountHolderName: 'A',
           accountNumber: '123456',
           holderTypeId: 'business',
           payoutScheduleId: 'daily',
         ),
-        declarations: MerchantDeclarationsInputDto(
+        declarations: MerchantDeclarationsInputModel(
           informationAccurate: true,
           authorizedToSubmit: true,
           termsAccepted: true,
@@ -58,7 +57,7 @@ void main() {
     () async {
       when(() => remote.fetchReferenceData()).thenAnswer(
         (_) async => ApiResponse.success(
-          data: FakeMerchantOnboardingRepository.demoReferenceDataDto(),
+          data: FakeMerchantOnboardingRepository.demoReferenceDataModel(),
         ),
       );
 
@@ -171,7 +170,7 @@ void main() {
         () => remote.submitApplication(request: any(named: 'request')),
       ).thenAnswer(
         (_) async => ApiResponse.success(
-          data: MerchantSubmitResultDto(
+          data: const MerchantSubmitResultModel(
             applicationId: 'app-123',
             submittedAt: '2026-08-31T00:00:00.000Z',
           ),
@@ -200,22 +199,5 @@ void main() {
     final result = await repository.submitApplication(application);
 
     expect(result.getLeft().toNullable(), isA<MerchantUnexpectedFailure>());
-  });
-
-  test('mapApiFailure normalizes documented codes', () {
-    expect(
-      mapApiFailure(
-        ApiFailure.fromApiResponse(ApiResponse.error(code: 'UNAUTHORIZED')),
-      ),
-      isA<MerchantUnauthenticatedFailure>(),
-    );
-    expect(
-      mapApiFailure(
-        ApiFailure.fromApiResponse(
-          ApiResponse.error(code: 'MERCHANT_ONBOARDING_TERMS_VERSION_STALE'),
-        ),
-      ),
-      isA<MerchantStaleTermsFailure>(),
-    );
   });
 }

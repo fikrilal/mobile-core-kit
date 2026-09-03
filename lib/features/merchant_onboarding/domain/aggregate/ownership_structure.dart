@@ -5,7 +5,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_val
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
 
-/// One validated owners-step row.
 class OwnerRow {
   const OwnerRow._({
     required this.id,
@@ -20,15 +19,11 @@ class OwnerRow {
   final PersonName fullName;
   final OwnerRoleId roleId;
 
-  /// Non-null only when the role contributes ownership.
   final OwnershipPercentage? percentage;
   final EmailAddress email;
   final bool isPrimaryContact;
 }
 
-/// Validated step-2 aggregate. Owns row bounds, unique row ids, normalized
-/// email uniqueness (the later duplicate row is blamed), the exactly-one
-/// primary contact rule, and the exact 10,000 basis-point ownership total.
 class OwnershipStructure {
   OwnershipStructure._(List<OwnerRow> rows) : rows = List.unmodifiable(rows);
 
@@ -77,9 +72,6 @@ class OwnershipStructure {
       OwnershipPercentage? percentage;
       EmailAddress? email;
 
-      // Row ids must be unique and valid; duplicates break mutation paths,
-      // error routing, and settlement references. Dedupe on the normalized id
-      // so 'row-1' and ' row-1 ' cannot both pass.
       final parsedRowId = OwnerRowId.create(row.ownerRowId, path: rowPath).fold(
         (failure) {
           errors.add(failure);
@@ -137,7 +129,6 @@ class OwnershipStructure {
         invalidCode: MerchantValidationCodes.ownerEmailInvalid,
       ).fold(errors.add, (value) => email = value);
 
-      // Copies promote: closure-assigned locals never do.
       final parsedName = fullName;
       final parsedRoleId = roleId;
       final parsedPercentage = percentage;
@@ -153,8 +144,6 @@ class OwnershipStructure {
 
       if (row.isPrimaryContact) primaryCount++;
 
-      // The ownership total counts every contributing row with a parsed
-      // percentage, even when other fields of the row are invalid.
       if (role != null &&
           role.contributesOwnership &&
           parsedPercentage != null) {

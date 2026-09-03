@@ -2,8 +2,6 @@ import 'package:fpdart/fpdart.dart';
 
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 
-/// A simple catalog entry with a stable id and a demo display label.
-/// Presentation renders the label; drafts and requests store the id.
 class ReferenceOption {
   const ReferenceOption({required this.id, required this.label});
 
@@ -11,8 +9,6 @@ class ReferenceOption {
   final String label;
 }
 
-/// A business-type catalog entry. The flag drives the conditional
-/// registration-number rule; the id is the only identity sent to the server.
 class BusinessTypeOption {
   const BusinessTypeOption({
     required this.id,
@@ -25,8 +21,6 @@ class BusinessTypeOption {
   final bool requiresRegistrationNumber;
 }
 
-/// An owner-role catalog entry. The flag drives the conditional ownership
-/// percentage rule per owner row.
 class OwnerRoleOption {
   const OwnerRoleOption({
     required this.id,
@@ -39,7 +33,6 @@ class OwnerRoleOption {
   final bool contributesOwnership;
 }
 
-/// A bank catalog entry with the payout schedules it supports.
 class BankOption {
   BankOption({
     required this.id,
@@ -52,8 +45,6 @@ class BankOption {
   final Set<String> supportedScheduleIds;
 }
 
-/// An account-holder-type catalog entry. The flag drives the conditional
-/// settlement owner reference rule.
 class AccountHolderTypeOption {
   const AccountHolderTypeOption({
     required this.id,
@@ -66,8 +57,6 @@ class AccountHolderTypeOption {
   final bool requiresOwnerReference;
 }
 
-/// Immutable reference-data snapshot supplied before editing starts. Domain
-/// decisions use ids and metadata only; labels are demo display values.
 class MerchantReferenceData {
   MerchantReferenceData({
     required List<BusinessTypeOption> businessTypes,
@@ -126,8 +115,6 @@ class MerchantReferenceData {
       values.isEmpty ? null : values.first;
 }
 
-/// Typed catalog identifiers. They prevent accidentally mixing ids across
-/// unrelated catalogs and are constructed only through snapshot membership.
 abstract class MerchantReferenceId {
   const MerchantReferenceId(this.value);
 

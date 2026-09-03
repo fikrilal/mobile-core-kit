@@ -1,6 +1,3 @@
-/// One-shot effects for the merchant-onboarding flow. Focus requests, discard
-/// confirmation, route leaving, and success navigation are never durable
-/// state flags.
 sealed class MerchantOnboardingEffect {
   const MerchantOnboardingEffect();
 }

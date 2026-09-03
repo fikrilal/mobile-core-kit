@@ -49,9 +49,6 @@ extension MerchantOnboardingStateX on MerchantOnboardingState {
   MerchantValidationFailure? failureForPath(String path) =>
       localFailures.where((f) => f.path == path).firstOrNull;
 
-  /// Whether a deterministic failure should currently be visible for [path]:
-  /// field paths must be touched; aggregate-level paths (e.g. `owners`) are
-  /// visible once the owning step has been attempted.
   bool isFailureVisible(MerchantValidationFailure failure) {
     final path = failure.path;
     if (path == null) return true;

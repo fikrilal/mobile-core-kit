@@ -101,13 +101,13 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
     );
   }
 
-  /// Remote reference DTO mirroring [demoReferenceData] for repository tests.
-  static MerchantReferenceDataDto demoReferenceDataDto() {
+  /// Remote reference model mirroring [demoReferenceData] for repository tests.
+  static MerchantReferenceDataModel demoReferenceDataModel() {
     final reference = demoReferenceData();
-    return MerchantReferenceDataDto(
+    return MerchantReferenceDataModel(
       businessTypes: [
         for (final option in reference.businessTypes)
-          MerchantBusinessTypeOptionDto(
+          MerchantBusinessTypeOptionModel(
             id: option.id,
             label: option.label,
             requiresRegistrationNumber: option.requiresRegistrationNumber,
@@ -115,15 +115,15 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
       ],
       industries: [
         for (final option in reference.industries)
-          MerchantLabeledOptionDto(id: option.id, label: option.label),
+          MerchantLabeledOptionModel(id: option.id, label: option.label),
       ],
       monthlySalesRanges: [
         for (final option in reference.monthlySalesRanges)
-          MerchantLabeledOptionDto(id: option.id, label: option.label),
+          MerchantLabeledOptionModel(id: option.id, label: option.label),
       ],
       ownerRoles: [
         for (final option in reference.ownerRoles)
-          MerchantOwnerRoleOptionDto(
+          MerchantOwnerRoleOptionModel(
             id: option.id,
             label: option.label,
             contributesOwnership: option.contributesOwnership,
@@ -131,7 +131,7 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
       ],
       banks: [
         for (final option in reference.banks)
-          MerchantBankOptionDto(
+          MerchantBankOptionModel(
             id: option.id,
             label: option.label,
             supportedPayoutScheduleIds: option.supportedScheduleIds.toList(),
@@ -139,7 +139,7 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
       ],
       accountHolderTypes: [
         for (final option in reference.holderTypes)
-          MerchantAccountHolderTypeOptionDto(
+          MerchantAccountHolderTypeOptionModel(
             id: option.id,
             label: option.label,
             requiresOwnerReference: option.requiresOwnerReference,
@@ -147,7 +147,7 @@ class FakeMerchantOnboardingRepository implements MerchantOnboardingRepository {
       ],
       payoutSchedules: [
         for (final option in reference.payoutSchedules)
-          MerchantLabeledOptionDto(id: option.id, label: option.label),
+          MerchantLabeledOptionModel(id: option.id, label: option.label),
       ],
       termsVersion: reference.termsVersion,
     );

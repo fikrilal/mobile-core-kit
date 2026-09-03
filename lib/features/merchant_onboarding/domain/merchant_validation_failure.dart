@@ -1,6 +1,3 @@
-/// A deterministic, framework-free validation failure with a stable machine
-/// code and an optional form path such as `business.legalName` or
-/// `owners.<ownerRowId>.email`.
 class MerchantValidationFailure {
   const MerchantValidationFailure({required this.code, this.path});
 
@@ -21,10 +18,7 @@ class MerchantValidationFailure {
   String toString() => 'MerchantValidationFailure($code, $path)';
 }
 
-/// Stable demo validation codes. Paths follow the blueprint:
-/// step field order first, then owner row order, then aggregate-level paths.
 abstract final class MerchantValidationCodes {
-  // Step 1 — business profile.
   static const businessLegalNameRequired = 'business.legal_name.required';
   static const businessLegalNameInvalid = 'business.legal_name.invalid';
   static const businessTypeRequired = 'business.type.required';
@@ -41,7 +35,6 @@ abstract final class MerchantValidationCodes {
   static const contactPhoneRequired = 'contact.phone.required';
   static const contactPhoneInvalid = 'contact.phone.invalid';
 
-  // Step 2 — owners.
   static const ownersRequired = 'owners.required';
   static const ownersLimitExceeded = 'owners.limit.exceeded';
   static const ownerNameRequired = 'owner.name.required';
@@ -58,7 +51,6 @@ abstract final class MerchantValidationCodes {
   static const ownersPrimaryInvalid = 'owners.primary.invalid';
   static const ownersTotalInvalid = 'owners.total.invalid';
 
-  // Step 3 — settlement.
   static const settlementBankRequired = 'settlement.bank.required';
   static const settlementBankUnsupported = 'settlement.bank.unsupported';
   static const settlementHolderNameRequired =
@@ -81,7 +73,6 @@ abstract final class MerchantValidationCodes {
   static const settlementScheduleUnsupportedByBank =
       'settlement.schedule.unsupported_by_bank';
 
-  // Step 4 — declarations.
   static const declarationsInformationAccurateRequired =
       'declarations.information_accurate.required';
   static const declarationsAuthorizedToSubmitRequired =
@@ -91,6 +82,5 @@ abstract final class MerchantValidationCodes {
   static const declarationsTermsVersionStale =
       'declarations.terms_version.stale';
 
-  // Form-level.
   static const referenceUnavailable = 'reference.unavailable';
 }

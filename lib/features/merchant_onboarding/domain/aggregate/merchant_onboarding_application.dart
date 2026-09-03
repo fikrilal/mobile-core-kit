@@ -8,9 +8,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/mercha
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
-/// Validated root aggregate for the whole application. Child aggregates own
-/// their step-local rules; the root owns the cross-step relationship between
-/// owner-held settlement accounts and existing owner rows.
 class MerchantOnboardingApplication {
   const MerchantOnboardingApplication._({
     required this.business,
@@ -55,8 +52,6 @@ class MerchantOnboardingApplication {
       reference: reference,
     ).fold(errors.addAll, (value) => declarations = value);
 
-    // Cross-step rule: an owner-held settlement account must reference an
-    // existing owner row. Checked only when both children are constructible.
     final ownerHeld = settlement?.ownerRowId != null;
     if (ownerHeld && owners != null) {
       if (!owners!.containsRow(settlement!.ownerRowId!.value)) {

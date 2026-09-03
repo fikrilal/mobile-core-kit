@@ -8,36 +8,31 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/se
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/load_merchant_reference_data_usecase.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 
-/// Direction an owner row moves within the owners list.
 enum OwnerMoveDirection { up, down }
 
 class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
-  MerchantOnboardingCubit(this._loadReferenceData, this._submitOnboarding)
+  MerchantOnboardingCubit(this._repository, this._submitOnboarding)
     : super(MerchantOnboardingState.initial());
 
-  final LoadMerchantReferenceDataUseCase _loadReferenceData;
+  final MerchantOnboardingRepository _repository;
   final SubmitMerchantOnboardingUseCase _submitOnboarding;
 
   final _effects = StreamController<MerchantOnboardingEffect>.broadcast();
 
   Stream<MerchantOnboardingEffect> get effects => _effects.stream;
 
-  // ---------------------------------------------------------------------------
-  // Reference data
-  // ---------------------------------------------------------------------------
-
   Future<void> loadReferenceData() async {
     if (state.isSubmitting) return;
 
     emit(state.copyWith(referenceStatus: MerchantReferenceStatus.loading));
 
-    final result = await _loadReferenceData();
+    final result = await _repository.loadReferenceData();
     result.match(
       (failure) {
         emit(state.copyWith(referenceStatus: MerchantReferenceStatus.failure));
@@ -57,10 +52,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       },
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // Business profile edits (step 1)
-  // ---------------------------------------------------------------------------
 
   void businessLegalNameChanged(String value) => _updateBusiness(
     (business) => business.copyWith(legalName: value),
@@ -102,10 +93,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     touched: 'business.contactPhone',
   );
 
-  // ---------------------------------------------------------------------------
-  // Owner row edits (step 2)
-  // ---------------------------------------------------------------------------
-
   void ownerNameChanged(String ownerRowId, String value) => _updateOwner(
     ownerRowId,
     (row) => row.copyWith(fullName: value),
@@ -130,8 +117,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     touched: 'owners.$ownerRowId.email',
   );
 
-  /// Setting a row as primary contact unsets every other row so the
-  /// exactly-one rule stays satisfiable.
   void ownerPrimaryToggled(String ownerRowId, bool isPrimary) => _updateInput(
     (input) => input.copyWith(
       owners: input.owners
@@ -196,10 +181,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Settlement edits (step 3)
-  // ---------------------------------------------------------------------------
-
   void settlementBankChanged(String? id) => _updateSettlement(
     (settlement) => settlement.copyWith(bankId: id, clearBankId: id == null),
     touched: 'settlement.bankId',
@@ -223,8 +204,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       (settlement) => settlement.copyWith(
         holderTypeId: id,
         clearHolderTypeId: id == null,
-        // Switching away from an owner-held account clears the stale
-        // system-derived reference; user-typed values are never discarded.
+
         clearOwnerRowId: !requiresOwner,
       ),
       touched: 'settlement.holderTypeId',
@@ -246,10 +226,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     ),
     touched: 'settlement.payoutScheduleId',
   );
-
-  // ---------------------------------------------------------------------------
-  // Declarations (step 4)
-  // ---------------------------------------------------------------------------
 
   void declarationInformationAccurateToggled(bool value) => _updateInput(
     (input) => input.copyWith(
@@ -275,12 +251,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     touched: {'declarations.termsAccepted'},
   );
 
-  // ---------------------------------------------------------------------------
-  // Step movement
-  // ---------------------------------------------------------------------------
-
-  /// `Next` on the current step: marks the step touched, runs the step
-  /// preflight, focuses the first invalid field, and advances only when valid.
   void nextTapped() {
     if (!state.isReferenceReady || state.isSubmitting) return;
     if (state.step == MerchantOnboardingStep.review) {
@@ -315,7 +285,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     );
   }
 
-  /// In-app back: returns to the previous step without losing input.
   void backTapped() {
     if (state.isSubmitting) return;
     if (state.step == MerchantOnboardingStep.business) {
@@ -325,13 +294,11 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     emit(state.copyWith(step: _previousStep(state.step)));
   }
 
-  /// Review edit action: jump straight to the owning step.
   void editStepRequested(MerchantOnboardingStep step) {
     if (state.isSubmitting) return;
     emit(state.copyWith(step: step));
   }
 
-  /// System/app back while the route is alive.
   void systemBackRequested() {
     if (state.isSubmitting) return;
     _requestLeave();
@@ -341,10 +308,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     if (state.isSubmitting) return;
     _effects.add(const MerchantLeaveEffect());
   }
-
-  // ---------------------------------------------------------------------------
-  // Submit
-  // ---------------------------------------------------------------------------
 
   Future<void> submitTapped() async {
     final reference = state.referenceData;
@@ -366,10 +329,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
     result.match(
       (failure) {
-        // Local final-gate failures and recognized server field validation
-        // failures route to the owning step and focus the first invalid
-        // field. Server paths use backend field names, so normalize through
-        // the same path-based step routing.
         if (failure is MerchantLocalValidationFailure ||
             failure is MerchantServerValidationFailure) {
           final failures = switch (failure) {
@@ -406,7 +365,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
           state.copyWith(
             submissionStatus: MerchantSubmissionStatus.success,
             localFailures: [],
-            // The in-memory draft is cleared once submission succeeds.
+
             input: MerchantOnboardingInput(),
             touchedPaths: {},
             attemptedSteps: {},
@@ -417,10 +376,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       },
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // Internals
-  // ---------------------------------------------------------------------------
 
   void _requestLeave() {
     if (state.isMateriallyEdited &&
@@ -478,8 +433,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
     var nextInput = update(state.input);
     if (material) {
-      // Any material business, owner, or settlement edit resets the
-      // declarations while the entered draft stays intact.
       nextInput = nextInput.copyWith(
         declarations: nextInput.declarations.copyWith(
           informationAccurate: false,

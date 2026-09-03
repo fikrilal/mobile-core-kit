@@ -1,30 +1,70 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 
 part 'merchant_onboarding_submit_models.freezed.dart';
 part 'merchant_onboarding_submit_models.g.dart';
 
-/// Wire models for `POST /v1/merchant-onboarding/applications`. The request
-/// mirrors the accepted OpenAPI schema; ownership is transported as exact
-/// integer basis points and the account number stays a JSON string.
-
 @freezed
-abstract class MerchantOnboardingSubmitRequestDto
-    with _$MerchantOnboardingSubmitRequestDto {
-  const factory MerchantOnboardingSubmitRequestDto({
-    required MerchantBusinessInputDto business,
-    required List<MerchantOwnerInputDto> owners,
-    required MerchantSettlementInputDto settlement,
-    required MerchantDeclarationsInputDto declarations,
-  }) = _MerchantOnboardingSubmitRequestDto;
+abstract class MerchantOnboardingSubmitRequestModel
+    with _$MerchantOnboardingSubmitRequestModel {
+  const factory MerchantOnboardingSubmitRequestModel({
+    required MerchantBusinessInputModel business,
+    required List<MerchantOwnerInputModel> owners,
+    required MerchantSettlementInputModel settlement,
+    required MerchantDeclarationsInputModel declarations,
+  }) = _MerchantOnboardingSubmitRequestModel;
 
-  factory MerchantOnboardingSubmitRequestDto.fromJson(
+  const MerchantOnboardingSubmitRequestModel._();
+
+  factory MerchantOnboardingSubmitRequestModel.fromJson(
     Map<String, dynamic> json,
-  ) => _$MerchantOnboardingSubmitRequestDtoFromJson(json);
+  ) => _$MerchantOnboardingSubmitRequestModelFromJson(json);
+
+  factory MerchantOnboardingSubmitRequestModel.fromApplication(
+    MerchantOnboardingApplication application,
+  ) {
+    return MerchantOnboardingSubmitRequestModel(
+      business: MerchantBusinessInputModel(
+        legalName: application.business.legalName.value,
+        businessTypeId: application.business.businessTypeId.value,
+        registrationNumber: application.business.registrationNumber?.value,
+        industryId: application.business.industryId.value,
+        monthlySalesRangeId: application.business.monthlySalesRangeId.value,
+        contactEmail: application.business.contactEmail.value,
+        contactPhone: application.business.contactPhone.value,
+      ),
+      owners: [
+        for (final row in application.owners.rows)
+          MerchantOwnerInputModel(
+            ownerRowId: row.id.value,
+            fullName: row.fullName.value,
+            roleId: row.roleId.value,
+            ownershipBasisPoints: row.percentage?.basisPoints,
+            email: row.email.value,
+            isPrimaryContact: row.isPrimaryContact,
+          ),
+      ],
+      settlement: MerchantSettlementInputModel(
+        bankId: application.settlement.bankId.value,
+        accountHolderName: application.settlement.accountHolderName.value,
+        accountNumber: application.settlement.accountNumber.value,
+        holderTypeId: application.settlement.holderTypeId.value,
+        ownerRowId: application.settlement.ownerRowId?.value,
+        payoutScheduleId: application.settlement.payoutScheduleId.value,
+      ),
+      declarations: MerchantDeclarationsInputModel(
+        informationAccurate: application.declarations.informationAccurate,
+        authorizedToSubmit: application.declarations.authorizedToSubmit,
+        termsAccepted: application.declarations.termsAccepted,
+        termsVersion: application.declarations.termsVersion.value,
+      ),
+    );
+  }
 }
 
 @freezed
-abstract class MerchantBusinessInputDto with _$MerchantBusinessInputDto {
-  const factory MerchantBusinessInputDto({
+abstract class MerchantBusinessInputModel with _$MerchantBusinessInputModel {
+  const factory MerchantBusinessInputModel({
     required String legalName,
     required String businessTypeId,
     String? registrationNumber,
@@ -32,78 +72,77 @@ abstract class MerchantBusinessInputDto with _$MerchantBusinessInputDto {
     required String monthlySalesRangeId,
     required String contactEmail,
     required String contactPhone,
-  }) = _MerchantBusinessInputDto;
+  }) = _MerchantBusinessInputModel;
 
-  factory MerchantBusinessInputDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantBusinessInputDtoFromJson(json);
+  factory MerchantBusinessInputModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantBusinessInputModelFromJson(json);
 }
 
 @freezed
-abstract class MerchantOwnerInputDto with _$MerchantOwnerInputDto {
-  const factory MerchantOwnerInputDto({
+abstract class MerchantOwnerInputModel with _$MerchantOwnerInputModel {
+  const factory MerchantOwnerInputModel({
     required String ownerRowId,
     required String fullName,
     required String roleId,
     int? ownershipBasisPoints,
     required String email,
     required bool isPrimaryContact,
-  }) = _MerchantOwnerInputDto;
+  }) = _MerchantOwnerInputModel;
 
-  factory MerchantOwnerInputDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantOwnerInputDtoFromJson(json);
+  factory MerchantOwnerInputModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantOwnerInputModelFromJson(json);
 }
 
 @freezed
-abstract class MerchantSettlementInputDto with _$MerchantSettlementInputDto {
-  const factory MerchantSettlementInputDto({
+abstract class MerchantSettlementInputModel
+    with _$MerchantSettlementInputModel {
+  const factory MerchantSettlementInputModel({
     required String bankId,
     required String accountHolderName,
     required String accountNumber,
     required String holderTypeId,
     String? ownerRowId,
     required String payoutScheduleId,
-  }) = _MerchantSettlementInputDto;
+  }) = _MerchantSettlementInputModel;
 
-  factory MerchantSettlementInputDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantSettlementInputDtoFromJson(json);
+  factory MerchantSettlementInputModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantSettlementInputModelFromJson(json);
 }
 
 @freezed
-abstract class MerchantDeclarationsInputDto
-    with _$MerchantDeclarationsInputDto {
-  const factory MerchantDeclarationsInputDto({
+abstract class MerchantDeclarationsInputModel
+    with _$MerchantDeclarationsInputModel {
+  const factory MerchantDeclarationsInputModel({
     required bool informationAccurate,
     required bool authorizedToSubmit,
     required bool termsAccepted,
     required String termsVersion,
-  }) = _MerchantDeclarationsInputDto;
+  }) = _MerchantDeclarationsInputModel;
 
-  factory MerchantDeclarationsInputDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantDeclarationsInputDtoFromJson(json);
+  factory MerchantDeclarationsInputModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantDeclarationsInputModelFromJson(json);
 }
 
-/// `201` response body (`{data: MerchantSubmitResultDto}`; envelope unwrapped
-/// by [ApiHelper]). Only the application id is consumed by the UI; account
-/// data stays inside the data boundary.
 @freezed
-abstract class MerchantSubmitResultDto with _$MerchantSubmitResultDto {
-  const factory MerchantSubmitResultDto({
+abstract class MerchantSubmitResultModel with _$MerchantSubmitResultModel {
+  const factory MerchantSubmitResultModel({
     required String applicationId,
     required String submittedAt,
-    MerchantSubmitSettlementDto? settlement,
-  }) = _MerchantSubmitResultDto;
+    MerchantSubmitSettlementModel? settlement,
+  }) = _MerchantSubmitResultModel;
 
-  factory MerchantSubmitResultDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantSubmitResultDtoFromJson(json);
+  factory MerchantSubmitResultModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantSubmitResultModelFromJson(json);
 }
 
 @freezed
-abstract class MerchantSubmitSettlementDto with _$MerchantSubmitSettlementDto {
-  const factory MerchantSubmitSettlementDto({
+abstract class MerchantSubmitSettlementModel
+    with _$MerchantSubmitSettlementModel {
+  const factory MerchantSubmitSettlementModel({
     required String bankId,
     required String accountNumberLast4,
-  }) = _MerchantSubmitSettlementDto;
+  }) = _MerchantSubmitSettlementModel;
 
-  factory MerchantSubmitSettlementDto.fromJson(Map<String, dynamic> json) =>
-      _$MerchantSubmitSettlementDtoFromJson(json);
+  factory MerchantSubmitSettlementModel.fromJson(Map<String, dynamic> json) =>
+      _$MerchantSubmitSettlementModelFromJson(json);
 }

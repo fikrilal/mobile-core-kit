@@ -5,8 +5,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
-/// Shared 2–100 character trimmed-name rule for legal business names, person
-/// names, and bank account holder names.
 MerchantValidationFailure? _validateTrimmedName({
   required String raw,
   required String requiredCode,
@@ -81,7 +79,6 @@ class BankAccountHolderName {
   }
 }
 
-/// Trimmed, lowercased email address with pragmatic syntax validation.
 class EmailAddress {
   const EmailAddress._(this.value);
 
@@ -105,8 +102,6 @@ class EmailAddress {
   }
 }
 
-/// Phone number normalized to `+<digits>` (E.164 shape) with a supported
-/// total digit length of 8–15. Formatting characters are ignored.
 class PhoneNumber {
   const PhoneNumber._(this.value);
 
@@ -132,8 +127,6 @@ class PhoneNumber {
     final allDigits = RegExp(r'^\+?\d+$').hasMatch(digits);
     final nationalNumber = hasPlus ? digits.substring(1) : digits;
 
-    // E.164 requires a country code; a leading zero after '+' (or a bare
-    // national number starting with 0) is not a valid E.164 number.
     final hasCountryCode =
         digitCount >= 8 && digitCount <= 15 && !nationalNumber.startsWith('0');
 
@@ -151,8 +144,6 @@ class PhoneNumber {
   }
 }
 
-/// Trimmed, uppercased registration number: 4–30 ASCII letters, digits, or
-/// dashes.
 class RegistrationNumber {
   const RegistrationNumber._(this.value);
 
@@ -182,8 +173,6 @@ class RegistrationNumber {
   }
 }
 
-/// Ownership share stored as exact integer basis points (100.00% = 10000).
-/// Accepts 0.01–100.00 with at most two fractional digits.
 class OwnershipPercentage {
   const OwnershipPercentage._(this.basisPoints);
 
@@ -232,8 +221,6 @@ class OwnershipPercentage {
   }
 }
 
-/// Bank account number as text: spaces removed, 6–24 digits, leading zeroes
-/// preserved. Never a numeric value.
 class BankAccountNumber {
   const BankAccountNumber._(this.value);
 
@@ -266,8 +253,6 @@ class BankAccountNumber {
   }
 }
 
-/// Stable local identifier for one owners-step row. Generated when the row is
-/// added; edits, reordering, and deletion of other rows never change it.
 class OwnerRowId {
   const OwnerRowId._(this.value);
 
@@ -289,7 +274,6 @@ class OwnerRowId {
     return right(OwnerRowId._(value));
   }
 
-  /// Generates a random UUID-shaped identifier (version 4 style).
   static OwnerRowId generate() {
     final values = List<int>.generate(16, (_) => _rowIdRandom.nextInt(256));
     values[6] = (values[6] & 0x0f) | 0x40;
@@ -304,7 +288,6 @@ class OwnerRowId {
   static final Random _rowIdRandom = Random();
 }
 
-/// Terms version accepted by the user; must equal the snapshot version.
 class TermsVersion {
   const TermsVersion._(this.value);
 

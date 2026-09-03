@@ -9,10 +9,8 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_dropdown_field.dart';
 
-/// Signature used by step widgets to register focus nodes for field paths.
 typedef RegisterFocus = FocusNode Function(String path);
 
-/// Step 1: business profile.
 class BusinessStepWidget extends StatelessWidget {
   const BusinessStepWidget({
     super.key,

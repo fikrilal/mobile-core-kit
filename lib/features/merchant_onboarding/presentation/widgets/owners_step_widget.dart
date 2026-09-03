@@ -11,7 +11,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/locali
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_owner_row_card.dart';
 
-/// Step 2: dynamic owner rows plus the ownership aggregate summary.
 class OwnersStepWidget extends StatelessWidget {
   const OwnersStepWidget({
     super.key,

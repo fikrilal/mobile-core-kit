@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive_scope.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/policies/navigation_policy.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/policies/text_scale_policy.dart';
+import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
 /// Standard test app shell for integration tests.
@@ -14,6 +15,7 @@ Widget buildIntegrationTestApp({
 }) {
   return MaterialApp.router(
     routerConfig: routerConfig,
+    theme: AppTheme.light(),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     builder: (context, child) {
