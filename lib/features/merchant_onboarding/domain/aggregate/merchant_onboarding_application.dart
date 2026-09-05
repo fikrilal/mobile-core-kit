@@ -1,12 +1,11 @@
 import 'package:fpdart/fpdart.dart';
-
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/business_profile.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_declarations.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/ownership_structure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/settlement_account.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
 class MerchantOnboardingApplication {
   const MerchantOnboardingApplication._({
@@ -24,7 +23,7 @@ class MerchantOnboardingApplication {
   static Either<List<MerchantValidationFailure>, MerchantOnboardingApplication>
   create({
     required MerchantOnboardingInput input,
-    required MerchantReferenceData reference,
+    required MerchantReferenceDataEntity reference,
   }) {
     final errors = <MerchantValidationFailure>[];
     BusinessProfile? business;

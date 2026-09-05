@@ -1,0 +1,1 @@
+enum OwnerMoveDirection { up, down }

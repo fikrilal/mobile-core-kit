@@ -1,9 +1,8 @@
 import 'package:fpdart/fpdart.dart';
-
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/terms_version.dart';
 
 class MerchantDeclarations {
   const MerchantDeclarations._({
@@ -20,7 +19,7 @@ class MerchantDeclarations {
 
   static Either<List<MerchantValidationFailure>, MerchantDeclarations> create({
     required DeclarationsInput input,
-    required MerchantReferenceData reference,
+    required MerchantReferenceDataEntity reference,
   }) {
     final errors = <MerchantValidationFailure>[];
     TermsVersion? termsVersion;

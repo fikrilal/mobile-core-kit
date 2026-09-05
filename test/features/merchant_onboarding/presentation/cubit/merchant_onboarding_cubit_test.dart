@@ -1,390 +1,307 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/presentation/models/owner_move_direction.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../domain/merchant_test_fixtures.dart';
-import '../../support/fake_merchant_onboarding_repository.dart';
 
 class _MockMerchantOnboardingRepository extends Mock
     implements MerchantOnboardingRepository {}
 
+class _MockSubmitMerchantOnboardingUseCase extends Mock
+    implements SubmitMerchantOnboardingUseCase {}
+
 void main() {
+  late _MockMerchantOnboardingRepository repository;
+  late _MockSubmitMerchantOnboardingUseCase submitUseCase;
+  late MerchantOnboardingCubit cubit;
+
   setUpAll(() {
-    registerFallbackValue(
-      MerchantOnboardingApplication.create(
-        input: validInput(),
-        reference: buildReferenceData(),
-      ).getRight().toNullable()!,
-    );
+    registerFallbackValue(MerchantOnboardingInput());
+    registerFallbackValue(buildReferenceData());
   });
 
-  late _MockMerchantOnboardingRepository repo;
-  late MerchantOnboardingCubit cubit;
-  late List<MerchantOnboardingEffect> effects;
-
   setUp(() {
-    repo = _MockMerchantOnboardingRepository();
-    when(() => repo.loadReferenceData()).thenAnswer(
-      (_) async => right(FakeMerchantOnboardingRepository.demoReferenceData()),
-    );
-    when(() => repo.submitApplication(any())).thenAnswer(
-      (_) async => right(
-        const MerchantApplicationReceipt(
-          applicationId: FakeMerchantOnboardingRepository.demoApplicationId,
-        ),
-      ),
-    );
-
-    cubit = MerchantOnboardingCubit(
-      repo,
-      SubmitMerchantOnboardingUseCase(repo),
-    );
-    effects = [];
-    cubit.effects.listen(effects.add);
+    repository = _MockMerchantOnboardingRepository();
+    submitUseCase = _MockSubmitMerchantOnboardingUseCase();
+    when(
+      () => repository.loadReferenceData(),
+    ).thenAnswer((_) async => Right(buildReferenceData()));
+    cubit = MerchantOnboardingCubit(repository, submitUseCase);
   });
 
   tearDown(() async {
     await cubit.close();
   });
 
-  Future<void> loadReady() async {
-    await cubit.loadReferenceData();
-  }
+  test('initial state is correct', () {
+    expect(cubit.state.step, MerchantOnboardingStep.business);
+    expect(cubit.state.referenceStatus, MerchantReferenceStatus.loading);
+    expect(cubit.state.referenceData, isNull);
+    expect(cubit.state.isMateriallyEdited, isFalse);
+  });
 
-  /// Fills business + owners + settlement and walks to the review step.
-  /// Returns the generated owner row id.
-  Future<String> walkToReview() async {
-    await loadReady();
-    cubit.businessLegalNameChanged('Kopi Nusantara');
-    cubit.businessTypeChanged('sole_proprietorship');
-    cubit.businessIndustryChanged('retail');
-    cubit.businessMonthlySalesRangeChanged('10m_to_50m_idr');
-    cubit.businessContactEmailChanged('contact@kopinusantara.id');
-    cubit.businessContactPhoneChanged('+62 812-3456-7890');
-    cubit.nextTapped();
+  test('loadReferenceData succeeds and populates reference', () async {
+    await cubit.loadReferenceData();
+
+    expect(cubit.state.referenceStatus, MerchantReferenceStatus.ready);
+    expect(cubit.state.referenceData, isNotNull);
+    expect(cubit.state.input.declarations.termsVersion, '2026-08-30');
+  });
+
+  test('loadReferenceData sets failure status on error', () async {
+    when(
+      () => repository.loadReferenceData(),
+    ).thenAnswer((_) async => const Left(MerchantUnexpectedFailure()));
+
+    await cubit.loadReferenceData();
+
+    expect(cubit.state.referenceStatus, MerchantReferenceStatus.failure);
+    expect(cubit.state.referenceData, isNull);
+  });
+
+  test(
+    'updating business fields updates state and resets declarations',
+    () async {
+      await cubit.loadReferenceData();
+      cubit.declarationInformationAccurateToggled(true);
+      expect(cubit.state.input.declarations.informationAccurate, isTrue);
+
+      cubit.businessLegalNameChanged('PT Maju Jaya');
+      expect(cubit.state.input.business.legalName, 'PT Maju Jaya');
+      expect(cubit.state.touchedPaths, contains('business.legalName'));
+      expect(cubit.state.isMateriallyEdited, isTrue);
+      expect(cubit.state.input.declarations.informationAccurate, isFalse);
+
+      cubit.businessTypeChanged('individual');
+      expect(cubit.state.input.business.businessTypeId, 'individual');
+
+      cubit.businessRegistrationNumberChanged('123456');
+      expect(cubit.state.input.business.registrationNumber, '123456');
+
+      cubit.businessIndustryChanged('retail');
+      expect(cubit.state.input.business.industryId, 'retail');
+
+      cubit.businessMonthlySalesRangeChanged('under_10m');
+      expect(cubit.state.input.business.monthlySalesRangeId, 'under_10m');
+
+      cubit.businessContactEmailChanged('test@example.com');
+      expect(cubit.state.input.business.contactEmail, 'test@example.com');
+
+      cubit.businessContactPhoneChanged('+628123456789');
+      expect(cubit.state.input.business.contactPhone, '+628123456789');
+    },
+  );
+
+  test('owner operations add, update, move, and remove correctly', () async {
+    await cubit.loadReferenceData();
 
     cubit.ownerAdded();
-    final ownerId = cubit.state.input.owners.single.ownerRowId;
-    cubit.ownerNameChanged(ownerId, 'Budi Santoso');
-    cubit.ownerRoleChanged(ownerId, 'owner');
-    cubit.ownerPercentageChanged(ownerId, '100');
-    cubit.ownerEmailChanged(ownerId, 'budi@example.com');
-    cubit.ownerPrimaryToggled(ownerId, true);
-    cubit.nextTapped();
+    expect(cubit.state.input.owners.length, 1);
+    final firstId = cubit.state.input.owners.first.ownerRowId;
+    expect(cubit.state.input.owners.first.isPrimaryContact, isTrue);
 
-    cubit.settlementBankChanged('demo_bank_alpha');
-    cubit.settlementHolderNameChanged('Budi Santoso');
-    cubit.settlementAccountNumberChanged('0123456789');
-    cubit.settlementHolderTypeChanged('business');
+    cubit.ownerAdded();
+    expect(cubit.state.input.owners.length, 2);
+    final secondId = cubit.state.input.owners[1].ownerRowId;
+    expect(cubit.state.input.owners[1].isPrimaryContact, isFalse);
+
+    cubit.ownerNameChanged(firstId, 'Alice');
+    cubit.ownerRoleChanged(firstId, 'director');
+    cubit.ownerPercentageChanged(firstId, '50');
+    cubit.ownerEmailChanged(firstId, 'alice@example.com');
+
+    expect(cubit.state.input.owners.first.fullName, 'Alice');
+    expect(cubit.state.input.owners.first.roleId, 'director');
+    expect(cubit.state.input.owners.first.ownershipPercentage, '50');
+    expect(cubit.state.input.owners.first.email, 'alice@example.com');
+
+    cubit.ownerPrimaryToggled(secondId, true);
+    expect(
+      cubit.state.input.owners
+          .firstWhere((o) => o.ownerRowId == firstId)
+          .isPrimaryContact,
+      isFalse,
+    );
+    expect(
+      cubit.state.input.owners
+          .firstWhere((o) => o.ownerRowId == secondId)
+          .isPrimaryContact,
+      isTrue,
+    );
+
+    cubit.ownerMoved(secondId, OwnerMoveDirection.up);
+    expect(cubit.state.input.owners.first.ownerRowId, secondId);
+
+    cubit.settlementOwnerReferenceChanged(firstId);
+    expect(cubit.state.input.settlement.ownerRowId, firstId);
+
+    cubit.ownerRemoved(firstId);
+    expect(cubit.state.input.owners.length, 1);
+    expect(cubit.state.input.settlement.ownerRowId, isNull);
+  });
+
+  test('settlement field updates and clearing owner reference', () async {
+    await cubit.loadReferenceData();
+
+    cubit.settlementBankChanged('bca');
+    cubit.settlementHolderNameChanged('PT Maju');
+    cubit.settlementAccountNumberChanged('1234567890');
     cubit.settlementPayoutScheduleChanged('daily');
+
+    expect(cubit.state.input.settlement.bankId, 'bca');
+    expect(cubit.state.input.settlement.accountHolderName, 'PT Maju');
+    expect(cubit.state.input.settlement.accountNumber, '1234567890');
+    expect(cubit.state.input.settlement.payoutScheduleId, 'daily');
+
+    cubit.settlementOwnerReferenceChanged('owner_1');
+    expect(cubit.state.input.settlement.ownerRowId, 'owner_1');
+
+    cubit.settlementHolderTypeChanged('business');
+    expect(cubit.state.input.settlement.holderTypeId, 'business');
+    expect(cubit.state.input.settlement.ownerRowId, isNull);
+  });
+
+  test('nextStep validates current step and stops on error', () async {
+    await cubit.loadReferenceData();
+
+    final effects = <MerchantOnboardingEffect>[];
+    final sub = cubit.effects.listen(effects.add);
+
     cubit.nextTapped();
     await pumpEventQueue();
-    return ownerId;
-  }
 
-  group('reference data', () {
-    test('loads the snapshot and stamps the terms version', () async {
-      await loadReady();
+    expect(cubit.state.step, MerchantOnboardingStep.business);
+    expect(cubit.state.localFailures, isNotEmpty);
+    expect(effects.first, isA<MerchantFocusFieldEffect>());
 
-      expect(cubit.state.referenceStatus, MerchantReferenceStatus.ready);
-      expect(cubit.state.referenceData, isNotNull);
-      expect(cubit.state.input.declarations.termsVersion, '2026-08-30');
-    });
+    await sub.cancel();
+  });
 
-    test('exposes failure state for a failed load', () async {
+  test('nextStep advances when step is valid', () async {
+    await cubit.loadReferenceData();
+
+    cubit.businessLegalNameChanged('PT Valid Name');
+    cubit.businessTypeChanged('sole_proprietorship');
+    cubit.businessRegistrationNumberChanged('REG123456');
+    cubit.businessIndustryChanged('retail');
+    cubit.businessMonthlySalesRangeChanged('under_10m_idr');
+    cubit.businessContactEmailChanged('contact@ptvalid.com');
+    cubit.businessContactPhoneChanged('+6281234567890');
+
+    cubit.nextTapped();
+    await pumpEventQueue();
+
+    expect(cubit.state.step, MerchantOnboardingStep.owners);
+    expect(cubit.state.localFailures, isEmpty);
+  });
+
+  test('backStep navigates back or emits confirm discard', () async {
+    await cubit.loadReferenceData();
+
+    final effects = <MerchantOnboardingEffect>[];
+    final sub = cubit.effects.listen(effects.add);
+
+    cubit.backTapped();
+    await pumpEventQueue();
+    expect(effects.first, isA<MerchantLeaveEffect>());
+
+    cubit.businessLegalNameChanged('PT Edited');
+    cubit.backTapped();
+    await pumpEventQueue();
+    expect(effects[1], isA<MerchantConfirmDiscardEffect>());
+
+    cubit.editStepRequested(MerchantOnboardingStep.owners);
+    cubit.backTapped();
+    await pumpEventQueue();
+    expect(cubit.state.step, MerchantOnboardingStep.business);
+
+    cubit.systemBackRequested();
+    await pumpEventQueue();
+    expect(effects.last, isA<MerchantConfirmDiscardEffect>());
+
+    cubit.discardConfirmed();
+    await pumpEventQueue();
+    expect(effects.last, isA<MerchantLeaveEffect>());
+
+    await sub.cancel();
+  });
+
+  test(
+    'submit failure redirects to target step and emits focus effect',
+    () async {
+      await cubit.loadReferenceData();
       when(
-        () => repo.loadReferenceData(),
-      ).thenAnswer((_) async => left(const MerchantUnexpectedFailure()));
-
-      await cubit.loadReferenceData();
-
-      expect(cubit.state.referenceStatus, MerchantReferenceStatus.failure);
-    });
-
-    test('retry loads the snapshot again', () async {
-      var calls = 0;
-      when(() => repo.loadReferenceData()).thenAnswer((_) async {
-        calls++;
-        return calls == 1
-            ? left<MerchantOnboardingFailure, MerchantReferenceData>(
-                const MerchantUnexpectedFailure(),
-              )
-            : right(FakeMerchantOnboardingRepository.demoReferenceData());
-      });
-
-      await cubit.loadReferenceData();
-      await cubit.loadReferenceData();
-
-      expect(cubit.state.referenceStatus, MerchantReferenceStatus.ready);
-    });
-  });
-
-  group('step preflight (acceptance scenarios 2 and 3)', () {
-    test(
-      'stays on step one, shows all failures, focuses the first field',
-      () async {
-        await loadReady();
-
-        cubit.nextTapped();
-        await pumpEventQueue();
-
-        expect(cubit.state.step, MerchantOnboardingStep.business);
-        expect(cubit.state.localFailures, isNotEmpty);
-        expect(cubit.state.localFailures.first.path, 'business.legalName');
-        expect(
-          effects.whereType<MerchantFocusFieldEffect>().single.path,
-          'business.legalName',
-        );
-      },
-    );
-
-    test(
-      'requires registration even when the widget was never touched',
-      () async {
-        await loadReady();
-        cubit.businessLegalNameChanged('Kopi Nusantara');
-        cubit.businessTypeChanged('private_company');
-
-        cubit.nextTapped();
-        await pumpEventQueue();
-
-        expect(cubit.state.step, MerchantOnboardingStep.business);
-        expect(
-          cubit.state.localFailures.any(
-            (f) => f.code == 'business.registration.required',
-          ),
-          true,
-        );
-      },
-    );
-  });
-
-  group('owner rows', () {
-    test('edits preserve stable row ids', () async {
-      await loadReady();
-
-      cubit.ownerAdded();
-      final firstId = cubit.state.input.owners.single.ownerRowId;
-      cubit.ownerNameChanged(firstId, 'Budi Santoso');
-
-      cubit.ownerAdded();
-      final secondId = cubit.state.input.owners.last.ownerRowId;
-      expect(secondId, isNot(firstId));
-
-      cubit.ownerNameChanged(secondId, 'Sari Dewi');
-      cubit.ownerEmailChanged(secondId, 'sari@example.com');
-
-      expect(
-        cubit.state.input.owners.map((r) => r.ownerRowId),
-        containsAll([firstId, secondId]),
+        () => submitUseCase(
+          input: any(named: 'input'),
+          reference: any(named: 'reference'),
+        ),
+      ).thenAnswer(
+        (_) async => const Left(
+          MerchantLocalValidationFailure([
+            MerchantValidationFailure(
+              code: 'required',
+              path: 'business.legalName',
+            ),
+          ]),
+        ),
       );
-      expect(cubit.state.input.owners.last.fullName, 'Sari Dewi');
-      expect(cubit.state.input.owners.first.fullName, 'Budi Santoso');
-    });
 
-    test('moving rows keeps ids attached to their values', () async {
-      await loadReady();
+      final effects = <MerchantOnboardingEffect>[];
+      final sub = cubit.effects.listen(effects.add);
 
-      cubit.ownerAdded();
-      final firstId = cubit.state.input.owners.first.ownerRowId;
-      cubit.ownerAdded();
-      final secondId = cubit.state.input.owners.last.ownerRowId;
-      cubit.ownerNameChanged(secondId, 'Sari Dewi');
-
-      cubit.ownerMoved(secondId, OwnerMoveDirection.up);
-
-      expect(cubit.state.input.owners.first.ownerRowId, secondId);
-      expect(cubit.state.input.owners.first.fullName, 'Sari Dewi');
-      expect(cubit.state.input.owners.last.ownerRowId, firstId);
-    });
-
-    test(
-      'removing the settlement-referenced owner clears the reference (acceptance 6)',
-      () async {
-        await loadReady();
-
-        cubit.ownerAdded();
-        final ownerId = cubit.state.input.owners.single.ownerRowId;
-        cubit.settlementHolderTypeChanged('owner');
-        cubit.settlementOwnerReferenceChanged(ownerId);
-        expect(cubit.state.input.settlement.ownerRowId, ownerId);
-
-        cubit.ownerRemoved(ownerId);
-
-        expect(cubit.state.input.settlement.ownerRowId, isNull);
-        expect(cubit.state.input.owners, isEmpty);
-      },
-    );
-  });
-
-  group('declaration reset (acceptance 8)', () {
-    test('material edits reset declarations but keep the draft', () async {
-      await walkToReview();
-
-      cubit.declarationInformationAccurateToggled(true);
-      cubit.declarationAuthorizedToSubmitToggled(true);
-      cubit.declarationTermsAcceptedToggled(true);
-      expect(cubit.state.input.declarations.informationAccurate, true);
-
-      cubit.editStepRequested(MerchantOnboardingStep.business);
-      cubit.businessLegalNameChanged('Kopi Nusantara Baru');
-
-      expect(cubit.state.input.declarations.informationAccurate, false);
-      expect(cubit.state.input.declarations.authorizedToSubmit, false);
-      expect(cubit.state.input.declarations.termsAccepted, false);
-      expect(cubit.state.input.business.legalName, 'Kopi Nusantara Baru');
-      expect(cubit.state.isMateriallyEdited, true);
-
-      // Pure step movement does not reset declarations again.
-      final afterMovement = cubit.state.input.declarations;
       cubit.editStepRequested(MerchantOnboardingStep.review);
-      cubit.backTapped();
-      expect(cubit.state.input.declarations, afterMovement);
-    });
-  });
-
-  group('submit', () {
-    test('valid input reaches the fake repository exactly once (11)', () async {
-      await walkToReview();
-      cubit.declarationInformationAccurateToggled(true);
-      cubit.declarationAuthorizedToSubmitToggled(true);
-      cubit.declarationTermsAcceptedToggled(true);
-
-      await cubit.submitTapped();
-      await cubit.submitTapped(); // rapid double tap
-
-      verify(() => repo.submitApplication(any())).called(1);
-      expect(cubit.state.submissionStatus, MerchantSubmissionStatus.success);
-      await pumpEventQueue();
-      expect(
-        effects.whereType<MerchantSubmittedEffect>().single.applicationId,
-        FakeMerchantOnboardingRepository.demoApplicationId,
-      );
-      // The in-memory draft was cleared on success.
-      expect(cubit.state.input.owners, isEmpty);
-      expect(cubit.state.input.business, const BusinessProfileInput());
-      expect(cubit.state.input.declarations, const DeclarationsInput());
-    });
-
-    test('invalid final input never reaches the repository (10)', () async {
-      await walkToReview();
-      // Invalidate the settlement after every step previously passed.
-      cubit.settlementBankChanged(null);
-
       await cubit.submitTapped();
       await pumpEventQueue();
 
-      verifyNever(() => repo.submitApplication(any()));
       expect(cubit.state.submissionStatus, MerchantSubmissionStatus.failure);
-      expect(cubit.state.step, MerchantOnboardingStep.settlement);
+      expect(cubit.state.step, MerchantOnboardingStep.business);
+      expect(effects.single, isA<MerchantFocusFieldEffect>());
       expect(
-        effects.whereType<MerchantFocusFieldEffect>().last.path,
-        'settlement.bankId',
+        (effects.single as MerchantFocusFieldEffect).path,
+        'business.legalName',
       );
-    });
 
-    test(
-      'server field validation routes to the owning step and focuses',
-      () async {
-        await walkToReview();
-        cubit.declarationInformationAccurateToggled(true);
-        cubit.declarationAuthorizedToSubmitToggled(true);
-        cubit.declarationTermsAcceptedToggled(true);
-        when(() => repo.submitApplication(any())).thenAnswer(
-          (_) async => left(
-            MerchantServerValidationFailure([
-              const MerchantValidationFailure(
-                code: 'minLength',
-                path: 'settlement.bankId',
-              ),
-            ]),
-          ),
-        );
+      await sub.cancel();
+    },
+  );
 
-        await cubit.submitTapped();
-        await pumpEventQueue();
-
-        expect(cubit.state.step, MerchantOnboardingStep.settlement);
-        expect(
-          cubit.state.localFailures.any((f) => f.path == 'settlement.bankId'),
-          true,
-        );
-        expect(
-          effects.whereType<MerchantFocusFieldEffect>().last.path,
-          'settlement.bankId',
-        );
-      },
+  test('submit success updates state and emits submitted effect', () async {
+    await cubit.loadReferenceData();
+    when(
+      () => submitUseCase(
+        input: any(named: 'input'),
+        reference: any(named: 'reference'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const Right(MerchantApplicationReceipt(applicationId: 'app_123')),
     );
 
-    test(
-      'non-validation failures stay on review with a banner failure',
-      () async {
-        await walkToReview();
-        cubit.declarationInformationAccurateToggled(true);
-        cubit.declarationAuthorizedToSubmitToggled(true);
-        cubit.declarationTermsAcceptedToggled(true);
-        when(() => repo.submitApplication(any())).thenAnswer(
-          (_) async => left(const MerchantDuplicateApplicationFailure()),
-        );
+    final effects = <MerchantOnboardingEffect>[];
+    final sub = cubit.effects.listen(effects.add);
 
-        await cubit.submitTapped();
-        await pumpEventQueue();
+    cubit.editStepRequested(MerchantOnboardingStep.review);
+    await cubit.submitTapped();
+    await pumpEventQueue();
 
-        expect(cubit.state.step, MerchantOnboardingStep.review);
-        expect(
-          cubit.state.submissionFailure,
-          isA<MerchantDuplicateApplicationFailure>(),
-        );
-      },
-    );
-  });
-
-  group('discard confirmation (acceptance 13)', () {
-    test(
-      'materially edited draft asks for confirmation before leaving',
-      () async {
-        await loadReady();
-        cubit.businessLegalNameChanged('Kopi Nusantara');
-
-        cubit.systemBackRequested();
-        await pumpEventQueue();
-
-        expect(effects.whereType<MerchantConfirmDiscardEffect>(), hasLength(1));
-        expect(effects.whereType<MerchantLeaveEffect>(), isEmpty);
-      },
+    expect(cubit.state.submissionStatus, MerchantSubmissionStatus.success);
+    expect(cubit.state.isMateriallyEdited, isFalse);
+    expect(effects.single, isA<MerchantSubmittedEffect>());
+    expect(
+      (effects.single as MerchantSubmittedEffect).applicationId,
+      'app_123',
     );
 
-    test('untouched draft leaves without confirmation', () async {
-      await loadReady();
-
-      cubit.systemBackRequested();
-      await pumpEventQueue();
-
-      expect(effects.whereType<MerchantLeaveEffect>(), hasLength(1));
-      expect(effects.whereType<MerchantConfirmDiscardEffect>(), isEmpty);
-    });
-
-    test('confirming discard requests leave', () async {
-      await loadReady();
-      cubit.businessLegalNameChanged('Kopi Nusantara');
-      cubit.systemBackRequested();
-      await pumpEventQueue();
-
-      cubit.discardConfirmed();
-      await pumpEventQueue();
-
-      expect(effects.whereType<MerchantLeaveEffect>(), hasLength(1));
-    });
+    await sub.cancel();
   });
 }

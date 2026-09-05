@@ -1,70 +1,74 @@
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
 /// Demo reference data matching the plan's catalog table exactly.
-MerchantReferenceData buildReferenceData() => MerchantReferenceData(
+MerchantReferenceDataEntity buildReferenceData() => MerchantReferenceDataEntity(
   businessTypes: [
-    BusinessTypeOption(
+    BusinessTypeOptionEntity(
       id: 'sole_proprietorship',
       label: 'Sole proprietorship',
       requiresRegistrationNumber: false,
     ),
-    BusinessTypeOption(
+    BusinessTypeOptionEntity(
       id: 'private_company',
       label: 'Private company',
       requiresRegistrationNumber: true,
     ),
   ],
   industries: [
-    ReferenceOption(id: 'retail', label: 'Retail'),
-    ReferenceOption(id: 'food_beverage', label: 'Food & beverage'),
-    ReferenceOption(
+    ReferenceOptionEntity(id: 'retail', label: 'Retail'),
+    ReferenceOptionEntity(id: 'food_beverage', label: 'Food & beverage'),
+    ReferenceOptionEntity(
       id: 'professional_services',
       label: 'Professional services',
     ),
-    ReferenceOption(id: 'digital_services', label: 'Digital services'),
+    ReferenceOptionEntity(id: 'digital_services', label: 'Digital services'),
   ],
   monthlySalesRanges: [
-    ReferenceOption(id: 'under_10m_idr', label: '< IDR 10 million'),
-    ReferenceOption(id: '10m_to_50m_idr', label: 'IDR 10-50 million'),
-    ReferenceOption(id: '50m_to_250m_idr', label: 'IDR 50-250 million'),
-    ReferenceOption(id: 'above_250m_idr', label: '> IDR 250 million'),
+    ReferenceOptionEntity(id: 'under_10m_idr', label: '< IDR 10 million'),
+    ReferenceOptionEntity(id: '10m_to_50m_idr', label: 'IDR 10-50 million'),
+    ReferenceOptionEntity(id: '50m_to_250m_idr', label: 'IDR 50-250 million'),
+    ReferenceOptionEntity(id: 'above_250m_idr', label: '> IDR 250 million'),
   ],
   ownerRoles: [
-    OwnerRoleOption(id: 'owner', label: 'Owner', contributesOwnership: true),
-    OwnerRoleOption(
+    OwnerRoleOptionEntity(
+      id: 'owner',
+      label: 'Owner',
+      contributesOwnership: true,
+    ),
+    OwnerRoleOptionEntity(
       id: 'director',
       label: 'Director',
       contributesOwnership: false,
     ),
   ],
   banks: [
-    BankOption(
+    BankOptionEntity(
       id: 'demo_bank_alpha',
       label: 'Demo Bank Alpha',
       supportedScheduleIds: {'daily', 'weekly'},
     ),
-    BankOption(
+    BankOptionEntity(
       id: 'demo_bank_beta',
       label: 'Demo Bank Beta',
       supportedScheduleIds: {'weekly'},
     ),
   ],
   holderTypes: [
-    AccountHolderTypeOption(
+    AccountHolderTypeOptionEntity(
       id: 'business',
       label: 'Business',
       requiresOwnerReference: false,
     ),
-    AccountHolderTypeOption(
+    AccountHolderTypeOptionEntity(
       id: 'owner',
       label: 'Owner',
       requiresOwnerReference: true,
     ),
   ],
   payoutSchedules: [
-    ReferenceOption(id: 'daily', label: 'Daily'),
-    ReferenceOption(id: 'weekly', label: 'Weekly'),
+    ReferenceOptionEntity(id: 'daily', label: 'Daily'),
+    ReferenceOptionEntity(id: 'weekly', label: 'Weekly'),
   ],
   termsVersion: '2026-08-30',
 );

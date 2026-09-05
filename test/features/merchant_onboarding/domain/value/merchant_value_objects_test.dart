@@ -1,6 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_number.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/legal_business_name.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/ownership_percentage.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/phone_number.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/registration_number.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/terms_version.dart';
 
 import '../merchant_test_fixtures.dart';
 

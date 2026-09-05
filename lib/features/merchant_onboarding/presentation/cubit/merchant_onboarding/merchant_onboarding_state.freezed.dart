@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MerchantOnboardingState {
 
- MerchantOnboardingStep get step; MerchantReferenceStatus get referenceStatus; MerchantReferenceData? get referenceData; MerchantOnboardingInput get input; Set<String> get touchedPaths; Set<MerchantOnboardingStep> get attemptedSteps; List<MerchantValidationFailure> get localFailures; MerchantSubmissionStatus get submissionStatus; MerchantOnboardingFailure? get submissionFailure; bool get isMateriallyEdited;
+ MerchantOnboardingStep get step; MerchantReferenceStatus get referenceStatus; MerchantReferenceDataEntity? get referenceData; MerchantOnboardingInput get input; Set<String> get touchedPaths; Set<MerchantOnboardingStep> get attemptedSteps; List<MerchantValidationFailure> get localFailures; MerchantSubmissionStatus get submissionStatus; MerchantOnboardingFailure? get submissionFailure; bool get isMateriallyEdited;
 /// Create a copy of MerchantOnboardingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,11 +45,11 @@ abstract mixin class $MerchantOnboardingStateCopyWith<$Res>  {
   factory $MerchantOnboardingStateCopyWith(MerchantOnboardingState value, $Res Function(MerchantOnboardingState) _then) = _$MerchantOnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- MerchantOnboardingStep step, MerchantReferenceStatus referenceStatus, MerchantReferenceData? referenceData, MerchantOnboardingInput input, Set<String> touchedPaths, Set<MerchantOnboardingStep> attemptedSteps, List<MerchantValidationFailure> localFailures, MerchantSubmissionStatus submissionStatus, MerchantOnboardingFailure? submissionFailure, bool isMateriallyEdited
+ MerchantOnboardingStep step, MerchantReferenceStatus referenceStatus, MerchantReferenceDataEntity? referenceData, MerchantOnboardingInput input, Set<String> touchedPaths, Set<MerchantOnboardingStep> attemptedSteps, List<MerchantValidationFailure> localFailures, MerchantSubmissionStatus submissionStatus, MerchantOnboardingFailure? submissionFailure, bool isMateriallyEdited
 });
 
 
-
+$MerchantReferenceDataEntityCopyWith<$Res>? get referenceData;
 
 }
 /// @nodoc
@@ -67,7 +67,7 @@ class _$MerchantOnboardingStateCopyWithImpl<$Res>
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as MerchantOnboardingStep,referenceStatus: null == referenceStatus ? _self.referenceStatus : referenceStatus // ignore: cast_nullable_to_non_nullable
 as MerchantReferenceStatus,referenceData: freezed == referenceData ? _self.referenceData : referenceData // ignore: cast_nullable_to_non_nullable
-as MerchantReferenceData?,input: null == input ? _self.input : input // ignore: cast_nullable_to_non_nullable
+as MerchantReferenceDataEntity?,input: null == input ? _self.input : input // ignore: cast_nullable_to_non_nullable
 as MerchantOnboardingInput,touchedPaths: null == touchedPaths ? _self.touchedPaths : touchedPaths // ignore: cast_nullable_to_non_nullable
 as Set<String>,attemptedSteps: null == attemptedSteps ? _self.attemptedSteps : attemptedSteps // ignore: cast_nullable_to_non_nullable
 as Set<MerchantOnboardingStep>,localFailures: null == localFailures ? _self.localFailures : localFailures // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,19 @@ as MerchantOnboardingFailure?,isMateriallyEdited: null == isMateriallyEdited ? _
 as bool,
   ));
 }
+/// Create a copy of MerchantOnboardingState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MerchantReferenceDataEntityCopyWith<$Res>? get referenceData {
+    if (_self.referenceData == null) {
+    return null;
+  }
 
+  return $MerchantReferenceDataEntityCopyWith<$Res>(_self.referenceData!, (value) {
+    return _then(_self.copyWith(referenceData: value));
+  });
+}
 }
 
 
@@ -159,7 +171,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceData? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceDataEntity? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MerchantOnboardingState() when $default != null:
 return $default(_that.step,_that.referenceStatus,_that.referenceData,_that.input,_that.touchedPaths,_that.attemptedSteps,_that.localFailures,_that.submissionStatus,_that.submissionFailure,_that.isMateriallyEdited);case _:
@@ -180,7 +192,7 @@ return $default(_that.step,_that.referenceStatus,_that.referenceData,_that.input
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceData? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceDataEntity? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)  $default,) {final _that = this;
 switch (_that) {
 case _MerchantOnboardingState():
 return $default(_that.step,_that.referenceStatus,_that.referenceData,_that.input,_that.touchedPaths,_that.attemptedSteps,_that.localFailures,_that.submissionStatus,_that.submissionFailure,_that.isMateriallyEdited);case _:
@@ -200,7 +212,7 @@ return $default(_that.step,_that.referenceStatus,_that.referenceData,_that.input
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceData? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( MerchantOnboardingStep step,  MerchantReferenceStatus referenceStatus,  MerchantReferenceDataEntity? referenceData,  MerchantOnboardingInput input,  Set<String> touchedPaths,  Set<MerchantOnboardingStep> attemptedSteps,  List<MerchantValidationFailure> localFailures,  MerchantSubmissionStatus submissionStatus,  MerchantOnboardingFailure? submissionFailure,  bool isMateriallyEdited)?  $default,) {final _that = this;
 switch (_that) {
 case _MerchantOnboardingState() when $default != null:
 return $default(_that.step,_that.referenceStatus,_that.referenceData,_that.input,_that.touchedPaths,_that.attemptedSteps,_that.localFailures,_that.submissionStatus,_that.submissionFailure,_that.isMateriallyEdited);case _:
@@ -220,7 +232,7 @@ class _MerchantOnboardingState implements MerchantOnboardingState {
 
 @override@JsonKey() final  MerchantOnboardingStep step;
 @override@JsonKey() final  MerchantReferenceStatus referenceStatus;
-@override final  MerchantReferenceData? referenceData;
+@override final  MerchantReferenceDataEntity? referenceData;
 @override final  MerchantOnboardingInput input;
  final  Set<String> _touchedPaths;
 @override@JsonKey() Set<String> get touchedPaths {
@@ -277,11 +289,11 @@ abstract mixin class _$MerchantOnboardingStateCopyWith<$Res> implements $Merchan
   factory _$MerchantOnboardingStateCopyWith(_MerchantOnboardingState value, $Res Function(_MerchantOnboardingState) _then) = __$MerchantOnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- MerchantOnboardingStep step, MerchantReferenceStatus referenceStatus, MerchantReferenceData? referenceData, MerchantOnboardingInput input, Set<String> touchedPaths, Set<MerchantOnboardingStep> attemptedSteps, List<MerchantValidationFailure> localFailures, MerchantSubmissionStatus submissionStatus, MerchantOnboardingFailure? submissionFailure, bool isMateriallyEdited
+ MerchantOnboardingStep step, MerchantReferenceStatus referenceStatus, MerchantReferenceDataEntity? referenceData, MerchantOnboardingInput input, Set<String> touchedPaths, Set<MerchantOnboardingStep> attemptedSteps, List<MerchantValidationFailure> localFailures, MerchantSubmissionStatus submissionStatus, MerchantOnboardingFailure? submissionFailure, bool isMateriallyEdited
 });
 
 
-
+@override $MerchantReferenceDataEntityCopyWith<$Res>? get referenceData;
 
 }
 /// @nodoc
@@ -299,7 +311,7 @@ class __$MerchantOnboardingStateCopyWithImpl<$Res>
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as MerchantOnboardingStep,referenceStatus: null == referenceStatus ? _self.referenceStatus : referenceStatus // ignore: cast_nullable_to_non_nullable
 as MerchantReferenceStatus,referenceData: freezed == referenceData ? _self.referenceData : referenceData // ignore: cast_nullable_to_non_nullable
-as MerchantReferenceData?,input: null == input ? _self.input : input // ignore: cast_nullable_to_non_nullable
+as MerchantReferenceDataEntity?,input: null == input ? _self.input : input // ignore: cast_nullable_to_non_nullable
 as MerchantOnboardingInput,touchedPaths: null == touchedPaths ? _self._touchedPaths : touchedPaths // ignore: cast_nullable_to_non_nullable
 as Set<String>,attemptedSteps: null == attemptedSteps ? _self._attemptedSteps : attemptedSteps // ignore: cast_nullable_to_non_nullable
 as Set<MerchantOnboardingStep>,localFailures: null == localFailures ? _self._localFailures : localFailures // ignore: cast_nullable_to_non_nullable
@@ -310,7 +322,19 @@ as bool,
   ));
 }
 
+/// Create a copy of MerchantOnboardingState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MerchantReferenceDataEntityCopyWith<$Res>? get referenceData {
+    if (_self.referenceData == null) {
+    return null;
+  }
 
+  return $MerchantReferenceDataEntityCopyWith<$Res>(_self.referenceData!, (value) {
+    return _then(_self.copyWith(referenceData: value));
+  });
+}
 }
 
 // dart format on

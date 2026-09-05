@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 
 import '../merchant_test_fixtures.dart';
 
 void main() {
   final reference = buildReferenceData();
 
-  MerchantReferenceData referenceWith({required String termsVersion}) =>
-      MerchantReferenceData(
+  MerchantReferenceDataEntity referenceWith({required String termsVersion}) =>
+      MerchantReferenceDataEntity(
         businessTypes: reference.businessTypes,
         industries: reference.industries,
         monthlySalesRanges: reference.monthlySalesRanges,
@@ -107,7 +107,7 @@ void main() {
     // Mutating the caller's set after snapshot construction must not change
     // the bank's validated schedule rule.
     final mutableSchedules = {'daily', 'weekly'};
-    final bank = BankOption(
+    final bank = BankOptionEntity(
       id: 'demo_bank_gamma',
       label: 'Demo Bank Gamma',
       supportedScheduleIds: mutableSchedules,

@@ -6,8 +6,8 @@ import 'package:mobile_core_kit/features/merchant_onboarding/data/error/merchant
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_application_receipt.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 
 class MerchantOnboardingRepositoryImpl implements MerchantOnboardingRepository {
@@ -16,7 +16,7 @@ class MerchantOnboardingRepositoryImpl implements MerchantOnboardingRepository {
   final MerchantOnboardingRemoteDataSource _remote;
 
   @override
-  Future<Either<MerchantOnboardingFailure, MerchantReferenceData>>
+  Future<Either<MerchantOnboardingFailure, MerchantReferenceDataEntity>>
   loadReferenceData() async {
     try {
       final response = await _remote.fetchReferenceData();

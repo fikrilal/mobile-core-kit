@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/app_textfield.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_dropdown_field.dart';
@@ -22,7 +22,7 @@ class BusinessStepWidget extends StatelessWidget {
   });
 
   final BusinessProfileInput input;
-  final MerchantReferenceData reference;
+  final MerchantReferenceDataEntity reference;
   final MerchantOnboardingCubit cubit;
   final List<MerchantValidationFailure> failures;
   final RegisterFocus registerFocus;
@@ -59,7 +59,7 @@ class BusinessStepWidget extends StatelessWidget {
           value: input.businessTypeId,
           options: [
             for (final type in reference.businessTypes)
-              ReferenceOption(id: type.id, label: type.label),
+              ReferenceOptionEntity(id: type.id, label: type.label),
           ],
           errorText: errorFor('business.businessTypeId'),
           onChanged: cubit.businessTypeChanged,

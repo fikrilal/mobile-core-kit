@@ -1,9 +1,13 @@
 import 'package:fpdart/fpdart.dart';
-
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/account_holder_type_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_holder_name.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_number.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/payout_schedule_id.dart';
 
 class SettlementAccount {
   const SettlementAccount._({
@@ -25,7 +29,7 @@ class SettlementAccount {
 
   static Either<List<MerchantValidationFailure>, SettlementAccount> create({
     required SettlementInput input,
-    required MerchantReferenceData reference,
+    required MerchantReferenceDataEntity reference,
   }) {
     final errors = <MerchantValidationFailure>[];
     BankId? bankId;

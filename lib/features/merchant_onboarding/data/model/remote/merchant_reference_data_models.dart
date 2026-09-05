@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 
 part 'merchant_reference_data_models.freezed.dart';
 part 'merchant_reference_data_models.g.dart';
@@ -22,11 +22,11 @@ abstract class MerchantReferenceDataModel with _$MerchantReferenceDataModel {
   factory MerchantReferenceDataModel.fromJson(Map<String, dynamic> json) =>
       _$MerchantReferenceDataModelFromJson(json);
 
-  MerchantReferenceData toDomain() {
-    return MerchantReferenceData(
+  MerchantReferenceDataEntity toDomain() {
+    return MerchantReferenceDataEntity(
       businessTypes: [
         for (final option in businessTypes)
-          BusinessTypeOption(
+          BusinessTypeOptionEntity(
             id: option.id,
             label: option.label,
             requiresRegistrationNumber: option.requiresRegistrationNumber,
@@ -34,15 +34,15 @@ abstract class MerchantReferenceDataModel with _$MerchantReferenceDataModel {
       ],
       industries: [
         for (final option in industries)
-          ReferenceOption(id: option.id, label: option.label),
+          ReferenceOptionEntity(id: option.id, label: option.label),
       ],
       monthlySalesRanges: [
         for (final option in monthlySalesRanges)
-          ReferenceOption(id: option.id, label: option.label),
+          ReferenceOptionEntity(id: option.id, label: option.label),
       ],
       ownerRoles: [
         for (final option in ownerRoles)
-          OwnerRoleOption(
+          OwnerRoleOptionEntity(
             id: option.id,
             label: option.label,
             contributesOwnership: option.contributesOwnership,
@@ -50,7 +50,7 @@ abstract class MerchantReferenceDataModel with _$MerchantReferenceDataModel {
       ],
       banks: [
         for (final option in banks)
-          BankOption(
+          BankOptionEntity(
             id: option.id,
             label: option.label,
             supportedScheduleIds: option.supportedPayoutScheduleIds.toSet(),
@@ -58,7 +58,7 @@ abstract class MerchantReferenceDataModel with _$MerchantReferenceDataModel {
       ],
       holderTypes: [
         for (final option in accountHolderTypes)
-          AccountHolderTypeOption(
+          AccountHolderTypeOptionEntity(
             id: option.id,
             label: option.label,
             requiresOwnerReference: option.requiresOwnerReference,
@@ -66,7 +66,7 @@ abstract class MerchantReferenceDataModel with _$MerchantReferenceDataModel {
       ],
       payoutSchedules: [
         for (final option in payoutSchedules)
-          ReferenceOption(id: option.id, label: option.label),
+          ReferenceOptionEntity(id: option.id, label: option.label),
       ],
       termsVersion: termsVersion,
     );

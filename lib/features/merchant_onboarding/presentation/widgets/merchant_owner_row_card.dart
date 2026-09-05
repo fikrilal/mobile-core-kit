@@ -4,11 +4,12 @@ import 'package:mobile_core_kit/core/design_system/theme/typography/components/t
 import 'package:mobile_core_kit/core/design_system/widgets/checkbox/app_checkbox_tile.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/app_textfield.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/presentation/models/owner_move_direction.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_dropdown_field.dart';
 
@@ -25,7 +26,7 @@ class MerchantOwnerRowCard extends StatelessWidget {
 
   final OwnerInput row;
   final int index;
-  final MerchantReferenceData reference;
+  final MerchantReferenceDataEntity reference;
   final MerchantOnboardingCubit cubit;
   final List<MerchantValidationFailure> failures;
   final RegisterFocus registerFocus;
@@ -100,7 +101,10 @@ class MerchantOwnerRowCard extends StatelessWidget {
               value: row.roleId,
               options: [
                 for (final roleOption in reference.ownerRoles)
-                  ReferenceOption(id: roleOption.id, label: roleOption.label),
+                  ReferenceOptionEntity(
+                    id: roleOption.id,
+                    label: roleOption.label,
+                  ),
               ],
               errorText: errorFor('$rowPath.roleId'),
               onChanged: (id) => cubit.ownerRoleChanged(row.ownerRowId, id),
@@ -111,7 +115,9 @@ class MerchantOwnerRowCard extends StatelessWidget {
               focusNode: registerFocus('$rowPath.ownershipPercentage'),
               initialValue: row.ownershipPercentage,
               labelText: l10n.merchantOnboardingFieldOwnershipPercentage,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               errorText: errorFor('$rowPath.ownershipPercentage'),
               onChanged: (value) =>
                   cubit.ownerPercentageChanged(row.ownerRowId, value),

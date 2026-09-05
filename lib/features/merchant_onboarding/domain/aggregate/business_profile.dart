@@ -1,9 +1,14 @@
 import 'package:fpdart/fpdart.dart';
-
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/business_type_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/industry_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/legal_business_name.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/monthly_sales_range_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/phone_number.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/registration_number.dart';
 
 class BusinessProfile {
   const BusinessProfile._({
@@ -26,7 +31,7 @@ class BusinessProfile {
 
   static Either<List<MerchantValidationFailure>, BusinessProfile> create({
     required BusinessProfileInput input,
-    required MerchantReferenceData reference,
+    required MerchantReferenceDataEntity reference,
   }) {
     final errors = <MerchantValidationFailure>[];
     LegalBusinessName? legalName;

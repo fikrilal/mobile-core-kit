@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 
 class MerchantDropdownField extends StatelessWidget {
   const MerchantDropdownField({
@@ -17,11 +17,11 @@ class MerchantDropdownField extends StatelessWidget {
 
   final String label;
   final String? value;
-  final List<ReferenceOption> options;
+  final List<ReferenceOptionEntity> options;
   final ValueChanged<String?> onChanged;
   final FocusNode? focusNode;
   final String? errorText;
-  final String? Function(ReferenceOption)? optionLabel;
+  final String? Function(ReferenceOptionEntity)? optionLabel;
 
   @override
   Widget build(BuildContext context) {

@@ -69,7 +69,6 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
         unawaited(_showDiscardDialog());
       case MerchantLeaveEffect():
         _leaveRequested = true;
-
         setState(() {});
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.pop();

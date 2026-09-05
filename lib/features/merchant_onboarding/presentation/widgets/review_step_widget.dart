@@ -3,9 +3,9 @@ import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/checkbox/app_checkbox_tile.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/localization/merchant_onboarding_error_localizer.dart';
@@ -23,7 +23,7 @@ class ReviewStepWidget extends StatelessWidget {
   });
 
   final MerchantOnboardingInput input;
-  final MerchantReferenceData reference;
+  final MerchantReferenceDataEntity reference;
   final MerchantOnboardingCubit cubit;
   final List<MerchantValidationFailure> failures;
   final RegisterFocus registerFocus;

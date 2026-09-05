@@ -1,9 +1,12 @@
 import 'package:fpdart/fpdart.dart';
-
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_role_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/ownership_percentage.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/person_name.dart';
 
 class OwnerRow {
   const OwnerRow._({
@@ -38,7 +41,7 @@ class OwnershipStructure {
 
   static Either<List<MerchantValidationFailure>, OwnershipStructure> create({
     required List<OwnerInput> rows,
-    required MerchantReferenceData reference,
+    required MerchantReferenceDataEntity reference,
   }) {
     if (rows.length < minRows) {
       return left([

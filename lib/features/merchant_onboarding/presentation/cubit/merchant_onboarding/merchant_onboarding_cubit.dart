@@ -10,11 +10,10 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onb
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
-
-enum OwnerMoveDirection { up, down }
+import 'package:mobile_core_kit/features/merchant_onboarding/presentation/models/owner_move_direction.dart';
 
 class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
   MerchantOnboardingCubit(this._repository, this._submitOnboarding)
@@ -22,231 +21,198 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
   final MerchantOnboardingRepository _repository;
   final SubmitMerchantOnboardingUseCase _submitOnboarding;
-
   final _effects = StreamController<MerchantOnboardingEffect>.broadcast();
 
   Stream<MerchantOnboardingEffect> get effects => _effects.stream;
 
   Future<void> loadReferenceData() async {
     if (state.isSubmitting) return;
-
     emit(state.copyWith(referenceStatus: MerchantReferenceStatus.loading));
 
     final result = await _repository.loadReferenceData();
     result.match(
-      (failure) {
-        emit(state.copyWith(referenceStatus: MerchantReferenceStatus.failure));
-      },
-      (reference) {
-        emit(
-          state.copyWith(
-            referenceStatus: MerchantReferenceStatus.ready,
-            referenceData: reference,
-            input: state.input.copyWith(
-              declarations: state.input.declarations.copyWith(
-                termsVersion: reference.termsVersion,
-              ),
+      (_) => emit(
+        state.copyWith(referenceStatus: MerchantReferenceStatus.failure),
+      ),
+      (reference) => emit(
+        state.copyWith(
+          referenceStatus: MerchantReferenceStatus.ready,
+          referenceData: reference,
+          input: state.input.copyWith(
+            declarations: state.input.declarations.copyWith(
+              termsVersion: reference.termsVersion,
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  void businessLegalNameChanged(String value) => _updateBusiness(
-    (business) => business.copyWith(legalName: value),
-    touched: 'business.legalName',
-  );
+  void businessLegalNameChanged(String v) =>
+      _updateBusiness((b) => b.copyWith(legalName: v), 'business.legalName');
 
   void businessTypeChanged(String? id) => _updateBusiness(
-    (business) =>
-        business.copyWith(businessTypeId: id, clearBusinessTypeId: id == null),
-    touched: 'business.businessTypeId',
+    (b) => b.copyWith(businessTypeId: id, clearBusinessTypeId: id == null),
+    'business.businessTypeId',
   );
 
-  void businessRegistrationNumberChanged(String value) => _updateBusiness(
-    (business) => business.copyWith(registrationNumber: value),
-    touched: 'business.registrationNumber',
+  void businessRegistrationNumberChanged(String v) => _updateBusiness(
+    (b) => b.copyWith(registrationNumber: v),
+    'business.registrationNumber',
   );
 
   void businessIndustryChanged(String? id) => _updateBusiness(
-    (business) =>
-        business.copyWith(industryId: id, clearIndustryId: id == null),
-    touched: 'business.industryId',
+    (b) => b.copyWith(industryId: id, clearIndustryId: id == null),
+    'business.industryId',
   );
 
   void businessMonthlySalesRangeChanged(String? id) => _updateBusiness(
-    (business) => business.copyWith(
+    (b) => b.copyWith(
       monthlySalesRangeId: id,
       clearMonthlySalesRangeId: id == null,
     ),
-    touched: 'business.monthlySalesRangeId',
+    'business.monthlySalesRangeId',
   );
 
-  void businessContactEmailChanged(String value) => _updateBusiness(
-    (business) => business.copyWith(contactEmail: value),
-    touched: 'business.contactEmail',
+  void businessContactEmailChanged(String v) => _updateBusiness(
+    (b) => b.copyWith(contactEmail: v),
+    'business.contactEmail',
   );
 
-  void businessContactPhoneChanged(String value) => _updateBusiness(
-    (business) => business.copyWith(contactPhone: value),
-    touched: 'business.contactPhone',
+  void businessContactPhoneChanged(String v) => _updateBusiness(
+    (b) => b.copyWith(contactPhone: v),
+    'business.contactPhone',
   );
 
-  void ownerNameChanged(String ownerRowId, String value) => _updateOwner(
-    ownerRowId,
-    (row) => row.copyWith(fullName: value),
-    touched: 'owners.$ownerRowId.fullName',
+  void ownerNameChanged(String id, String v) =>
+      _updateOwner(id, (r) => r.copyWith(fullName: v), 'owners.$id.fullName');
+
+  void ownerRoleChanged(String id, String? roleId) => _updateOwner(
+    id,
+    (r) => r.copyWith(roleId: roleId, clearRoleId: roleId == null),
+    'owners.$id.roleId',
   );
 
-  void ownerRoleChanged(String ownerRowId, String? id) => _updateOwner(
-    ownerRowId,
-    (row) => row.copyWith(roleId: id, clearRoleId: id == null),
-    touched: 'owners.$ownerRowId.roleId',
+  void ownerPercentageChanged(String id, String v) => _updateOwner(
+    id,
+    (r) => r.copyWith(ownershipPercentage: v),
+    'owners.$id.ownershipPercentage',
   );
 
-  void ownerPercentageChanged(String ownerRowId, String value) => _updateOwner(
-    ownerRowId,
-    (row) => row.copyWith(ownershipPercentage: value),
-    touched: 'owners.$ownerRowId.ownershipPercentage',
-  );
+  void ownerEmailChanged(String id, String v) =>
+      _updateOwner(id, (r) => r.copyWith(email: v), 'owners.$id.email');
 
-  void ownerEmailChanged(String ownerRowId, String value) => _updateOwner(
-    ownerRowId,
-    (row) => row.copyWith(email: value),
-    touched: 'owners.$ownerRowId.email',
-  );
-
-  void ownerPrimaryToggled(String ownerRowId, bool isPrimary) => _updateInput(
-    (input) => input.copyWith(
-      owners: input.owners
+  void ownerPrimaryToggled(String id, bool isPrimary) => _updateInput(
+    (i) => i.copyWith(
+      owners: i.owners
           .map(
-            (row) => row.ownerRowId == ownerRowId
-                ? row.copyWith(isPrimaryContact: isPrimary)
-                : (isPrimary ? row.copyWith(isPrimaryContact: false) : row),
+            (r) => r.ownerRowId == id
+                ? r.copyWith(isPrimaryContact: isPrimary)
+                : (isPrimary ? r.copyWith(isPrimaryContact: false) : r),
           )
           .toList(),
     ),
     material: true,
-    touched: {'owners.$ownerRowId.isPrimaryContact'},
+    touched: {'owners.$id.isPrimaryContact'},
   );
 
-  void ownerAdded() {
-    _updateInput(
-      (input) => input.copyWith(
-        owners: [
-          ...input.owners,
-          OwnerInput(
-            ownerRowId: OwnerRowId.generate().value,
-            isPrimaryContact: input.owners.isEmpty,
-          ),
-        ],
-      ),
-      material: true,
-      touched: {},
-    );
-  }
+  void ownerAdded() => _updateInput(
+    (i) => i.copyWith(
+      owners: [
+        ...i.owners,
+        OwnerInput(
+          ownerRowId: OwnerRowId.generate().value,
+          isPrimaryContact: i.owners.isEmpty,
+        ),
+      ],
+    ),
+    material: true,
+    touched: {},
+  );
 
-  void ownerRemoved(String ownerRowId) {
-    _updateInput(
-      (input) => input.copyWith(
-        owners: input.owners
-            .where((row) => row.ownerRowId != ownerRowId)
-            .toList(),
-        settlement: input.settlement.ownerRowId == ownerRowId
-            ? input.settlement.copyWith(clearOwnerRowId: true)
-            : input.settlement,
-      ),
-      material: true,
-      touched: {},
-    );
-  }
+  void ownerRemoved(String id) => _updateInput(
+    (i) => i.copyWith(
+      owners: i.owners.where((r) => r.ownerRowId != id).toList(),
+      settlement: i.settlement.ownerRowId == id
+          ? i.settlement.copyWith(clearOwnerRowId: true)
+          : i.settlement,
+    ),
+    material: true,
+    touched: {},
+  );
 
-  void ownerMoved(String ownerRowId, OwnerMoveDirection direction) {
+  void ownerMoved(String id, OwnerMoveDirection dir) {
     final owners = state.input.owners;
-    final index = owners.indexWhere((row) => row.ownerRowId == ownerRowId);
-    if (index < 0) return;
-
-    final target = direction == OwnerMoveDirection.up ? index - 1 : index + 1;
-    if (target < 0 || target >= owners.length) return;
+    final idx = owners.indexWhere((r) => r.ownerRowId == id);
+    final target = dir == OwnerMoveDirection.up ? idx - 1 : idx + 1;
+    if (idx < 0 || target < 0 || target >= owners.length) return;
 
     final reordered = [...owners];
-    final moved = reordered.removeAt(index);
-    reordered.insert(target, moved);
-
+    reordered.insert(target, reordered.removeAt(idx));
     _updateInput(
-      (input) => input.copyWith(owners: reordered),
+      (i) => i.copyWith(owners: reordered),
       material: true,
       touched: {},
     );
   }
 
   void settlementBankChanged(String? id) => _updateSettlement(
-    (settlement) => settlement.copyWith(bankId: id, clearBankId: id == null),
-    touched: 'settlement.bankId',
+    (s) => s.copyWith(bankId: id, clearBankId: id == null),
+    'settlement.bankId',
   );
 
-  void settlementHolderNameChanged(String value) => _updateSettlement(
-    (settlement) => settlement.copyWith(accountHolderName: value),
-    touched: 'settlement.accountHolderName',
+  void settlementHolderNameChanged(String v) => _updateSettlement(
+    (s) => s.copyWith(accountHolderName: v),
+    'settlement.accountHolderName',
   );
 
-  void settlementAccountNumberChanged(String value) => _updateSettlement(
-    (settlement) => settlement.copyWith(accountNumber: value),
-    touched: 'settlement.accountNumber',
+  void settlementAccountNumberChanged(String v) => _updateSettlement(
+    (s) => s.copyWith(accountNumber: v),
+    'settlement.accountNumber',
   );
 
   void settlementHolderTypeChanged(String? id) {
-    final holderType = state.referenceData?.holderTypeById(id);
-    final requiresOwner = holderType?.requiresOwnerReference ?? false;
-
+    final requiresOwner =
+        state.referenceData?.holderTypeById(id)?.requiresOwnerReference ??
+        false;
     _updateSettlement(
-      (settlement) => settlement.copyWith(
+      (s) => s.copyWith(
         holderTypeId: id,
         clearHolderTypeId: id == null,
-
         clearOwnerRowId: !requiresOwner,
       ),
-      touched: 'settlement.holderTypeId',
+      'settlement.holderTypeId',
     );
   }
 
-  void settlementOwnerReferenceChanged(String? ownerRowId) => _updateSettlement(
-    (settlement) => settlement.copyWith(
-      ownerRowId: ownerRowId,
-      clearOwnerRowId: ownerRowId == null,
-    ),
-    touched: 'settlement.ownerRowId',
+  void settlementOwnerReferenceChanged(String? id) => _updateSettlement(
+    (s) => s.copyWith(ownerRowId: id, clearOwnerRowId: id == null),
+    'settlement.ownerRowId',
   );
 
   void settlementPayoutScheduleChanged(String? id) => _updateSettlement(
-    (settlement) => settlement.copyWith(
-      payoutScheduleId: id,
-      clearPayoutScheduleId: id == null,
-    ),
-    touched: 'settlement.payoutScheduleId',
+    (s) => s.copyWith(payoutScheduleId: id, clearPayoutScheduleId: id == null),
+    'settlement.payoutScheduleId',
   );
 
-  void declarationInformationAccurateToggled(bool value) => _updateInput(
-    (input) => input.copyWith(
-      declarations: input.declarations.copyWith(informationAccurate: value),
+  void declarationInformationAccurateToggled(bool v) => _updateInput(
+    (i) => i.copyWith(
+      declarations: i.declarations.copyWith(informationAccurate: v),
     ),
     material: false,
     touched: {'declarations.informationAccurate'},
   );
 
-  void declarationAuthorizedToSubmitToggled(bool value) => _updateInput(
-    (input) => input.copyWith(
-      declarations: input.declarations.copyWith(authorizedToSubmit: value),
+  void declarationAuthorizedToSubmitToggled(bool v) => _updateInput(
+    (i) => i.copyWith(
+      declarations: i.declarations.copyWith(authorizedToSubmit: v),
     ),
     material: false,
     touched: {'declarations.authorizedToSubmit'},
   );
 
-  void declarationTermsAcceptedToggled(bool value) => _updateInput(
-    (input) => input.copyWith(
-      declarations: input.declarations.copyWith(termsAccepted: value),
-    ),
+  void declarationTermsAcceptedToggled(bool v) => _updateInput(
+    (i) => i.copyWith(declarations: i.declarations.copyWith(termsAccepted: v)),
     material: false,
     touched: {'declarations.termsAccepted'},
   );
@@ -259,7 +225,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     }
 
     final failures = _validateStep(state.step, state.input);
-    final touched = _stepFieldPaths(state.step, state.input);
+    final touched = state.step.fieldPaths(state.input);
 
     if (failures.isNotEmpty) {
       emit(
@@ -277,10 +243,10 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
     emit(
       state.copyWith(
-        step: _nextStep(state.step),
+        step: state.step.next,
         touchedPaths: state.touchedPaths.union(touched),
         attemptedSteps: state.attemptedSteps.union({state.step}),
-        localFailures: [],
+        localFailures: const [],
       ),
     );
   }
@@ -291,7 +257,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       _requestLeave();
       return;
     }
-    emit(state.copyWith(step: _previousStep(state.step)));
+    emit(state.copyWith(step: state.step.previous));
   }
 
   void editStepRequested(MerchantOnboardingStep step) {
@@ -319,12 +285,10 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
         submissionFailure: null,
       ),
     );
-
     final result = await _submitOnboarding(
       input: state.input,
       reference: reference,
     );
-
     if (isClosed) return;
 
     result.match(
@@ -336,7 +300,9 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
             MerchantServerValidationFailure(:final failures) => failures,
             _ => const <MerchantValidationFailure>[],
           };
-          final targetStep = _stepForPath(failures.first.path);
+          final targetStep = MerchantOnboardingStep.forPath(
+            failures.first.path,
+          );
           emit(
             state.copyWith(
               submissionStatus: MerchantSubmissionStatus.failure,
@@ -352,7 +318,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
           );
           return;
         }
-
         emit(
           state.copyWith(
             submissionStatus: MerchantSubmissionStatus.failure,
@@ -364,11 +329,10 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
         emit(
           state.copyWith(
             submissionStatus: MerchantSubmissionStatus.success,
-            localFailures: [],
-
+            localFailures: const [],
             input: MerchantOnboardingInput(),
-            touchedPaths: {},
-            attemptedSteps: {},
+            touchedPaths: const {},
+            attemptedSteps: const {},
             isMateriallyEdited: false,
           ),
         );
@@ -387,25 +351,25 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
   }
 
   void _updateBusiness(
-    BusinessProfileInput Function(BusinessProfileInput) update, {
-    required String touched,
-  }) {
+    BusinessProfileInput Function(BusinessProfileInput) update,
+    String touched,
+  ) {
     _updateInput(
-      (input) => input.copyWith(business: update(input.business)),
+      (i) => i.copyWith(business: update(i.business)),
       material: true,
       touched: {touched},
     );
   }
 
   void _updateOwner(
-    String ownerRowId,
-    OwnerInput Function(OwnerInput) update, {
-    required String touched,
-  }) {
+    String id,
+    OwnerInput Function(OwnerInput) update,
+    String touched,
+  ) {
     _updateInput(
-      (input) => input.copyWith(
-        owners: input.owners
-            .map((row) => row.ownerRowId == ownerRowId ? update(row) : row)
+      (i) => i.copyWith(
+        owners: i.owners
+            .map((r) => r.ownerRowId == id ? update(r) : r)
             .toList(),
       ),
       material: true,
@@ -414,11 +378,11 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
   }
 
   void _updateSettlement(
-    SettlementInput Function(SettlementInput) update, {
-    required String touched,
-  }) {
+    SettlementInput Function(SettlementInput) update,
+    String touched,
+  ) {
     _updateInput(
-      (input) => input.copyWith(settlement: update(input.settlement)),
+      (i) => i.copyWith(settlement: update(i.settlement)),
       material: true,
       touched: {touched},
     );
@@ -442,8 +406,13 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       );
     }
 
-    final failures = _validateStep(state.step, nextInput).where((failure) {
-      return _isFailureVisibleDuringEdit(failure, touched);
+    final failures = _validateStep(state.step, nextInput).where((f) {
+      final path = f.path;
+      if (path == null) return true;
+      if (state.touchedPaths.contains(path) || touched.contains(path)) {
+        return true;
+      }
+      return path == 'owners' && state.attemptedSteps.contains(state.step);
     }).toList();
 
     emit(
@@ -456,31 +425,12 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     );
   }
 
-  bool _isFailureVisibleDuringEdit(
-    MerchantValidationFailure failure,
-    Set<String> justTouched,
-  ) {
-    final path = failure.path;
-    if (path == null) return true;
-    if (state.touchedPaths.contains(path) || justTouched.contains(path)) {
-      return true;
-    }
-    return switch (path) {
-      'owners' => attemptedContains(state.step),
-      _ => false,
-    };
-  }
-
-  bool attemptedContains(MerchantOnboardingStep step) =>
-      state.attemptedSteps.contains(step);
-
   List<MerchantValidationFailure> _validateStep(
     MerchantOnboardingStep step,
     MerchantOnboardingInput input,
   ) {
     final reference = state.referenceData;
     if (reference == null) return const [];
-
     return switch (step) {
       MerchantOnboardingStep.business => BusinessProfile.create(
         input: input.business,
@@ -499,81 +449,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
         reference: reference,
       ).fold((f) => f, (_) => []),
     };
-  }
-
-  Set<String> _stepFieldPaths(
-    MerchantOnboardingStep step,
-    MerchantOnboardingInput input,
-  ) {
-    switch (step) {
-      case MerchantOnboardingStep.business:
-        return const {
-          'business.legalName',
-          'business.businessTypeId',
-          'business.registrationNumber',
-          'business.industryId',
-          'business.monthlySalesRangeId',
-          'business.contactEmail',
-          'business.contactPhone',
-        };
-      case MerchantOnboardingStep.owners:
-        return {
-          for (final row in input.owners) ...[
-            'owners.${row.ownerRowId}.fullName',
-            'owners.${row.ownerRowId}.roleId',
-            'owners.${row.ownerRowId}.ownershipPercentage',
-            'owners.${row.ownerRowId}.email',
-            'owners.${row.ownerRowId}.isPrimaryContact',
-          ],
-          'owners',
-        };
-      case MerchantOnboardingStep.settlement:
-        return const {
-          'settlement.bankId',
-          'settlement.accountHolderName',
-          'settlement.accountNumber',
-          'settlement.holderTypeId',
-          'settlement.ownerRowId',
-          'settlement.payoutScheduleId',
-        };
-      case MerchantOnboardingStep.review:
-        return const {
-          'declarations.informationAccurate',
-          'declarations.authorizedToSubmit',
-          'declarations.termsAccepted',
-          'declarations.termsVersion',
-        };
-    }
-  }
-
-  MerchantOnboardingStep _nextStep(MerchantOnboardingStep step) =>
-      switch (step) {
-        MerchantOnboardingStep.business => MerchantOnboardingStep.owners,
-        MerchantOnboardingStep.owners => MerchantOnboardingStep.settlement,
-        MerchantOnboardingStep.settlement => MerchantOnboardingStep.review,
-        MerchantOnboardingStep.review => MerchantOnboardingStep.review,
-      };
-
-  MerchantOnboardingStep _previousStep(MerchantOnboardingStep step) =>
-      switch (step) {
-        MerchantOnboardingStep.business => MerchantOnboardingStep.business,
-        MerchantOnboardingStep.owners => MerchantOnboardingStep.business,
-        MerchantOnboardingStep.settlement => MerchantOnboardingStep.owners,
-        MerchantOnboardingStep.review => MerchantOnboardingStep.settlement,
-      };
-
-  MerchantOnboardingStep _stepForPath(String? path) {
-    if (path == null) return MerchantOnboardingStep.review;
-    if (path.startsWith('business.') || path.startsWith('contact.')) {
-      return MerchantOnboardingStep.business;
-    }
-    if (path == 'owners' || path.startsWith('owners.')) {
-      return MerchantOnboardingStep.owners;
-    }
-    if (path.startsWith('settlement.')) {
-      return MerchantOnboardingStep.settlement;
-    }
-    return MerchantOnboardingStep.review;
   }
 
   @override

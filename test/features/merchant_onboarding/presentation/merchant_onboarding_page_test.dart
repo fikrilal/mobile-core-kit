@@ -77,7 +77,6 @@ void main() {
       ),
       findsNothing,
     );
-    // The business step shell and its Next action are present.
     expect(find.byType(MerchantOnboardingPage), findsOneWidget);
   });
 
@@ -126,13 +125,10 @@ void main() {
     await tester.pumpWidget(wrap(cubit));
     await tester.pumpAndSettle();
 
-    // Step 1: business.
     await tester.enterText(
       find.byKey(const ValueKey('business_legal_name')),
       'Kopi Nusantara',
     );
-    // Dropdowns are complex; drive the cubit directly for the rest of the
-    // business step to keep the widget test focused on navigation.
     cubit.businessTypeChanged('sole_proprietorship');
     cubit.businessIndustryChanged('retail');
     cubit.businessMonthlySalesRangeChanged('10m_to_50m_idr');
@@ -141,27 +137,17 @@ void main() {
     cubit.nextTapped();
     await tester.pumpAndSettle();
 
-    // Step 2: owners — add a row via the UI.
     await tester.ensureVisible(find.text('Add owner'));
     await tester.tap(find.text('Add owner'));
     await tester.pumpAndSettle();
-    cubit.ownerNameChanged(
-      cubit.state.input.owners.single.ownerRowId,
-      'Budi Santoso',
-    );
-    cubit.ownerRoleChanged(cubit.state.input.owners.single.ownerRowId, 'owner');
-    cubit.ownerPercentageChanged(
-      cubit.state.input.owners.single.ownerRowId,
-      '100',
-    );
-    cubit.ownerEmailChanged(
-      cubit.state.input.owners.single.ownerRowId,
-      'budi@example.com',
-    );
+    final ownerId = cubit.state.input.owners.single.ownerRowId;
+    cubit.ownerNameChanged(ownerId, 'Budi Santoso');
+    cubit.ownerRoleChanged(ownerId, 'owner');
+    cubit.ownerPercentageChanged(ownerId, '100');
+    cubit.ownerEmailChanged(ownerId, 'budi@example.com');
     cubit.nextTapped();
     await tester.pumpAndSettle();
 
-    // Step 3: settlement.
     cubit.settlementBankChanged('demo_bank_alpha');
     cubit.settlementHolderNameChanged('Budi Santoso');
     cubit.settlementAccountNumberChanged('0123456789');
@@ -170,11 +156,9 @@ void main() {
     cubit.nextTapped();
     await tester.pumpAndSettle();
 
-    // Step 4: review shows the masked account number, never the raw value.
     expect(find.text('0123456789'), findsNothing);
     expect(find.text('****6789'), findsOneWidget);
 
-    // Accept declarations via the UI (scrolled into view) and submit.
     await tester.ensureVisible(
       find.byKey(const ValueKey('declaration_information_accurate')),
     );
@@ -187,9 +171,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('declaration_terms_accepted')));
     await tester.pumpAndSettle();
 
-    // Submit through the cubit (the shell button is equivalent) and let the
-    // snackbar render.
-    await cubit.submitTapped();
+    cubit.submitTapped();
     await tester.pumpAndSettle();
 
     expect(cubit.state.submissionStatus, MerchantSubmissionStatus.success);

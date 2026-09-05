@@ -16,9 +16,9 @@ import 'package:mobile_core_kit/features/auth/data/model/remote/register_request
 import 'package:mobile_core_kit/features/merchant_onboarding/data/datasource/remote/merchant_onboarding_remote_datasource.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/reference/merchant_reference_data.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/merchant_value_objects.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/pages/merchant_onboarding_page.dart';
@@ -177,7 +177,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await cubit.submitTapped();
+        cubit.submitTapped();
+        await tester.pumpAndSettle();
         await tester.pumpAndSettle();
 
         expect(cubit.state.submissionStatus, MerchantSubmissionStatus.success);
@@ -276,7 +277,7 @@ void main() {
 /// Builds a validated application from the live reference snapshot.
 Future<MerchantOnboardingApplication> buildValidApplication({
   required String email,
-  required MerchantReferenceData reference,
+  required MerchantReferenceDataEntity reference,
 }) async {
   final owningRole = reference.ownerRoles.firstWhere(
     (r) => r.contributesOwnership,
