@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_core_kit/core/design_system/theme/tokens/radii.dart';
+import 'package:mobile_core_kit/core/design_system/theme/tokens/sizing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/checkbox/app_checkbox_tile.dart';
@@ -31,6 +33,7 @@ class ReviewStepWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     String? errorFor(String path) {
       final failure = failures.where((f) => f.path == path).firstOrNull;
@@ -87,10 +90,11 @@ class ReviewStepWidget extends StatelessWidget {
           onEdit: () => cubit.editStepRequested(MerchantOnboardingStep.owners),
           children: [
             for (final (index, owner) in input.owners.indexed) ...[
+              if (index > 0) const Divider(height: AppSpacing.space16),
               _ReviewRow(
                 label: l10n.merchantOnboardingOwnerN(n: index + 1),
                 value:
-                    '${owner.fullName} — ${owner.roleId ?? l10n.merchantOnboardingNotProvided}'
+                    '${owner.fullName} — ${reference.ownerRoleById(owner.roleId)?.label ?? owner.roleId ?? l10n.merchantOnboardingNotProvided}'
                     '${owner.isPrimaryContact ? ' • ${l10n.merchantOnboardingFieldPrimaryContact}' : ''}',
               ),
               if (owner.ownershipPercentage.isNotEmpty)
@@ -140,41 +144,60 @@ class ReviewStepWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.space16),
-        AppText.titleMedium(l10n.merchantOnboardingStepReview),
-        const SizedBox(height: AppSpacing.space4),
-        AppText.bodySmall(
-          l10n.merchantOnboardingTermsVersionLabel(
-            version: reference.termsVersion,
+        Container(
+          margin: const EdgeInsets.only(bottom: AppSpacing.space16),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(AppRadii.radius12),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
-        ),
-        const SizedBox(height: AppSpacing.space8),
-        AppCheckboxTile(
-          key: const ValueKey('declaration_information_accurate'),
-          focusNode: registerFocus('declarations.informationAccurate'),
-          value: input.declarations.informationAccurate,
-          label: l10n.merchantOnboardingDeclarationInformationAccurate,
-          helperText: errorFor('declarations.informationAccurate'),
-          onChanged: (value) =>
-              cubit.declarationInformationAccurateToggled(value ?? false),
-        ),
-        AppCheckboxTile(
-          key: const ValueKey('declaration_authorized_to_submit'),
-          focusNode: registerFocus('declarations.authorizedToSubmit'),
-          value: input.declarations.authorizedToSubmit,
-          label: l10n.merchantOnboardingDeclarationAuthorizedToSubmit,
-          helperText: errorFor('declarations.authorizedToSubmit'),
-          onChanged: (value) =>
-              cubit.declarationAuthorizedToSubmitToggled(value ?? false),
-        ),
-        AppCheckboxTile(
-          key: const ValueKey('declaration_terms_accepted'),
-          focusNode: registerFocus('declarations.termsAccepted'),
-          value: input.declarations.termsAccepted,
-          label: l10n.merchantOnboardingDeclarationTermsAccepted,
-          helperText: errorFor('declarations.termsAccepted'),
-          onChanged: (value) =>
-              cubit.declarationTermsAcceptedToggled(value ?? false),
+          padding: const EdgeInsets.all(AppSpacing.space16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppText.titleSmall(
+                l10n.merchantOnboardingStepReview,
+                fontWeight: FontWeight.w600,
+              ),
+              const SizedBox(height: AppSpacing.space4),
+              AppText.bodySmall(
+                l10n.merchantOnboardingTermsVersionLabel(
+                  version: reference.termsVersion,
+                ),
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: AppSpacing.space12),
+              AppCheckboxTile(
+                key: const ValueKey('declaration_information_accurate'),
+                focusNode: registerFocus('declarations.informationAccurate'),
+                value: input.declarations.informationAccurate,
+                label: l10n.merchantOnboardingDeclarationInformationAccurate,
+                helperText: errorFor('declarations.informationAccurate'),
+                onChanged: (value) =>
+                    cubit.declarationInformationAccurateToggled(value ?? false),
+              ),
+              const SizedBox(height: AppSpacing.space8),
+              AppCheckboxTile(
+                key: const ValueKey('declaration_authorized_to_submit'),
+                focusNode: registerFocus('declarations.authorizedToSubmit'),
+                value: input.declarations.authorizedToSubmit,
+                label: l10n.merchantOnboardingDeclarationAuthorizedToSubmit,
+                helperText: errorFor('declarations.authorizedToSubmit'),
+                onChanged: (value) =>
+                    cubit.declarationAuthorizedToSubmitToggled(value ?? false),
+              ),
+              const SizedBox(height: AppSpacing.space8),
+              AppCheckboxTile(
+                key: const ValueKey('declaration_terms_accepted'),
+                focusNode: registerFocus('declarations.termsAccepted'),
+                value: input.declarations.termsAccepted,
+                label: l10n.merchantOnboardingDeclarationTermsAccepted,
+                helperText: errorFor('declarations.termsAccepted'),
+                onChanged: (value) =>
+                    cubit.declarationTermsAcceptedToggled(value ?? false),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -201,21 +224,44 @@ class _ReviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(child: AppText.titleMedium(title)),
-            TextButton(
-              onPressed: onEdit,
-              child: Text(context.l10n.merchantOnboardingActionEdit),
-            ),
-          ],
-        ),
-        ...children,
-        const SizedBox(height: AppSpacing.space16),
-      ],
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.space16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadii.radius12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: AppText.titleSmall(title, fontWeight: FontWeight.w600),
+              ),
+              TextButton.icon(
+                onPressed: onEdit,
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  size: AppSizing.iconSizeSmall,
+                ),
+                label: Text(context.l10n.merchantOnboardingActionEdit),
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.space8,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: AppSpacing.space16),
+          ...children,
+        ],
+      ),
     );
   }
 }
@@ -234,19 +280,22 @@ class _ReviewRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 2,
+            flex: 5,
             child: AppText.bodySmall(
               label,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
+              overflow: TextOverflow.visible,
             ),
           ),
+          const SizedBox(width: AppSpacing.space12),
           Expanded(
-            flex: 3,
+            flex: 6,
             child: AppText.bodyMedium(
               (value == null || value!.isEmpty)
                   ? context.l10n.merchantOnboardingNotProvided
                   : value!,
               textAlign: TextAlign.end,
+              overflow: TextOverflow.visible,
             ),
           ),
         ],

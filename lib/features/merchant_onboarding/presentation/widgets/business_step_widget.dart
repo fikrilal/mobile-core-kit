@@ -51,7 +51,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.legalName'),
           onChanged: cubit.businessLegalNameChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         MerchantDropdownField(
           key: const ValueKey('business_type'),
           focusNode: registerFocus('business.businessTypeId'),
@@ -64,7 +64,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.businessTypeId'),
           onChanged: cubit.businessTypeChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         AppTextField(
           key: const ValueKey('business_registration_number'),
           focusNode: registerFocus('business.registrationNumber'),
@@ -76,7 +76,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.registrationNumber'),
           onChanged: cubit.businessRegistrationNumberChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         MerchantDropdownField(
           key: const ValueKey('business_industry'),
           focusNode: registerFocus('business.industryId'),
@@ -86,7 +86,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.industryId'),
           onChanged: cubit.businessIndustryChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         MerchantDropdownField(
           key: const ValueKey('business_monthly_sales'),
           focusNode: registerFocus('business.monthlySalesRangeId'),
@@ -96,7 +96,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.monthlySalesRangeId'),
           onChanged: cubit.businessMonthlySalesRangeChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         AppTextField.email(
           key: const ValueKey('business_contact_email'),
           focusNode: registerFocus('business.contactEmail'),
@@ -105,7 +105,7 @@ class BusinessStepWidget extends StatelessWidget {
           errorText: errorFor('business.contactEmail'),
           onChanged: cubit.businessContactEmailChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         AppTextField(
           key: const ValueKey('business_contact_phone'),
           focusNode: registerFocus('business.contactPhone'),

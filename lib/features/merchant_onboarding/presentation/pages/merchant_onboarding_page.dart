@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_core_kit/core/design_system/theme/system/motion_durations.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmation_dialog.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
@@ -122,6 +123,9 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
           final reference = state.referenceData!;
           final step = state.step;
           final failures = state.localFailures;
+          final l10n = context.l10n;
+          final totalSteps = MerchantOnboardingStep.values.length;
+          final currentStep = step.index + 1;
 
           if (state.submissionFailure != null &&
               state.submissionStatus == MerchantSubmissionStatus.failure &&
@@ -172,17 +176,41 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
           };
 
           return Scaffold(
+            appBar: AppBar(
+              title: Text(l10n.merchantOnboardingTitle),
+              leading: IconButton(
+                icon: Icon(
+                  step == MerchantOnboardingStep.business
+                      ? Icons.close_rounded
+                      : Icons.arrow_back_rounded,
+                ),
+                onPressed: state.isSubmitting ? null : cubit.backTapped,
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(3),
+                child: LinearProgressIndicator(
+                  value: currentStep / totalSteps,
+                  minHeight: 3,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
+                ),
+              ),
+            ),
             body: MerchantOnboardingStepShell(
               step: step,
-              currentStep: step.index + 1,
-              totalSteps: MerchantOnboardingStep.values.length,
+              currentStep: currentStep,
+              totalSteps: totalSteps,
               isSubmitting: state.isSubmitting,
               canGoBack: step != MerchantOnboardingStep.business,
               canSubmit: state.canSubmit,
               isLastStep: step == MerchantOnboardingStep.review,
               onBack: cubit.backTapped,
               onNext: cubit.nextTapped,
-              child: stepWidget,
+              child: AnimatedSwitcher(
+                duration: MotionDurations.medium,
+                child: KeyedSubtree(key: ValueKey(step), child: stepWidget),
+              ),
             ),
           );
         },

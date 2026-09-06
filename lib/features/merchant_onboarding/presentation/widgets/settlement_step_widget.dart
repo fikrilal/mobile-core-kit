@@ -56,7 +56,7 @@ class SettlementStepWidget extends StatelessWidget {
           errorText: errorFor('settlement.bankId'),
           onChanged: cubit.settlementBankChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         AppTextField(
           key: const ValueKey('settlement_holder_name'),
           focusNode: registerFocus('settlement.accountHolderName'),
@@ -65,7 +65,7 @@ class SettlementStepWidget extends StatelessWidget {
           errorText: errorFor('settlement.accountHolderName'),
           onChanged: cubit.settlementHolderNameChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         AppTextField(
           key: const ValueKey('settlement_account_number'),
           focusNode: registerFocus('settlement.accountNumber'),
@@ -75,7 +75,7 @@ class SettlementStepWidget extends StatelessWidget {
           errorText: errorFor('settlement.accountNumber'),
           onChanged: cubit.settlementAccountNumberChanged,
         ),
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         MerchantDropdownField(
           key: const ValueKey('settlement_holder_type'),
           focusNode: registerFocus('settlement.holderTypeId'),
@@ -89,7 +89,7 @@ class SettlementStepWidget extends StatelessWidget {
           onChanged: cubit.settlementHolderTypeChanged,
         ),
         if (holderType?.requiresOwnerReference == true) ...[
-          const SizedBox(height: AppSpacing.space12),
+          const SizedBox(height: AppSpacing.space16),
           MerchantDropdownField(
             key: const ValueKey('settlement_owner_reference'),
             focusNode: registerFocus('settlement.ownerRowId'),
@@ -106,7 +106,7 @@ class SettlementStepWidget extends StatelessWidget {
             onChanged: cubit.settlementOwnerReferenceChanged,
           ),
         ],
-        const SizedBox(height: AppSpacing.space12),
+        const SizedBox(height: AppSpacing.space16),
         MerchantDropdownField(
           key: const ValueKey('settlement_payout_schedule'),
           focusNode: registerFocus('settlement.payoutScheduleId'),

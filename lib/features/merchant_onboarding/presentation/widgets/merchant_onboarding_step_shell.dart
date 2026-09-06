@@ -36,6 +36,7 @@ class MerchantOnboardingStepShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final stepTitle = switch (step) {
       MerchantOnboardingStep.business => l10n.merchantOnboardingStepBusiness,
       MerchantOnboardingStep.owners => l10n.merchantOnboardingStepOwners,
@@ -45,67 +46,64 @@ class MerchantOnboardingStepShell extends StatelessWidget {
     };
 
     return AppPageContainer(
-      surface: SurfaceKind.dashboard,
+      surface: SurfaceKind.form,
+      safeArea: false,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.space16,
-              AppSpacing.space12,
-              AppSpacing.space16,
-              AppSpacing.space4,
+            padding: const EdgeInsets.only(
+              top: AppSpacing.space16,
+              bottom: AppSpacing.space8,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText.titleMedium(stepTitle),
-                const SizedBox(height: AppSpacing.space4),
                 AppText.bodySmall(
                   l10n.merchantOnboardingStepOf(
                     current: currentStep,
                     total: totalSteps,
                   ),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
+                const SizedBox(height: AppSpacing.space4),
+                AppText.headlineSmall(stepTitle),
               ],
             ),
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.space16),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.space8),
               child: child,
             ),
           ),
           SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.space16,
-                AppSpacing.space8,
-                AppSpacing.space16,
-                AppSpacing.space16,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.space16),
               child: Row(
                 children: [
-                  if (canGoBack)
-                    AppButton.secondary(
-                      text: l10n.merchantOnboardingActionBack,
-                      onPressed: isSubmitting ? null : onBack,
+                  if (canGoBack) ...[
+                    Expanded(
+                      child: AppButton.secondary(
+                        text: l10n.merchantOnboardingActionBack,
+                        isDisabled: isSubmitting,
+                        onPressed: onBack,
+                      ),
                     ),
-                  const SizedBox(width: AppSpacing.space12),
+                    const SizedBox(width: AppSpacing.space12),
+                  ],
                   Expanded(
-                    child: isLastStep
-                        ? AppButton.primary(
-                            text: l10n.merchantOnboardingActionSubmit,
-                            isExpanded: true,
-                            isLoading: isSubmitting,
-                            isDisabled: !canSubmit,
-                            onPressed: isSubmitting ? null : onNext,
-                          )
-                        : AppButton.primary(
-                            text: l10n.merchantOnboardingActionNext,
-                            isExpanded: true,
-                            onPressed: isSubmitting ? null : onNext,
-                          ),
+                    flex: canGoBack ? 2 : 1,
+                    child: AppButton.primary(
+                      text: isLastStep
+                          ? l10n.merchantOnboardingActionSubmit
+                          : l10n.merchantOnboardingActionNext,
+                      isExpanded: true,
+                      isLoading: isSubmitting,
+                      isDisabled: !canSubmit,
+                      onPressed: onNext,
+                    ),
                   ),
                 ],
               ),
