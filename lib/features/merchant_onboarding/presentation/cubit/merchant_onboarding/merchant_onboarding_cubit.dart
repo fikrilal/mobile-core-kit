@@ -6,12 +6,11 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/bu
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_declarations.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/ownership_structure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/settlement_account.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/models/owner_move_direction.dart';
 
@@ -21,9 +20,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
 
   final MerchantOnboardingRepository _repository;
   final SubmitMerchantOnboardingUseCase _submitOnboarding;
-  final _effects = StreamController<MerchantOnboardingEffect>.broadcast();
-
-  Stream<MerchantOnboardingEffect> get effects => _effects.stream;
 
   Future<void> loadReferenceData() async {
     if (state.isSubmitting) return;
@@ -235,9 +231,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
           localFailures: failures,
         ),
       );
-      _effects.add(
-        MerchantFocusFieldEffect(failures.first.path ?? failures.first.code),
-      );
       return;
     }
 
@@ -254,7 +247,6 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
   void backTapped() {
     if (state.isSubmitting) return;
     if (state.step == MerchantOnboardingStep.business) {
-      _requestLeave();
       return;
     }
     emit(state.copyWith(step: state.step.previous));
@@ -265,14 +257,9 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
     emit(state.copyWith(step: step));
   }
 
-  void systemBackRequested() {
-    if (state.isSubmitting) return;
-    _requestLeave();
-  }
-
   void discardConfirmed() {
     if (state.isSubmitting) return;
-    _effects.add(const MerchantLeaveEffect());
+    emit(state.copyWith(isMateriallyEdited: false));
   }
 
   Future<void> submitTapped() async {
@@ -300,20 +287,24 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
             MerchantServerValidationFailure(:final failures) => failures,
             _ => const <MerchantValidationFailure>[],
           };
-          final targetStep = MerchantOnboardingStep.forPath(
-            failures.first.path,
-          );
+          if (failures.isNotEmpty) {
+            final targetStep = MerchantOnboardingStep.forPath(
+              failures.first.path,
+            );
+            emit(
+              state.copyWith(
+                submissionStatus: MerchantSubmissionStatus.failure,
+                localFailures: failures,
+                attemptedSteps: state.attemptedSteps.union({targetStep}),
+                step: targetStep,
+              ),
+            );
+            return;
+          }
           emit(
             state.copyWith(
               submissionStatus: MerchantSubmissionStatus.failure,
-              localFailures: failures,
-              attemptedSteps: state.attemptedSteps.union({targetStep}),
-              step: targetStep,
-            ),
-          );
-          _effects.add(
-            MerchantFocusFieldEffect(
-              failures.first.path ?? failures.first.code,
+              submissionFailure: const MerchantUnexpectedFailure(),
             ),
           );
           return;
@@ -324,12 +315,12 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
             submissionFailure: failure,
           ),
         );
-        _effects.add(const MerchantSubmitFailureEffect());
       },
       (receipt) {
         emit(
           state.copyWith(
             submissionStatus: MerchantSubmissionStatus.success,
+            submittedApplicationId: receipt.applicationId,
             localFailures: const [],
             input: MerchantOnboardingInput(),
             touchedPaths: const {},
@@ -337,18 +328,8 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
             isMateriallyEdited: false,
           ),
         );
-        _effects.add(MerchantSubmittedEffect(receipt.applicationId));
       },
     );
-  }
-
-  void _requestLeave() {
-    if (state.isMateriallyEdited &&
-        state.submissionStatus != MerchantSubmissionStatus.success) {
-      _effects.add(const MerchantConfirmDiscardEffect());
-      return;
-    }
-    _effects.add(const MerchantLeaveEffect());
   }
 
   void _updateBusiness(
@@ -450,11 +431,5 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
         reference: reference,
       ).fold((f) => f, (_) => []),
     };
-  }
-
-  @override
-  Future<void> close() async {
-    unawaited(_effects.close());
-    return super.close();
   }
 }

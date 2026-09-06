@@ -9,7 +9,6 @@ import 'package:mobile_core_kit/core/design_system/widgets/dialog/app_confirmati
 import 'package:mobile_core_kit/core/design_system/widgets/snackbar/app_snackbar.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/business_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/merchant_onboarding_step_shell.dart';
@@ -27,20 +26,10 @@ class MerchantOnboardingPage extends StatefulWidget {
 
 class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
   final _focusRequests = <String, FocusNode>{};
-  StreamSubscription<MerchantOnboardingEffect>? _effectsSub;
   bool _leaveRequested = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _effectsSub ??= context.read<MerchantOnboardingCubit>().effects.listen(
-      _handleEffect,
-    );
-  }
-
-  @override
   void dispose() {
-    unawaited(_effectsSub?.cancel());
     for (final node in _focusRequests.values) {
       node.dispose();
     }
@@ -49,45 +38,6 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
 
   FocusNode registerFocus(String path) =>
       _focusRequests.putIfAbsent(path, FocusNode.new);
-
-  void _handleEffect(MerchantOnboardingEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case MerchantFocusFieldEffect(:final path):
-        final node = _focusRequests[path];
-        if (node != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) node.requestFocus();
-          });
-        }
-      case MerchantConfirmDiscardEffect():
-        unawaited(_showDiscardDialog());
-      case MerchantLeaveEffect():
-        _leaveRequested = true;
-        setState(() {});
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _navigateBackOrHome();
-        });
-      case MerchantSubmittedEffect(:final applicationId):
-        AppSnackBar.showSuccess(
-          context,
-          message: context.l10n.merchantOnboardingSubmitSuccess(
-            applicationId: applicationId,
-          ),
-        );
-        _leaveRequested = true;
-        setState(() {});
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _navigateBackOrHome();
-        });
-      case MerchantSubmitFailureEffect():
-        AppSnackBar.showError(
-          context,
-          message: context.l10n.merchantOnboardingSubmitFailure,
-        );
-    }
-  }
 
   void _navigateBackOrHome() {
     final navigator = Navigator.of(context);
@@ -112,13 +62,25 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
 
     if (confirmed == true && mounted) {
       context.read<MerchantOnboardingCubit>().discardConfirmed();
+      _leaveRequested = true;
+      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _navigateBackOrHome();
+      });
     }
   }
 
-  void _handleSystemBack() {
-    final cubit = context.read<MerchantOnboardingCubit>();
-    if (cubit.state.isSubmitting) return;
-    cubit.systemBackRequested();
+  void _handleLeaveOrDiscard(MerchantOnboardingState state) {
+    if (state.isMateriallyEdited &&
+        state.submissionStatus != MerchantSubmissionStatus.success) {
+      unawaited(_showDiscardDialog());
+    } else {
+      _leaveRequested = true;
+      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _navigateBackOrHome();
+      });
+    }
   }
 
   @override
@@ -126,94 +88,165 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
     return PopScope(
       canPop: _leaveRequested,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _handleSystemBack();
-      },
-      child: BlocBuilder<MerchantOnboardingCubit, MerchantOnboardingState>(
-        builder: (context, state) {
+        if (!didPop) {
           final cubit = context.read<MerchantOnboardingCubit>();
-
-          if (state.referenceStatus != MerchantReferenceStatus.ready) {
-            return _buildReferenceGate(state, cubit);
+          final state = cubit.state;
+          if (state.isSubmitting) return;
+          if (state.step != MerchantOnboardingStep.business) {
+            cubit.backTapped();
+            return;
+          }
+          _handleLeaveOrDiscard(state);
+        }
+      },
+      child: BlocListener<MerchantOnboardingCubit, MerchantOnboardingState>(
+        listenWhen: (previous, current) {
+          final submitFailed =
+              current.submissionStatus == MerchantSubmissionStatus.failure &&
+              previous.submissionStatus != MerchantSubmissionStatus.failure &&
+              current.submissionFailure != null;
+          final submitSucceeded =
+              current.submissionStatus == MerchantSubmissionStatus.success &&
+              previous.submissionStatus != MerchantSubmissionStatus.success;
+          final focusChanged =
+              previous.localFailures != current.localFailures &&
+              current.localFailures.isNotEmpty;
+          return submitFailed || submitSucceeded || focusChanged;
+        },
+        listener: (context, state) {
+          if (state.submissionStatus == MerchantSubmissionStatus.failure &&
+              state.submissionFailure != null) {
+            AppSnackBar.showError(
+              context,
+              message: context.l10n.merchantOnboardingSubmitFailure,
+            );
           }
 
-          final reference = state.referenceData!;
-          final step = state.step;
-          final failures = state.localFailures;
-          final l10n = context.l10n;
-          final totalSteps = MerchantOnboardingStep.values.length;
-          final currentStep = step.index + 1;
-
-          final Widget stepWidget = switch (step) {
-            MerchantOnboardingStep.business => BusinessStepWidget(
-              input: state.input.business,
-              reference: reference,
-              cubit: cubit,
-              failures: failures,
-              registerFocus: registerFocus,
-            ),
-            MerchantOnboardingStep.owners => OwnersStepWidget(
-              owners: state.input.owners,
-              reference: reference,
-              cubit: cubit,
-              failures: failures,
-              registerFocus: registerFocus,
-            ),
-            MerchantOnboardingStep.settlement => SettlementStepWidget(
-              input: state.input.settlement,
-              owners: state.input.owners,
-              reference: reference,
-              cubit: cubit,
-              failures: failures,
-              registerFocus: registerFocus,
-            ),
-            MerchantOnboardingStep.review => ReviewStepWidget(
-              input: state.input,
-              reference: reference,
-              cubit: cubit,
-              failures: failures,
-              registerFocus: registerFocus,
-            ),
-          };
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(l10n.merchantOnboardingTitle),
-              leading: IconButton(
-                icon: Icon(
-                  step == MerchantOnboardingStep.business
-                      ? Icons.close_rounded
-                      : Icons.arrow_back_rounded,
+          if (state.submissionStatus == MerchantSubmissionStatus.success) {
+            final applicationId = state.submittedApplicationId;
+            if (applicationId != null) {
+              AppSnackBar.showSuccess(
+                context,
+                message: context.l10n.merchantOnboardingSubmitSuccess(
+                  applicationId: applicationId,
                 ),
-                onPressed: state.isSubmitting ? null : cubit.backTapped,
-              ),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(3),
-                child: LinearProgressIndicator(
-                  value: currentStep / totalSteps,
-                  minHeight: 3,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainerHighest,
-                ),
-              ),
-            ),
-            body: MerchantOnboardingStepShell(
-              step: step,
-              currentStep: currentStep,
-              totalSteps: totalSteps,
-              isSubmitting: state.isSubmitting,
-              canGoBack: step != MerchantOnboardingStep.business,
-              canSubmit: state.canSubmit,
-              isLastStep: step == MerchantOnboardingStep.review,
-              onBack: cubit.backTapped,
-              onNext: cubit.nextTapped,
-              child: AnimatedSwitcher(
-                duration: MotionDurations.medium,
-                child: KeyedSubtree(key: ValueKey(step), child: stepWidget),
-              ),
-            ),
-          );
+              );
+            }
+            _leaveRequested = true;
+            setState(() {});
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _navigateBackOrHome();
+            });
+          }
+
+          if (state.localFailures.isNotEmpty) {
+            final first = state.localFailures.firstOrNull;
+            if (first != null) {
+              final path = first.path ?? first.code;
+              final node = _focusRequests[path];
+              if (node != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) node.requestFocus();
+                });
+              }
+            }
+          }
         },
+        child: BlocBuilder<MerchantOnboardingCubit, MerchantOnboardingState>(
+          builder: (context, state) {
+            final cubit = context.read<MerchantOnboardingCubit>();
+
+            if (state.referenceStatus != MerchantReferenceStatus.ready) {
+              return _buildReferenceGate(state, cubit);
+            }
+
+            final reference = state.referenceData!;
+            final step = state.step;
+            final failures = state.localFailures;
+            final l10n = context.l10n;
+            final totalSteps = MerchantOnboardingStep.values.length;
+            final currentStep = step.index + 1;
+
+            final Widget stepWidget = switch (step) {
+              MerchantOnboardingStep.business => BusinessStepWidget(
+                input: state.input.business,
+                reference: reference,
+                cubit: cubit,
+                failures: failures,
+                registerFocus: registerFocus,
+              ),
+              MerchantOnboardingStep.owners => OwnersStepWidget(
+                owners: state.input.owners,
+                reference: reference,
+                cubit: cubit,
+                failures: failures,
+                registerFocus: registerFocus,
+              ),
+              MerchantOnboardingStep.settlement => SettlementStepWidget(
+                input: state.input.settlement,
+                owners: state.input.owners,
+                reference: reference,
+                cubit: cubit,
+                failures: failures,
+                registerFocus: registerFocus,
+              ),
+              MerchantOnboardingStep.review => ReviewStepWidget(
+                input: state.input,
+                reference: reference,
+                cubit: cubit,
+                failures: failures,
+                registerFocus: registerFocus,
+              ),
+            };
+
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(l10n.merchantOnboardingTitle),
+                leading: IconButton(
+                  icon: Icon(
+                    step == MerchantOnboardingStep.business
+                        ? Icons.close_rounded
+                        : Icons.arrow_back_rounded,
+                  ),
+                  onPressed: state.isSubmitting
+                      ? null
+                      : () {
+                          if (step == MerchantOnboardingStep.business) {
+                            _handleLeaveOrDiscard(state);
+                          } else {
+                            cubit.backTapped();
+                          }
+                        },
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(3),
+                  child: LinearProgressIndicator(
+                    value: currentStep / totalSteps,
+                    minHeight: 3,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+              ),
+              body: MerchantOnboardingStepShell(
+                step: step,
+                currentStep: currentStep,
+                totalSteps: totalSteps,
+                isSubmitting: state.isSubmitting,
+                canGoBack: step != MerchantOnboardingStep.business,
+                canSubmit: state.canSubmit,
+                isLastStep: step == MerchantOnboardingStep.review,
+                onBack: cubit.backTapped,
+                onNext: cubit.nextTapped,
+                child: AnimatedSwitcher(
+                  duration: MotionDurations.medium,
+                  child: KeyedSubtree(key: ValueKey(step), child: stepWidget),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

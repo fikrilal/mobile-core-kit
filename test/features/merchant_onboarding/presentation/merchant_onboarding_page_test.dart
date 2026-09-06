@@ -288,4 +288,32 @@ void main() {
       );
     },
   );
+
+  testWidgets(
+    'system back navigates to previous step on steps 2-4 instead of exiting',
+    (tester) async {
+      final repo = _MockRepository();
+      when(() => repo.loadReferenceData()).thenAnswer(
+        (_) async =>
+            right(FakeMerchantOnboardingRepository.demoReferenceData()),
+      );
+
+      final cubit = buildCubit(repo);
+      await tester.pumpWidget(wrap(cubit));
+      await tester.pumpAndSettle();
+
+      // Advance to Owners step
+      cubit.editStepRequested(MerchantOnboardingStep.owners);
+      await tester.pumpAndSettle();
+      expect(cubit.state.step, MerchantOnboardingStep.owners);
+
+      // Trigger system back
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      // Must navigate back to Business step, not pop the page
+      expect(cubit.state.step, MerchantOnboardingStep.business);
+      expect(find.byType(MerchantOnboardingPage), findsOneWidget);
+    },
+  );
 }
