@@ -177,4 +177,114 @@ void main() {
     expect(cubit.state.submissionStatus, MerchantSubmissionStatus.success);
     expect(cubit.state.input.owners, isEmpty);
   });
+
+  testWidgets(
+    'successful submission pops back to the caller screen and shows snackbar',
+    (tester) async {
+      final repo = _MockRepository();
+      when(() => repo.loadReferenceData()).thenAnswer(
+        (_) async =>
+            right(FakeMerchantOnboardingRepository.demoReferenceData()),
+      );
+      when(() => repo.submitApplication(any())).thenAnswer(
+        (_) async => right(
+          const MerchantApplicationReceipt(
+            applicationId: FakeMerchantOnboardingRepository.demoApplicationId,
+          ),
+        ),
+      );
+      final cubit = buildCubit(repo);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.light().copyWith(
+            splashFactory: NoSplash.splashFactory,
+          ),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => AdaptiveScope(
+                          navigationPolicy: const NavigationPolicy.none(),
+                          child: BlocProvider<MerchantOnboardingCubit>.value(
+                            value: cubit,
+                            child: const MerchantOnboardingPage(),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Open Onboarding'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Onboarding'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MerchantOnboardingPage), findsOneWidget);
+
+      cubit.businessLegalNameChanged('Kopi Nusantara');
+      cubit.businessTypeChanged('sole_proprietorship');
+      cubit.businessIndustryChanged('retail');
+      cubit.businessMonthlySalesRangeChanged('10m_to_50m_idr');
+      cubit.businessContactEmailChanged('contact@kopinusantara.id');
+      cubit.businessContactPhoneChanged('+62 812-3456-7890');
+      cubit.nextTapped();
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Add owner'));
+      await tester.tap(find.text('Add owner'));
+      await tester.pumpAndSettle();
+      final ownerId = cubit.state.input.owners.single.ownerRowId;
+      cubit.ownerNameChanged(ownerId, 'Budi Santoso');
+      cubit.ownerRoleChanged(ownerId, 'owner');
+      cubit.ownerPercentageChanged(ownerId, '100');
+      cubit.ownerEmailChanged(ownerId, 'budi@example.com');
+      cubit.nextTapped();
+      await tester.pumpAndSettle();
+
+      cubit.settlementBankChanged('demo_bank_alpha');
+      cubit.settlementHolderNameChanged('Budi Santoso');
+      cubit.settlementAccountNumberChanged('0123456789');
+      cubit.settlementHolderTypeChanged('business');
+      cubit.settlementPayoutScheduleChanged('daily');
+      cubit.nextTapped();
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('declaration_information_accurate')),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('declaration_information_accurate')),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('declaration_authorized_to_submit')),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('declaration_terms_accepted')),
+      );
+      await tester.pumpAndSettle();
+
+      cubit.submitTapped();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MerchantOnboardingPage), findsNothing);
+      expect(find.text('Open Onboarding'), findsOneWidget);
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(
+        find.textContaining(FakeMerchantOnboardingRepository.demoApplicationId),
+        findsOneWidget,
+      );
+    },
+  );
 }

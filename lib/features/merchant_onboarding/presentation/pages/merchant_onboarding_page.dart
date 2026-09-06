@@ -16,6 +16,7 @@ import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widget
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/owners_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/review_step_widget.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/widgets/settlement_step_widget.dart';
+import 'package:mobile_core_kit/navigation/app_routes.dart';
 
 class MerchantOnboardingPage extends StatefulWidget {
   const MerchantOnboardingPage({super.key});
@@ -72,7 +73,7 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
         _leaveRequested = true;
         setState(() {});
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.pop();
+          if (mounted) _navigateBackOrHome();
         });
       case MerchantSubmittedEffect(:final applicationId):
         AppSnackBar.showSuccess(
@@ -81,6 +82,22 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
             applicationId: applicationId,
           ),
         );
+        _leaveRequested = true;
+        setState(() {});
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _navigateBackOrHome();
+        });
+    }
+  }
+
+  void _navigateBackOrHome() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    if (GoRouter.maybeOf(context) != null) {
+      context.go(AppRoutes.home);
     }
   }
 
