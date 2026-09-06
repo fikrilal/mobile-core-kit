@@ -36,9 +36,7 @@ class MerchantOnboardingRemoteDataSource {
       host: ApiHost.core,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(idempotencyKey),
       data: request.toJson(),
       parser: MerchantSubmitResultModel.fromJson,
     );

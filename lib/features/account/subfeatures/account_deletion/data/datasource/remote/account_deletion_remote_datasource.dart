@@ -22,9 +22,7 @@ class AccountDeletionRemoteDataSource {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(),
     );
   }
 }

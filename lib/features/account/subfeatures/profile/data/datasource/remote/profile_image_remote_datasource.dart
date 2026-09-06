@@ -31,9 +31,7 @@ class ProfileImageRemoteDataSource {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(idempotencyKey),
       data: CreateProfileImageUploadRequestModel(
         contentType: contentType,
         sizeBytes: sizeBytes,
@@ -75,9 +73,7 @@ class ProfileImageRemoteDataSource {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(idempotencyKey),
     );
 
     return response;

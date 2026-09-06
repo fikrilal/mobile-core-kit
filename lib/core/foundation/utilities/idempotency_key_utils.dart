@@ -10,6 +10,9 @@ import 'dart:math';
 abstract final class IdempotencyKeyUtils {
   static final Random _random = Random.secure();
 
+  /// The HTTP header name for idempotency keys.
+  static const String headerName = 'Idempotency-Key';
+
   /// Generates a random hex string suitable for `Idempotency-Key`.
   ///
   /// Default: 16 bytes (32 hex chars).
@@ -21,4 +24,10 @@ abstract final class IdempotencyKeyUtils {
     }
     return buffer.toString();
   }
+
+  /// Returns a request headers map containing the `Idempotency-Key`.
+  ///
+  /// Uses [idempotencyKey] if provided, otherwise generates a fresh key.
+  static Map<String, String> headers([String? idempotencyKey]) =>
+      <String, String>{headerName: idempotencyKey ?? generate()};
 }

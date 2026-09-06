@@ -143,9 +143,7 @@ class AuthRemoteDataSource {
       host: ApiHost.auth,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(idempotencyKey),
     );
     return response;
   }
