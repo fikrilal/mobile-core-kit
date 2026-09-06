@@ -7,7 +7,6 @@ import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/features/auth/domain/input/password_reset_confirmation_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -85,10 +84,14 @@ void main() {
       await pumpEventQueue();
 
       expect(
-        emitted.any((s) => s.status == PasswordResetConfirmStatus.submitting),
-        true,
+        emitted.map((s) => s.status).toList(),
+        containsAllInOrder([
+          PasswordResetConfirmStatus.submitting,
+          PasswordResetConfirmStatus.success,
+        ]),
       );
       expect(emitted.last.status, PasswordResetConfirmStatus.success);
+      expect(emitted.last.failure, isNull);
 
       final captured = verify(
         () => confirmPasswordReset(captureAny()),
@@ -156,6 +159,13 @@ void main() {
       await cubit.submit();
       await pumpEventQueue();
 
+      expect(
+        emitted.map((s) => s.status).toList(),
+        containsAllInOrder([
+          PasswordResetConfirmStatus.submitting,
+          PasswordResetConfirmStatus.failure,
+        ]),
+      );
       expect(emitted.last.status, PasswordResetConfirmStatus.failure);
       expect(
         emitted.last.tokenError?.code,
@@ -166,7 +176,7 @@ void main() {
       await cubit.close();
     });
 
-    test('emits failure effect for non-validation failure', () async {
+    test('emits failure for non-validation failure', () async {
       when(
         () => confirmPasswordReset(any()),
       ).thenAnswer((_) async => left(const AuthFailure.serverError()));
@@ -176,20 +186,25 @@ void main() {
         sessionManager,
         token: 'token',
       );
-      final effects = <PasswordResetConfirmEffect>[];
-      final effectSub = cubit.effects.listen(effects.add);
+      final emitted = <PasswordResetConfirmState>[];
+      final sub = cubit.stream.listen(emitted.add);
 
       cubit.newPasswordChanged('newpassword123');
       cubit.confirmNewPasswordChanged('newpassword123');
       await cubit.submit();
       await pumpEventQueue();
 
-      expect(cubit.state.status, PasswordResetConfirmStatus.failure);
-      expect(cubit.state.failure, const AuthFailure.serverError());
-      expect(effects, hasLength(1));
-      expect(effects.single, isA<PasswordResetConfirmFailureEffect>());
+      expect(
+        emitted.map((s) => s.status).toList(),
+        containsAllInOrder([
+          PasswordResetConfirmStatus.submitting,
+          PasswordResetConfirmStatus.failure,
+        ]),
+      );
+      expect(emitted.last.status, PasswordResetConfirmStatus.failure);
+      expect(emitted.last.failure, const AuthFailure.serverError());
 
-      await effectSub.cancel();
+      await sub.cancel();
       await cubit.close();
     });
   });

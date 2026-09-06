@@ -15,7 +15,6 @@ import 'package:mobile_core_kit/features/auth/domain/usecase/login_user_usecase.
 import 'package:mobile_core_kit/features/auth/domain/usecase/sign_in_with_google_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/login_password.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_in/presentation/cubit/login/login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
@@ -30,9 +29,6 @@ class LoginCubit extends Cubit<LoginState> {
   final SignInWithGoogleUseCase _googleSignIn;
   final SessionManager _sessionManager;
   final AnalyticsTracker _analytics;
-  final _effects = StreamController<LoginEffect>.broadcast();
-
-  Stream<LoginEffect> get effects => _effects.stream;
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
@@ -204,7 +200,6 @@ class LoginCubit extends Cubit<LoginState> {
             submittingMethod: null,
           ),
         );
-        _effects.add(LoginFailureEffect(failure));
       },
       invalidCredentials: (_) => _emitFailure(failure),
       tooManyRequests: (_) => _emitFailure(failure),
@@ -235,7 +230,6 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void _emitFailure(AuthFailure failure) {
-    _effects.add(LoginFailureEffect(failure));
     emit(
       state.copyWith(
         status: LoginStatus.failure,
@@ -243,11 +237,5 @@ class LoginCubit extends Cubit<LoginState> {
         submittingMethod: null,
       ),
     );
-  }
-
-  @override
-  Future<void> close() async {
-    unawaited(_effects.close());
-    return super.close();
   }
 }

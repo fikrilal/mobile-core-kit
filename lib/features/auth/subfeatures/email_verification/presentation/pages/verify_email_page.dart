@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,49 +12,14 @@ import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_m
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_state.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
-class VerifyEmailPage extends StatefulWidget {
+class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage({super.key, required this.canResendVerificationEmail});
 
   final bool canResendVerificationEmail;
-
-  @override
-  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
-}
-
-class _VerifyEmailPageState extends State<VerifyEmailPage> {
-  StreamSubscription<EmailVerificationEffect>? _effectSubscription;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _effectSubscription ??= context
-        .read<EmailVerificationCubit>()
-        .effects
-        .listen(_handleEffect);
-  }
-
-  void _handleEffect(EmailVerificationEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case EmailVerificationFailureEffect(:final failure):
-        AppSnackBar.showError(
-          context,
-          message: messageForAuthFailure(failure, context.l10n),
-        );
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_effectSubscription?.cancel());
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +27,23 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       appBar: AppBar(
         title: AppText.titleMedium(context.l10n.authVerifyEmailTitle),
       ),
-      body: _VerifyEmailBody(
-        canResendVerificationEmail: widget.canResendVerificationEmail,
+      body: BlocListener<EmailVerificationCubit, EmailVerificationState>(
+        listenWhen: (previous, current) =>
+            current.status == EmailVerificationStatus.failure &&
+            current.failure != null &&
+            (previous.status != EmailVerificationStatus.failure ||
+                previous.failure != current.failure),
+        listener: (context, state) {
+          final failure = state.failure;
+          if (failure == null) return;
+          AppSnackBar.showError(
+            context,
+            message: messageForAuthFailure(failure, context.l10n),
+          );
+        },
+        child: _VerifyEmailBody(
+          canResendVerificationEmail: canResendVerificationEmail,
+        ),
       ),
     );
   }

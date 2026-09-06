@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,58 +12,11 @@ import 'package:mobile_core_kit/core/presentation/localization/auth_failure_loca
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/presentation/localization/validation_error_localizer.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_state.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+class ChangePasswordPage extends StatelessWidget {
   const ChangePasswordPage({super.key});
-
-  @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
-}
-
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  StreamSubscription<ChangePasswordEffect>? _effectSubscription;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _effectSubscription ??= context.read<ChangePasswordCubit>().effects.listen(
-      _handleEffect,
-    );
-  }
-
-  void _handleEffect(ChangePasswordEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case ChangePasswordSuccessEffect():
-        AppSnackBar.showSuccess(
-          context,
-          message: context.l10n.authChangePasswordSuccessTitle,
-        );
-
-        final navigator = Navigator.of(context);
-        if (navigator.canPop()) {
-          navigator.pop();
-          return;
-        }
-
-        context.go(AppRoutes.home);
-      case ChangePasswordFailureEffect(:final failure):
-        AppSnackBar.showError(
-          context,
-          message: messageForAuthFailure(failure, context.l10n),
-        );
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_effectSubscription?.cancel());
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +24,39 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       appBar: AppBar(
         title: AppText.titleMedium(context.l10n.authChangePasswordTitle),
       ),
-      body: const _ChangePasswordBody(),
+      body: BlocListener<ChangePasswordCubit, ChangePasswordState>(
+        listenWhen: (previous, current) =>
+            (current.status == ChangePasswordStatus.failure &&
+                current.failure != null &&
+                (previous.status != ChangePasswordStatus.failure ||
+                    previous.failure != current.failure)) ||
+            (current.status == ChangePasswordStatus.success &&
+                previous.status != ChangePasswordStatus.success),
+        listener: (context, state) {
+          if (state.status == ChangePasswordStatus.failure) {
+            final failure = state.failure;
+            if (failure == null) return;
+            AppSnackBar.showError(
+              context,
+              message: messageForAuthFailure(failure, context.l10n),
+            );
+          } else if (state.status == ChangePasswordStatus.success) {
+            AppSnackBar.showSuccess(
+              context,
+              message: context.l10n.authChangePasswordSuccessTitle,
+            );
+
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+              return;
+            }
+
+            context.go(AppRoutes.home);
+          }
+        },
+        child: const _ChangePasswordBody(),
+      ),
     );
   }
 }

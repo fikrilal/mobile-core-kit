@@ -262,7 +262,7 @@ class SignInPage extends StatelessWidget {
 Typing already sets `status` back to `initial`, so the next submit is a new
 `failure` transition.
 
-Working copy of this shape: `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page_ofc.dart`.
+Working copy of this shape: `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart`.
 
 Need snackbar **and** `pop()` after success? One listener:
 
@@ -389,7 +389,7 @@ cubit that emits `failure` and expecting `AppSnackBar`.
 
 ## 14) In-repo references
 
-- Listener-shaped login: `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page_ofc.dart`
+- Listener-shaped login: `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart`
 - Login state/cubit: `lib/features/auth/subfeatures/sign_in/presentation/cubit/login/`
 - GET-shaped list: `lib/features/account/subfeatures/security/presentation/pages/me_sessions_page.dart` (load/error body; revoke still uses a listener)
 - Merchant route load: `lib/navigation/merchant_onboarding/merchant_onboarding_routes_list.dart`

@@ -14,7 +14,6 @@ import 'package:mobile_core_kit/features/auth/domain/input/register_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/register_user_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/password.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
@@ -24,9 +23,6 @@ class RegisterCubit extends Cubit<RegisterState> {
   final RegisterUserUseCase _registerUser;
   final SessionManager _sessionManager;
   final AnalyticsTracker _analytics;
-  final _effects = StreamController<RegisterEffect>.broadcast();
-
-  Stream<RegisterEffect> get effects => _effects.stream;
 
   void emailChanged(String value) {
     final result = EmailAddress.create(value);
@@ -133,7 +129,6 @@ class RegisterCubit extends Cubit<RegisterState> {
             failure: failure,
           ),
         );
-        _effects.add(RegisterFailureEffect(failure));
       },
       emailNotVerified: (_) => _emitFailure(failure),
       oidcLinkRequired: (_) => _emitFailure(failure),
@@ -153,7 +148,6 @@ class RegisterCubit extends Cubit<RegisterState> {
             failure: failure,
           ),
         );
-        _effects.add(RegisterFailureEffect(failure));
       },
       invalidCredentials: (_) => _emitFailure(failure),
       tooManyRequests: (_) => _emitFailure(failure),
@@ -169,13 +163,6 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   void _emitFailure(AuthFailure failure) {
-    _effects.add(RegisterFailureEffect(failure));
     emit(state.copyWith(status: RegisterStatus.failure, failure: failure));
-  }
-
-  @override
-  Future<void> close() async {
-    unawaited(_effects.close());
-    return super.close();
   }
 }
