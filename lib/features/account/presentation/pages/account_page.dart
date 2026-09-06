@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ import 'package:mobile_core_kit/features/account/presentation/widgets/account_he
 import 'package:mobile_core_kit/features/account/presentation/widgets/account_main_section.dart';
 import 'package:mobile_core_kit/features/account/presentation/widgets/account_settings_section.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/widgets/profile_photo_action_sheet.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
@@ -37,7 +35,7 @@ import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class AccountPage extends StatefulWidget {
+class AccountPage extends StatelessWidget {
   const AccountPage({
     super.key,
     required this.userContext,
@@ -56,53 +54,6 @@ class AccountPage extends StatefulWidget {
   final Future<void> Function() onLogout;
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
-}
-
-class _AccountPageState extends State<AccountPage> {
-  StreamSubscription<ProfileImageEffect>? _effectSubscription;
-  ProfileImageCubit? _effectCubit;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final cubit = context.read<ProfileImageCubit>();
-    if (identical(_effectCubit, cubit)) return;
-
-    _effectSubscription?.cancel();
-    _effectCubit = cubit;
-    _effectSubscription = cubit.effects.listen(_onEffect);
-  }
-
-  @override
-  void dispose() {
-    _effectSubscription?.cancel();
-    super.dispose();
-  }
-
-  void _onEffect(ProfileImageEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case ShowProfileImageFailure(:final failure):
-        AppSnackBar.showError(
-          context,
-          message: messageForAuthFailure(failure, context.l10n),
-        );
-      case ShowProfileImageUpdated():
-        AppSnackBar.showSuccess(
-          context,
-          message: context.l10n.profilePhotoUpdated,
-        );
-      case ShowProfileImageRemoved():
-        AppSnackBar.showSuccess(
-          context,
-          message: context.l10n.profilePhotoRemoved,
-        );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isProfileImageBusy = context.select(
       (ProfileImageCubit c) => c.state.isUploading || c.state.isClearing,
@@ -111,8 +62,8 @@ class _AccountPageState extends State<AccountPage> {
       (ProfileImageCubit c) => c.state.action,
     );
 
-    final isOverlayLoading = widget.isLoggingOut || isProfileImageBusy;
-    final overlayMessage = widget.isLoggingOut
+    final isOverlayLoading = isLoggingOut || isProfileImageBusy;
+    final overlayMessage = isLoggingOut
         ? context.l10n.profileLoggingOut
         : isProfileImageBusy
         ? switch (profileImageAction) {
@@ -121,17 +72,52 @@ class _AccountPageState extends State<AccountPage> {
           }
         : context.l10n.commonLoading;
 
-    return AppLoadingOverlay(
-      isLoading: isOverlayLoading,
-      message: overlayMessage,
-      child: _AccountContent(
-        isLoggingOut: widget.isLoggingOut,
-        isProfileImageBusy: isProfileImageBusy,
-        userContext: widget.userContext,
-        themeModeController: widget.themeModeController,
-        localeController: widget.localeController,
-        imagePicker: widget.imagePicker,
-        onLogout: widget.onLogout,
+    return BlocListener<ProfileImageCubit, ProfileImageState>(
+      listenWhen: (previous, current) {
+        if (current.action == ProfileImageAction.loadAvatar) {
+          return false;
+        }
+        return (current.status == ProfileImageStatus.failure &&
+                current.failure != null &&
+                (previous.status != ProfileImageStatus.failure ||
+                    previous.failure != current.failure)) ||
+            (current.status == ProfileImageStatus.success &&
+                previous.status != ProfileImageStatus.success);
+      },
+      listener: (context, state) {
+        if (state.status == ProfileImageStatus.failure) {
+          final failure = state.failure;
+          if (failure == null) return;
+          AppSnackBar.showError(
+            context,
+            message: messageForAuthFailure(failure, context.l10n),
+          );
+        } else if (state.status == ProfileImageStatus.success) {
+          if (state.action == ProfileImageAction.upload) {
+            AppSnackBar.showSuccess(
+              context,
+              message: context.l10n.profilePhotoUpdated,
+            );
+          } else if (state.action == ProfileImageAction.clear) {
+            AppSnackBar.showSuccess(
+              context,
+              message: context.l10n.profilePhotoRemoved,
+            );
+          }
+        }
+      },
+      child: AppLoadingOverlay(
+        isLoading: isOverlayLoading,
+        message: overlayMessage,
+        child: _AccountContent(
+          isLoggingOut: isLoggingOut,
+          isProfileImageBusy: isProfileImageBusy,
+          userContext: userContext,
+          themeModeController: themeModeController,
+          localeController: localeController,
+          imagePicker: imagePicker,
+          onLogout: onLogout,
+        ),
       ),
     );
   }

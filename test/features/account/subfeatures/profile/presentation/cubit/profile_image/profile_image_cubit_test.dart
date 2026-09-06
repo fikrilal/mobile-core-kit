@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
@@ -15,7 +14,6 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repo
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/clear_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/upload_profile_image_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -42,33 +40,28 @@ void main() {
   late _MockClearProfileImageUseCase clearProfileImage;
   late _MockUserContextService userContext;
   late _MockProfileAvatarRepository avatarRepository;
-  late List<ProfileImageEffect> effects;
-  late StreamSubscription<ProfileImageEffect> effectSubscription;
 
   setUp(() {
     uploadProfileImage = _MockUploadProfileImageUseCase();
     clearProfileImage = _MockClearProfileImageUseCase();
     userContext = _MockUserContextService();
     avatarRepository = _MockProfileAvatarRepository();
-    effects = [];
   });
 
   const user = UserEntity(id: 'user-1', email: 'user@example.com');
 
   blocTest<ProfileImageCubit, ProfileImageState>(
-    'emits loading then initial and updated effect when upload succeeds',
+    'emits loading then success when upload succeeds',
     build: () {
       when(
         () => uploadProfileImage(any()),
       ).thenAnswer((_) async => right(user));
-      final cubit = ProfileImageCubit(
+      return ProfileImageCubit(
         userContext,
         uploadProfileImage,
         clearProfileImage,
         avatarRepository,
       );
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
     },
     act: (cubit) async => cubit.upload(
       bytes: Uint8List.fromList([1, 2, 3]),
@@ -80,31 +73,24 @@ void main() {
         action: ProfileImageAction.upload,
       ),
       ProfileImageState(
-        status: ProfileImageStatus.initial,
-        action: ProfileImageAction.none,
+        status: ProfileImageStatus.success,
+        action: ProfileImageAction.upload,
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowProfileImageUpdated>()]);
-      await effectSubscription.cancel();
-    },
   );
 
   blocTest<ProfileImageCubit, ProfileImageState>(
-    'emits loading then initial and failure effect when upload fails',
+    'emits loading then failure when upload fails',
     build: () {
       when(
         () => uploadProfileImage(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
-      final cubit = ProfileImageCubit(
+      return ProfileImageCubit(
         userContext,
         uploadProfileImage,
         clearProfileImage,
         avatarRepository,
       );
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
     },
     act: (cubit) async => cubit.upload(
       bytes: Uint8List.fromList([1, 2, 3]),
@@ -116,33 +102,23 @@ void main() {
         action: ProfileImageAction.upload,
       ),
       ProfileImageState(
-        status: ProfileImageStatus.initial,
-        action: ProfileImageAction.none,
+        status: ProfileImageStatus.failure,
+        action: ProfileImageAction.upload,
+        failure: AuthFailure.network(),
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowProfileImageFailure>()]);
-      expect(
-        (effects.single as ShowProfileImageFailure).failure,
-        const AuthFailure.network(),
-      );
-      await effectSubscription.cancel();
-    },
   );
 
   blocTest<ProfileImageCubit, ProfileImageState>(
-    'emits loading then initial and removed effect when clear succeeds',
+    'emits loading then success when clear succeeds',
     build: () {
       when(() => clearProfileImage(any())).thenAnswer((_) async => right(user));
-      final cubit = ProfileImageCubit(
+      return ProfileImageCubit(
         userContext,
         uploadProfileImage,
         clearProfileImage,
         avatarRepository,
       );
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
     },
     act: (cubit) async => cubit.clear(),
     expect: () => const [
@@ -151,31 +127,24 @@ void main() {
         action: ProfileImageAction.clear,
       ),
       ProfileImageState(
-        status: ProfileImageStatus.initial,
-        action: ProfileImageAction.none,
+        status: ProfileImageStatus.success,
+        action: ProfileImageAction.clear,
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowProfileImageRemoved>()]);
-      await effectSubscription.cancel();
-    },
   );
 
   blocTest<ProfileImageCubit, ProfileImageState>(
-    'emits loading then initial and failure effect when clear fails',
+    'emits loading then failure when clear fails',
     build: () {
       when(
         () => clearProfileImage(any()),
       ).thenAnswer((_) async => left(const AuthFailure.serverError()));
-      final cubit = ProfileImageCubit(
+      return ProfileImageCubit(
         userContext,
         uploadProfileImage,
         clearProfileImage,
         avatarRepository,
       );
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
     },
     act: (cubit) async => cubit.clear(),
     expect: () => const [
@@ -184,19 +153,11 @@ void main() {
         action: ProfileImageAction.clear,
       ),
       ProfileImageState(
-        status: ProfileImageStatus.initial,
-        action: ProfileImageAction.none,
+        status: ProfileImageStatus.failure,
+        action: ProfileImageAction.clear,
+        failure: AuthFailure.serverError(),
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowProfileImageFailure>()]);
-      expect(
-        (effects.single as ShowProfileImageFailure).failure,
-        const AuthFailure.serverError(),
-      );
-      await effectSubscription.cancel();
-    },
   );
 
   blocTest<ProfileImageCubit, ProfileImageState>(
@@ -366,18 +327,4 @@ void main() {
       ),
     ],
   );
-
-  test('closes effects stream on close', () async {
-    final cubit = ProfileImageCubit(
-      userContext,
-      uploadProfileImage,
-      clearProfileImage,
-      avatarRepository,
-    );
-    final done = expectLater(cubit.effects, emitsDone);
-
-    await cubit.close();
-
-    await done;
-  });
 }
