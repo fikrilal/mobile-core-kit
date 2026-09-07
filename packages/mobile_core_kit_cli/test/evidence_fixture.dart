@@ -18,7 +18,10 @@ void writeEvidenceFixture(Directory root) {
     ..writeAsStringSync('''
 {"schemaVersion":1,"coverage":{"observedAt":"2026-08-10","sourcePlan":"$sourcePlan","coveredLines":1,"executableLines":1,"observedBasisPoints":10000,"enforcedFloorBasisPoints":10000},"profiles":[{"id":"fast","observedDurationMs":1,"advisoryBudgetMs":1,"sourcePlan":"$sourcePlan"},{"id":"full","observedDurationMs":1,"advisoryBudgetMs":1,"sourcePlan":"$sourcePlan"}]}
 ''');
-  File(p.join(root.path, '.github/workflows/governance.yml'))
+  File(p.join(root.path, '.github/workflows/required.yml'))
     ..parent.createSync(recursive: true)
-    ..writeAsStringSync('env:\n  COVERAGE_MIN: "100.0"\n');
+    ..writeAsStringSync(
+      'env:\n  COVERAGE_MIN: "100.0"\n',
+      mode: FileMode.append,
+    );
 }

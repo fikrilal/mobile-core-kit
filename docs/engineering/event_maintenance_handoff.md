@@ -50,9 +50,10 @@ does not accept commands from arguments or events. It covers:
 - CLI and custom-lint harness fixtures;
 - active/queued V2 plans and stale runtime-evidence observations.
 
-Every command has a deadline. The service snapshots Git status before and
-after the run and refuses a maintenance result if tracked or untracked source
-state changed. Codegen runs in an ignored disposable checkout because the
+Every command has a deadline. The service snapshots HEAD, index changes, Git status, and dirty/untracked
+content fingerprints before and after the run and refuses a maintenance result if tracked or untracked source
+state changed. Dependency and codegen commands retain independent outcomes and durations.
+Codegen runs in a disposable checkout outside the source tree because the
 underlying verifier necessarily generates files. The bounded sanitized report
 is written to `.tmp/mobilekit/maintenance/latest.json`; command logs and
 absolute paths are not persisted in it.
@@ -71,7 +72,8 @@ source.
 | --- | --- |
 | `CI Risk` | Clean base/head Git diff plus changed V2 plan risk/impact classification |
 | `CI Full` | Canonical `mobilekit verify --profile ci` from a clean checkout |
-| `CI Runtime` | Risk-selected portable golden evidence and Android debug assembly |
+| `CI Coverage` | Non-golden application coverage with the existing 55% floor |
+| `CI Runtime` | Risk-selected goldens, Android debug assembly, and both registered integration targets on an API 35 emulator |
 | `CI Governance` | Dependency review and committed-history secret scan |
 | `CI Required` | One stable aggregate over every selected lane |
 
@@ -88,7 +90,11 @@ cannot be claimed until the branch is separately authorized for push.
 
 ## Verified handoff
 
-Local `verified` means ready for review, not authority to publish. Before one
+Local `verified` means static verification passed. Run `mobilekit handoff check
+--task <task-id>` to check selected local acceptance evidence; outstanding
+obligations fail this read-only gate. Publication preflight and generated drafts
+disclose incomplete evidence, allowing review to start without a completion
+claim. Neither check grants authority to publish. Before one
 handoff action, render its fresh boundary:
 
 ```bash
@@ -136,5 +142,6 @@ of Git/GitHub state. Commit, push, and draft PR require separate approvals.
 Merge, marking ready, deployment, signing, migrations, release, branch
 deletion, and force push do not exist in the adapter API.
 
-For this proposal implementation, only local commits were authorized. No push
-or draft PR is performed.
+Coverage is owned by `CI Coverage` in the required workflow. Branch protection
+should require the stable `CI Required` aggregate; its coverage and selected
+runtime failures cannot be hidden by another successful lane.

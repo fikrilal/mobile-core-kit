@@ -15,6 +15,159 @@ import 'package:test/test.dart';
 
 void main() {
   test(
+    'draft discloses missing evidence without claiming completion',
+    () async {
+      final fixture = _fixture(
+        TaskAction.draftPr,
+        clean: true,
+        oracleIds: ['auth.integration', 'ui.review'],
+      );
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      final dryRun = await fixture.service.dryRun(_taskId, TaskAction.draftPr);
+      expect(dryRun.evidence.outstanding, hasLength(2));
+      await fixture.service.draftPr(
+        _taskId,
+        _challenge,
+        base: 'main',
+        title: 'Draft',
+      );
+      expect(fixture.adapter.draftBody, contains('INCOMPLETE'));
+      expect(fixture.adapter.draftBody, contains('auth.integration'));
+      fixture.action = TaskAction.verify;
+      expect((await fixture.service.check(_taskId)).ready, isFalse);
+    },
+  );
+
+  test('completion requires current runtime and manual evidence', () async {
+    final fixture = _fixture(
+      TaskAction.verify,
+      oracleIds: ['auth.integration', 'ui.review'],
+    );
+    addTearDown(() => fixture.root.deleteSync(recursive: true));
+    _writeRuntime(fixture.root);
+    expect(
+      (await fixture.service.check(_taskId)).outstanding.single,
+      startsWith('ui.review:'),
+    );
+    _write(
+      fixture.root,
+      '.tmp/mobilekit/tasks/$_taskId/manual-evidence.json',
+      jsonEncode({
+        'schemaVersion': 1,
+        'task': _evidenceTask(),
+        'reviews': [
+          {
+            'oracleId': 'ui.review',
+            'target': 'docs/review.md',
+            'outcome': 'passed',
+            'reviewer': 'human:reviewer',
+            'reviewedAt': '2026-09-06T00:00:00Z',
+            'artifacts': [_summaryArtifact(fixture.root)],
+          },
+        ],
+      }),
+    );
+    expect((await fixture.service.check(_taskId)).ready, isTrue);
+    _write(fixture.root, '_artifacts/mobile/run/summary.md', 'tampered');
+    expect((await fixture.service.check(_taskId)).outstanding, hasLength(2));
+  });
+
+  for (final variant in ['stale', 'failed', 'agent-review', 'duplicate']) {
+    test('completion rejects $variant manual review', () async {
+      final fixture = _fixture(TaskAction.verify, oracleIds: ['ui.review']);
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      final review = {
+        'oracleId': 'ui.review',
+        'target': 'docs/review.md',
+        'outcome': variant == 'failed' ? 'failed' : 'passed',
+        'reviewer': variant == 'agent-review'
+            ? 'agent:codex'
+            : 'human:reviewer',
+        'reviewedAt': '2026-09-06T00:00:00Z',
+        'artifacts': [_summaryArtifact(fixture.root)],
+      };
+      _write(
+        fixture.root,
+        '.tmp/mobilekit/tasks/$_taskId/manual-evidence.json',
+        jsonEncode({
+          'schemaVersion': 1,
+          'task': {
+            ..._evidenceTask(),
+            if (variant == 'stale') 'fingerprint': _otherFingerprint,
+          },
+          'reviews': [review, if (variant == 'duplicate') review],
+        }),
+      );
+      expect((await fixture.service.check(_taskId)).ready, isFalse);
+    });
+  }
+
+  for (final variant in [
+    'stale',
+    'failed',
+    'partial',
+    'wrong-target',
+    'malformed',
+    'missing-summary',
+  ]) {
+    test('completion rejects $variant runtime evidence', () async {
+      final fixture = _fixture(
+        TaskAction.verify,
+        oracleIds: ['auth.integration'],
+      );
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      _writeRuntime(fixture.root, variant: variant);
+      expect((await fixture.service.check(_taskId)).ready, isFalse);
+    });
+  }
+
+  test(
+    'a newer failed run supersedes passing evidence for the same candidate',
+    () async {
+      final fixture = _fixture(
+        TaskAction.verify,
+        oracleIds: ['auth.integration'],
+      );
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      _writeRuntime(fixture.root);
+      expect((await fixture.service.check(_taskId)).ready, isTrue);
+      final file = File(
+        p.join(fixture.root.path, '_artifacts/mobile/run/evidence.json'),
+      );
+      final failed = jsonDecode(file.readAsStringSync()) as Map;
+      failed['run'] = {
+        'finishedAt': '2026-09-06T01:00:00Z',
+        'outcome': 'failed',
+        'exitCode': 1,
+      };
+      _write(
+        fixture.root,
+        '_artifacts/mobile/later/evidence.json',
+        jsonEncode(failed),
+      );
+      expect((await fixture.service.check(_taskId)).ready, isFalse);
+      failed['run'] = {
+        'finishedAt': '2026-09-06T02:00:00Z',
+        'outcome': 'passed',
+        'exitCode': 0,
+      };
+      _write(
+        fixture.root,
+        '_artifacts/mobile/repaired/evidence.json',
+        jsonEncode(failed),
+      );
+      expect((await fixture.service.check(_taskId)).ready, isTrue);
+    },
+  );
+
+  test('static-only selected oracle needs no runtime receipt', () async {
+    final fixture = _fixture(TaskAction.verify);
+    addTearDown(() => fixture.root.deleteSync(recursive: true));
+    fixture.adapter.failInspect = true;
+    expect((await fixture.service.check(_taskId)).ready, isTrue);
+  });
+
+  test(
     'dry-run binds a private expiring approval without mutating Git',
     () async {
       final fixture = _fixture(TaskAction.commit);
@@ -206,10 +359,29 @@ const _revision = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 _HandoffFixture _fixture(
   TaskAction action, {
   bool clean = false,
+  List<String> oracleIds = const ['harness.full'],
   DateTime Function()? now,
 }) {
   final root = Directory.systemTemp.createTempSync('mobilekit_handoff_');
-  final states = _MemoryStateStore(_state());
+  _write(root, 'harness/oracles.yaml', '''
+schemaVersion: 1
+oracles:
+  harness.full:
+    kind: verification-profile
+    target: full
+    covers: [harness]
+  auth.integration:
+    kind: integration-test
+    target: integration_test/auth_test.dart
+    covers: [auth]
+  ui.review:
+    kind: manual-review
+    target: docs/review.md
+    covers: [ui]
+''');
+  _write(root, 'integration_test/auth_test.dart', '// fixture');
+  _write(root, 'docs/review.md', 'Review procedure');
+  final states = _MemoryStateStore(_state(oracleIds: oracleIds));
   final episodes = _MemoryEpisodeStore(_episode());
   final approvals = _MemoryApprovalStore();
   final adapter = _FakePublicationAdapter(clean: clean);
@@ -238,41 +410,47 @@ _HandoffFixture _fixture(
   return fixture;
 }
 
-TaskState _state() => TaskState(
-  taskId: _taskId,
-  lifecycle: TaskLifecycle.verified,
-  startedAt: DateTime.utc(2026, 8, 12),
-  updatedAt: DateTime.utc(2026, 8, 12),
-  baseRevision: _revision,
-  planPath: 'docs/exec-plans/active/handoff.md',
-  planSourceHash: _fingerprint,
-  authorityHash: _authority,
-  declaredRisk: TaskRisk.high,
-  boundaries: const TaskBoundaries(
-    allowedPaths: [_taskPath],
-    allowedActions: [TaskAction.commit, TaskAction.push, TaskAction.draftPr],
-    maximumRisk: TaskRisk.high,
-    repairLimit: 2,
-    timeout: Duration(hours: 1),
-  ),
-  impacts: const TaskImpactAreas(
-    auth: false,
-    navigation: false,
-    api: false,
-    database: false,
-    platform: false,
-    ui: false,
-    harness: true,
-    externalSystems: true,
-  ),
-  preexistingChanges: const [],
-  attemptCount: 1,
-  repairCount: 0,
-  repeatedFailureCount: 0,
-  selectedLanes: const ['full'],
-  transitions: const [],
-  lastTaskFingerprint: _fingerprint,
-);
+TaskState _state({List<String> oracleIds = const ['harness.full']}) =>
+    TaskState(
+      oracleIds: oracleIds,
+      taskId: _taskId,
+      lifecycle: TaskLifecycle.verified,
+      startedAt: DateTime.utc(2026, 8, 12),
+      updatedAt: DateTime.utc(2026, 8, 12),
+      baseRevision: _revision,
+      planPath: 'docs/exec-plans/active/handoff.md',
+      planSourceHash: _fingerprint,
+      authorityHash: _authority,
+      declaredRisk: TaskRisk.high,
+      boundaries: const TaskBoundaries(
+        allowedPaths: [_taskPath],
+        allowedActions: [
+          TaskAction.commit,
+          TaskAction.push,
+          TaskAction.draftPr,
+        ],
+        maximumRisk: TaskRisk.high,
+        repairLimit: 2,
+        timeout: Duration(hours: 1),
+      ),
+      impacts: const TaskImpactAreas(
+        auth: false,
+        navigation: false,
+        api: false,
+        database: false,
+        platform: false,
+        ui: false,
+        harness: true,
+        externalSystems: true,
+      ),
+      preexistingChanges: const [],
+      attemptCount: 1,
+      repairCount: 0,
+      repeatedFailureCount: 0,
+      selectedLanes: const ['full'],
+      transitions: const [],
+      lastTaskFingerprint: _fingerprint,
+    );
 
 TaskEpisode _episode() => TaskEpisode(
   taskId: _taskId,
@@ -388,6 +566,8 @@ class _FakePublicationAdapter implements PublicationAdapter {
   List<String> worktreePaths;
   final List<String> mutations = [];
   bool failPush = false;
+  bool failInspect = false;
+  String? draftBody;
 
   @override
   Future<String> commit(String message) async {
@@ -405,19 +585,22 @@ class _FakePublicationAdapter implements PublicationAdapter {
     required String bodyPath,
   }) async {
     expect(File(bodyPath).existsSync(), isTrue);
+    draftBody = File(bodyPath).readAsStringSync();
     mutations.add('draft:$branch:$base:$title');
     return 'https://github.com/example/mobile/pull/7';
   }
 
   @override
-  Future<PublicationRepositoryState> inspect() async =>
-      PublicationRepositoryState(
-        branch: 'agent/task-fixture',
-        remote: 'github.com/example/mobile',
-        head: _revision,
-        stagedPaths: [...stagedPaths],
-        worktreePaths: [...worktreePaths],
-      );
+  Future<PublicationRepositoryState> inspect() async {
+    if (failInspect) throw StateError('Publication inspection unavailable');
+    return PublicationRepositoryState(
+      branch: 'agent/task-fixture',
+      remote: 'github.com/example/mobile',
+      head: _revision,
+      stagedPaths: [...stagedPaths],
+      worktreePaths: [...worktreePaths],
+    );
+  }
 
   @override
   Future<String> push(String branch) async {
@@ -430,5 +613,64 @@ class _FakePublicationAdapter implements PublicationAdapter {
   Future<void> stage(List<String> paths) async {
     mutations.add('stage:${paths.join(',')}');
     stagedPaths = [...paths];
+  }
+}
+
+void _write(Directory root, String path, String content) {
+  File(p.join(root.path, path))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(content);
+}
+
+Map<String, Object?> _evidenceTask() => {
+  'id': _taskId,
+  'authorityHash': _authority,
+  'baseRevision': _revision,
+  'fingerprint': _fingerprint,
+};
+
+Map<String, Object?> _summaryArtifact(Directory root) {
+  const content = 'Sanitized observation';
+  _write(root, '_artifacts/mobile/run/summary.md', content);
+  return {
+    'path': '_artifacts/mobile/run/summary.md',
+    'sizeBytes': content.length,
+    'sha256': sha256String(content),
+    'durability': 'durable-summary',
+  };
+}
+
+void _writeRuntime(Directory root, {String variant = 'passed'}) {
+  final manifest = {
+    'schemaVersion': 1,
+    'task': {
+      ..._evidenceTask(),
+      if (variant == 'stale') 'fingerprint': _otherFingerprint,
+    },
+    'run': {
+      'finishedAt': '2026-09-06T00:00:00Z',
+      'outcome': variant == 'failed' ? 'failed' : 'passed',
+      'exitCode': variant == 'failed' ? 1 : 0,
+    },
+    'results': [
+      if (variant != 'partial')
+        {
+          'oracleId': 'auth.integration',
+          'target': variant == 'wrong-target'
+              ? 'other.dart'
+              : 'integration_test/auth_test.dart',
+          'outcome': 'passed',
+          'exitCode': 0,
+        },
+    ],
+    'artifacts': [_summaryArtifact(root)],
+  };
+  _write(
+    root,
+    '_artifacts/mobile/run/evidence.json',
+    variant == 'malformed' ? '{' : jsonEncode(manifest),
+  );
+  if (variant == 'missing-summary') {
+    File(p.join(root.path, '_artifacts/mobile/run/summary.md')).deleteSync();
   }
 }

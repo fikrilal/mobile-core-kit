@@ -123,6 +123,15 @@ fingerprint. Record the hashed device identifier, flavor, registered oracle
 results, and repository-relative artifact paths. Do not attach raw device IDs,
 credentials, request/response bodies, trace contents, or local raw logs.
 
+Before claiming local acceptance, run:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit handoff check --task <task-id>
+```
+
+A nonzero result lists outstanding selected oracle evidence. Draft PRs may
+remain incomplete and disclose those obligations; a draft is not completion.
+
 ### 5. Self-review
 
 Before opening or updating the PR, verify:
@@ -191,5 +200,5 @@ A PR is done only when:
 1. acceptance criteria are met
 2. required checks pass
 3. risk-class review expectations are satisfied
-4. evidence is present when the change needs runtime proof
+4. `handoff check` passes for the final candidate and evidence is present when the change needs runtime proof
 5. the stable hosted `CI Required` aggregate passes for the reviewed commit

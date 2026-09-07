@@ -319,10 +319,17 @@ V2 plans. See `docs/engineering/event_maintenance_handoff.md`.
 ### Verified handoff
 
 ```bash
+mobilekit handoff check --task <task-id>
 mobilekit handoff dry-run --task <task-id> --action commit
 mobilekit handoff dry-run --task <task-id> --action push
 mobilekit handoff dry-run --task <task-id> --action draft-pr
 ```
+
+`handoff check` returns nonzero for missing, failed, stale, or incomplete selected
+local oracle evidence. Runtime manifests are discovered under `_artifacts/mobile/`;
+manual receipts use the task control root described in `mobile_runtime_harness.md`.
+This check is read-only and grants no publication authority. Hosted CI and required
+human review remain independent. Draft bodies disclose outstanding obligations.
 
 Dry-run verifies fresh candidate evidence, exact paths, branch, remote, and
 action authority without mutating Git/GitHub. A mutating command additionally

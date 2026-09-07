@@ -95,3 +95,38 @@ repair evidence changes an expected decision and is therefore detected.
 This is deliberately narrow. A broad mutation-testing dependency or blocking
 lane should be introduced only after reviewed operating evidence shows that
 the pilot finds defects worth its cost.
+
+## Collect the first operating cohort
+
+The next improvement step is ordinary product work through the existing task
+loop. Do not create synthetic tasks, induce failures, or reconstruct missing
+results from memory to satisfy eligibility.
+
+For each real task:
+
+1. Before implementation, use a V2 plan with explicit acceptance scenarios,
+   scope, risk, and suitable oracles.
+2. Use `task verify` and record scoped repairs with `task repair`. Preserve
+   the sanitized episode, attempt outcomes, selected lanes, and durations.
+3. Run selected runtime/manual checks and `handoff check` at the final
+   candidate. For an escalation, preserve the terminal failure instead of
+   claiming success or weakening the gate.
+4. Obtain separately authorized publication and exact-candidate hosted CI.
+   Record the full candidate revision and numeric CI run ID. A local check or
+   a run for another revision cannot substitute for hosted reproduction.
+5. Ask the human reviewer to verify the task outcome and evidence independently.
+   Preserve the review marker and review date, not review text or private logs.
+6. Under a separate authorized V2 ledger-edit plan, add only the schema fields
+   described above, sorted by task ID. Run `evidence verify`, `evidence report`,
+   and normal verification before source review accepts the record.
+
+After five qualifying tasks across at least two risk classes, including a real
+repair or escalation, run `improve analyze`. If the cohort is still ineligible,
+continue collecting real work; do not lower the thresholds. Choose one recurring
+failure for a narrow hypothesis only when the data supports it. Report the
+cohort and verification durations alongside any recommendation; a lower repair
+rate alone is not proof of better product outcomes.
+
+The ledger remains empty until independent review and hosted reproduction
+actually exist. Completing harness implementation itself does not manufacture
+those prerequisites.

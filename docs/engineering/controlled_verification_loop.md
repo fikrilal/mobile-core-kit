@@ -73,3 +73,10 @@ controlled verification rather than assuming that the prior command passed.
 
 After `task workspace prepare`, run this loop from the exact linked worktree.
 The controller rejects verification from the primary checkout.
+
+After a successful lane, the controller repeats preflight and compares the
+candidate fingerprint with the starting fingerprint. Scope/authority changes
+or candidate drift escalate instead of recording success for a moving checkout.
+Inspect the concurrent edit and establish fresh authority before retrying.
+`verified` still means static verification; use `mobilekit handoff check` for
+selected local behavioral obligations before claiming acceptance completion.

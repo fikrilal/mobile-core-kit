@@ -14,6 +14,13 @@ A non-trivial task starts from one active V2 plan. Its metadata declares:
 - mobile-specific impact areas and observable acceptance scenarios;
 - registered behavioral oracle IDs for medium/high-risk impacts.
 
+Directory grants must end in `/`, for example
+`packages/mobile_core_kit_cli/test/`; without the slash a grant names only that
+exact path. Before `task begin`, check that directory grants include the slash
+and include shared fixtures affected by workflow migrations. Run edit preflight
+again as soon as the first files change, so a scope declaration mistake is
+detected before more implementation accumulates.
+
 Allowed paths are normalized and reject absolute paths, traversal, globs,
 repository-root grants, `.git`, duplicates, and symlink escapes. The active
 plan must include itself in scope. `edit`, `verify`, `commit`, `push`, and

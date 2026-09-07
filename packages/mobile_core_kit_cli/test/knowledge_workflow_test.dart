@@ -74,7 +74,7 @@ void main() {
     addTearDown(() => fixture.delete(recursive: true));
     File(
       p.join(fixture.path, '.github', 'workflows', 'required.yml'),
-    ).writeAsStringSync('run: flutter test\n');
+    ).writeAsStringSync('env:\n  COVERAGE_MIN: "100.0"\nrun: flutter test\n');
     final errors = StringBuffer();
 
     final result = await KnowledgeWorkflow(

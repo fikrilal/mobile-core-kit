@@ -217,7 +217,8 @@ class MobilekitCli {
         command: 'handoff',
         arguments: arguments.skip(1).toList(),
         usage:
-            'Usage: mobilekit handoff dry-run --task <id> '
+            'Usage: mobilekit handoff check --task <id> | '
+            'handoff dry-run --task <id> '
             '--action <commit|push|draft-pr> | '
             'handoff commit --task <id> --message <message> | '
             'handoff push --task <id> | '
@@ -661,7 +662,9 @@ class MobilekitCli {
       '  maintenance  Run fixed read-only repository observations.',
     );
     output.writeln('  ci        Classify a clean base/head CI candidate.');
-    output.writeln('  handoff   Prepare or execute a verified narrow handoff.');
+    output.writeln(
+      '  handoff   Check acceptance evidence or prepare a narrow handoff.',
+    );
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');

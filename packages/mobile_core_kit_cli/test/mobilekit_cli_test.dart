@@ -123,7 +123,7 @@ void main() {
       ),
       (
         arguments: ['handoff', '--help'],
-        usage: 'Usage: mobilekit handoff dry-run --task <id>',
+        usage: 'Usage: mobilekit handoff check --task <id>',
       ),
     ]) {
       final output = StringBuffer();

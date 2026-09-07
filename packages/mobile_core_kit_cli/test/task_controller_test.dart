@@ -107,6 +107,66 @@ void main() {
     },
   );
 
+  test('rejects a candidate changed while verification runs', () async {
+    final fixture = await _fixture();
+    addTearDown(() => fixture.root.delete(recursive: true));
+    await expectLater(
+      fixture.controller.verify(
+        _taskId,
+        runLane: (_, __) async {
+          fixture.repository.worktree = const [
+            RepositoryChange(
+              path: 'lib/features/example/new.dart',
+              sources: [ChangeSource.untracked],
+            ),
+          ];
+          fixture.repository.fingerprints['lib/features/example/new.dart'] =
+              _hash2;
+          return _passed;
+        },
+      ),
+      throwsA(
+        isA<TaskControlError>().having(
+          (e) => e.code,
+          'code',
+          'task.candidate-changed',
+        ),
+      ),
+    );
+    expect(fixture.store.read(_taskId).lifecycle, TaskLifecycle.escalated);
+    expect(
+      fixture.episodes.events.any((e) => e.type == 'verification-passed'),
+      isFalse,
+    );
+  });
+
+  test('rejects scope escape during a successful lane', () async {
+    final fixture = await _fixture();
+    addTearDown(() => fixture.root.delete(recursive: true));
+    await expectLater(
+      fixture.controller.verify(
+        _taskId,
+        runLane: (_, __) async {
+          fixture.repository.worktree = const [
+            RepositoryChange(
+              path: 'lib/outside.dart',
+              sources: [ChangeSource.untracked],
+            ),
+          ];
+          return _passed;
+        },
+      ),
+      throwsA(
+        isA<TaskControlError>().having(
+          (e) => e.code,
+          'code',
+          'task.scope-violation',
+        ),
+      ),
+    );
+    expect(fixture.store.read(_taskId).lifecycle, TaskLifecycle.escalated);
+  });
+
   test('expired task escalates without executing a lane', () async {
     var clock = DateTime.utc(2026, 8, 11);
     final fixture = await _fixture(now: () => clock);

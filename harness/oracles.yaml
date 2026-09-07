@@ -28,3 +28,15 @@ oracles:
     kind: manual-review
     target: docs/engineering/agent_pr_loop.md
     covers: [external-systems]
+  auth.refresh-logout-persistence:
+    kind: regression-test
+    target: test/core/runtime/session/session_manager_refresh_logout_persistence_test.dart
+    covers: [auth]
+  auth.expiry-persistence:
+    kind: regression-test
+    target: test/core/runtime/session/session_expiry_persistence_test.dart
+    covers: [auth]
+  navigation.pending-link-recovery:
+    kind: regression-test
+    target: test/core/runtime/navigation/pending_deep_link_controller_test.dart
+    covers: [navigation]

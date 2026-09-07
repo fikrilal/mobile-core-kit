@@ -72,3 +72,23 @@ Completion-grade runtime evidence can execute only `integration-test` targets
 selected by the verified task's oracle IDs. `--target` may narrow that set; it
 cannot introduce an unregistered path. Device execution remains explicit and
 single-flight. See `docs/engineering/mobile_runtime_harness.md`.
+
+## Match acceptance scenarios to assertions
+
+Impact coverage is a routing check, not proof that every behavior in that
+category was exercised. Record the selected test and the assertion relevant to
+each acceptance scenario in the V2 plan. Existing focused boundaries include:
+
+- `auth.refresh-logout-persistence`: token/cache cleanup on refresh failure and logout;
+- `auth.expiry-persistence`: expiry restoration through persisted session data;
+- `navigation.pending-link-recovery`: pending-link controller recovery behavior.
+
+These regressions run in the canonical full/CI application test suite. Select
+an integration oracle as well when the acceptance scenario depends on a device.
+Neither `harness.full` nor a database impact declaration proves an untested
+migration. A migration task must identify its actual data invariants and obtain
+a reviewed appropriate oracle before implementation.
+
+After static verification and any selected device/manual checks, run
+`mobilekit handoff check --task <task-id>`. Registry membership alone is not a
+passing result. See `mobile_runtime_harness.md` for receipt discovery and review.

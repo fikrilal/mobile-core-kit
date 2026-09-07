@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:mobile_core_kit_cli/src/handoff/completion_evidence.dart';
 import 'package:mobile_core_kit_cli/src/handoff/handoff_approval.dart';
 import 'package:mobile_core_kit_cli/src/handoff/publication_adapter.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
@@ -22,6 +23,7 @@ class HandoffDryRunResult {
     required this.changedPaths,
     required this.expiresAt,
     required this.challenge,
+    required this.evidence,
   });
 
   final String taskId;
@@ -32,6 +34,7 @@ class HandoffDryRunResult {
   final List<String> changedPaths;
   final DateTime expiresAt;
   final String challenge;
+  final CompletionEvidence evidence;
 }
 
 class HandoffMutationResult {
@@ -71,6 +74,10 @@ class HandoffService {
              stateStore: states ?? FileTaskStateStore(controlRoot),
            ).preflight(taskId, action: action)),
        adapter = adapter ?? NativePublicationAdapter(root),
+       _evidenceReader = CompletionEvidenceReader(
+         root: root,
+         controlRoot: controlRoot,
+       ),
        lock = lock ?? RepositoryMutationLock(controlRoot),
        now = now ?? DateTime.now,
        challenge = challenge ?? _secureChallenge;
@@ -87,6 +94,12 @@ class HandoffService {
   final RepositoryMutationLock lock;
   final DateTime Function() now;
   final String Function() challenge;
+  final CompletionEvidenceReader _evidenceReader;
+
+  Future<CompletionEvidence> check(String taskId) async {
+    final verified = await _verified(taskId, TaskAction.verify);
+    return _evidenceReader.read(verified.state);
+  }
 
   Future<HandoffDryRunResult> dryRun(String taskId, TaskAction action) {
     _requirePublicationAction(action);
@@ -132,6 +145,7 @@ class HandoffService {
         changedPaths: approval.changedPaths,
         expiresAt: approval.expiresAt,
         challenge: value,
+        evidence: fresh.evidence,
       );
     });
   }
@@ -234,15 +248,17 @@ class HandoffService {
     });
   }
 
-  Future<_FreshHandoff> _fresh(String taskId, TaskAction action) async {
+  Future<({TaskState state, TaskPreflightResult preflight})> _verified(
+    String taskId,
+    TaskAction action,
+  ) async {
     final state = states.read(taskId);
     if (state.lifecycle != TaskLifecycle.verified ||
         state.attemptCount <= 0 ||
-        state.lastTaskFingerprint == null ||
-        state.preexistingChanges.isNotEmpty) {
+        state.lastTaskFingerprint == null) {
       throw const TaskControlError(
         'handoff.task-not-ready',
-        'Handoff requires a verified task with a clean original baseline.',
+        'Handoff requires successful static verification for the current task.',
       );
     }
     final result = await preflight(taskId, action);
@@ -255,6 +271,19 @@ class HandoffService {
       throw const TaskControlError(
         'handoff.verification-stale',
         'Latest successful verification does not match the current candidate.',
+      );
+    }
+    return (state: state, preflight: result);
+  }
+
+  Future<_FreshHandoff> _fresh(String taskId, TaskAction action) async {
+    final verified = await _verified(taskId, action);
+    final state = verified.state;
+    final result = verified.preflight;
+    if (state.preexistingChanges.isNotEmpty) {
+      throw const TaskControlError(
+        'handoff.task-not-ready',
+        'Publication requires a clean original baseline.',
       );
     }
     final repository = await adapter.inspect();
@@ -272,6 +301,7 @@ class HandoffService {
       state: state,
       preflight: result,
       repository: repository,
+      evidence: _evidenceReader.read(state),
     );
   }
 
@@ -381,12 +411,16 @@ class HandoffService {
 
   String _draftBody(_FreshHandoff fresh) =>
       '''
-## Verified handoff
+## Static verification handoff
 
 - Task: `${fresh.state.taskId}`
 - Verification attempt: `${fresh.state.attemptCount}`
 - Candidate fingerprint: `${fresh.preflight.taskFingerprint}`
 - Selected lane: `${fresh.state.selectedLanes.join(', ')}`
+
+### Local acceptance evidence
+
+${fresh.evidence.ready ? 'Selected local oracle obligations passed. Hosted CI and required human review remain independent.' : 'INCOMPLETE: behavioral completion has not been established.\n\n${fresh.evidence.outstanding.map((item) => '- $item').join('\n')}'}
 
 ### Verified task paths
 
@@ -399,11 +433,13 @@ class _FreshHandoff {
     required this.state,
     required this.preflight,
     required this.repository,
+    required this.evidence,
   });
 
   final TaskState state;
   final TaskPreflightResult preflight;
   final PublicationRepositoryState repository;
+  final CompletionEvidence evidence;
 }
 
 String _secureChallenge() {

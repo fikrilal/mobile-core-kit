@@ -438,7 +438,7 @@ List<String> _planImpacts(TaskPlan plan) => <String>[
 
 void _validateCoverageFloor(Directory root, int basisPoints) {
   final workflow = File(
-    p.join(root.path, '.github', 'workflows', 'governance.yml'),
+    p.join(root.path, '.github', 'workflows', 'required.yml'),
   );
   if (!workflow.existsSync()) throw _invalid();
   final match = RegExp(

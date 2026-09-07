@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:mobile_core_kit_cli/src/handoff/handoff_service.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_registry.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/task/task_control_root.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
@@ -26,6 +27,7 @@ class HandoffWorkflow {
         controlRoot: controlRoot,
       );
       return switch (arguments.first) {
+        'check' => _check(service, arguments.skip(1).toList()),
         'dry-run' => _dryRun(service, arguments.skip(1).toList()),
         'commit' => _commit(service, arguments.skip(1).toList()),
         'push' => _push(service, arguments.skip(1).toList()),
@@ -40,10 +42,29 @@ class HandoffWorkflow {
     } on TaskControlError catch (error) {
       context.errorOutput.writeln('FAIL [${error.code}] ${error.message}');
       return 1;
+    } on OracleRegistryError catch (error) {
+      context.errorOutput.writeln('FAIL [${error.code}] ${error.message}');
+      return 1;
     } on TaskPlanError catch (error) {
       context.errorOutput.writeln('FAIL [${error.code}] ${error.message}');
       return 1;
     }
+  }
+
+  Future<int> _check(HandoffService service, List<String> arguments) async {
+    final parser = ArgParser()..addOption('task');
+    final parsed = parser.parse(arguments);
+    _rejectRest(parsed.rest);
+    final result = await service.check(_required(parsed, 'task'));
+    for (final item in result.outstanding) {
+      context.output.writeln('- $item');
+    }
+    context.output.writeln(
+      result.ready
+          ? 'Local acceptance evidence passed. Hosted CI and required human review remain independent; no publication authority granted.'
+          : 'FAIL [handoff.evidence-incomplete] Required local acceptance evidence is outstanding.',
+    );
+    return result.ready ? 0 : 1;
   }
 
   Future<int> _dryRun(HandoffService service, List<String> arguments) async {
@@ -55,7 +76,17 @@ class HandoffWorkflow {
     final taskId = _required(parsed, 'task');
     final action = TaskAction.parse(_required(parsed, 'action'));
     final result = await service.dryRun(taskId, action);
-    context.output.writeln('Handoff ready: ${result.action.label}');
+    context.output.writeln(
+      'Publication preflight passed: ${result.action.label}',
+    );
+    context.output.writeln(
+      result.evidence.ready
+          ? 'Local oracle evidence: passed.'
+          : 'Local oracle evidence: INCOMPLETE.',
+    );
+    for (final item in result.evidence.outstanding) {
+      context.output.writeln('- $item');
+    }
     context.output.writeln('Task: ${result.taskId}');
     context.output.writeln('Branch: ${result.branch}');
     context.output.writeln('Remote: ${result.remote}');

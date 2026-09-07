@@ -113,3 +113,64 @@ preflight, or this operating guide. Do not rely on agent memory.
 - `docs/engineering/task_authority.md`
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/mobilekit_cli_reference.md`
+
+## Local acceptance gate
+
+```bash
+dart run mobile_core_kit_cli:mobilekit handoff check --task <task-id>
+```
+
+This read-only command returns nonzero while any selected oracle obligation is
+outstanding. It first requires successful static verification for the current
+task fingerprint. Full/CI verification supplies results for the pinned OpenAPI
+contract and registered tests within the canonical test suites. Integration
+oracles require passing runtime manifests and matching target identities;
+procedure, manual-review, and metric assertions require explicit review receipts.
+
+For automatic discovery, keep runtime artifacts below `_artifacts/mobile/`
+(the default), including when selecting `--artifacts-dir`. Manifests elsewhere
+remain diagnostic artifacts until moved with their repository-relative paths
+and hashes correctly preserved. Every selected integration target must have
+passing evidence. The latest timestamped result per oracle wins; a newer failed
+run invalidates an earlier pass for the same candidate. A narrowed `--target` run does not satisfy other targets.
+Durable summary size/hash checks reject missing or modified artifacts; transient
+logs are deliberately not required for durable acceptance.
+
+For a manual/procedure/metric oracle, a human reviews the selected procedure and
+records `.tmp/mobilekit/tasks/<task-id>/manual-evidence.json` in the task control
+root. Use this shape, replacing placeholders with real reviewed values:
+
+```json
+{
+  "schemaVersion": 1,
+  "task": {
+    "id": "<task-id>",
+    "authorityHash": "<authority-hash>",
+    "baseRevision": "<base-revision>",
+    "fingerprint": "<final-task-fingerprint>"
+  },
+  "reviews": [{
+    "oracleId": "ui.human-review",
+    "target": "docs/engineering/mobile_runtime_harness.md",
+    "outcome": "passed",
+    "reviewer": "human:reviewer-id",
+    "reviewedAt": "2026-09-06T00:00:00Z",
+    "artifacts": [{
+      "path": "_artifacts/mobile/review/summary.md",
+      "sha256": "<sha256-of-sanitized-summary>",
+      "sizeBytes": 123,
+      "durability": "durable-summary"
+    }]
+  }]
+}
+```
+
+The summary identifies the acceptance scenario, observation, and result without
+credentials, private logs, or user data. Do not write a human review receipt
+unless that review happened. Reviewer markers identify an attestation; they do
+not authenticate a person. Repository review must establish its independence.
+
+`verified` task state describes the static lane only. A successful local
+acceptance check still requires independent hosted `CI Required` and the
+risk-appropriate human review before merge. Publication preflight and draft
+bodies disclose outstanding evidence; a draft can remain incomplete.

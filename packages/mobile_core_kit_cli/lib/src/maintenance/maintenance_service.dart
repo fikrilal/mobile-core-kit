@@ -136,10 +136,16 @@ class MaintenanceService {
       final results = <MaintenanceStepResult>[];
       var passed = true;
       for (final step in steps) {
-        if (step.id == MaintenanceStepId.dependencies) continue;
         final stopwatch = Stopwatch()..start();
         var exitCode = 0;
-        if (step.sandboxedCodegen) {
+        if (step.id == MaintenanceStepId.dependencies) {
+          exitCode = await runCommand(root, [
+            _sandboxTool('flutter'),
+            'pub',
+            'outdated',
+            '--no-dev-dependencies',
+          ], const Duration(minutes: 15));
+        } else if (step.sandboxedCodegen) {
           exitCode = await _runCodegenSandbox();
         } else {
           for (final command in step.commands) {
@@ -153,15 +159,6 @@ class MaintenanceService {
         }
         stopwatch.stop();
         if (exitCode != 0) passed = false;
-        if (step.sandboxedCodegen) {
-          results.add(
-            MaintenanceStepResult(
-              id: MaintenanceStepId.dependencies,
-              status: exitCode == 0 ? 'passed' : 'failed',
-              durationMs: stopwatch.elapsedMilliseconds,
-            ),
-          );
-        }
         results.add(
           MaintenanceStepResult(
             id: step.id,
@@ -202,7 +199,7 @@ class MaintenanceService {
     final sandbox = Directory.systemTemp.createTempSync('mobilekit-codegen-');
     final checkout = Directory(p.join(sandbox.path, 'checkout'));
     try {
-      return runCommand(
+      return await runCommand(
         root,
         _maintenanceBundleCommand(checkout),
         const Duration(minutes: 30),
@@ -236,10 +233,7 @@ class MaintenanceService {
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        r'$dependencyExit = 0; '
-            r'& $args[0] pub outdated --no-dev-dependencies; '
-            r'if ($LASTEXITCODE -ne 0) { $dependencyExit = $LASTEXITCODE }; '
-            r'git clone --quiet --shared --no-checkout $args[2] $args[3]; '
+        r'git clone --quiet --shared --no-checkout $args[2] $args[3]; '
             r'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; '
             r'git -C $args[3] checkout --quiet --detach HEAD; '
             r'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; '
@@ -250,7 +244,7 @@ class MaintenanceService {
             r'if ($codegenExit -eq 0) { '
             r'& $args[1] run mobile_core_kit_cli:mobilekit codegen verify; '
             r'$codegenExit = $LASTEXITCODE }; Pop-Location; '
-            r'if ($dependencyExit -ne 0 -or $codegenExit -ne 0) { exit 1 }',
+            r'exit $codegenExit',
         flutter,
         dart,
         root.path,
@@ -260,17 +254,14 @@ class MaintenanceService {
     return [
       '/bin/bash',
       '-c',
-      r'dependency_exit=0; '
-          '"\$1" pub outdated --no-dev-dependencies || dependency_exit=\$?; '
-          'git clone --quiet --shared --no-checkout "\$3" "\$4" && '
+      'git clone --quiet --shared --no-checkout "\$3" "\$4" && '
           'git -C "\$4" checkout --quiet --detach HEAD && '
           'mkdir -p "\$4/.tmp" || exit \$?; '
           r'codegen_exit=0; '
           '(cd "\$4" && "\$1" pub get && '
           '"\$2" run mobile_core_kit_cli:mobilekit codegen verify) || '
           r'codegen_exit=$?; '
-          'if [ "\$dependency_exit" -ne 0 ] || [ "\$codegen_exit" -ne 0 ]; '
-          r'then exit 1; fi',
+          r'exit $codegen_exit',
       'mobilekit-maintenance',
       flutter,
       dart,
@@ -293,7 +284,32 @@ class MaintenanceService {
         'Maintenance could not inspect tracked repository state.',
       );
     }
-    return result.stdout as String;
+    final repository = NativeGitRepository(root);
+    final contents = <List<String>>[];
+    for (final change in await repository.worktreeChanges()) {
+      contents.add([
+        change.path,
+        await repository.contentFingerprint(change.path),
+      ]);
+    }
+    final index = Process.runSync('git', const [
+      'diff',
+      '--cached',
+      '--binary',
+      '--no-ext-diff',
+    ], workingDirectory: root.path);
+    if (index.exitCode != 0) {
+      throw const TaskControlError(
+        'maintenance.git-unavailable',
+        'Maintenance could not inspect the index.',
+      );
+    }
+    return jsonEncode([
+      await repository.head(),
+      result.stdout,
+      index.stdout,
+      contents,
+    ]);
   }
 
   Map<String, Object?> _observations() {
