@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** harness-evidence-commit-v2
-**Status:** active
+**Status:** completed
 **Owner:** Muse Spark
 **Risk:** high
 **Authority:** User explicitly authorized commit of the verified harness-evidence candidate on 2026-09-07 ("yes I allowed"). v5 baseline verified green but its dry-run was correctly refused: a scratch begin-helper existed at v5 begin time, so the baseline was not clean. This v2 baseline re-records the identical candidate with an outside-repo begin helper, so pre-existing is empty. Scope: stage and commit ONLY the exact task-owned harness paths listed below; no code edits; no push, PR, merge, or deployment authority.
@@ -65,11 +65,11 @@ mechanical v4 plan retirement to `completed/`. Nothing else.
 
 ## Implementation Checklist
 
-- [ ] Begin commit baseline via outside-repo helper, confirm empty pre-existing set.
-- [ ] Verify full lane, confirm handoff check passes.
-- [ ] Dry-run commit; capture challenge without echoing it.
-- [ ] Execute commit with fresh user approval token.
-- [ ] Confirm commit hash, clean status, episode trail.
+- [x] Begin commit baseline via outside-repo helper, confirm empty pre-existing set.
+- [x] Verify full lane, confirm handoff check passes.
+- [x] Dry-run commit; capture challenge without echoing it.
+- [x] Execute commit with fresh user approval token.
+- [x] Confirm commit hash, clean status, episode trail.
 
 ## Decision Log
 
@@ -118,7 +118,12 @@ scope. Never reset --hard shared history.
 
 ## Completion Notes
 
-Pending.
+Committed 2026-09-08 as `84d10d3` on `demo/merchant-onboarding-validation`:
+`feat(harness): evidence-bound completion, coverage CI, drift-safe verification`
+(27 files, +1400/−183). Verification: full lane green at attempt 1,
+`handoff check` passed read-only, dry-run evidence passed, one-time approval
+consumed exactly once. Worktree clean of task paths; no push/PR performed
+(out of scope). Your `_WIP/` docs remain in `~/wip_backup_20260907/`.
 
 ## Follow-ups
 
