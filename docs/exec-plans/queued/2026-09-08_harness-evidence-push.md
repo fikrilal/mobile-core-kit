@@ -2,11 +2,11 @@
 
 **Plan version:** 2
 **Task ID:** harness-evidence-push
-**Status:** active
+**Status:** queued
 **Owner:** Muse Spark
 **Risk:** high
 **Authority:** User explicitly chose push + draft PR on 2026-09-08 and authorized this baseline, including the mechanical retirement of the already-committed v2 plan file (`active/2026-09-07_harness-evidence-commit-v2.md` -> `completed/`) required for single-active-plan knowledge. Scope: push the already-committed `84d10d3` (`feat(harness): evidence-bound completion, coverage CI, drift-safe verification`) from local `demo/merchant-onboarding-validation` to origin, then open a DRAFT PR against `main`; no code edits, no merge, no ready-for-review, no deploy.
-**Allowed paths:** docs/exec-plans/active/2026-09-08_harness-evidence-push.md, docs/exec-plans/completed/2026-09-08_harness-evidence-push.md, docs/exec-plans/active/2026-09-07_harness-evidence-commit-v2.md, docs/exec-plans/completed/2026-09-07_harness-evidence-commit-v2.md
+**Allowed paths:** docs/exec-plans/queued/2026-09-08_harness-evidence-push.md, docs/exec-plans/active/2026-09-08_harness-evidence-push.md, docs/exec-plans/completed/2026-09-08_harness-evidence-push.md, docs/exec-plans/active/2026-09-07_harness-evidence-commit-v2.md, docs/exec-plans/completed/2026-09-07_harness-evidence-commit-v2.md
 **Allowed actions:** verify, push, draft-pr
 **Maximum risk:** high
 **Repair limit:** 2
@@ -80,6 +80,8 @@ independently; merge stays a separate human decision.
   passed, 27 exact paths). User chose push + draft PR. New minimal baseline
   with only plan paths in scope; zero task-owned content expected, so push
   requires the clean-checkout shape (`_assertClean`).
+- 2026-09-08: Parked to queued so `maestro-journey-plumbing` can be the
+  single active V2. Push + draft PR not completed. Resume this plan later.
 
 ## Verification
 
@@ -112,7 +114,7 @@ changes (push moves no worktree files).
 
 ## Completion Notes
 
-Pending.
+Parked to queued 2026-09-08. Not completed. Resume after Maestro plumbing.
 
 ## Follow-ups
 
