@@ -1,0 +1,14 @@
+appId: dev.fikril.mobile.corekit.dev
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Sign in to your account"
+    timeout: 20000
+- tapOn: "Email"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn: "Password"
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- tapOn: "Sign in to your account"
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 20000

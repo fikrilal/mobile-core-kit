@@ -17,6 +17,7 @@ void main() {
       ..createSync();
     File(p.join(pathDirectory.path, 'git')).writeAsStringSync('');
     File(p.join(pathDirectory.path, 'npx')).writeAsStringSync('');
+    File(p.join(pathDirectory.path, 'maestro')).writeAsStringSync('');
 
     final report = Doctor(
       executableFinder: ExecutableFinder(
@@ -74,6 +75,14 @@ void main() {
     ).inspect(startDirectory: tempDirectory);
 
     expect(report.hasErrors, isFalse);
+    expect(
+      report.checks.any(
+        (check) =>
+            check.label == 'maestro' &&
+            check.status == DoctorCheckStatus.warning,
+      ),
+      isTrue,
+    );
     expect(
       report.checks.any(
         (check) =>

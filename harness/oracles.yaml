@@ -16,6 +16,10 @@ oracles:
     kind: integration-test
     target: integration_test/auth_happy_path_test.dart
     covers: [auth]
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
   startup.integration:
     kind: integration-test
     target: integration_test/startup_deep_link_resume_test.dart

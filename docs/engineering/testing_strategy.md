@@ -126,7 +126,7 @@ Keep integration tests deterministic: no real network calls, and no reliance on 
 
 ## 6. E2E/UI Tests (`integration_test/`)
 
-This template includes a small E2E/UI suite under `integration_test/` (device/emulator required).
+This template includes a small E2E/UI suite under `integration_test/` (device/emulator required). Local Maestro flows under `maestro/` prove real-app journeys against a real dev backend; they are agent verification, not CI. Completion runs go through `mobilekit runtime evidence --target maestro/<flow>.yaml`, not raw `maestro test`.
 
 ### Run on Android (recommended)
 

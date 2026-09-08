@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart';
+import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_binding.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_process.dart';
@@ -10,6 +11,8 @@ import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
+
+typedef RuntimeBinaryLocator = String? Function(String executable);
 
 const runtimeEvidenceSchemaVersion = 1;
 
@@ -42,6 +45,7 @@ class RuntimeEvidenceWorkflow {
     DateTime Function()? now,
     StringSink? output,
     StringSink? errorOutput,
+    RuntimeBinaryLocator? locateBinary,
   }) : rootDirectory = rootDirectory,
        _processRunner =
            processRunner ??
@@ -53,7 +57,10 @@ class RuntimeEvidenceWorkflow {
            bindingResolver ?? TaskRuntimeEvidenceBindingResolver(rootDirectory),
        _now = now ?? DateTime.now,
        _output = output ?? stdout,
-       _errorOutput = errorOutput ?? stderr;
+       _errorOutput = errorOutput ?? stderr,
+       _locateBinary =
+           locateBinary ??
+           ((executable) => ExecutableFinder().find(executable));
 
   final Directory rootDirectory;
   final RuntimeEvidenceProcessRunner _processRunner;
@@ -61,6 +68,7 @@ class RuntimeEvidenceWorkflow {
   final DateTime Function() _now;
   final StringSink _output;
   final StringSink _errorOutput;
+  final RuntimeBinaryLocator _locateBinary;
 
   static void writeUsage(StringSink output) {
     output.writeln('Usage: mobilekit runtime evidence [options]');
@@ -177,7 +185,29 @@ class RuntimeEvidenceWorkflow {
     String envSource = 'unavailable';
     String googleServicesSource = 'unavailable';
     try {
-      final environment = _prepareEnvironment(options);
+      final maestroSelected = selectedTargets.keys.any(
+        (id) => binding.runtimeKinds[id] == 'maestro-flow',
+      );
+      final dartSelected = selectedTargets.keys.any(
+        (id) => binding.runtimeKinds[id] == 'integration-test',
+      );
+      if (maestroSelected && options.flavor == 'prod') {
+        throw const FormatException('maestro-flow rejects --flavor prod.');
+      }
+      if (maestroSelected &&
+          (options.googleServicesJson ?? '').contains(
+            'google-services.ci.json',
+          )) {
+        throw const FormatException(
+          'maestro-flow rejects the CI Firebase fixture.',
+        );
+      }
+
+      final environment = _prepareEnvironment(
+        options,
+        allowExampleFallback:
+            !maestroSelected && options.allowExampleEnvFallback,
+      );
       if (environment == null) return 1;
       envSource = environment.source;
       if (environment.mutation != null) mutations.add(environment.mutation!);
@@ -208,10 +238,15 @@ class RuntimeEvidenceWorkflow {
         return 1;
       }
 
-      boundary = 'runtime.integration';
+      boundary = maestroSelected && !dartSelected
+          ? 'runtime.maestro'
+          : dartSelected && !maestroSelected
+          ? 'runtime.integration'
+          : 'runtime.device';
       var failures = 0;
       for (final entry in selectedTargets.entries) {
         final target = entry.value;
+        final kind = binding.runtimeKinds[entry.key] ?? 'integration-test';
         final targetFile = _resolveFile(target);
         if (!targetFile.existsSync()) {
           _errorOutput.writeln('ERROR: Target not found: $target');
@@ -225,20 +260,28 @@ class RuntimeEvidenceWorkflow {
           failures++;
           continue;
         }
+        if (kind == 'maestro-flow' && _locateBinary('maestro') == null) {
+          throw const TaskControlError(
+            'runtime.maestro-missing',
+            'The maestro CLI is not on PATH.',
+          );
+        }
         final logFile = artifacts.logFile(target.replaceAll('/', '_'));
         _output.writeln(
           '==> Running $target (oracle=${entry.key}, flavor=${options.flavor})',
         );
         final targetExit = await _processRunner.run(
-          command: [
-            'flutter',
-            'test',
-            '-d',
-            options.device,
-            '--flavor',
-            options.flavor,
-            target,
-          ],
+          command: kind == 'maestro-flow'
+              ? ['maestro', 'test', '--udid', options.device, target]
+              : [
+                  'flutter',
+                  'test',
+                  '-d',
+                  options.device,
+                  '--flavor',
+                  options.flavor,
+                  target,
+                ],
           workingDirectory: rootDirectory,
           logFile: logFile,
           output: _output,
@@ -343,13 +386,16 @@ class RuntimeEvidenceWorkflow {
     return result;
   }
 
-  _PreparedFile? _prepareEnvironment(RuntimeEvidenceOptions options) {
+  _PreparedFile? _prepareEnvironment(
+    RuntimeEvidenceOptions options, {
+    required bool allowExampleFallback,
+  }) {
     final envFile = _resolveFile('.env/${options.flavor}.yaml');
     if (envFile.existsSync() && envFile.lengthSync() > 0) {
       return const _PreparedFile('existing');
     }
     final exampleFile = _resolveFile('.env/${options.flavor}.example.yaml');
-    if (options.allowExampleEnvFallback &&
+    if (allowExampleFallback &&
         options.flavor != 'prod' &&
         exampleFile.existsSync() &&
         exampleFile.lengthSync() > 0) {

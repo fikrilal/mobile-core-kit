@@ -384,16 +384,20 @@ mobilekit runtime evidence --task <task-id> --device emulator-5554
 mobilekit runtime evidence --task <task-id> --device emulator-5554 \
   --target integration_test/auth_happy_path_test.dart
 mobilekit runtime evidence --task <task-id> --device emulator-5554 \
+  --target maestro/login.yaml --flavor dev
+mobilekit runtime evidence --task <task-id> --device emulator-5554 \
   --flavor dev --google-services-json <secure-path>/google-services.json
 ```
 
 The task must already be verified at its exact current fingerprint and must
-select registered integration-test oracles. Options include required `--task`
-and `--device`, repeatable registered `--target`, `--flavor dev|staging|prod`,
-`--artifacts-dir`, `--no-example-env-fallback`, and
-`--google-services-json`. Evidence defaults to
-`_artifacts/mobile/<timestamp>/evidence.json`; raw logs are bounded, ignored,
-owner-restricted local diagnostics. See
+select registered `integration-test` or `maestro-flow` oracles. Raw
+`maestro test` and Maestro MCP never satisfy `handoff check`. Options
+include required `--task` and `--device`, repeatable registered `--target`,
+`--flavor dev|staging|prod` (`maestro-flow` rejects `prod`),
+`--artifacts-dir`, `--no-example-env-fallback` (ignored for
+`maestro-flow`; real env is required), and `--google-services-json`.
+Evidence defaults to `_artifacts/mobile/<timestamp>/evidence.json`; raw
+logs are bounded, ignored, owner-restricted local diagnostics. See
 `docs/engineering/mobile_runtime_harness.md`.
 
 ## Exit codes

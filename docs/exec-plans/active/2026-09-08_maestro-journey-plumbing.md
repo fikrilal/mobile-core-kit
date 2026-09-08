@@ -89,19 +89,19 @@ This task does not prove login on an emulator. That is
 
 ## Implementation Checklist
 
-- [ ] Add `maestro-flow` to the oracle registry parser and `oracle verify`.
-- [ ] Add `maestro/login.yaml` and register `auth.journey`.
-- [ ] Extend binding to collect `maestro-flow` targets.
-- [ ] Extend `RuntimeEvidenceWorkflow` to shell out to `maestro test` for
+- [x] Add `maestro-flow` to the oracle registry parser and `oracle verify`.
+- [x] Add `maestro/login.yaml` and register `auth.journey`.
+- [x] Extend binding to collect `maestro-flow` targets.
+- [x] Extend `RuntimeEvidenceWorkflow` to shell out to `maestro test` for
       those targets; keep `flutter test` for `integration-test`.
-- [ ] Reject `--flavor prod` for `maestro-flow`; fail closed on missing
+- [x] Reject `--flavor prod` for `maestro-flow`; fail closed on missing
       binary / unregistered path / stale fingerprint.
-- [ ] Extend `CompletionEvidenceReader` for `maestro-flow`.
-- [ ] Warn in `mobilekit doctor` when `maestro` is not on `PATH`.
-- [ ] Add CLI tests for the wrapper (no live device required).
-- [ ] Update the allowed engineering docs and `AGENTS.md` map pointer if
+- [x] Extend `CompletionEvidenceReader` for `maestro-flow`.
+- [x] Warn in `mobilekit doctor` when `maestro` is not on `PATH`.
+- [x] Add CLI tests for the wrapper (no live device required).
+- [x] Update the allowed engineering docs and `AGENTS.md` map pointer if
       needed.
-- [ ] Run `task verify` for this task (`harness.full`).
+- [x] Run `task verify` for this task (`harness.full`).
 
 ## Decision Log
 
@@ -126,7 +126,9 @@ dart run mobile_core_kit_cli:mobilekit oracle verify
 dart test packages/mobile_core_kit_cli/test
 ```
 
-Do not run Maestro on an emulator as completion evidence for this task.
+2026-09-08: `task verify --task maestro-journey-plumbing --env dev` passed
+(`verified`, profile=full, attempt=1). `oracle verify`: 11 registered.
+No live Maestro emulator run (out of scope).
 
 ## Runtime Evidence
 
@@ -150,7 +152,10 @@ place. Delete `maestro/` if it contains only this task's YAML.
 
 ## Completion Notes
 
-Activated 2026-09-08. Implementation pending `task begin`.
+Plumbing implemented and `task verify` passed 2026-09-08. Not committed
+(this baseline does not authorize commit). Next: re-baseline
+`maestro-login-pilot` Oracle IDs to `auth.journey, runtime.mobile-evidence`
+then begin that task.
 
 ## Follow-ups
 

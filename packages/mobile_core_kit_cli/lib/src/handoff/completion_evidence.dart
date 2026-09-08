@@ -51,7 +51,8 @@ class CompletionEvidenceReader {
                 'packages/mobile_core_kit_cli/test/',
                 'packages/mobile_core_kit_lints/test/',
               ].any(oracle.target.startsWith),
-        'integration-test' => runtime.contains('$id:${oracle.target}'),
+        'integration-test' ||
+        'maestro-flow' => runtime.contains('$id:${oracle.target}'),
         _ => manual.contains('$id:${oracle.target}'),
       };
       if (!satisfied) {

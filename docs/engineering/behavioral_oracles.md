@@ -10,7 +10,8 @@ that the behavior request was understood correctly.
 `harness/oracles.yaml` is the checked-in registry. Each stable ID declares:
 
 - a kind such as verification profile, pinned contract, integration test,
-  golden, metric assertion, regression test, procedure, or manual review;
+  maestro flow, golden, metric assertion, regression test, procedure, or
+  manual review;
 - one profile name or repository-relative target;
 - the task impact areas it can credibly cover.
 
@@ -35,10 +36,11 @@ Prefer the narrowest credible independent boundary:
 
 1. an existing regression/unit/widget/Bloc test for deterministic behavior;
 2. the pinned OpenAPI contract for endpoint, DTO, and auth-scheme shape;
-3. a registered integration test for device/runtime behavior;
-4. a registered golden or metric assertion when pixels or performance are the
+3. a registered integration test for device/runtime **wiring**;
+4. a registered `maestro-flow` for a local real-app user journey (not CI);
+5. a registered golden or metric assertion when pixels or performance are the
    acceptance boundary;
-5. an explicit manual-review procedure only when automation is not credible.
+6. an explicit manual-review procedure only when automation is not credible.
 
 Do not register placeholder files, broad directories, arbitrary shell
 commands, or a test solely because the implementing agent just authored it.
@@ -68,10 +70,12 @@ decision; the harness does not infer compatibility or mutate backend state.
 
 ## Runtime selection
 
-Completion-grade runtime evidence can execute only `integration-test` targets
-selected by the verified task's oracle IDs. `--target` may narrow that set; it
-cannot introduce an unregistered path. Device execution remains explicit and
-single-flight. See `docs/engineering/mobile_runtime_harness.md`.
+Completion-grade runtime evidence can execute `integration-test` and
+`maestro-flow` targets selected by the verified task's oracle IDs.
+`--target` may narrow that set; it cannot introduce an unregistered path.
+Device execution remains explicit and single-flight. `maestro-flow` is local
+agent journey proof: not CI, not Maestro Cloud. See
+`docs/engineering/mobile_runtime_harness.md`.
 
 ## Match acceptance scenarios to assertions
 

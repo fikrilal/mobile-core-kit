@@ -106,6 +106,7 @@ class Doctor {
     for (final executable in ['git', 'npx']) {
       checks.add(_pathCommandCheck(executable));
     }
+    checks.add(_optionalPathCommandCheck('maestro'));
 
     return DoctorReport(repositoryPath: root.path, checks: checks);
   }
@@ -364,6 +365,23 @@ class Doctor {
       label: executable,
       status: DoctorCheckStatus.error,
       detail: 'Not found in PATH.',
+    );
+  }
+
+  DoctorCheck _optionalPathCommandCheck(String executable) {
+    final resolved = _executableFinder.find(executable);
+    if (resolved != null) {
+      return DoctorCheck(
+        label: executable,
+        status: DoctorCheckStatus.ok,
+        detail: resolved,
+      );
+    }
+    return DoctorCheck(
+      label: executable,
+      status: DoctorCheckStatus.warning,
+      detail:
+          'Not found in PATH. Local Maestro journey proof will fail closed.',
     );
   }
 }

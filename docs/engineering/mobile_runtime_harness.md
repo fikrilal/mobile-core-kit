@@ -10,7 +10,8 @@ push, platform integrations, or medium/high-risk UI interactions.
 
 ## Preconditions
 
-1. The V2 plan selects one or more registered `integration-test` oracle IDs.
+1. The V2 plan selects one or more registered `integration-test` or
+   `maestro-flow` oracle IDs.
 2. `mobilekit task verify --task <id> --env <env>` passed for the exact current
    fingerprint.
 3. One device or emulator is available. Device execution is single-flight.
@@ -39,6 +40,25 @@ dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --device <device-id> \
   --target integration_test/auth_happy_path_test.dart
 ```
+
+Local Maestro journey proof (not CI, not Cloud). Kit CLI is the only
+completion run. Raw `maestro test` and Maestro MCP are iteration only:
+
+```bash
+dart run mobile_core_kit_cli:mobilekit runtime logs start \
+  --session journey --mode run --device <device-id> --flavor dev \
+  --target lib/main_dev.dart
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --task <task-id> \
+  --device <device-id> \
+  --flavor dev \
+  --target maestro/login.yaml
+```
+
+`maestro-flow` requires a real `.env/<flavor>.yaml` (no example fallback),
+rejects `--flavor prod` and the CI Firebase fixture, and fails closed if
+the `maestro` binary is missing. Install Maestro CLI on PATH; `mobilekit
+doctor` warns when it is absent.
 
 Use an explicit Firebase input transactionally when required:
 

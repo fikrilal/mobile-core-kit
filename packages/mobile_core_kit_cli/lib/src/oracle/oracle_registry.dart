@@ -187,6 +187,7 @@ const _oracleKinds = {
   'verification-profile',
   'contract',
   'integration-test',
+  'maestro-flow',
   'golden-test',
   'metric-assertion',
   'regression-test',

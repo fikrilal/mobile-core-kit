@@ -435,6 +435,167 @@ void main() {
       }
     }
   });
+
+  test('runs maestro-flow with maestro test and binds the manifest', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final processRunner = FakeRuntimeEvidenceProcessRunner();
+    final artifacts = p.join(root.path, '_artifacts', 'maestro');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: processRunner,
+          bindingResolver: FakeRuntimeEvidenceBindingResolver(
+            root,
+            extraTargets: {'auth.journey': 'maestro/login.yaml'},
+            extraKinds: {'auth.journey': 'maestro-flow'},
+          ),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          output: StringBuffer(),
+          errorOutput: StringBuffer(),
+        ).run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 0);
+    expect(
+      processRunner.commands.where((command) => command.first == 'maestro'),
+      [
+        ['maestro', 'test', '--udid', 'emulator-5554', 'maestro/login.yaml'],
+      ],
+    );
+    expect(
+      File(p.join(artifacts, 'evidence.json')).readAsStringSync(),
+      allOf(
+        contains('"boundary": "runtime.maestro"'),
+        contains('"target": "maestro/login.yaml"'),
+        contains('"outcome": "passed"'),
+      ),
+    );
+  });
+
+  test('rejects prod flavor and missing maestro binary', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final errors = StringBuffer();
+    final workflow = RuntimeEvidenceWorkflow(
+      rootDirectory: root,
+      processRunner: FakeRuntimeEvidenceProcessRunner(),
+      bindingResolver: FakeRuntimeEvidenceBindingResolver(
+        root,
+        extraTargets: {'auth.journey': 'maestro/login.yaml'},
+        extraKinds: {'auth.journey': 'maestro-flow'},
+      ),
+      locateBinary: (_) => null,
+      output: StringBuffer(),
+      errorOutput: errors,
+    );
+
+    expect(
+      await workflow.run([
+        '--task',
+        'runtime-task',
+        '--device',
+        'emulator-5554',
+        '--flavor',
+        'prod',
+        '--target',
+        'maestro/login.yaml',
+      ]),
+      2,
+    );
+    expect(errors.toString(), contains('rejects --flavor prod'));
+
+    errors.clear();
+    expect(
+      await workflow.run([
+        '--task',
+        'runtime-task',
+        '--device',
+        'emulator-5554',
+        '--target',
+        'maestro/login.yaml',
+      ]),
+      1,
+    );
+    expect(errors.toString(), contains('runtime.maestro-missing'));
+  });
+
+  test(
+    'maestro-flow refuses example env and the CI Firebase fixture',
+    () async {
+      final root = await _createRepository(includeEnvironment: false);
+      addTearDown(() => root.delete(recursive: true));
+      File(
+        p.join(root.path, '.env', 'dev.example.yaml'),
+      ).writeAsStringSync('core: https://example.test\n');
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      File(p.join(root.path, 'harness', 'fixtures', 'google-services.ci.json'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('{"project_id":"ci"}\n');
+      final errors = StringBuffer();
+      final workflow = RuntimeEvidenceWorkflow(
+        rootDirectory: root,
+        processRunner: FakeRuntimeEvidenceProcessRunner(),
+        bindingResolver: FakeRuntimeEvidenceBindingResolver(
+          root,
+          extraTargets: {'auth.journey': 'maestro/login.yaml'},
+          extraKinds: {'auth.journey': 'maestro-flow'},
+        ),
+        locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+        output: StringBuffer(),
+        errorOutput: errors,
+      );
+
+      expect(
+        await workflow.run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+        ]),
+        1,
+      );
+      expect(errors.toString(), contains('Missing or empty env file'));
+
+      errors.clear();
+      File(
+        p.join(root.path, '.env', 'dev.yaml'),
+      ).writeAsStringSync('core: https://api.example.test\n');
+      expect(
+        await workflow.run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--google-services-json',
+          'harness/fixtures/google-services.ci.json',
+        ]),
+        2,
+      );
+      expect(errors.toString(), contains('CI Firebase fixture'));
+    },
+  );
 }
 
 const _generatedConfigPath =
@@ -525,9 +686,15 @@ class FakeRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
 
 class FakeRuntimeEvidenceBindingResolver
     implements RuntimeEvidenceBindingResolver {
-  FakeRuntimeEvidenceBindingResolver(this.root);
+  FakeRuntimeEvidenceBindingResolver(
+    this.root, {
+    this.extraTargets = const {},
+    this.extraKinds = const {},
+  });
 
   final Directory root;
+  final Map<String, String> extraTargets;
+  final Map<String, String> extraKinds;
 
   @override
   Future<RuntimeEvidenceBinding> resolve(String taskId) async {
@@ -538,6 +705,14 @@ class FakeRuntimeEvidenceBindingResolver
             .map((file) => p.relative(file.path, from: root.path))
             .toList()
           ..sort();
+    final runtimeTargets = {
+      for (final target in targets) _oracleId(target): target,
+      ...extraTargets,
+    };
+    final runtimeKinds = {
+      for (final target in targets) _oracleId(target): 'integration-test',
+      ...extraKinds,
+    };
     return RuntimeEvidenceBinding(
       taskId: taskId,
       planPath: 'docs/exec-plans/active/runtime.md',
@@ -549,8 +724,9 @@ class FakeRuntimeEvidenceBindingResolver
       candidateRevision: '4444444444444444444444444444444444444444',
       taskFingerprint:
           '5555555555555555555555555555555555555555555555555555555555555555',
-      oracleIds: targets.map((target) => _oracleId(target)).toList(),
-      runtimeTargets: {for (final target in targets) _oracleId(target): target},
+      oracleIds: runtimeTargets.keys.toList(),
+      runtimeTargets: runtimeTargets,
+      runtimeKinds: runtimeKinds,
     );
   }
 

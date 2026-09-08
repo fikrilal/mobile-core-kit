@@ -118,6 +118,10 @@ Runtime evidence is expected for:
 Collect runtime evidence using:
 - `docs/engineering/mobile_runtime_harness.md`
 
+For a user-facing flow, after `task verify`: start `runtime logs --mode run`,
+then `runtime evidence --target maestro/<flow>.yaml` on a local emulator.
+That is local journey proof. It is not hosted CI.
+
 Attach the sanitized `evidence.json` and summary for the exact final task
 fingerprint. Record the hashed device identifier, flavor, registered oracle
 results, and repository-relative artifact paths. Do not attach raw device IDs,
