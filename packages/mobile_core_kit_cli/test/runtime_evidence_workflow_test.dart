@@ -116,6 +116,7 @@ void main() {
     final durable = manifest.readAsStringSync();
     expect(durable, contains('"id": "runtime-task"'));
     expect(durable, contains('"outcome": "passed"'));
+    expect(durable, contains('"durability": "durable-summary"'));
     expect(durable, contains('"environmentPreparation": "existing"'));
     expect(durable, isNot(contains('emulator-5554')));
     expect(durable, isNot(contains(root.path)));
@@ -481,6 +482,7 @@ void main() {
         contains('"boundary": "runtime.maestro"'),
         contains('"target": "maestro/login.yaml"'),
         contains('"outcome": "passed"'),
+        contains('"durability": "durable-summary"'),
       ),
     );
   });

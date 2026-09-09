@@ -491,13 +491,15 @@ class RuntimeEvidenceWorkflow {
     required List<_RuntimeTargetResult> results,
   }) {
     final artifactEntries = <Map<String, Object?>>[];
-    for (final file in [artifacts.summaryFile, ...artifacts.logFiles]) {
+    final summary = artifacts.summaryFile;
+    final summaryPath = summary.path;
+    for (final file in [summary, ...artifacts.logFiles]) {
       if (!file.existsSync()) continue;
       artifactEntries.add({
         'path': artifacts.relativePath(file),
         'sha256': sha256.convert(file.readAsBytesSync()).toString(),
         'sizeBytes': file.lengthSync(),
-        'durability': file == artifacts.summaryFile
+        'durability': file.path == summaryPath
             ? 'durable-summary'
             : 'transient-local-log',
       });
