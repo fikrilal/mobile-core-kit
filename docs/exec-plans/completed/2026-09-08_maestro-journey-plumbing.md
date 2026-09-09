@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** maestro-journey-plumbing
-**Status:** active
+**Status:** completed
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Implement and verify the local Maestro plumbing (oracle kind, login YAML, binding, `runtime evidence` shell-out, `handoff check`, doctor PATH check, CLI tests, docs). No commit, push, or draft-PR. No live-backend journey run as completion evidence. No CI job, Maestro Cloud, MCP wrapper, or `mobilekit maestro` command.
@@ -152,14 +152,13 @@ place. Delete `maestro/` if it contains only this task's YAML.
 
 ## Completion Notes
 
-Plumbing implemented and `task verify` passed 2026-09-08. Not committed
-(this baseline does not authorize commit). Next: re-baseline
-`maestro-login-pilot` Oracle IDs to `auth.journey, runtime.mobile-evidence`
-then begin that task.
+Plumbing implemented, `task verify` passed, and source committed as
+`13ba726`. Completed 2026-09-08 so `maestro-login-pilot` can be the
+single active V2.
 
 ## Follow-ups
 
-- [ ] After this plan is completed, update
+- [x] After this plan is completed, update
       `docs/exec-plans/queued/2026-09-08_maestro-login-pilot.md` Oracle IDs
-      to `auth.journey` (new authority hash, still queued, then begin).
-- [ ] No tech-debt tracker row unless the wrapper ships with known holes.
+      to `auth.journey` (new authority hash, then begin).
+- [x] No tech-debt tracker row; wrapper has no known holes.

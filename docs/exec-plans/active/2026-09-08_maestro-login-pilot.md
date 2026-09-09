@@ -2,16 +2,16 @@
 
 **Plan version:** 2
 **Task ID:** maestro-login-pilot
-**Status:** queued
+**Status:** active
 **Owner:** fikrilal
 **Risk:** high
-**Authority:** When activated after `maestro-journey-plumbing` is completed and this plan's Oracle IDs have been re-baselined to include `auth.journey`: run the local agent journey loop for email/password login on a local Android emulator against the real dev backend. Bind Maestro evidence via `mobilekit runtime evidence`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof. Do not begin this file until that re-baseline exists.
+**Authority:** Run the local agent journey loop for email/password login on a local Android emulator against the real dev backend. Bind Maestro evidence via `mobilekit runtime evidence`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
 **Allowed paths:** docs/exec-plans/queued/2026-09-08_maestro-login-pilot.md, docs/exec-plans/active/2026-09-08_maestro-login-pilot.md, docs/exec-plans/completed/2026-09-08_maestro-login-pilot.md, maestro/, lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart, docs/engineering/mobile_runtime_harness.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2
 **Task timeout:** 6h
-**Oracle IDs:** auth.refresh-logout-persistence, ui.human-review, runtime.mobile-evidence
+**Oracle IDs:** auth.journey, runtime.mobile-evidence
 
 Date: 2026-09-08
 Related issue/PR: `_WIP/2026-09-06_maestro-device-proof-proposal.md`; depends on `maestro-journey-plumbing`
@@ -94,18 +94,22 @@ Before `task begin`:
 
 ## Implementation Checklist
 
-- [ ] Blocked: do not `task begin` until plumbing is completed.
-- [ ] Re-baseline Oracle IDs to `auth.journey, runtime.mobile-evidence`.
-- [ ] Confirm `maestro` on `PATH`, emulator up, `.env/dev.yaml` real,
+- [x] Blocked: do not `task begin` until plumbing is completed.
+- [x] Re-baseline Oracle IDs to `auth.journey, runtime.mobile-evidence`.
+- [x] Confirm `maestro` on `PATH`, emulator up, `.env/dev.yaml` real,
       backend reachable.
-- [ ] Adjust `maestro/login.yaml` or sign-in Semantics only if the flow
+- [x] Adjust `maestro/login.yaml` or sign-in Semantics only if the flow
       cannot see a widget.
-- [ ] `task verify` at F.
-- [ ] `runtime logs start --mode run` for `lib/main_dev.dart`.
-- [ ] `runtime evidence --target maestro/login.yaml`.
-- [ ] On fail: `runtime logs tail`, repair, re-verify, rerun evidence.
+- [ ] `task verify` at F (re-run after harness / `maestro/README.md`
+      edits).
+- [x] Skip `runtime logs start --mode run`. Maestro `launchApp` kills
+      that `flutter run` session; kit-CLI evidence is the driver.
+- [ ] `runtime evidence --target maestro/login.yaml` after the doc
+      fingerprint.
+- [ ] On fail: inspect Maestro debug + API, repair, re-verify, rerun
+      evidence. Do not restart `flutter run`.
 - [ ] `handoff check` with `auth.journey` satisfied.
-- [ ] `runtime logs stop`.
+- [x] No `runtime logs stop` (log session never started).
 
 ## Decision Log
 
@@ -116,6 +120,22 @@ Before `task begin`:
   `auth.journey` is unregistered. Re-baseline before begin.
 - 2026-09-08: Seed default is unique register-then-login, fail closed if
   the backend is down.
+- 2026-09-08: Re-baselined Oracle IDs to `auth.journey,
+  runtime.mobile-evidence` after plumbing completed. Activated.
+- 2026-09-09: Parked to queued. Bound Maestro evidence passed, but
+  `handoff check` rejects `summary.md` tagged `transient-local-log`
+  (`File ==` is identity). CLI fix is out of this plan's scope;
+  follow-up `maestro-evidence-durability`.
+- 2026-09-09: Resumed after durability writer fix. `auth.journey`
+  handoff clears. `runtime.mobile-evidence` still needs a human
+  procedure receipt.
+- 2026-09-09: Promoted twice-seen Maestro gaps into
+  `docs/engineering/mobile_runtime_harness.md` and `maestro/README.md`.
+  Do not pair evidence with `runtime logs --mode run`. App must already
+  be installed. YAML: regex anchors, no `hideKeyboard`, profile gate,
+  unique register-then-login. `mobilekit_cli_reference.md` and
+  `agent_pr_loop.md` still mention the old logs pairing; those paths
+  are out of this plan's scope.
 
 ## Verification
 
@@ -124,10 +144,8 @@ Do not run these until after the Oracle ID re-baseline and `task begin`.
 ```bash
 dart run mobile_core_kit_cli:mobilekit task preflight --task maestro-login-pilot --action verify
 dart run mobile_core_kit_cli:mobilekit task verify --task maestro-login-pilot --env dev
-dart run mobile_core_kit_cli:mobilekit runtime logs start --session journey --mode run --device <emulator-id> --flavor dev --target lib/main_dev.dart
 dart run mobile_core_kit_cli:mobilekit runtime evidence --task maestro-login-pilot --device <emulator-id> --flavor dev --target maestro/login.yaml
 dart run mobile_core_kit_cli:mobilekit handoff check --task maestro-login-pilot
-dart run mobile_core_kit_cli:mobilekit runtime logs stop --session journey
 ```
 
 ## Runtime Evidence
@@ -155,8 +173,7 @@ the prior task.
 
 ## Completion Notes
 
-Pending. Queued. Not begin-able until plumbing completes and Oracle IDs
-are re-baselined to `auth.journey, runtime.mobile-evidence`.
+Activated 2026-09-08 after plumbing completion and Oracle ID re-baseline.
 
 ## Follow-ups
 

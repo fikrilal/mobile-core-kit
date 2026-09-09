@@ -42,12 +42,15 @@ dart run mobile_core_kit_cli:mobilekit runtime evidence \
 ```
 
 Local Maestro journey proof (not CI, not Cloud). Kit CLI is the only
-completion run. Raw `maestro test` and Maestro MCP are iteration only:
+completion run. Raw `maestro test` and Maestro MCP are iteration only.
+
+The app package must already be installed on `--device`. `runtime evidence`
+shells out to `maestro test`; it does not build or `flutter install`.
+Maestro `launchApp` is the driver. Do not start `runtime logs --mode run`
+first: `launchApp` kills that `flutter run` session. `runtime logs --mode
+logs` remains diagnostic only. YAML authoring lives in `maestro/README.md`.
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit runtime logs start \
-  --session journey --mode run --device <device-id> --flavor dev \
-  --target lib/main_dev.dart
 dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --task <task-id> \
   --device <device-id> \
@@ -133,6 +136,7 @@ preflight, or this operating guide. Do not rely on agent memory.
 - `docs/engineering/task_authority.md`
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/mobilekit_cli_reference.md`
+- `maestro/README.md`
 
 ## Local acceptance gate
 
