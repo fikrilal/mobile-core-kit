@@ -16,6 +16,38 @@ typedef RuntimeBinaryLocator = String? Function(String executable);
 
 const runtimeEvidenceSchemaVersion = 1;
 
+abstract class RuntimeLogcatAttacher {
+  Future<void> start({required String device, required File logFile});
+
+  Future<void> stop();
+}
+
+class FlutterRuntimeLogcatAttacher implements RuntimeLogcatAttacher {
+  Process? _process;
+  IOSink? _sink;
+
+  @override
+  Future<void> start({required String device, required File logFile}) async {
+    logFile.parent.createSync(recursive: true);
+    if (!logFile.existsSync()) {
+      logFile.createSync();
+    }
+    _sink = logFile.openWrite(mode: FileMode.append);
+    _process = await Process.start('flutter', ['logs', '-d', device]);
+    _process!.stdout.listen(_sink!.add, onError: (_) {});
+    _process!.stderr.listen(_sink!.add, onError: (_) {});
+  }
+
+  @override
+  Future<void> stop() async {
+    _process?.kill();
+    _process = null;
+    await _sink?.flush();
+    await _sink?.close();
+    _sink = null;
+  }
+}
+
 class RuntimeEvidenceOptions {
   const RuntimeEvidenceOptions({
     required this.taskId,
@@ -27,7 +59,7 @@ class RuntimeEvidenceOptions {
     required this.googleServicesJson,
   });
 
-  final String taskId;
+  final String? taskId;
   final String device;
   final String flavor;
   final List<String> targets;
@@ -46,6 +78,7 @@ class RuntimeEvidenceWorkflow {
     StringSink? output,
     StringSink? errorOutput,
     RuntimeBinaryLocator? locateBinary,
+    RuntimeLogcatAttacher? logcatAttacher,
   }) : rootDirectory = rootDirectory,
        _processRunner =
            processRunner ??
@@ -60,7 +93,8 @@ class RuntimeEvidenceWorkflow {
        _errorOutput = errorOutput ?? stderr,
        _locateBinary =
            locateBinary ??
-           ((executable) => ExecutableFinder().find(executable));
+           ((executable) => ExecutableFinder().find(executable)),
+       _logcatAttacher = logcatAttacher;
 
   final Directory rootDirectory;
   final RuntimeEvidenceProcessRunner _processRunner;
@@ -69,12 +103,16 @@ class RuntimeEvidenceWorkflow {
   final StringSink _output;
   final StringSink _errorOutput;
   final RuntimeBinaryLocator _locateBinary;
+  final RuntimeLogcatAttacher? _logcatAttacher;
 
   static void writeUsage(StringSink output) {
     output.writeln('Usage: mobilekit runtime evidence [options]');
     output.writeln();
     output.writeln('Options:');
-    output.writeln('  --task <id>              Required verified task ID.');
+    output.writeln(
+      '  --task <id>              Required for Dart targets and Maestro '
+      'proof; omit to iterate a maestro/*.yaml.',
+    );
     output.writeln(
       '  --device <id>            Required device or emulator id.',
     );
@@ -113,7 +151,11 @@ class RuntimeEvidenceWorkflow {
     }
 
     try {
-      return await _runEvidence(_optionsFrom(parsed));
+      final options = _optionsFrom(parsed);
+      if (options.taskId == null) {
+        return await _runIterate(options);
+      }
+      return await _runEvidence(options);
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
       return 2;
@@ -144,10 +186,8 @@ class RuntimeEvidenceWorkflow {
     ..addOption('google-services-json');
 
   RuntimeEvidenceOptions _optionsFrom(ArgResults parsed) {
-    final taskId = parsed.option('task');
-    if (taskId == null || taskId.isEmpty) {
-      throw const FormatException('--task is required.');
-    }
+    final rawTaskId = parsed.option('task');
+    final taskId = (rawTaskId == null || rawTaskId.isEmpty) ? null : rawTaskId;
     final device = parsed.option('device');
     if (device == null || device.isEmpty) {
       throw const FormatException('--device is required.');
@@ -155,19 +195,93 @@ class RuntimeEvidenceWorkflow {
     if (parsed.rest.isNotEmpty) {
       throw FormatException("Unknown argument '${parsed.rest.first}'.");
     }
+    final targets = List<String>.unmodifiable(parsed.multiOption('target'));
+    if (taskId == null) {
+      if (targets.isEmpty) {
+        throw const FormatException(
+          '--task is required for Dart targets and for Maestro proof; '
+          'omit only to iterate a maestro/*.yaml.',
+        );
+      }
+      for (final target in targets) {
+        if (!_isMaestroYaml(target)) {
+          throw const FormatException('--task is required for Dart targets.');
+        }
+      }
+    }
     return RuntimeEvidenceOptions(
       taskId: taskId,
       device: device,
       flavor: parsed.option('flavor')!,
-      targets: List.unmodifiable(parsed.multiOption('target')),
+      targets: targets,
       artifactsDirectory: parsed.option('artifacts-dir'),
       allowExampleEnvFallback: !parsed.flag('no-example-env-fallback'),
       googleServicesJson: parsed.option('google-services-json'),
     );
   }
 
+  Future<int> _runIterate(RuntimeEvidenceOptions options) async {
+    if (options.flavor == 'prod') {
+      throw const FormatException('maestro-flow rejects --flavor prod.');
+    }
+    if ((options.googleServicesJson ?? '').contains(
+      'google-services.ci.json',
+    )) {
+      throw const FormatException(
+        'maestro-flow rejects the CI Firebase fixture.',
+      );
+    }
+    if (_locateBinary('maestro') == null) {
+      throw const TaskControlError(
+        'runtime.maestro-missing',
+        'The maestro CLI is not on PATH.',
+      );
+    }
+    final artifacts = _RuntimeEvidenceArtifacts(
+      rootDirectory: rootDirectory,
+      requestedDirectory: options.artifactsDirectory,
+      now: _now,
+    );
+    artifacts.create();
+    var exitCode = 1;
+    var outcome = 'failed';
+    try {
+      await _attachLogcat(options.device, artifacts);
+      var failures = 0;
+      for (final target in options.targets) {
+        final targetFile = _resolveFile(target);
+        if (!targetFile.existsSync()) {
+          _errorOutput.writeln('ERROR: Target not found: $target');
+          failures++;
+          continue;
+        }
+        _output.writeln('==> Iterating $target (flavor=${options.flavor})');
+        final targetExit = await _processRunner.run(
+          command: ['maestro', 'test', '--udid', options.device, target],
+          workingDirectory: rootDirectory,
+          logFile: artifacts.logFile(target.replaceAll('/', '_')),
+          output: _output,
+          errorOutput: _errorOutput,
+        );
+        _boundLog(artifacts.logFile(target.replaceAll('/', '_')));
+        if (targetExit != 0) failures++;
+      }
+      exitCode = failures == 0 ? 0 : 1;
+      outcome = failures == 0 ? 'passed' : 'failed';
+      return exitCode;
+    } finally {
+      await _detachLogcat();
+      for (final file in artifacts.logFiles) {
+        _boundLog(file);
+      }
+      _output.writeln(
+        'Maestro iterate $outcome. Logs: ${artifacts.displayDirectory}/logs',
+      );
+    }
+  }
+
   Future<int> _runEvidence(RuntimeEvidenceOptions options) async {
-    final binding = await _bindingResolver.resolve(options.taskId);
+    final binding = await _bindingResolver.resolve(options.taskId!);
     final selectedTargets = _selectTargets(binding, options.targets);
     final artifacts = _RuntimeEvidenceArtifacts(
       rootDirectory: rootDirectory,
@@ -243,6 +357,9 @@ class RuntimeEvidenceWorkflow {
           : dartSelected && !maestroSelected
           ? 'runtime.integration'
           : 'runtime.device';
+      if (maestroSelected) {
+        await _attachLogcat(options.device, artifacts);
+      }
       var failures = 0;
       for (final entry in selectedTargets.entries) {
         final target = entry.value;
@@ -301,6 +418,7 @@ class RuntimeEvidenceWorkflow {
       outcome = failures == 0 ? 'passed' : 'failed';
       return exitCode;
     } finally {
+      await _detachLogcat();
       for (final mutation in mutations.reversed) {
         mutation.restore();
       }
@@ -332,6 +450,39 @@ class RuntimeEvidenceWorkflow {
       _output.writeln(
         'Mobile evidence $outcome. See: ${artifacts.displayDirectory}/evidence.json',
       );
+    }
+  }
+
+  bool _isMaestroYaml(String target) {
+    final normalized = p.posix.normalize(target.replaceAll(r'\', '/'));
+    return normalized.startsWith('maestro/') &&
+        normalized.endsWith('.yaml') &&
+        !normalized.contains('..');
+  }
+
+  Future<void> _attachLogcat(
+    String device,
+    _RuntimeEvidenceArtifacts artifacts,
+  ) async {
+    final attacher = _logcatAttacher;
+    if (attacher == null) return;
+    try {
+      await attacher.start(
+        device: device,
+        logFile: artifacts.logFile('logcat'),
+      );
+    } catch (error) {
+      _errorOutput.writeln('WARN: logcat attach failed: $error');
+    }
+  }
+
+  Future<void> _detachLogcat() async {
+    final attacher = _logcatAttacher;
+    if (attacher == null) return;
+    try {
+      await attacher.stop();
+    } catch (error) {
+      _errorOutput.writeln('WARN: logcat stop failed: $error');
     }
   }
 

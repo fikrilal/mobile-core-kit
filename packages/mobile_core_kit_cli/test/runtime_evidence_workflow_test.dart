@@ -255,6 +255,10 @@ void main() {
     );
 
     expect(await workflow.run([]), 2);
+    expect(errors.toString(), contains('--device is required'));
+
+    errors.clear();
+    expect(await workflow.run(['--device', 'emulator-5554']), 2);
     expect(errors.toString(), contains('--task is required'));
 
     errors.clear();
@@ -598,6 +602,129 @@ void main() {
       expect(errors.toString(), contains('CI Firebase fixture'));
     },
   );
+
+  test(
+    'iterates maestro yaml without --task and skips evidence.json',
+    () async {
+      final root = await _createRepository();
+      addTearDown(() => root.delete(recursive: true));
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      final processRunner = FakeRuntimeEvidenceProcessRunner();
+      final logcat = RecordingLogcatAttacher();
+      final artifacts = p.join(root.path, '_artifacts', 'iterate');
+
+      final result =
+          await RuntimeEvidenceWorkflow(
+            rootDirectory: root,
+            processRunner: processRunner,
+            locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+            logcatAttacher: logcat,
+            output: StringBuffer(),
+            errorOutput: StringBuffer(),
+          ).run([
+            '--device',
+            'emulator-5554',
+            '--target',
+            'maestro/login.yaml',
+            '--artifacts-dir',
+            artifacts,
+          ]);
+
+      expect(result, 0);
+      expect(processRunner.commands, [
+        ['maestro', 'test', '--udid', 'emulator-5554', 'maestro/login.yaml'],
+      ]);
+      expect(logcat.starts, 1);
+      expect(logcat.stops, 1);
+      expect(File(p.join(artifacts, 'evidence.json')).existsSync(), isFalse);
+      expect(
+        File(p.join(artifacts, 'logs', 'logcat.log')).existsSync(),
+        isTrue,
+      );
+    },
+  );
+
+  test('requires --task for Dart targets', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    final errors = StringBuffer();
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(),
+          output: StringBuffer(),
+          errorOutput: errors,
+        ).run([
+          '--device',
+          'emulator-5554',
+          '--target',
+          'integration_test/first_test.dart',
+        ]);
+
+    expect(result, 2);
+    expect(errors.toString(), contains('--task is required for Dart targets'));
+  });
+
+  test('attaches logcat for maestro proof and always stops it', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final logcat = RecordingLogcatAttacher();
+    final artifacts = p.join(root.path, '_artifacts', 'maestro-logcat');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(
+            failingTarget: 'maestro/login.yaml',
+          ),
+          bindingResolver: FakeRuntimeEvidenceBindingResolver(
+            root,
+            extraTargets: {'auth.journey': 'maestro/login.yaml'},
+            extraKinds: {'auth.journey': 'maestro-flow'},
+          ),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          logcatAttacher: logcat,
+          output: StringBuffer(),
+          errorOutput: StringBuffer(),
+        ).run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 1);
+    expect(logcat.starts, 1);
+    expect(logcat.stops, 1);
+    expect(File(p.join(artifacts, 'evidence.json')).existsSync(), isTrue);
+  });
+}
+
+class RecordingLogcatAttacher implements RuntimeLogcatAttacher {
+  var starts = 0;
+  var stops = 0;
+
+  @override
+  Future<void> start({required String device, required File logFile}) async {
+    starts++;
+    logFile.parent.createSync(recursive: true);
+    logFile.writeAsStringSync('logcat\n');
+  }
+
+  @override
+  Future<void> stop() async {
+    stops++;
+  }
 }
 
 const _generatedConfigPath =
@@ -664,7 +791,7 @@ class FakeRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
         command.length > 1 &&
         command.first == 'flutter' &&
         command[1] == 'test';
-    final target = isFlutterTest ? command.last : '';
+    final target = command.last;
     final log =
         logPayload ??
         (isFlutterTest

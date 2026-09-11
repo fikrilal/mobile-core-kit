@@ -46,8 +46,7 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
-| `mobilekit runtime logs` | Manage background Flutter log sessions. |
-| `mobilekit runtime evidence` | Run device integration tests and collect evidence. |
+| `mobilekit runtime evidence` | Run Maestro YAML or device tests; bind proof with `--task`. |
 
 Show the current top-level or command-specific help with:
 
@@ -363,23 +362,14 @@ name; `--dry-run` prints the planned output without writing files.
 
 ## Runtime commands
 
-### Logs
-
-```bash
-mobilekit runtime logs start --session emulator --mode logs --device emulator-5554
-mobilekit runtime logs start --session dev-run --mode run --device emulator-5554 --flavor dev --target lib/main_dev.dart
-mobilekit runtime logs status --session emulator
-mobilekit runtime logs tail --session emulator --lines 200
-mobilekit runtime logs stop --session emulator
-```
-
-Useful options include `--session`, `--artifacts-dir`, `--mode logs|run`,
-`--device`, `--flavor`, `--target`, `--lines`, and `--` for extra Flutter
-arguments. Runtime log artifacts default to `_artifacts/runtime_logs/`.
-
 ### Evidence
 
 ```bash
+# Iterate a YAML (not handoff).
+mobilekit runtime evidence --device emulator-5554 --flavor dev \
+  --target maestro/login.yaml
+
+# Prove a selected oracle.
 mobilekit runtime evidence --task <task-id> --device emulator-5554
 mobilekit runtime evidence --task <task-id> --device emulator-5554 \
   --target integration_test/auth_happy_path_test.dart
@@ -389,10 +379,13 @@ mobilekit runtime evidence --task <task-id> --device emulator-5554 \
   --flavor dev --google-services-json <secure-path>/google-services.json
 ```
 
-The task must already be verified at its exact current fingerprint and must
-select registered `integration-test` or `maestro-flow` oracles. Raw
+YAML runs attach `flutter logs` for the Maestro process. Omit `--task`
+to iterate any existing `maestro/*.yaml` (no `evidence.json`). With
+`--task`, the task must already be verified at its exact current
+fingerprint and must select registered `integration-test` or
+`maestro-flow` oracles. Dart targets still require `--task`. Raw
 `maestro test` and Maestro MCP never satisfy `handoff check`. Options
-include required `--task` and `--device`, repeatable registered `--target`,
+include `--device`, optional `--task`, repeatable `--target`,
 `--flavor dev|staging|prod` (`maestro-flow` rejects `prod`),
 `--artifacts-dir`, `--no-example-env-fallback` (ignored for
 `maestro-flow`; real env is required), and `--google-services-json`.

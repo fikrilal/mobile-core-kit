@@ -46,11 +46,18 @@ completion run. Raw `maestro test` and Maestro MCP are iteration only.
 
 The app package must already be installed on `--device`. `runtime evidence`
 shells out to `maestro test`; it does not build or `flutter install`.
-Maestro `launchApp` is the driver. Do not start `runtime logs --mode run`
-first: `launchApp` kills that `flutter run` session. `runtime logs --mode
-logs` remains diagnostic only. YAML authoring lives in `maestro/README.md`.
+Maestro `launchApp` is the driver. YAML runs attach `flutter logs` for
+that device, then stop. Do not `fvm flutter run` alongside Maestro:
+`launchApp` kills it. YAML authoring lives in `maestro/README.md`.
 
 ```bash
+# Iterate. Not handoff.
+dart run mobile_core_kit_cli:mobilekit runtime evidence \
+  --device <device-id> \
+  --flavor dev \
+  --target maestro/login.yaml
+
+# Prove.
 dart run mobile_core_kit_cli:mobilekit runtime evidence \
   --task <task-id> \
   --device <device-id> \
@@ -114,15 +121,15 @@ review does not authorize an agent to weaken or bypass the deterministic gate.
 
 ## Live diagnostic logs
 
-The separate log bridge is diagnostic, not completion evidence:
+Maestro YAML evidence attaches `flutter logs` itself. For a human
+session with no YAML, use Flutter directly:
 
 ```bash
-dart run mobile_core_kit_cli:mobilekit runtime logs start \
-  --session emulator --mode logs --device <device-id>
-dart run mobile_core_kit_cli:mobilekit runtime logs tail \
-  --session emulator --lines 200
-dart run mobile_core_kit_cli:mobilekit runtime logs stop --session emulator
+fvm flutter logs -d <device-id>
+fvm flutter run -d <device-id> --flavor dev -t lib/main_dev.dart
 ```
+
+Those streams are diagnostic, not completion evidence.
 
 ## Failure promotion
 

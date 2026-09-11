@@ -140,23 +140,19 @@ void main() {
     }
   });
 
-  test(
-    'prints runtime log command help without finding a repository',
-    () async {
-      final output = StringBuffer();
-      final errors = StringBuffer();
+  test('rejects runtime logs as an unknown runtime command', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
 
-      final result = await MobilekitCli(
-        currentDirectory: Directory.systemTemp,
-        output: output,
-        errorOutput: errors,
-      ).run(['runtime', 'logs', '--help']);
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['runtime', 'logs', '--help']);
 
-      expect(result, 0);
-      expect(output.toString(), contains('Usage: mobilekit runtime logs'));
-      expect(errors, isEmpty);
-    },
-  );
+    expect(result, 2);
+    expect(errors.toString(), contains("Unknown runtime command 'logs'"));
+  });
 
   test('prints lint command help without finding a repository', () async {
     final output = StringBuffer();

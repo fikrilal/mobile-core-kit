@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** maestro-login-pilot
-**Status:** active
+**Status:** completed
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Run the local agent journey loop for email/password login on a local Android emulator against the real dev backend. Bind Maestro evidence via `mobilekit runtime evidence`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
@@ -100,15 +100,16 @@ Before `task begin`:
       backend reachable.
 - [x] Adjust `maestro/login.yaml` or sign-in Semantics only if the flow
       cannot see a widget.
-- [ ] `task verify` at F (re-run after harness / `maestro/README.md`
-      edits).
+- [x] `task verify` at F after harness / `maestro/README.md` edits
+      (attempt 2, fingerprint
+      `c7a4d58fcb66a800471fdee67a1080f5b630c64175ba81231dffabb057ff8c3b`).
 - [x] Skip `runtime logs start --mode run`. Maestro `launchApp` kills
       that `flutter run` session; kit-CLI evidence is the driver.
-- [ ] `runtime evidence --target maestro/login.yaml` after the doc
-      fingerprint.
-- [ ] On fail: inspect Maestro debug + API, repair, re-verify, rerun
+- [x] `runtime evidence --target maestro/login.yaml` after the doc
+      fingerprint (`_artifacts/mobile/20260909_201401`).
+- [x] On fail: inspect Maestro debug + API, repair, re-verify, rerun
       evidence. Do not restart `flutter run`.
-- [ ] `handoff check` with `auth.journey` satisfied.
+- [x] `handoff check` with `auth.journey` satisfied.
 - [x] No `runtime logs stop` (log session never started).
 
 ## Decision Log
@@ -173,10 +174,22 @@ the prior task.
 
 ## Completion Notes
 
-Activated 2026-09-08 after plumbing completion and Oracle ID re-baseline.
+Local login journey proved 2026-09-09. Bound evidence
+`_artifacts/mobile/20260909_201401/evidence.json`: `outcome: passed`,
+`boundary: runtime.maestro`, `target: maestro/login.yaml`,
+fingerprint
+`c7a4d58fcb66a800471fdee67a1080f5b630c64175ba81231dffabb057ff8c3b`.
+`handoff check` has no outstanding `auth.journey`. Source landed in
+`8086ff6` (durability) and `d2650c4` (YAML/docs).
+
+`runtime.mobile-evidence` still needs a human procedure receipt. That
+is not this task's Maestro proof.
 
 ## Follow-ups
 
-- [ ] Record none, or a tech-debt row if the live backend seed needs a
-      durable test tenant.
-- [ ] iOS simulator and a second flow stay out of this task.
+Human procedure receipt for `runtime.mobile-evidence`.
+iOS simulator stays out.
+Register journey is a separate plan (`maestro-register-pilot`).
+`mobilekit_cli_reference.md` and `agent_pr_loop.md` still mention
+pairing evidence with `runtime logs --mode run`; out of this plan's
+scope.

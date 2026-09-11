@@ -15,8 +15,6 @@ import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
-import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
-import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
 import 'package:mobile_core_kit_cli/src/task/task_workflow.dart';
 import 'package:mobile_core_kit_cli/src/template/template_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
@@ -90,6 +88,7 @@ class MobilekitCli {
             platform: _platform,
             output: _output,
             errorOutput: _errorOutput,
+            logcatAttacher: FlutterRuntimeLogcatAttacher(),
           ).run(runtimeArguments),
         ).run(arguments.skip(1).toList()),
       ),
@@ -246,7 +245,6 @@ class MobilekitCli {
       return arguments.isEmpty ? 2 : 0;
     }
     return switch (arguments.first) {
-      'logs' => _runRuntimeLogs(arguments.skip(1).toList()),
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
@@ -304,33 +302,6 @@ class MobilekitCli {
     );
   }
 
-  Future<int> _runRuntimeLogs(List<String> arguments) async {
-    if (arguments.isEmpty || _isHelp(arguments.first)) {
-      RuntimeLogWorkflow.writeUsage(_output);
-      return arguments.isEmpty ? 2 : 0;
-    }
-
-    if (_containsCommandHelp(arguments)) {
-      RuntimeLogWorkflow.writeUsage(_output);
-      return 0;
-    }
-
-    final root = _findRepositoryRoot();
-    if (root == null) return 1;
-
-    final sessionManager = RuntimeLogSessionManager(
-      rootDirectory: root,
-      platform: _platform,
-      output: _output,
-      errorOutput: _errorOutput,
-    );
-    return RuntimeLogWorkflow(
-      sessionManager: sessionManager,
-      output: _output,
-      errorOutput: _errorOutput,
-    ).run(arguments);
-  }
-
   Future<int> _runRuntimeEvidence(List<String> arguments) async {
     if (arguments.isEmpty || arguments.any(_isHelp)) {
       RuntimeEvidenceWorkflow.writeUsage(_output);
@@ -345,6 +316,7 @@ class MobilekitCli {
       platform: _platform,
       output: _output,
       errorOutput: _errorOutput,
+      logcatAttacher: FlutterRuntimeLogcatAttacher(),
     ).run(arguments);
   }
 
@@ -358,9 +330,8 @@ class MobilekitCli {
     output.writeln('Usage: mobilekit runtime <command> [options]');
     output.writeln();
     output.writeln('Commands:');
-    output.writeln('  logs      Manage live Flutter log sessions.');
     output.writeln(
-      '  evidence  Run device integration tests and collect evidence.',
+      '  evidence  Run Maestro YAML or device tests; bind proof with --task.',
     );
     output.writeln();
     output.writeln('Run `mobilekit runtime <command> --help` for usage.');
@@ -668,7 +639,7 @@ class MobilekitCli {
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
-    output.writeln('  runtime   Manage runtime evidence and log sessions.');
+    output.writeln('  runtime   Run Maestro YAML or device tests as evidence.');
     output.writeln();
     output.writeln('Run `mobilekit <command> --help` for command usage.');
   }
@@ -714,12 +685,4 @@ class MobilekitCli {
   bool _isHelp(String argument) => argument == '-h' || argument == '--help';
 
   bool _containsHelp(List<String> arguments) => arguments.any(_isHelp);
-
-  bool _containsCommandHelp(List<String> arguments) {
-    final separatorIndex = arguments.indexOf('--');
-    final commandArguments = separatorIndex == -1
-        ? arguments
-        : arguments.take(separatorIndex);
-    return commandArguments.any(_isHelp);
-  }
 }
