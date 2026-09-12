@@ -16,6 +16,7 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
   - isolated current-agent worktrees: `docs/engineering/current_agent_workspaces.md`
   - registered independent acceptance evidence: `docs/engineering/behavioral_oracles.md`
   - task-bound sanitized device evidence: `docs/engineering/mobile_runtime_harness.md`
+  - Maestro YAML subset (allowed/banned commands): `docs/engineering/maestro_flows.md`
   - queued event intake, read-only maintenance, independent CI, and verified handoff: `docs/engineering/event_maintenance_handoff.md`
   - calibrated sanitized operating evidence and gate-honesty policy: `docs/engineering/harness_operating_evidence.md`
   - deterministic, human-terminal harness improvement: `docs/engineering/controlled_harness_improvement.md`

@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** runtime-evidence-iterate
-**Status:** active
+**Status:** completed
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Implement `_WIP/2026-09-09_runtime-journey-cli.md`: optional `--task` on `runtime evidence` for Maestro YAML, auto-attach `flutter logs` for the Maestro process, delete the public `runtime logs` command. No new kit verb. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
@@ -92,7 +92,8 @@ run` / `fvm flutter logs`.
 - [x] Auto-attach `flutter logs` for YAML; always stop.
 - [x] Remove public `runtime logs` dispatch and update CLI tests.
 - [x] Update harness, CLI reference, agent_pr_loop, `maestro/README.md`.
-- [ ] `task verify --task runtime-evidence-iterate --env dev`.
+- [x] `task verify --task runtime-evidence-iterate --env dev`
+      (attempt 2 after format repair).
 
 ## Decision Log
 
@@ -143,7 +144,11 @@ dispatch if this lands mid-way. Leave register-pilot as it was.
 
 ## Completion Notes
 
-Pending.
+Shipped in `ab4d331`. `--task` optional for `maestro/*.yaml`. YAML
+runs attach `flutter logs` and stop it. Public `runtime logs` removed.
+`task verify --env dev` passed (attempt 2). Iterate smoke on a cold
+headless emulator hit System UI ANR; CLI contract (no `evidence.json`,
+logcat file written) still held.
 
 ## Follow-ups
 

@@ -1,0 +1,21 @@
+# Register → Home → Profile → Log out → Sign In.
+# Unique MAESTRO_TEST_*. Do not curl-register.
+# See maestro/README.md.
+appId: dev.fikril.mobile.corekit.dev
+---
+- launchApp:
+    clearState: true
+- runFlow: _register_to_home.yaml
+- tapOn: "(?s).*Profile.*"
+- scrollUntilVisible:
+    element:
+      text: "(?s).*Log out.*"
+    direction: DOWN
+- tapOn: "(?s).*Log out.*"
+- extendedWaitUntil:
+    visible: "Log out\\?"
+    timeout: 10000
+- tapOn: "Log out"
+- extendedWaitUntil:
+    visible: "Sign in to your account"
+    timeout: 20000

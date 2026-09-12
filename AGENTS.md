@@ -111,7 +111,7 @@ Minimum checks (pick what’s relevant to what you changed):
 
 - Lint checks: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
-- Local user-journey proof (not CI): `mobilekit runtime evidence --target maestro/<flow>.yaml` after `task verify`. Raw Maestro CLI/MCP is iteration only. See `docs/engineering/mobile_runtime_harness.md`.
+- Local user-journey proof (not CI): `mobilekit runtime evidence --target maestro/<flow>.yaml` after `task verify`. Raw Maestro CLI/MCP is iteration only. YAML rules: `docs/engineering/maestro_flows.md`. Proof: `docs/engineering/mobile_runtime_harness.md`.
 - Codegen (if touching Freezed/JSON/build config): `dart run build_runner build`
 - Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
 - Small-helper duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers`

@@ -24,6 +24,22 @@ oracles:
     kind: maestro-flow
     target: maestro/register.yaml
     covers: [auth, ui]
+  merchant.onboarding-journey:
+    kind: maestro-flow
+    target: maestro/merchant_onboarding.yaml
+    covers: [auth, ui]
+  auth.password-reset-request:
+    kind: maestro-flow
+    target: maestro/password_reset_request.yaml
+    covers: [auth, ui]
+  auth.logout-journey:
+    kind: maestro-flow
+    target: maestro/logout.yaml
+    covers: [auth, ui]
+  auth.change-password-journey:
+    kind: maestro-flow
+    target: maestro/change_password.yaml
+    covers: [auth, ui]
   startup.integration:
     kind: integration-test
     target: integration_test/startup_deep_link_resume_test.dart

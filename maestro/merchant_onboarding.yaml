@@ -1,0 +1,178 @@
+# Home → merchant onboarding wizard (demo).
+# Dropdown option labels come from live reference data — iterate them.
+# Unique MAESTRO_TEST_* typed in register. Do not curl-register.
+# See maestro/README.md.
+appId: dev.fikril.mobile.corekit.dev
+---
+- launchApp:
+    clearState: true
+- runFlow: _register_to_home.yaml
+- tapOn: "Start merchant onboarding demo"
+- extendedWaitUntil:
+    visible: "Business profile"
+    timeout: 20000
+- tapOn:
+    below:
+      text: "^Legal business name$"
+- inputText: "Pilot Demo LLC"
+- tapOn: "Merchant onboarding (demo)"
+- tapOn:
+    below:
+      text: "^Business type$"
+    above:
+      text: "^Registration number$"
+- extendedWaitUntil:
+    visible: "Sole proprietorship"
+    timeout: 5000
+- tapOn: "Sole proprietorship"
+- tapOn:
+    below:
+      text: "^Industry$"
+- extendedWaitUntil:
+    visible: "Retail"
+    timeout: 5000
+- tapOn: "Retail"
+- tapOn:
+    below:
+      text: "^Monthly sales range$"
+    above:
+      text: "^Contact email$"
+- extendedWaitUntil:
+    visible: "Under IDR 10 million"
+    timeout: 5000
+- tapOn: "Under IDR 10 million"
+- scrollUntilVisible:
+    element:
+      text: "^Contact email$"
+    direction: DOWN
+- tapOn:
+    below:
+      text: "^Contact email$"
+    above:
+      text: "^Contact phone$"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- swipe:
+    start: 50%, 40%
+    end: 50%, 15%
+- tapOn:
+    point: 50%, 50%
+- inputText: "+15551234567"
+- tapOn: "Next"
+
+# 2. Owners
+- extendedWaitUntil:
+    visible: "Owners"
+    timeout: 10000
+- tapOn: "Add owner"
+- extendedWaitUntil:
+    visible: "^Full name$"
+    timeout: 5000
+- tapOn:
+    below:
+      text: "^Full name$"
+- inputText: "Pilot Owner"
+- tapOn: "Merchant onboarding (demo)"
+- tapOn:
+    below:
+      text: "^Role$"
+    above:
+      text: "^Ownership percentage.*$"
+- extendedWaitUntil:
+    visible: "Owner"
+    timeout: 5000
+- tapOn: "Owner"
+- tapOn:
+    below:
+      text: "^Ownership percentage.*$"
+- inputText: "100"
+- tapOn: "Merchant onboarding (demo)"
+- swipe:
+    start: 50%, 40%
+    end: 50%, 15%
+- tapOn:
+    below:
+      text: "^Email$"
+    above:
+      text: ".*Primary contact.*"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn: "Merchant onboarding (demo)"
+- waitForAnimationToEnd
+- tapOn: "Next"
+
+# 3. Settlement
+- extendedWaitUntil:
+    visible: "Settlement"
+    timeout: 10000
+- tapOn:
+    below:
+      text: "^Bank$"
+    above:
+      text: "^Account holder name$"
+- extendedWaitUntil:
+    visible: "Demo Bank Alpha"
+    timeout: 5000
+- tapOn: "Demo Bank Alpha"
+- tapOn:
+    below:
+      text: "^Account holder name$"
+    above:
+      text: "^Account number$"
+- inputText: "Pilot Demo LLC"
+- tapOn: "Merchant onboarding (demo)"
+- tapOn:
+    below:
+      text: "^Account number$"
+- inputText: "1234567890"
+- tapOn: "Merchant onboarding (demo)"
+- swipe:
+    start: 50%, 40%
+    end: 50%, 15%
+- tapOn:
+    below:
+      text: "^Account holder type$"
+    above:
+      text: "^Payout schedule$"
+- extendedWaitUntil:
+    visible: "Business"
+    timeout: 5000
+- tapOn: "Business"
+- tapOn:
+    below:
+      text: "^Payout schedule$"
+- extendedWaitUntil:
+    visible: "Daily"
+    timeout: 5000
+- tapOn: "Daily"
+- tapOn: "Next"
+
+# 4. Review & Submit
+- extendedWaitUntil:
+    visible: "Review & submit"
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      text: ".*The information provided is accurate.*"
+    direction: DOWN
+    centerElement: true
+- tapOn: ".*The information provided is accurate.*"
+- scrollUntilVisible:
+    element:
+      text: ".*I am authorized to submit this application.*"
+    direction: DOWN
+    centerElement: true
+- tapOn: ".*I am authorized to submit this application.*"
+- scrollUntilVisible:
+    element:
+      text: ".*I accept the demo terms.*"
+    direction: DOWN
+    centerElement: true
+- tapOn: ".*I accept the demo terms.*"
+- scrollUntilVisible:
+    element:
+      text: "Submit application"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Submit application"
+- extendedWaitUntil:
+    visible: "Application .* submitted.*"
+    timeout: 20000

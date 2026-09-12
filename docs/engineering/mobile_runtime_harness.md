@@ -48,7 +48,7 @@ The app package must already be installed on `--device`. `runtime evidence`
 shells out to `maestro test`; it does not build or `flutter install`.
 Maestro `launchApp` is the driver. YAML runs attach `flutter logs` for
 that device, then stop. Do not `fvm flutter run` alongside Maestro:
-`launchApp` kills it. YAML authoring lives in `maestro/README.md`.
+`launchApp` kills it. YAML rules: `docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
 
 ```bash
 # Iterate. Not handoff.
@@ -143,6 +143,7 @@ preflight, or this operating guide. Do not rely on agent memory.
 - `docs/engineering/task_authority.md`
 - `docs/engineering/agent_pr_loop.md`
 - `docs/engineering/mobilekit_cli_reference.md`
+- `docs/engineering/maestro_flows.md`
 - `maestro/README.md`
 
 ## Local acceptance gate

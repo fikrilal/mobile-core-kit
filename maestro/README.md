@@ -3,6 +3,9 @@
 Black-box YAML against Semantics and visible text. Flutter `Key`s are
 invisible to Maestro.
 
+Rules (allowed/banned commands, selectors): `docs/engineering/maestro_flows.md`.
+Proof contract: `docs/engineering/mobile_runtime_harness.md`.
+
 Kit CLI is the only completion run. Omit `--task` to iterate:
 
 ```bash
@@ -55,3 +58,30 @@ flow only types login.
 Cold start with `clearState`: onboarding → sign-in → Create one →
 create account → complete profile → Home. Same env vars, typed into
 the register form. Do not curl-register first. Password minLength 10.
+
+## `_register_to_home.yaml`
+
+Shared subflow (no `launchApp`). Used by merchant, logout, and change
+password. Parent YAML must `launchApp` first.
+
+## `merchant_onboarding.yaml`
+
+Register-to-Home → **Start merchant onboarding demo** → wizard.
+Dropdown labels come from live reference data; iterate them. Success
+copy: `Application .* submitted`.
+
+## `password_reset_request.yaml`
+
+Sign In → **Forgot password?** → **Send reset link** → **Check your
+email**. Does not open the mail-token confirm screen.
+
+## `logout.yaml`
+
+Register-to-Home → **Profile** → **Log out** → confirm → Sign In.
+Two "Log out" matches; dialog confirm is index 1.
+
+## `change_password.yaml`
+
+Register-to-Home → Profile → **Security and privacy** → **Change
+password**. Current = `MAESTRO_TEST_PASSWORD`. New =
+`MAESTRO_TEST_NEW_PASSWORD` (min 10).
