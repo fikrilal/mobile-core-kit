@@ -6,6 +6,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mobile_core_kit/core/di/service_locator.dart';
 import 'package:mobile_core_kit/core/foundation/config/app_config.dart';
 import 'package:mobile_core_kit/core/foundation/utilities/idempotency_key_utils.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/uuid_v4_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 import 'package:mobile_core_kit/core/runtime/session/session_manager.dart';
 import 'package:mobile_core_kit/core/runtime/startup/app_launch_service.dart';
@@ -18,7 +19,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/m
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_cubit.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/pages/merchant_onboarding_page.dart';
@@ -299,7 +299,7 @@ Future<MerchantOnboardingApplication> buildValidApplication({
     ),
     owners: [
       OwnerInput(
-        ownerRowId: OwnerRowId.generate().value,
+        ownerRowId: UuidV4Utils.generate(),
         fullName: 'Budi Replay',
         roleId: owningRole.id,
         ownershipPercentage: '100',

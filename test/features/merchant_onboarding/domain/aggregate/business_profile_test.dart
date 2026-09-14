@@ -29,7 +29,7 @@ void main() {
 
     final profile = result.getRight().toNullable()!;
     expect(profile.legalName.value, 'Kopi Nusantara');
-    expect(profile.businessTypeId.value, 'sole_proprietorship');
+    expect(profile.businessTypeId, 'sole_proprietorship');
     expect(profile.registrationNumber, isNull);
     expect(profile.contactEmail.value, 'contact@example.com');
     expect(profile.contactPhone.value, '+6281234567890');

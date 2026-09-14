@@ -53,7 +53,7 @@ class MerchantOnboardingApplication {
 
     final ownerHeld = settlement?.ownerRowId != null;
     if (ownerHeld && owners != null) {
-      if (!owners!.containsRow(settlement!.ownerRowId!.value)) {
+      if (!owners!.containsRow(settlement!.ownerRowId!)) {
         errors.add(
           const MerchantValidationFailure(
             code: MerchantValidationCodes.settlementOwnerUnknown,

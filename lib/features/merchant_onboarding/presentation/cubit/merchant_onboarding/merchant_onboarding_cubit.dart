@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/uuid_v4_utils.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/business_profile.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_declarations.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/ownership_structure.dart';
@@ -10,7 +11,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onb
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/repository/merchant_onboarding_repository.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/usecase/submit_merchant_onboarding_usecase.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_effect.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/cubit/merchant_onboarding/merchant_onboarding_state.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/presentation/models/owner_move_direction.dart';
@@ -121,7 +121,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
       owners: [
         ...i.owners,
         OwnerInput(
-          ownerRowId: OwnerRowId.generate().value,
+          ownerRowId: UuidV4Utils.generate(),
           isPrimaryContact: i.owners.isEmpty,
         ),
       ],

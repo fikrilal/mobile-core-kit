@@ -26,31 +26,31 @@ abstract class MerchantOnboardingSubmitRequestModel
     return MerchantOnboardingSubmitRequestModel(
       business: MerchantBusinessInputModel(
         legalName: application.business.legalName.value,
-        businessTypeId: application.business.businessTypeId.value,
+        businessTypeId: application.business.businessTypeId,
         registrationNumber: application.business.registrationNumber?.value,
-        industryId: application.business.industryId.value,
-        monthlySalesRangeId: application.business.monthlySalesRangeId.value,
+        industryId: application.business.industryId,
+        monthlySalesRangeId: application.business.monthlySalesRangeId,
         contactEmail: application.business.contactEmail.value,
         contactPhone: application.business.contactPhone.value,
       ),
       owners: [
         for (final row in application.owners.rows)
           MerchantOwnerInputModel(
-            ownerRowId: row.id.value,
+            ownerRowId: row.id,
             fullName: row.fullName.value,
-            roleId: row.roleId.value,
+            roleId: row.roleId,
             ownershipBasisPoints: row.percentage?.basisPoints,
             email: row.email.value,
             isPrimaryContact: row.isPrimaryContact,
           ),
       ],
       settlement: MerchantSettlementInputModel(
-        bankId: application.settlement.bankId.value,
+        bankId: application.settlement.bankId,
         accountHolderName: application.settlement.accountHolderName.value,
         accountNumber: application.settlement.accountNumber.value,
-        holderTypeId: application.settlement.holderTypeId.value,
-        ownerRowId: application.settlement.ownerRowId?.value,
-        payoutScheduleId: application.settlement.payoutScheduleId.value,
+        holderTypeId: application.settlement.holderTypeId,
+        ownerRowId: application.settlement.ownerRowId,
+        payoutScheduleId: application.settlement.payoutScheduleId,
       ),
       declarations: MerchantDeclarationsInputModel(
         informationAccurate: application.declarations.informationAccurate,

@@ -3,8 +3,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merch
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_role_id.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/ownership_percentage.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/person_name.dart';
 
@@ -18,9 +16,9 @@ class OwnerRow {
     required this.isPrimaryContact,
   });
 
-  final OwnerRowId id;
+  final String id;
   final PersonName fullName;
-  final OwnerRoleId roleId;
+  final String roleId;
 
   final OwnershipPercentage? percentage;
   final EmailAddress email;
@@ -37,7 +35,7 @@ class OwnershipStructure {
   final List<OwnerRow> rows;
 
   bool containsRow(String ownerRowId) =>
-      rows.any((row) => row.id.value == ownerRowId);
+      rows.any((row) => row.id == ownerRowId);
 
   static Either<List<MerchantValidationFailure>, OwnershipStructure> create({
     required List<OwnerInput> rows,
@@ -71,19 +69,24 @@ class OwnershipStructure {
     for (final row in rows) {
       final rowPath = 'owners.${row.ownerRowId}';
       PersonName? fullName;
-      OwnerRoleId? roleId;
+      String? roleId;
       OwnershipPercentage? percentage;
       EmailAddress? email;
 
-      final parsedRowId = OwnerRowId.create(row.ownerRowId, path: rowPath).fold(
-        (failure) {
-          errors.add(failure);
-          return null;
-        },
-        (value) => value,
-      );
+      final rawRowId = row.ownerRowId.trim();
+      String? parsedRowId;
+      if (rawRowId.isEmpty) {
+        errors.add(
+          MerchantValidationFailure(
+            code: MerchantValidationCodes.ownersRequired,
+            path: rowPath,
+          ),
+        );
+      } else {
+        parsedRowId = rawRowId;
+      }
 
-      if (parsedRowId != null && seenRowIds.contains(parsedRowId.value)) {
+      if (parsedRowId != null && seenRowIds.contains(parsedRowId)) {
         errors.add(
           MerchantValidationFailure(
             code: MerchantValidationCodes.ownersRowIdDuplicate,
@@ -91,7 +94,7 @@ class OwnershipStructure {
           ),
         );
       } else if (parsedRowId != null) {
-        seenRowIds.add(parsedRowId.value);
+        seenRowIds.add(parsedRowId);
       }
 
       PersonName.create(
@@ -99,15 +102,26 @@ class OwnershipStructure {
         path: '$rowPath.fullName',
       ).fold(errors.add, (value) => fullName = value);
 
-      OwnerRoleId.create(
-        row.roleId,
-        reference,
-        path: '$rowPath.roleId',
-      ).fold(errors.add, (value) => roleId = value);
+      final rawRoleId = row.roleId?.trim() ?? '';
+      if (rawRoleId.isEmpty) {
+        errors.add(
+          MerchantValidationFailure(
+            code: MerchantValidationCodes.ownerRoleRequired,
+            path: '$rowPath.roleId',
+          ),
+        );
+      } else if (reference.ownerRoleById(rawRoleId) == null) {
+        errors.add(
+          MerchantValidationFailure(
+            code: MerchantValidationCodes.ownerRoleUnsupported,
+            path: '$rowPath.roleId',
+          ),
+        );
+      } else {
+        roleId = rawRoleId;
+      }
 
-      final role = roleId == null
-          ? null
-          : reference.ownerRoleById(roleId!.value);
+      final role = roleId == null ? null : reference.ownerRoleById(roleId);
       if (role != null) {
         final percentageRaw = row.ownershipPercentage.trim();
         if (role.contributesOwnership) {

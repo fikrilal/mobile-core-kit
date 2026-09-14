@@ -2,12 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/account_holder_type_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_holder_name.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_number.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_id.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/payout_schedule_id.dart';
 
 class SettlementAccount {
   const SettlementAccount._({
@@ -19,27 +15,44 @@ class SettlementAccount {
     required this.payoutScheduleId,
   });
 
-  final BankId bankId;
+  final String bankId;
   final BankAccountHolderName accountHolderName;
   final BankAccountNumber accountNumber;
-  final AccountHolderTypeId holderTypeId;
+  final String holderTypeId;
 
-  final OwnerRowId? ownerRowId;
-  final PayoutScheduleId payoutScheduleId;
+  final String? ownerRowId;
+  final String payoutScheduleId;
 
   static Either<List<MerchantValidationFailure>, SettlementAccount> create({
     required SettlementInput input,
     required MerchantReferenceDataEntity reference,
   }) {
     final errors = <MerchantValidationFailure>[];
-    BankId? bankId;
+    String? bankId;
     BankAccountHolderName? accountHolderName;
     BankAccountNumber? accountNumber;
-    AccountHolderTypeId? holderTypeId;
-    OwnerRowId? ownerRowId;
-    PayoutScheduleId? payoutScheduleId;
+    String? holderTypeId;
+    String? ownerRowId;
+    String? payoutScheduleId;
 
-    BankId.create(input.bankId, reference).fold(errors.add, (v) => bankId = v);
+    final rawBankId = input.bankId?.trim() ?? '';
+    if (rawBankId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementBankRequired,
+          path: 'settlement.bankId',
+        ),
+      );
+    } else if (reference.bankById(rawBankId) == null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementBankUnsupported,
+          path: 'settlement.bankId',
+        ),
+      );
+    } else {
+      bankId = rawBankId;
+    }
 
     BankAccountHolderName.create(
       input.accountHolderName,
@@ -49,14 +62,28 @@ class SettlementAccount {
       input.accountNumber,
     ).fold(errors.add, (v) => accountNumber = v);
 
-    AccountHolderTypeId.create(
-      input.holderTypeId,
-      reference,
-    ).fold(errors.add, (v) => holderTypeId = v);
+    final rawHolderTypeId = input.holderTypeId?.trim() ?? '';
+    if (rawHolderTypeId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementHolderTypeRequired,
+          path: 'settlement.holderTypeId',
+        ),
+      );
+    } else if (reference.holderTypeById(rawHolderTypeId) == null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementHolderTypeUnsupported,
+          path: 'settlement.holderTypeId',
+        ),
+      );
+    } else {
+      holderTypeId = rawHolderTypeId;
+    }
 
     final holderType = holderTypeId == null
         ? null
-        : reference.holderTypeById(holderTypeId!.value);
+        : reference.holderTypeById(holderTypeId);
     if (holderType != null) {
       final ownerRaw = input.ownerRowId?.trim() ?? '';
       if (holderType.requiresOwnerReference) {
@@ -68,10 +95,7 @@ class SettlementAccount {
             ),
           );
         } else {
-          OwnerRowId.create(
-            ownerRaw,
-            path: 'settlement.ownerRowId',
-          ).fold(errors.add, (v) => ownerRowId = v);
+          ownerRowId = ownerRaw;
         }
       } else if (ownerRaw.isNotEmpty) {
         errors.add(
@@ -83,14 +107,28 @@ class SettlementAccount {
       }
     }
 
-    PayoutScheduleId.create(
-      input.payoutScheduleId,
-      reference,
-    ).fold(errors.add, (v) => payoutScheduleId = v);
+    final rawPayoutScheduleId = input.payoutScheduleId?.trim() ?? '';
+    if (rawPayoutScheduleId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementScheduleRequired,
+          path: 'settlement.payoutScheduleId',
+        ),
+      );
+    } else if (reference.payoutScheduleById(rawPayoutScheduleId) == null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.settlementScheduleUnsupported,
+          path: 'settlement.payoutScheduleId',
+        ),
+      );
+    } else {
+      payoutScheduleId = rawPayoutScheduleId;
+    }
 
-    final bank = bankId == null ? null : reference.bankById(bankId!.value);
+    final bank = bankId == null ? null : reference.bankById(bankId);
     if (bank != null && payoutScheduleId != null) {
-      if (!bank.supportedScheduleIds.contains(payoutScheduleId!.value)) {
+      if (!bank.supportedScheduleIds.contains(payoutScheduleId)) {
         errors.add(
           const MerchantValidationFailure(
             code: MerchantValidationCodes.settlementScheduleUnsupportedByBank,

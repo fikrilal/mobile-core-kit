@@ -14,11 +14,11 @@ void main() {
     );
 
     final settlement = result.getRight().toNullable()!;
-    expect(settlement.bankId.value, 'demo_bank_alpha');
+    expect(settlement.bankId, 'demo_bank_alpha');
     expect(settlement.accountHolderName.value, 'Budi Santoso');
     expect(settlement.accountNumber.value, '0123456789');
     expect(settlement.ownerRowId, isNull);
-    expect(settlement.payoutScheduleId.value, 'daily');
+    expect(settlement.payoutScheduleId, 'daily');
   });
 
   test('requires an owner reference for owner-held accounts', () {
@@ -48,7 +48,7 @@ void main() {
       reference: reference,
     );
 
-    expect(result.getRight().toNullable()!.ownerRowId!.value, 'row-1');
+    expect(result.getRight().toNullable()!.ownerRowId, 'row-1');
   });
 
   test('rejects an owner reference on business-held accounts', () {

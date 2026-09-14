@@ -3,7 +3,6 @@ import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_val
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_number.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/legal_business_name.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/owner_row_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/ownership_percentage.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/phone_number.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/registration_number.dart';
@@ -206,20 +205,6 @@ void main() {
       expect(
         TermsVersion.create('', reference).getLeft().toNullable()!.code,
         MerchantValidationCodes.declarationsTermsVersionStale,
-      );
-    });
-  });
-
-  group('OwnerRowId', () {
-    test('generates unique UUID-shaped ids', () {
-      final a = OwnerRowId.generate();
-      final b = OwnerRowId.generate();
-      expect(a.value, isNot(b.value));
-      expect(
-        RegExp(
-          r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
-        ).hasMatch(a.value),
-        true,
       );
     });
   });

@@ -2,11 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/business_type_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/industry_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/legal_business_name.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/monthly_sales_range_id.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/phone_number.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/registration_number.dart';
 
@@ -22,10 +19,10 @@ class BusinessProfile {
   });
 
   final LegalBusinessName legalName;
-  final BusinessTypeId businessTypeId;
+  final String businessTypeId;
   final RegistrationNumber? registrationNumber;
-  final IndustryId industryId;
-  final MonthlySalesRangeId monthlySalesRangeId;
+  final String industryId;
+  final String monthlySalesRangeId;
   final EmailAddress contactEmail;
   final PhoneNumber contactPhone;
 
@@ -35,10 +32,10 @@ class BusinessProfile {
   }) {
     final errors = <MerchantValidationFailure>[];
     LegalBusinessName? legalName;
-    BusinessTypeId? businessTypeId;
+    String? businessTypeId;
     RegistrationNumber? registrationNumber;
-    IndustryId? industryId;
-    MonthlySalesRangeId? monthlySalesRangeId;
+    String? industryId;
+    String? monthlySalesRangeId;
     EmailAddress? contactEmail;
     PhoneNumber? contactPhone;
 
@@ -46,14 +43,28 @@ class BusinessProfile {
       input.legalName,
     ).fold(errors.add, (value) => legalName = value);
 
-    BusinessTypeId.create(
-      input.businessTypeId,
-      reference,
-    ).fold(errors.add, (value) => businessTypeId = value);
+    final rawBusinessTypeId = input.businessTypeId?.trim() ?? '';
+    if (rawBusinessTypeId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessTypeRequired,
+          path: 'business.businessTypeId',
+        ),
+      );
+    } else if (reference.businessTypeById(rawBusinessTypeId) == null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessTypeUnsupported,
+          path: 'business.businessTypeId',
+        ),
+      );
+    } else {
+      businessTypeId = rawBusinessTypeId;
+    }
 
     final businessType = businessTypeId == null
         ? null
-        : reference.businessTypeById(businessTypeId!.value);
+        : reference.businessTypeById(businessTypeId);
     final registrationRaw = input.registrationNumber.trim();
     if (businessType != null &&
         businessType.requiresRegistrationNumber &&
@@ -71,15 +82,44 @@ class BusinessProfile {
       ).fold(errors.add, (value) => registrationNumber = value);
     }
 
-    IndustryId.create(
-      input.industryId,
-      reference,
-    ).fold(errors.add, (value) => industryId = value);
+    final rawIndustryId = input.industryId?.trim() ?? '';
+    if (rawIndustryId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessIndustryRequired,
+          path: 'business.industryId',
+        ),
+      );
+    } else if (reference.industryById(rawIndustryId) == null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessIndustryUnsupported,
+          path: 'business.industryId',
+        ),
+      );
+    } else {
+      industryId = rawIndustryId;
+    }
 
-    MonthlySalesRangeId.create(
-      input.monthlySalesRangeId,
-      reference,
-    ).fold(errors.add, (value) => monthlySalesRangeId = value);
+    final rawMonthlySalesRangeId = input.monthlySalesRangeId?.trim() ?? '';
+    if (rawMonthlySalesRangeId.isEmpty) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessSalesRangeRequired,
+          path: 'business.monthlySalesRangeId',
+        ),
+      );
+    } else if (reference.monthlySalesRangeById(rawMonthlySalesRangeId) ==
+        null) {
+      errors.add(
+        const MerchantValidationFailure(
+          code: MerchantValidationCodes.businessSalesRangeUnsupported,
+          path: 'business.monthlySalesRangeId',
+        ),
+      );
+    } else {
+      monthlySalesRangeId = rawMonthlySalesRangeId;
+    }
 
     EmailAddress.create(
       input.contactEmail,
