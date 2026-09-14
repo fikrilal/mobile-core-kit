@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/trimmed_name_validator.dart';
 
 class BankAccountHolderName {

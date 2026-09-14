@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/input/merchant_onboarding_input.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 
 part 'merchant_onboarding_state.freezed.dart';
 

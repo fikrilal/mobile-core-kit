@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/ownership_structure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 
 import '../merchant_test_fixtures.dart';
 

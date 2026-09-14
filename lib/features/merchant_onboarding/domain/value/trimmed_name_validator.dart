@@ -1,4 +1,4 @@
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 
 MerchantValidationFailure? validateTrimmedName({
   required String raw,

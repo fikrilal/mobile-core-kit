@@ -1,5 +1,5 @@
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 
 String messageForMerchantOnboardingFailure(

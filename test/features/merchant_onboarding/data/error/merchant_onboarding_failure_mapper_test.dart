@@ -4,7 +4,7 @@ import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.da
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/error/merchant_onboarding_error_codes.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/error/merchant_onboarding_failure_mapper.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
 
 void main() {
   group('mapMerchantReferenceFailure', () {

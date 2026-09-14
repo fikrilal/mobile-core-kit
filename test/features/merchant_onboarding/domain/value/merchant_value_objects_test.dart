@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/bank_account_number.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/email_address.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/value/legal_business_name.dart';

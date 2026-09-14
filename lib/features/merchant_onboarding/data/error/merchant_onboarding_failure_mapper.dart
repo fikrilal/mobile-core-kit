@@ -1,8 +1,8 @@
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_error_codes.dart';
 import 'package:mobile_core_kit/core/infra/network/exceptions/api_failure.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/error/merchant_onboarding_error_codes.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_validation_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_validation_failure.dart';
 
 MerchantOnboardingFailure mapMerchantReferenceFailure(ApiFailure failure) {
   final code = failure.code;

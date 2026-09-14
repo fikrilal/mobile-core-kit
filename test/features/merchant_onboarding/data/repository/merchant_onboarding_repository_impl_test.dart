@@ -5,7 +5,7 @@ import 'package:mobile_core_kit/features/merchant_onboarding/data/datasource/rem
 import 'package:mobile_core_kit/features/merchant_onboarding/data/model/remote/merchant_onboarding_submit_models.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/data/repository/merchant_onboarding_repository_impl.dart';
 import 'package:mobile_core_kit/features/merchant_onboarding/domain/aggregate/merchant_onboarding_application.dart';
-import 'package:mobile_core_kit/features/merchant_onboarding/domain/merchant_onboarding_failure.dart';
+import 'package:mobile_core_kit/features/merchant_onboarding/domain/failure/merchant_onboarding_failure.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../domain/merchant_test_fixtures.dart';
