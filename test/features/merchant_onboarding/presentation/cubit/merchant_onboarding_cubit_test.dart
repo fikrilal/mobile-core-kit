@@ -304,4 +304,26 @@ void main() {
 
     await sub.cancel();
   });
+
+  test('submit transport failure emits submit-failure effect', () async {
+    await cubit.loadReferenceData();
+    when(
+      () => submitUseCase(
+        input: any(named: 'input'),
+        reference: any(named: 'reference'),
+      ),
+    ).thenAnswer((_) async => const Left(MerchantRetryableFailure()));
+
+    final effects = <MerchantOnboardingEffect>[];
+    final sub = cubit.effects.listen(effects.add);
+
+    cubit.editStepRequested(MerchantOnboardingStep.review);
+    await cubit.submitTapped();
+    await pumpEventQueue();
+
+    expect(cubit.state.submissionStatus, MerchantSubmissionStatus.failure);
+    expect(effects.single, isA<MerchantSubmitFailureEffect>());
+
+    await sub.cancel();
+  });
 }

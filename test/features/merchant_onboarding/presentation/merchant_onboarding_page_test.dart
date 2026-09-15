@@ -32,7 +32,7 @@ Widget wrap(MerchantOnboardingCubit cubit) {
     home: AdaptiveScope(
       navigationPolicy: const NavigationPolicy.none(),
       child: BlocProvider<MerchantOnboardingCubit>(
-        create: (_) => cubit,
+        create: (_) => cubit..loadReferenceData(),
         child: const MerchantOnboardingPage(),
       ),
     ),
@@ -194,6 +194,7 @@ void main() {
         ),
       );
       final cubit = buildCubit(repo);
+      await cubit.loadReferenceData();
 
       await tester.pumpWidget(
         MaterialApp(

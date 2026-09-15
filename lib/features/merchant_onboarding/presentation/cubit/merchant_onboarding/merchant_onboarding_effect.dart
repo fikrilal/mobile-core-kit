@@ -21,3 +21,7 @@ final class MerchantSubmittedEffect extends MerchantOnboardingEffect {
 
   final String applicationId;
 }
+
+final class MerchantSubmitFailureEffect extends MerchantOnboardingEffect {
+  const MerchantSubmitFailureEffect();
+}

@@ -29,19 +29,13 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
   final _focusRequests = <String, FocusNode>{};
   StreamSubscription<MerchantOnboardingEffect>? _effectsSub;
   bool _leaveRequested = false;
-  bool _submissionFailureShown = false;
 
   @override
-  void initState() {
-    super.initState();
-    _effectsSub = context.read<MerchantOnboardingCubit>().effects.listen(
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _effectsSub ??= context.read<MerchantOnboardingCubit>().effects.listen(
       _handleEffect,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<MerchantOnboardingCubit>().loadReferenceData();
-      }
-    });
   }
 
   @override
@@ -87,6 +81,11 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _navigateBackOrHome();
         });
+      case MerchantSubmitFailureEffect():
+        AppSnackBar.showError(
+          context,
+          message: context.l10n.merchantOnboardingSubmitFailure,
+        );
     }
   }
 
@@ -143,22 +142,6 @@ class _MerchantOnboardingPageState extends State<MerchantOnboardingPage> {
           final l10n = context.l10n;
           final totalSteps = MerchantOnboardingStep.values.length;
           final currentStep = step.index + 1;
-
-          if (state.submissionFailure != null &&
-              state.submissionStatus == MerchantSubmissionStatus.failure &&
-              !_submissionFailureShown) {
-            _submissionFailureShown = true;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                AppSnackBar.showError(
-                  context,
-                  message: context.l10n.merchantOnboardingSubmitFailure,
-                );
-              }
-            });
-          } else if (state.submissionFailure == null) {
-            _submissionFailureShown = false;
-          }
 
           final Widget stepWidget = switch (step) {
             MerchantOnboardingStep.business => BusinessStepWidget(

@@ -324,6 +324,7 @@ class MerchantOnboardingCubit extends Cubit<MerchantOnboardingState> {
             submissionFailure: failure,
           ),
         );
+        _effects.add(const MerchantSubmitFailureEffect());
       },
       (receipt) {
         emit(

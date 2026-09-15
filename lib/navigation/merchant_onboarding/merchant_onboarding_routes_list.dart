@@ -9,7 +9,7 @@ final List<GoRoute> merchantOnboardingRoutes = [
   GoRoute(
     path: MerchantOnboardingRoutes.root,
     builder: (context, state) => BlocProvider<MerchantOnboardingCubit>(
-      create: (_) => locator<MerchantOnboardingCubit>(),
+      create: (_) => locator<MerchantOnboardingCubit>()..loadReferenceData(),
       child: const MerchantOnboardingPage(),
     ),
   ),
