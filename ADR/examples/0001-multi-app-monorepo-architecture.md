@@ -172,6 +172,6 @@ This ADR is closely related to:
 
 - `docs/engineering/project_architecture.md` — describes the feature‑first Clean Architecture and vertical slices.
 - `docs/engineering/data_domain_guide.md` — describes domain/data layering within features.
-- `docs/engineering/ui_state_architecture.md` — describes controller + state + effect UI patterns.
+- `docs/engineering/ui_state_architecture.md` — `BlocBuilder` + `BlocListener`.
 - (Downstream-only) multi‑app monorepo docs that informed this example are not part of this template.
 

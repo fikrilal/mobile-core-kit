@@ -91,7 +91,9 @@ blocTest<LoginCubit, LoginState>(
 ```
 
 2. **Submit success** – mock use case success, expect `submitting → success` transition and any derived fields set.
-3. **Submit failure** – mock `AuthFailure.validation` (or network), verify failure state + explicit effects (e.g., error snackbars) for mutation flows.
+3. **Submit failure** – mock `AuthFailure.validation` (or network), verify
+   `status: failure` (and `failure` on state). Snackbars are `BlocListener`
+   reactions; assert them in a widget test if needed.
 
 Tips:
 - Seed the bloc/cubit with specific state using `seed: () => initialState.copyWith(...)`.

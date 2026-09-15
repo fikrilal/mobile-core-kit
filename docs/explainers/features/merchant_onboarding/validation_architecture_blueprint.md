@@ -393,9 +393,9 @@ Its explicit intents include loading reference data; changing business,
 owner, settlement, or declaration values; adding/removing owners; moving
 between steps; and submitting.
 
-Navigation, focus requests, and success transitions are one-shot effects, not
-durable state flags. Submit is disabled only in flight; correctness still comes
-from the use-case gate.
+Navigation, focus, and success snackbars belong in `BlocListener` on state
+transitions, not in `builder`. Submit is disabled only in flight; correctness
+still comes from the use-case gate.
 
 Bloc becomes reasonable if later requirements add concurrent loads, autosave,
 external verification callbacks, or event ordering. It does not improve this
