@@ -331,7 +331,6 @@ class ScaffoldDataWorkflow {
           'run',
           'build_runner',
           'build',
-          '--delete-conflicting-outputs',
           '--build-filter=$filter',
         ],
       );
@@ -450,8 +449,26 @@ class $className {
     buffer.writeln('// ignore_for_file: invalid_annotation_target');
     buffer.writeln();
 
+    // Collect all transitive sub-schemas and enums
+    final allSubSchemas = <String, ResolvedSchema>{};
+    final allEnums = <String, ResolvedEnum>{};
+
+    void collect(ResolvedSchema s) {
+      for (final enumDef in s.enums) {
+        allEnums[enumDef.name] = enumDef;
+      }
+      for (final sub in s.subSchemas) {
+        if (!allSubSchemas.containsKey(sub.name)) {
+          allSubSchemas[sub.name] = sub;
+          collect(sub);
+        }
+      }
+    }
+
+    collect(schema);
+
     // Enums
-    for (final enumDef in schema.enums) {
+    for (final enumDef in allEnums.values) {
       buffer.writeln('enum ${enumDef.name} {');
       for (final val in enumDef.values) {
         final id = _toCamelCase(val.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_'));
@@ -463,7 +480,8 @@ class $className {
     }
 
     // Sub-schemas
-    for (final sub in schema.subSchemas) {
+    for (final sub in allSubSchemas.values) {
+      if (sub.name == modelName) continue;
       _writeFreezedClass(buffer, sub.name, sub.properties);
       buffer.writeln();
     }

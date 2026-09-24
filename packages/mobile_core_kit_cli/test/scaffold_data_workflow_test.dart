@@ -462,6 +462,24 @@ paths:
       expect(statusProp.enumDefinition!.values,
           ['PENDING', 'ACTIVE', 'SUSPENDED']);
     });
+
+    test('resolves transitive nested schemas and allOf references', () {
+      final file = File('docs/contracts/openapi/backend.openapi.yaml');
+      expect(file.existsSync(), isTrue);
+      final resolver = OpenApiSchemaResolver.fromYaml(file.readAsStringSync());
+      final op = resolver.findOperation('auth.password.login');
+      expect(op, isNotNull);
+      final res = op!.responseSchema!;
+      expect(res.properties.first.name, 'data');
+      expect(res.properties.first.dartType, 'AuthResultWithMeModel');
+
+      // Check transitive sub-schemas exist
+      final subNames = res.subSchemas.map((s) => s.name).toSet();
+      expect(subNames.contains('AuthResultWithMeModel'), isTrue);
+      final authResult = res.subSchemas.firstWhere((s) => s.name == 'AuthResultWithMeModel');
+      final authResultSubNames = authResult.subSchemas.map((s) => s.name).toSet();
+      expect(authResultSubNames.contains('MeModel'), isTrue);
+    });
   });
 }
 

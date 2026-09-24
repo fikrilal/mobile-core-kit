@@ -223,14 +223,40 @@ class OpenApiSchemaResolver {
     return _resolveSchema(schemaRaw, defaultName);
   }
 
-  ResolvedSchema _resolveSchema(Map<String, dynamic> rawSchema, String preferredName) {
+  ResolvedSchema _resolveSchema(
+    Map<String, dynamic> rawSchema,
+    String preferredName, [
+    Set<String>? visitedRefs,
+  ]) {
+    final visited = visitedRefs ?? <String>{};
     var schemaMap = rawSchema;
     var name = preferredName;
+
+    if (schemaMap.containsKey('allOf')) {
+      final allOf = schemaMap['allOf'];
+      if (allOf is List) {
+        for (final item in allOf) {
+          if (item is Map<String, dynamic> && item.containsKey(r'$ref')) {
+            schemaMap = Map<String, dynamic>.from(schemaMap)..addAll(item);
+            break;
+          }
+        }
+      }
+    }
 
     if (schemaMap.containsKey(r'$ref')) {
       final ref = schemaMap[r'$ref'] as String;
       final refName = ref.split('/').last;
       name = _normalizeModelName(refName);
+      if (visited.contains(ref)) {
+        return ResolvedSchema(
+          name: name,
+          properties: const [],
+          subSchemas: const [],
+          enums: const [],
+        );
+      }
+      visited.add(ref);
       schemaMap = _lookupRef(ref);
     }
 
@@ -259,6 +285,7 @@ class OpenApiSchemaResolver {
           parentName: name,
           isRequired: isRequired,
           isNullable: isNullable,
+          visited: visited,
         );
 
         properties.add(propResult.property);
@@ -285,15 +312,28 @@ class OpenApiSchemaResolver {
     required String parentName,
     required bool isRequired,
     required bool isNullable,
+    required Set<String> visited,
   }) {
     var schema = propSchema;
     final camelName = _toCamelCase(propName);
+
+    if (schema.containsKey('allOf')) {
+      final allOf = schema['allOf'];
+      if (allOf is List) {
+        for (final item in allOf) {
+          if (item is Map<String, dynamic> && item.containsKey(r'$ref')) {
+            schema = Map<String, dynamic>.from(schema)..addAll(item);
+            break;
+          }
+        }
+      }
+    }
 
     if (schema.containsKey(r'$ref')) {
       final ref = schema[r'$ref'] as String;
       final refName = ref.split('/').last;
       final subModelName = _normalizeModelName(refName);
-      final resolvedSub = _resolveSchema(schema, subModelName);
+      final resolvedSub = _resolveSchema(schema, subModelName, visited);
       final nullableSuffix = (!isRequired || isNullable) ? '?' : '';
       return _PropertyResolveResult(
         property: ResolvedProperty(
@@ -385,13 +425,24 @@ class OpenApiSchemaResolver {
     }
 
     if (type == 'array') {
-      final items = schema['items'];
+      var items = schema['items'];
       if (items is Map<String, dynamic>) {
-        if (items.containsKey(r'$ref')) {
+        if (items.containsKey('allOf')) {
+          final allOf = items['allOf'];
+          if (allOf is List) {
+            for (final item in allOf) {
+              if (item is Map<String, dynamic> && item.containsKey(r'$ref')) {
+                items = Map<String, dynamic>.from(items!)..addAll(item);
+                break;
+              }
+            }
+          }
+        }
+        if (items!.containsKey(r'$ref')) {
           final ref = items[r'$ref'] as String;
           final refName = ref.split('/').last;
           final subModelName = _normalizeModelName(refName);
-          final resolvedSub = _resolveSchema(items, subModelName);
+          final resolvedSub = _resolveSchema(items, subModelName, visited);
           final nullableSuffix = (!isRequired || isNullable) ? '?' : '';
           return _PropertyResolveResult(
             property: ResolvedProperty(
