@@ -377,7 +377,10 @@ components:
       );
       final endpointContent = endpointFile.readAsStringSync();
       expect(endpointContent, contains("static const String orders = '/orders';"));
-      expect(endpointContent, contains("static const String id = '/orders/{id}';"));
+      expect(
+        endpointContent,
+        contains("static String id(String id) => '/orders/\${Uri.encodeComponent(id)}';"),
+      );
 
       // Verify datasource file has both methods
       final dsFile = File(
@@ -385,7 +388,7 @@ components:
       );
       final dsContent = dsFile.readAsStringSync();
       expect(dsContent, contains('Future<ApiResponse<CreateResponseModel>> create('));
-      expect(dsContent, contains('Future<ApiResponse<GetResponseModel>> get()'));
+      expect(dsContent, contains('Future<ApiResponse<GetResponseModel>> get(String id)'));
     });
   });
 

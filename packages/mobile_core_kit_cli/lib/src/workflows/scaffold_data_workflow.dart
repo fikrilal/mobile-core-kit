@@ -230,6 +230,7 @@ class ScaffoldDataWorkflow {
     final endpointFile = context.file(endpointRelativePath);
     final endpointClassName = '${featurePascal}Endpoint';
     final endpointConstantName = _deriveEndpointConstantName(strippedPath, opSnake);
+    final pathParams = _extractPathParameters(strippedPath);
 
     String resolvedEndpointConstant = endpointConstantName;
     if (endpointFile.existsSync()) {
@@ -239,7 +240,9 @@ class ScaffoldDataWorkflow {
         resolvedEndpointConstant = existingConst;
       } else {
         final existingPattern = RegExp(
-          r'static\s+const\s+String\s+' + RegExp.escape(endpointConstantName) + r'\s*=',
+          r'static\s+(?:const\s+String|String)\s+' +
+              RegExp.escape(endpointConstantName) +
+              r'[\s=(]',
         );
         if (existingPattern.hasMatch(existingContent)) {
           resolvedEndpointConstant = _toCamelCase('${opSnake}_$endpointConstantName');
@@ -266,14 +269,16 @@ class ScaffoldDataWorkflow {
     final datasourceFile = context.file(datasourceRelativePath);
     final datasourceClassName = '${featurePascal}RemoteDataSource';
     final methodName = _toCamelCase(opSnake);
+    final effectiveResModelName = resSchema != null ? resModelName : 'ApiNoData';
 
     final methodCode = _generateDataSourceMethod(
       httpMethod: operation.httpMethod,
       methodName: methodName,
       endpointClass: endpointClassName,
       endpointConstant: resolvedEndpointConstant,
+      pathParams: pathParams,
       reqModelName: reqSchema != null ? reqModelName : null,
-      resModelName: resSchema != null ? resModelName : 'dynamic',
+      resModelName: effectiveResModelName,
       requiresAuth: operation.requiresAuth,
     );
 
@@ -286,6 +291,7 @@ class ScaffoldDataWorkflow {
           methodCode: methodCode,
           reqFileName: reqFileName,
           resFileName: resFileName,
+          resModelName: effectiveResModelName,
         );
       }
     } else {
@@ -295,6 +301,7 @@ class ScaffoldDataWorkflow {
         methodCode: methodCode,
         reqFileName: reqFileName,
         resFileName: resFileName,
+        resModelName: effectiveResModelName,
       );
     }
 
@@ -384,14 +391,51 @@ class ScaffoldDataWorkflow {
     return path;
   }
 
+  static List<String> _extractPathParameters(String path) {
+    return RegExp(r'\{([a-zA-Z0-9_]+)\}')
+        .allMatches(path)
+        .map((m) => m.group(1)!)
+        .toList();
+  }
+
+  static String _createEndpointEntry(String name, String path) {
+    final pathParams = _extractPathParameters(path);
+    if (pathParams.isEmpty) {
+      return "  static const String $name = '$path';\n";
+    }
+    var interpolated = path;
+    for (final param in pathParams) {
+      interpolated =
+          interpolated.replaceAll('{$param}', '\${Uri.encodeComponent($param)}');
+    }
+    final paramsDecl = pathParams.map((p) => 'String $p').join(', ');
+    return "  static String $name($paramsDecl) => '$interpolated';\n";
+  }
+
   static String? _findExistingEndpointConstant(String fileContent, String path) {
-    final regex = RegExp(
-      r'static\s+const\s+String\s+([a-zA-Z0-9_]+)\s*=\s*[\x27\x22]' +
-          RegExp.escape(path) +
-          r'[\x27\x22]',
-    );
-    final match = regex.firstMatch(fileContent);
-    return match?.group(1);
+    final pathParams = _extractPathParameters(path);
+    if (pathParams.isEmpty) {
+      final regex = RegExp(
+        r'static\s+const\s+String\s+([a-zA-Z0-9_]+)\s*=\s*[\x27\x22]' +
+            RegExp.escape(path) +
+            r'[\x27\x22]',
+      );
+      final match = regex.firstMatch(fileContent);
+      return match?.group(1);
+    } else {
+      final basePrefix = path.split('{').first;
+      final regex = RegExp(
+        r'static\s+String\s+([a-zA-Z0-9_]+)\s*\([^)]*\)',
+      );
+      for (final match in regex.allMatches(fileContent)) {
+        final name = match.group(1)!;
+        if (fileContent.contains('static String $name') &&
+            fileContent.contains(basePrefix)) {
+          return name;
+        }
+      }
+      return null;
+    }
   }
 
   static String _createEndpointFile({
@@ -400,6 +444,7 @@ class ScaffoldDataWorkflow {
     required String constantName,
     required String path,
   }) {
+    final entry = _createEndpointEntry(constantName, path);
     return '''/// Endpoint constants for the $feature feature (core API host).
 ///
 /// Paths exclude the `/v1` prefix because the core host base URL already
@@ -407,8 +452,7 @@ class ScaffoldDataWorkflow {
 class $className {
   $className._();
 
-  static const String $constantName = '$path';
-}
+$entry}
 ''';
   }
 
@@ -423,15 +467,17 @@ class $className {
 
     var targetName = constantName;
     final existingPattern = RegExp(
-      r'static\s+const\s+String\s+' + RegExp.escape(targetName) + r'\s*=',
+      r'static\s+(?:const\s+String|String)\s+' +
+          RegExp.escape(targetName) +
+          r'[\s=(]',
     );
     if (existingPattern.hasMatch(fileContent)) {
       targetName = _toCamelCase('${opSnake}_$targetName');
     }
 
-    final constantLine = "  static const String $targetName = '$path';\n";
+    final entryLine = _createEndpointEntry(targetName, path);
     return fileContent.substring(0, lastBrace) +
-        constantLine +
+        entryLine +
         fileContent.substring(lastBrace);
   }
 
@@ -519,6 +565,7 @@ class $className {
     required String methodName,
     required String endpointClass,
     required String endpointConstant,
+    required List<String> pathParams,
     required String? reqModelName,
     required String resModelName,
     required bool requiresAuth,
@@ -526,17 +573,37 @@ class $className {
     final methodLower = httpMethod.toLowerCase();
     final helperMethod = methodLower == 'get' ? 'getOne' : methodLower;
     final hasBody = reqModelName != null;
-    final param = hasBody ? '$reqModelName requestModel' : '';
+    final hasPathParams = pathParams.isNotEmpty;
+
+    String paramSignature = '';
+    if (hasPathParams && hasBody) {
+      final pList = pathParams.map((p) => 'required String $p').join(', ');
+      paramSignature = '{$pList, required $reqModelName requestModel}';
+    } else if (hasPathParams) {
+      if (pathParams.length == 1) {
+        paramSignature = 'String ${pathParams.first}';
+      } else {
+        final pList = pathParams.map((p) => 'required String $p').join(', ');
+        paramSignature = '{$pList}';
+      }
+    } else if (hasBody) {
+      paramSignature = '$reqModelName requestModel';
+    }
+
+    final endpointCall = hasPathParams
+        ? '$endpointClass.$endpointConstant(${pathParams.join(', ')})'
+        : '$endpointClass.$endpointConstant';
+
     final dataArg = hasBody ? '      data: requestModel.toJson(),\n' : '';
-    final parserArg = resModelName != 'dynamic'
+    final parserArg = (resModelName != 'dynamic' && resModelName != 'ApiNoData')
         ? '      parser: $resModelName.fromJson,\n'
         : '';
 
-    return '''  Future<ApiResponse<$resModelName>> $methodName($param) async {
+    return '''  Future<ApiResponse<$resModelName>> $methodName($paramSignature) async {
     Log.info('Executing $methodName', name: _tag);
 
     final response = await _apiHelper.$helperMethod<$resModelName>(
-      $endpointClass.$endpointConstant,
+      $endpointCall,
 $dataArg      requiresAuth: $requiresAuth,
       throwOnError: false,
 $parserArg    );
@@ -550,11 +617,15 @@ $parserArg    );
     required String methodCode,
     required String? reqFileName,
     required String? resFileName,
+    required String resModelName,
   }) {
     final buffer = StringBuffer();
     buffer.writeln("import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';");
     buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';");
     buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';");
+    if (resModelName == 'ApiNoData') {
+      buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';");
+    }
     buffer.writeln(
       "import 'package:mobile_core_kit/core/infra/network/endpoints/${feature}_endpoint.dart';",
     );
@@ -587,6 +658,7 @@ $parserArg    );
     required String methodCode,
     required String? reqFileName,
     required String? resFileName,
+    required String resModelName,
   }) {
     var content = existingContent;
 
@@ -595,6 +667,14 @@ $parserArg    );
         "import 'package:mobile_core_kit/core/infra/network/endpoints/${feature}_endpoint.dart';";
     if (!content.contains(endpointImport)) {
       content = '$endpointImport\n$content';
+    }
+
+    if (resModelName == 'ApiNoData') {
+      const noDataImport =
+          "import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';";
+      if (!content.contains(noDataImport)) {
+        content = '$noDataImport\n$content';
+      }
     }
 
     // Ensure model imports
