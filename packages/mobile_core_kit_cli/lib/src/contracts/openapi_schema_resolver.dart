@@ -25,10 +25,7 @@ class OpenApiOperation {
 
 /// Represents an enum extracted from a schema property.
 class ResolvedEnum {
-  const ResolvedEnum({
-    required this.name,
-    required this.values,
-  });
+  const ResolvedEnum({required this.name, required this.values});
 
   final String name;
   final List<String> values;
@@ -129,7 +126,9 @@ class OpenApiSchemaResolver {
         final operationId = rawOpId ?? '${method}_${_sanitizeName(path)}';
         final summary = (opMap['summary'] as String?) ?? '';
         final rawTags = opMap['tags'];
-        final tags = rawTags is List ? rawTags.map((e) => e.toString()).toList() : <String>[];
+        final tags = rawTags is List
+            ? rawTags.map((e) => e.toString()).toList()
+            : <String>[];
 
         final security = opMap['security'];
         final requiresAuth = security is List && security.isNotEmpty;
@@ -540,8 +539,9 @@ class OpenApiSchemaResolver {
       buffer.write(part[0].toUpperCase());
       if (part.length > 1) {
         final isAllCaps = part == part.toUpperCase();
-        final rest =
-            isAllCaps ? part.substring(1).toLowerCase() : part.substring(1);
+        final rest = isAllCaps
+            ? part.substring(1).toLowerCase()
+            : part.substring(1);
         buffer.write(rest);
       }
     }

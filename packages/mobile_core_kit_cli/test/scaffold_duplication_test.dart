@@ -28,119 +28,113 @@ void main() {
     },
   );
 
-  test(
-    'scaffolds a feature with valid barrel imports and registrar guidance',
-    () async {
-      final repository = await _createRepository();
-      addTearDown(() => repository.delete(recursive: true));
-      final output = StringBuffer();
+  test('scaffolds a feature with valid barrel imports and registrar guidance', () async {
+    final repository = await _createRepository();
+    addTearDown(() => repository.delete(recursive: true));
+    final output = StringBuffer();
 
-      final result = await MobilekitCli(
-        currentDirectory: repository,
-        output: output,
-      ).run(['scaffold', 'feature', 'review', '--slice', 'list']);
+    final result = await MobilekitCli(
+      currentDirectory: repository,
+      output: output,
+    ).run(['scaffold', 'feature', 'review', '--slice', 'list']);
 
-      expect(result, 0);
-      final outStr = output.toString();
-      expect(
-        outStr,
-        contains(
-          'call `ReviewModule.register(locator)` from `lib/core/di/registrars/feature_modules_registrar.dart`',
-        ),
-      );
+    expect(result, 0);
+    final outStr = output.toString();
+    expect(
+      outStr,
+      contains(
+        'call `ReviewModule.register(locator)` from `lib/core/di/registrars/feature_modules_registrar.dart`',
+      ),
+    );
 
-      final pageFile = File(
-        p.join(
-          repository.path,
-          'lib',
-          'features',
-          'review',
-          'presentation',
-          'pages',
-          'review_list_page.dart',
-        ),
-      );
-      expect(pageFile.existsSync(), isTrue);
-      final pageContent = pageFile.readAsStringSync();
-      expect(
-        pageContent,
-        contains(
-          "import 'package:mobile_core_kit/core/design_system/adaptive/adaptive.dart';",
-        ),
-      );
-      expect(
-        pageContent,
-        contains(
-          "import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';",
-        ),
-      );
-      expect(
-        pageContent,
-        contains(
-          "import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';",
-        ),
-      );
-      expect(
-        pageContent,
-        contains(
-          "import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';",
-        ),
-      );
-      expect(
-        pageContent,
-        contains(
-          "import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_message.dart';",
-        ),
-      );
-      expect(pageContent, contains('AppStateMessagePanel('));
-      expect(
-        pageContent,
-        isNot(contains('package:mobile_core_kit/core/adaptive/')),
-      );
-      expect(
-        pageContent,
-        isNot(contains('package:mobile_core_kit/core/theme/tokens/')),
-      );
-      expect(
-        pageContent,
-        isNot(contains('package:mobile_core_kit/core/widgets/')),
-      );
-      expect(
-        pageContent,
-        isNot(contains('package:mobile_core_kit/core/localization/')),
-      );
+    final pageFile = File(
+      p.join(
+        repository.path,
+        'lib',
+        'features',
+        'review',
+        'presentation',
+        'pages',
+        'review_list_page.dart',
+      ),
+    );
+    expect(pageFile.existsSync(), isTrue);
+    final pageContent = pageFile.readAsStringSync();
+    expect(
+      pageContent,
+      contains(
+        "import 'package:mobile_core_kit/core/design_system/adaptive/adaptive.dart';",
+      ),
+    );
+    expect(
+      pageContent,
+      contains(
+        "import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';",
+      ),
+    );
+    expect(
+      pageContent,
+      contains(
+        "import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';",
+      ),
+    );
+    expect(
+      pageContent,
+      contains(
+        "import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';",
+      ),
+    );
+    expect(
+      pageContent,
+      contains(
+        "import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_message.dart';",
+      ),
+    );
+    expect(pageContent, contains('AppStateMessagePanel('));
+    expect(
+      pageContent,
+      isNot(contains('package:mobile_core_kit/core/adaptive/')),
+    );
+    expect(
+      pageContent,
+      isNot(contains('package:mobile_core_kit/core/theme/tokens/')),
+    );
+    expect(
+      pageContent,
+      isNot(contains('package:mobile_core_kit/core/widgets/')),
+    );
+    expect(
+      pageContent,
+      isNot(contains('package:mobile_core_kit/core/localization/')),
+    );
 
-      final emptyDirs = Directory(repository.path)
-          .listSync(recursive: true)
-          .whereType<Directory>()
-          .where((d) => d.listSync().isEmpty)
-          .toList();
-      expect(emptyDirs, isEmpty);
+    final emptyDirs = Directory(repository.path)
+        .listSync(recursive: true)
+        .whereType<Directory>()
+        .where((d) => d.listSync().isEmpty)
+        .toList();
+    expect(emptyDirs, isEmpty);
 
-      final cubitTestFile = File(
-        p.join(
-          repository.path,
-          'test',
-          'features',
-          'review',
-          'presentation',
-          'cubit',
-          'list',
-          'review_list_cubit_test.dart',
-        ),
-      );
-      expect(cubitTestFile.existsSync(), isTrue);
-      final testContent = cubitTestFile.readAsStringSync();
-      expect(
-        testContent,
-        contains("import 'package:bloc_test/bloc_test.dart';"),
-      );
-      expect(
-        testContent,
-        contains('blocTest<ReviewListCubit, ReviewListState>('),
-      );
-    },
-  );
+    final cubitTestFile = File(
+      p.join(
+        repository.path,
+        'test',
+        'features',
+        'review',
+        'presentation',
+        'cubit',
+        'list',
+        'review_list_cubit_test.dart',
+      ),
+    );
+    expect(cubitTestFile.existsSync(), isTrue);
+    final testContent = cubitTestFile.readAsStringSync();
+    expect(testContent, contains("import 'package:bloc_test/bloc_test.dart';"));
+    expect(
+      testContent,
+      contains('blocTest<ReviewListCubit, ReviewListState>('),
+    );
+  });
 
   test(
     'scaffolds incremental slice into an existing feature without collisions',

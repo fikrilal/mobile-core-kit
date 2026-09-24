@@ -249,11 +249,7 @@ class ScaffoldWorkflow {
       });
     }
 
-    final directories = outputs.keys
-        .map(p.dirname)
-        .toSet()
-        .toList()
-      ..sort();
+    final directories = outputs.keys.map(p.dirname).toSet().toList()..sort();
 
     // Preflight: refuse if any file already exists.
     for (final path in outputs.keys) {
@@ -607,10 +603,14 @@ final class ${failureClass}Unexpected extends $failureClass {
 String _remoteDatasourceStub(String featurePascal) {
   final datasourceClass = '${featurePascal}RemoteDataSource';
   return '''
+import 'package:mobile_core_kit/core/foundation/config/api_host.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 
 class $datasourceClass {
   $datasourceClass(this._apiHelper);
+  final String _tag = '$datasourceClass';
 
   final ApiHelper _apiHelper;
 

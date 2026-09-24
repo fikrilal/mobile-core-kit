@@ -33,10 +33,7 @@ class ScaffoldDataWorkflow {
         negatable: false,
         help: 'List all operations in the OpenAPI contract.',
       )
-      ..addOption(
-        'filter',
-        help: 'Filter string when listing operations.',
-      )
+      ..addOption('filter', help: 'Filter string when listing operations.')
       ..addOption(
         'feature',
         abbr: 'f',
@@ -45,7 +42,8 @@ class ScaffoldDataWorkflow {
       ..addOption(
         'operation',
         abbr: 'o',
-        help: 'OpenAPI operationId or "METHOD /path", e.g. "merchantOnboarding.applications.submit".',
+        help:
+            'OpenAPI operationId or "METHOD /path", e.g. "merchantOnboarding.applications.submit".',
       )
       ..addOption(
         'openapi-spec',
@@ -68,7 +66,9 @@ class ScaffoldDataWorkflow {
       return 1;
     }
 
-    final resolver = OpenApiSchemaResolver.fromYaml(specFile.readAsStringSync());
+    final resolver = OpenApiSchemaResolver.fromYaml(
+      specFile.readAsStringSync(),
+    );
 
     if (args.flag('list')) {
       _listOperations(resolver, args.option('filter'));
@@ -79,7 +79,9 @@ class ScaffoldDataWorkflow {
     final operationQuery = (args.option('operation') ?? '').trim();
 
     if (feature.isEmpty) {
-      context.errorOutput.writeln('ERROR: Missing required option: --feature (-f)');
+      context.errorOutput.writeln(
+        'ERROR: Missing required option: --feature (-f)',
+      );
       context.errorOutput.writeln(
         'Example: mobilekit scaffold data --feature merchant_onboarding --operation merchantOnboarding.applications.submit',
       );
@@ -87,8 +89,12 @@ class ScaffoldDataWorkflow {
     }
 
     if (operationQuery.isEmpty) {
-      context.errorOutput.writeln('ERROR: Missing required option: --operation (-o)');
-      context.errorOutput.writeln('Tip: Use `mobilekit scaffold data --list` to browse available operations.');
+      context.errorOutput.writeln(
+        'ERROR: Missing required option: --operation (-o)',
+      );
+      context.errorOutput.writeln(
+        'Tip: Use `mobilekit scaffold data --list` to browse available operations.',
+      );
       return 2;
     }
 
@@ -97,7 +103,9 @@ class ScaffoldDataWorkflow {
       context.errorOutput.writeln(
         "ERROR: Operation '$operationQuery' not found in OpenAPI specification.",
       );
-      context.errorOutput.writeln('Tip: Run `mobilekit scaffold data --list` to view available operations.');
+      context.errorOutput.writeln(
+        'Tip: Run `mobilekit scaffold data --list` to view available operations.',
+      );
       return 1;
     }
 
@@ -116,19 +124,21 @@ class ScaffoldDataWorkflow {
   }
 
   void _printUsage(ArgParser parser) {
-    context.output.writeln([
-      'mobilekit scaffold data',
-      '',
-      'Scaffolds verified Freezed DTO models, core endpoint constants, and remote',
-      'datasource methods directly from the repository pinned OpenAPI contract.',
-      '',
-      'Usage:',
-      '  mobilekit scaffold data --feature <name> --operation <id> [options]',
-      '  mobilekit scaffold data --list [--filter <keyword>]',
-      '',
-      'Options:',
-      parser.usage,
-    ].join('\n'));
+    context.output.writeln(
+      [
+        'mobilekit scaffold data',
+        '',
+        'Scaffolds verified Freezed DTO models, core endpoint constants, and remote',
+        'datasource methods directly from the repository pinned OpenAPI contract.',
+        '',
+        'Usage:',
+        '  mobilekit scaffold data --feature <name> --operation <id> [options]',
+        '  mobilekit scaffold data --list [--filter <keyword>]',
+        '',
+        'Options:',
+        parser.usage,
+      ].join('\n'),
+    );
   }
 
   void _listOperations(OpenApiSchemaResolver resolver, String? filter) {
@@ -143,7 +153,9 @@ class ScaffoldDataWorkflow {
                 op.tags.any((t) => t.toLowerCase().contains(term));
           }).toList();
 
-    context.output.writeln('Found ${filtered.length} operation(s) in OpenAPI contract:');
+    context.output.writeln(
+      'Found ${filtered.length} operation(s) in OpenAPI contract:',
+    );
     context.output.writeln();
     for (final op in filtered) {
       final authTag = op.requiresAuth ? '[Auth]' : '[Public]';
@@ -168,12 +180,14 @@ class ScaffoldDataWorkflow {
     final reqModelName = '${opPascal}RequestModel';
     final resModelName = '${opPascal}ResponseModel';
 
-    final reqSchema = resolver.resolveRequestBodyForOperation(
+    final reqSchema =
+        resolver.resolveRequestBodyForOperation(
           operation,
           preferredName: reqModelName,
         ) ??
         operation.requestSchema;
-    final resSchema = resolver.resolveResponseForOperation(
+    final resSchema =
+        resolver.resolveResponseForOperation(
           operation,
           preferredName: resModelName,
         ) ??
@@ -229,13 +243,19 @@ class ScaffoldDataWorkflow {
         'lib/core/infra/network/endpoints/${feature}_endpoint.dart';
     final endpointFile = context.file(endpointRelativePath);
     final endpointClassName = '${featurePascal}Endpoint';
-    final endpointConstantName = _deriveEndpointConstantName(strippedPath, opSnake);
+    final endpointConstantName = _deriveEndpointConstantName(
+      strippedPath,
+      opSnake,
+    );
     final pathParams = _extractPathParameters(strippedPath);
 
     String resolvedEndpointConstant = endpointConstantName;
     if (endpointFile.existsSync()) {
       final existingContent = endpointFile.readAsStringSync();
-      final existingConst = _findExistingEndpointConstant(existingContent, strippedPath);
+      final existingConst = _findExistingEndpointConstant(
+        existingContent,
+        strippedPath,
+      );
       if (existingConst != null) {
         resolvedEndpointConstant = existingConst;
       } else {
@@ -245,7 +265,9 @@ class ScaffoldDataWorkflow {
               r'[\s=(]',
         );
         if (existingPattern.hasMatch(existingContent)) {
-          resolvedEndpointConstant = _toCamelCase('${opSnake}_$endpointConstantName');
+          resolvedEndpointConstant = _toCamelCase(
+            '${opSnake}_$endpointConstantName',
+          );
         }
         plannedWrites[endpointRelativePath] = _appendEndpointConstant(
           existingContent,
@@ -269,7 +291,9 @@ class ScaffoldDataWorkflow {
     final datasourceFile = context.file(datasourceRelativePath);
     final datasourceClassName = '${featurePascal}RemoteDataSource';
     final methodName = _toCamelCase(opSnake);
-    final effectiveResModelName = resSchema != null ? resModelName : 'ApiNoData';
+    final effectiveResModelName = resSchema != null
+        ? resModelName
+        : 'ApiNoData';
 
     final methodCode = _generateDataSourceMethod(
       httpMethod: operation.httpMethod,
@@ -331,19 +355,20 @@ class ScaffoldDataWorkflow {
     if (!noCodegen && (reqSchema != null || resSchema != null)) {
       final filter = 'lib/features/$feature/data/model/remote/**';
       context.output.writeln('\nRunning targeted build_runner codegen:');
-      final codegenResult = await context.step(
-        'Dart build_runner (targeted)',
-        [
-          'dart',
-          'run',
-          'build_runner',
-          'build',
-          '--build-filter=$filter',
-        ],
-      );
+      final codegenResult = await context.step('Dart build_runner (targeted)', [
+        'dart',
+        'run',
+        'build_runner',
+        'build',
+        '--build-filter=$filter',
+      ]);
       if (codegenResult != 0) {
-        context.errorOutput.writeln('WARNING: Targeted build_runner exited with code $codegenResult.');
-        context.errorOutput.writeln('You may need to run `dart run build_runner build` manually.');
+        context.errorOutput.writeln(
+          'WARNING: Targeted build_runner exited with code $codegenResult.',
+        );
+        context.errorOutput.writeln(
+          'You may need to run `dart run build_runner build` manually.',
+        );
       }
     } else if (noCodegen) {
       context.output.writeln('\nCodegen skipped (--no-codegen).');
@@ -352,7 +377,9 @@ class ScaffoldDataWorkflow {
       );
     }
 
-    context.output.writeln('\nSuccess! Scaffolding completed for ${operation.operationId}.');
+    context.output.writeln(
+      '\nSuccess! Scaffolding completed for ${operation.operationId}.',
+    );
     return 0;
   }
 
@@ -371,7 +398,10 @@ class ScaffoldDataWorkflow {
     return _toSnakeCase(raw);
   }
 
-  static String _deriveEndpointConstantName(String strippedPath, String opSnake) {
+  static String _deriveEndpointConstantName(
+    String strippedPath,
+    String opSnake,
+  ) {
     final cleanSegments = strippedPath
         .split('/')
         .where((s) => s.isNotEmpty)
@@ -392,10 +422,9 @@ class ScaffoldDataWorkflow {
   }
 
   static List<String> _extractPathParameters(String path) {
-    return RegExp(r'\{([a-zA-Z0-9_]+)\}')
-        .allMatches(path)
-        .map((m) => m.group(1)!)
-        .toList();
+    return RegExp(
+      r'\{([a-zA-Z0-9_]+)\}',
+    ).allMatches(path).map((m) => m.group(1)!).toList();
   }
 
   static String _createEndpointEntry(String name, String path) {
@@ -405,14 +434,19 @@ class ScaffoldDataWorkflow {
     }
     var interpolated = path;
     for (final param in pathParams) {
-      interpolated =
-          interpolated.replaceAll('{$param}', '\${Uri.encodeComponent($param)}');
+      interpolated = interpolated.replaceAll(
+        '{$param}',
+        '\${Uri.encodeComponent($param)}',
+      );
     }
     final paramsDecl = pathParams.map((p) => 'String $p').join(', ');
     return "  static String $name($paramsDecl) => '$interpolated';\n";
   }
 
-  static String? _findExistingEndpointConstant(String fileContent, String path) {
+  static String? _findExistingEndpointConstant(
+    String fileContent,
+    String path,
+  ) {
     final pathParams = _extractPathParameters(path);
     if (pathParams.isEmpty) {
       final regex = RegExp(
@@ -424,9 +458,7 @@ class ScaffoldDataWorkflow {
       return match?.group(1);
     } else {
       final basePrefix = path.split('{').first;
-      final regex = RegExp(
-        r'static\s+String\s+([a-zA-Z0-9_]+)\s*\([^)]*\)',
-      );
+      final regex = RegExp(r'static\s+String\s+([a-zA-Z0-9_]+)\s*\([^)]*\)');
       for (final match in regex.allMatches(fileContent)) {
         final name = match.group(1)!;
         if (fileContent.contains('static String $name') &&
@@ -487,7 +519,9 @@ $entry}
     required String fileName,
   }) {
     final buffer = StringBuffer();
-    buffer.writeln("import 'package:freezed_annotation/freezed_annotation.dart';");
+    buffer.writeln(
+      "import 'package:freezed_annotation/freezed_annotation.dart';",
+    );
     buffer.writeln();
     buffer.writeln("part '$fileName.freezed.dart';");
     buffer.writeln("part '$fileName.g.dart';");
@@ -604,7 +638,8 @@ $entry}
 
     final response = await _apiHelper.$helperMethod<$resModelName>(
       $endpointCall,
-$dataArg      requiresAuth: $requiresAuth,
+$dataArg      host: ApiHost.core,
+      requiresAuth: $requiresAuth,
       throwOnError: false,
 $parserArg    );
     return response;
@@ -620,11 +655,22 @@ $parserArg    );
     required String resModelName,
   }) {
     final buffer = StringBuffer();
-    buffer.writeln("import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';");
-    buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';");
-    buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';");
+    buffer.writeln(
+      "import 'package:mobile_core_kit/core/foundation/config/api_host.dart';",
+    );
+    buffer.writeln(
+      "import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';",
+    );
+    buffer.writeln(
+      "import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';",
+    );
+    buffer.writeln(
+      "import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';",
+    );
     if (resModelName == 'ApiNoData') {
-      buffer.writeln("import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';");
+      buffer.writeln(
+        "import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';",
+      );
     }
     buffer.writeln(
       "import 'package:mobile_core_kit/core/infra/network/endpoints/${feature}_endpoint.dart';",
@@ -662,34 +708,72 @@ $parserArg    );
   }) {
     var content = existingContent;
 
-    // Ensure endpoint import
-    final endpointImport =
-        "import 'package:mobile_core_kit/core/infra/network/endpoints/${feature}_endpoint.dart';";
-    if (!content.contains(endpointImport)) {
-      content = '$endpointImport\n$content';
-    }
+    // Collect all existing imports and required imports
+    final importRegex = RegExp(r"import\s+['\x22][^'\x22]+['\x22];\s*");
+    final allImports = importRegex
+        .allMatches(content)
+        .map((m) => m.group(0)!.trim())
+        .toSet();
+
+    allImports.add(
+      "import 'package:mobile_core_kit/core/foundation/config/api_host.dart';",
+    );
+    allImports.add(
+      "import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';",
+    );
+    allImports.add(
+      "import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';",
+    );
+    allImports.add(
+      "import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';",
+    );
+    allImports.add(
+      "import 'package:mobile_core_kit/core/infra/network/endpoints/${feature}_endpoint.dart';",
+    );
 
     if (resModelName == 'ApiNoData') {
-      const noDataImport =
-          "import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';";
-      if (!content.contains(noDataImport)) {
-        content = '$noDataImport\n$content';
-      }
+      allImports.add(
+        "import 'package:mobile_core_kit/core/infra/network/api/no_data.dart';",
+      );
     }
 
-    // Ensure model imports
     if (reqFileName != null) {
-      final reqImport =
-          "import 'package:mobile_core_kit/features/$feature/data/model/remote/$reqFileName.dart';";
-      if (!content.contains(reqImport)) {
-        content = '$reqImport\n$content';
-      }
+      allImports.add(
+        "import 'package:mobile_core_kit/features/$feature/data/model/remote/$reqFileName.dart';",
+      );
     }
     if (resFileName != null) {
-      final resImport =
-          "import 'package:mobile_core_kit/features/$feature/data/model/remote/$resFileName.dart';";
-      if (!content.contains(resImport)) {
-        content = '$resImport\n$content';
+      allImports.add(
+        "import 'package:mobile_core_kit/features/$feature/data/model/remote/$resFileName.dart';",
+      );
+    }
+
+    // Strip imports from content body
+    content = content.replaceAll(importRegex, '').trimLeft();
+
+    // Prepend alphabetically sorted imports
+    final sortedImports = allImports.toList()..sort();
+    content = '${sortedImports.join('\n')}\n\n$content';
+
+    // Ensure _tag definition exists in class
+    if (!content.contains(RegExp(r'final\s+String\s+_tag\s*='))) {
+      final classRegex = RegExp(r'class\s+([a-zA-Z0-9_]+)\s*\{');
+      final classMatch = classRegex.firstMatch(content);
+      if (classMatch != null) {
+        final className = classMatch.group(1)!;
+        final ctorRegex = RegExp(
+          r'(\s+' + RegExp.escape(className) + r'\s*\([^)]*\)\s*;)',
+        );
+        final ctorMatch = ctorRegex.firstMatch(content);
+        if (ctorMatch != null) {
+          final pos = ctorMatch.end;
+          content =
+              '${content.substring(0, pos)}\n  final String _tag = \'$className\';${content.substring(pos)}';
+        } else {
+          final classOpen = classMatch.end;
+          content =
+              '${content.substring(0, classOpen)}\n  final String _tag = \'$className\';\n${content.substring(classOpen)}';
+        }
       }
     }
 
@@ -713,8 +797,9 @@ $parserArg    );
       buffer.write(part[0].toUpperCase());
       if (part.length > 1) {
         final isAllCaps = part == part.toUpperCase();
-        final rest =
-            isAllCaps ? part.substring(1).toLowerCase() : part.substring(1);
+        final rest = isAllCaps
+            ? part.substring(1).toLowerCase()
+            : part.substring(1);
         buffer.write(rest);
       }
     }

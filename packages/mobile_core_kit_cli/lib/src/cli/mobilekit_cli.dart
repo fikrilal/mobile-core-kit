@@ -25,6 +25,7 @@ import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/scaffold_all_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_data_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
@@ -366,6 +367,20 @@ class MobilekitCli {
       return arguments.isEmpty ? 2 : 0;
     }
 
+    if (arguments.first == 'all') {
+      final root = _findRepositoryRoot();
+      if (root == null) return 1;
+
+      return _runRepositoryWorkflow(
+        command: 'scaffold all',
+        root: root,
+        usage:
+            'Usage: mobilekit scaffold all --feature <name> --operation <id> [options]',
+        workflow: (context) =>
+            ScaffoldAllWorkflow(context).run(arguments.skip(1).toList()),
+      );
+    }
+
     if (arguments.first == 'data') {
       final root = _findRepositoryRoot();
       if (root == null) return 1;
@@ -670,6 +685,9 @@ class MobilekitCli {
     output.writeln('Usage: mobilekit scaffold <subcommand> [options]');
     output.writeln();
     output.writeln('Subcommands:');
+    output.writeln(
+      '  all             Scaffold feature skeleton and OpenAPI data layer end-to-end.',
+    );
     output.writeln('  feature <name>  Scaffold standard feature boilerplate.');
     output.writeln(
       '  data            Scaffold verified Freezed DTOs and datasource from OpenAPI.',
