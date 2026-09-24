@@ -25,6 +25,7 @@ import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/scaffold_data_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
@@ -364,6 +365,21 @@ class MobilekitCli {
       _writeScaffoldUsage(_output);
       return arguments.isEmpty ? 2 : 0;
     }
+
+    if (arguments.first == 'data') {
+      final root = _findRepositoryRoot();
+      if (root == null) return 1;
+
+      return _runRepositoryWorkflow(
+        command: 'scaffold data',
+        root: root,
+        usage:
+            'Usage: mobilekit scaffold data --feature <name> --operation <id> [options]',
+        workflow: (context) =>
+            ScaffoldDataWorkflow(context).run(arguments.skip(1).toList()),
+      );
+    }
+
     if (arguments.first != 'feature') {
       _errorOutput.writeln(
         "ERROR: Unknown scaffold command '${arguments.first}'.",
@@ -382,19 +398,19 @@ class MobilekitCli {
       parsed = parser.parse(arguments.skip(1).toList());
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
-      _writeScaffoldUsage(_errorOutput);
+      _writeScaffoldFeatureUsage(_errorOutput);
       return 2;
     }
 
     if (parsed.flag('help')) {
-      _writeScaffoldUsage(_output);
+      _writeScaffoldFeatureUsage(_output);
       return 0;
     }
     if (parsed.rest.length != 1) {
       _errorOutput.writeln(
         'ERROR: Expected exactly one feature name in snake_case.',
       );
-      _writeScaffoldUsage(_errorOutput);
+      _writeScaffoldFeatureUsage(_errorOutput);
       return 2;
     }
 
@@ -651,6 +667,20 @@ class MobilekitCli {
   }
 
   void _writeScaffoldUsage(StringSink output) {
+    output.writeln('Usage: mobilekit scaffold <subcommand> [options]');
+    output.writeln();
+    output.writeln('Subcommands:');
+    output.writeln('  feature <name>  Scaffold standard feature boilerplate.');
+    output.writeln(
+      '  data            Scaffold verified Freezed DTOs and datasource from OpenAPI.',
+    );
+    output.writeln();
+    output.writeln(
+      'Run `mobilekit scaffold <subcommand> --help` for subcommand details.',
+    );
+  }
+
+  void _writeScaffoldFeatureUsage(StringSink output) {
     output.writeln('Usage: mobilekit scaffold feature <name> [options]');
     output.writeln();
     output.writeln('Options:');
