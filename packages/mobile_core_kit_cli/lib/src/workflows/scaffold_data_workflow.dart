@@ -524,6 +524,7 @@ class $className {
     required bool requiresAuth,
   }) {
     final methodLower = httpMethod.toLowerCase();
+    final helperMethod = methodLower == 'get' ? 'getOne' : methodLower;
     final hasBody = reqModelName != null;
     final param = hasBody ? '$reqModelName requestModel' : '';
     final dataArg = hasBody ? '      data: requestModel.toJson(),\n' : '';
@@ -534,7 +535,7 @@ class $className {
     return '''  Future<ApiResponse<$resModelName>> $methodName($param) async {
     Log.info('Executing $methodName', name: _tag);
 
-    final response = await _apiHelper.$methodLower<$resModelName>(
+    final response = await _apiHelper.$helperMethod<$resModelName>(
       $endpointClass.$endpointConstant,
 $dataArg      requiresAuth: $requiresAuth,
       throwOnError: false,
