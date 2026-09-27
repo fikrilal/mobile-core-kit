@@ -47,8 +47,10 @@ completion run. Raw `maestro test` and Maestro MCP are iteration only.
 The app package must already be installed on `--device`. `runtime evidence`
 shells out to `maestro test`; it does not build or `flutter install`.
 Maestro `launchApp` is the driver. YAML runs attach `flutter logs` for
-that device, then stop. Do not `fvm flutter run` alongside Maestro:
-`launchApp` kills it. YAML rules: `docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
+that device and subscribe to the Dart VM Logging stream (`[GoRouter]`,
+`[SessionManager]`, `[network]`, and the other `dart:developer` logs),
+then stop. Do not `fvm flutter run` alongside Maestro: `launchApp`
+kills it. YAML rules: `docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
 
 ```bash
 # Iterate. Not handoff.
@@ -121,8 +123,9 @@ review does not authorize an agent to weaken or bypass the deterministic gate.
 
 ## Live diagnostic logs
 
-Maestro YAML evidence attaches `flutter logs` itself. For a human
-session with no YAML, use Flutter directly:
+Maestro YAML evidence attaches `flutter logs` and the Dart VM Logging
+stream itself. `flutter logs` alone does not include `dart:developer`
+lines. For a human session with no YAML, use Flutter directly:
 
 ```bash
 fvm flutter logs -d <device-id>

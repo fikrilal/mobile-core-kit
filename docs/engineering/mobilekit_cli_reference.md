@@ -424,7 +424,8 @@ mobilekit runtime evidence --task <task-id> --device emulator-5554 \
   --flavor dev --google-services-json <secure-path>/google-services.json
 ```
 
-YAML runs attach `flutter logs` for the Maestro process. Omit `--task`
+YAML runs attach `flutter logs` and the Dart VM Logging stream for the
+Maestro process. Omit `--task`
 to iterate any existing `maestro/*.yaml` (no `evidence.json`). With
 `--task`, the task must already be verified at its exact current
 fingerprint and must select registered `integration-test` or

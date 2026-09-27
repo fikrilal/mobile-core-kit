@@ -7,46 +7,18 @@ import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_binding.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_process.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_vm_log.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
 
+export 'package:mobile_core_kit_cli/src/runtime/runtime_vm_log.dart'
+    show FlutterRuntimeLogcatAttacher, RuntimeLogcatAttacher;
+
 typedef RuntimeBinaryLocator = String? Function(String executable);
 
 const runtimeEvidenceSchemaVersion = 1;
-
-abstract class RuntimeLogcatAttacher {
-  Future<void> start({required String device, required File logFile});
-
-  Future<void> stop();
-}
-
-class FlutterRuntimeLogcatAttacher implements RuntimeLogcatAttacher {
-  Process? _process;
-  IOSink? _sink;
-
-  @override
-  Future<void> start({required String device, required File logFile}) async {
-    logFile.parent.createSync(recursive: true);
-    if (!logFile.existsSync()) {
-      logFile.createSync();
-    }
-    _sink = logFile.openWrite(mode: FileMode.append);
-    _process = await Process.start('flutter', ['logs', '-d', device]);
-    _process!.stdout.listen(_sink!.add, onError: (_) {});
-    _process!.stderr.listen(_sink!.add, onError: (_) {});
-  }
-
-  @override
-  Future<void> stop() async {
-    _process?.kill();
-    _process = null;
-    await _sink?.flush();
-    await _sink?.close();
-    _sink = null;
-  }
-}
 
 class RuntimeEvidenceOptions {
   const RuntimeEvidenceOptions({

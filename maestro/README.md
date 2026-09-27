@@ -28,8 +28,9 @@ See `docs/engineering/mobile_runtime_harness.md`.
 
 - Install the `dev` package first. Evidence does not build or
   `flutter install`. `launchApp` fails if the package is missing.
-- Evidence attaches `flutter logs` while Maestro runs. Do not
-  `fvm flutter run` at the same time: `launchApp` kills it.
+- Evidence attaches `flutter logs` and the Dart VM Logging stream
+  while Maestro runs. Do not `fvm flutter run` at the same time:
+  `launchApp` kills it.
 - Use a unique register-then-login identity per run. A fresh password
   user has empty `profile.givenName`, so the app sends
   `/user/complete-profile` before `/home`. Reusing a completed profile
