@@ -84,13 +84,15 @@ void main() {
       final scriptText = (emulator['with'] as YamlMap)['script'] as String;
       expect(
         scriptText,
-        contains('flutter test integration_test/auth_happy_path_test.dart'),
+        contains('mobilekit oracle paths --kind integration-test'),
+      );
+      expect(scriptText, contains('flutter test "\$target"'));
+      final golden = (runtime['steps'] as YamlList).cast<YamlMap>().singleWhere(
+        (step) => '${step['name']}' == 'Run portable golden evidence',
       );
       expect(
-        scriptText,
-        contains(
-          'flutter test integration_test/startup_deep_link_resume_test.dart',
-        ),
+        '${golden['run']}',
+        contains('mobilekit oracle paths --kind golden-test'),
       );
       expect(emulator['continue-on-error'], isNull);
       final coverage = jobs['coverage'] as YamlMap;

@@ -26,7 +26,7 @@ class HandoffWorkflow {
         root: context.rootDirectory,
         controlRoot: controlRoot,
       );
-      return switch (arguments.first) {
+      return await switch (arguments.first) {
         'check' => _check(service, arguments.skip(1).toList()),
         'dry-run' => _dryRun(service, arguments.skip(1).toList()),
         'commit' => _commit(service, arguments.skip(1).toList()),

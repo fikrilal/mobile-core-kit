@@ -122,7 +122,7 @@ class UserContextService {
           );
         }
 
-        return result.match(
+        return await result.match(
           (failure) async {
             _state.value = _state.value.copyWith(
               lastFailure: failure,

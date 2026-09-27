@@ -522,8 +522,8 @@ class MobilekitCli {
 
     try {
       final profile = parsed.option('profile');
-      if (profile == null) return runner.runDefault();
-      return runner.run(
+      if (profile == null) return await runner.runDefault();
+      return await runner.run(
         DuplicationProfile.values.firstWhere(
           (candidate) => candidate.label == profile,
         ),
