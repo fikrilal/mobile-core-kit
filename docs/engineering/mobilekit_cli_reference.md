@@ -45,6 +45,8 @@ The CLI is private to this repository and is not published to pub.dev.
 | `mobilekit handoff` | Prepare or execute one fresh action-specific handoff. |
 | `mobilekit risk classify` | Conservatively classify current mobile/repository risk. |
 | `mobilekit scaffold feature` | Generate a feature slice. |
+| `mobilekit scaffold data` | Scaffold verified Freezed DTOs and datasource from OpenAPI. |
+| `mobilekit scaffold all` | Scaffold feature skeleton and OpenAPI data layer end-to-end. |
 | `mobilekit duplication check` | Run duplication detection and filtering. |
 | `mobilekit runtime evidence` | Run Maestro YAML or device tests; bind proof with `--task`. |
 
@@ -351,6 +353,8 @@ mobilekit l10n verify path/to/report.json
 
 ## Scaffolding
 
+### `scaffold feature`
+
 ```bash
 mobilekit scaffold feature <name>
 mobilekit scaffold feature <name> --slice <slice>
@@ -359,6 +363,47 @@ mobilekit scaffold feature <name> --dry-run
 
 Feature names must use `snake_case`. `--slice, -s` selects an optional slice
 name; `--dry-run` prints the planned output without writing files.
+
+### `scaffold data`
+
+```bash
+mobilekit scaffold data --feature <name> --operation <id> [options]
+mobilekit scaffold data --list [--filter <keyword>]
+```
+
+Scaffolds verified Freezed DTO models, core endpoint constants, and remote
+datasource methods directly from the repository pinned OpenAPI contract.
+
+Options:
+
+- `--feature, -f <name>` — target feature name in `snake_case` (e.g. `merchant_onboarding`).
+- `--operation, -o <id>` — OpenAPI `operationId` or `"METHOD /path"` (e.g. `merchantOnboarding.applications.submit`).
+- `--openapi-spec <path>` — repository-relative path to OpenAPI specification (defaults to `docs/contracts/openapi/backend.openapi.yaml`).
+- `--list` — list all operations in the OpenAPI contract; optional `--filter <keyword>`.
+- `--dry-run` — print outputs without writing files.
+- `--force` — overwrite existing model files.
+- `--no-codegen` — skip running targeted `build_runner` codegen.
+
+### `scaffold all`
+
+```bash
+mobilekit scaffold all --feature <name> --operation <id> [options]
+mobilekit scaffold all -f <name> -o <id> --dry-run
+```
+
+End-to-end scaffolding: creates the feature architecture skeleton (if not
+already existing) and scaffolds the OpenAPI-driven data layer (Freezed DTOs,
+endpoint constants, and remote datasource methods).
+
+Options:
+
+- `--feature, -f <name>` — feature name in `snake_case` (e.g. `order_tracking`).
+- `--operation, -o <id>` — OpenAPI `operationId` (e.g. `orders.create`).
+- `--slice, -s <name>` — optional slice name (defaults to feature name).
+- `--openapi-spec, -c <path>` — path to OpenAPI specification file (defaults to `docs/contracts/openapi/backend.openapi.yaml`).
+- `--dry-run` — preview all operations without writing files to disk.
+- `--force` — overwrite existing model/DTO files.
+- `--no-codegen` — skip running `build_runner` codegen.
 
 ## Runtime commands
 
