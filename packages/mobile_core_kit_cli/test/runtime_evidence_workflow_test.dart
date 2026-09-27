@@ -708,9 +708,111 @@ void main() {
     expect(logcat.stops, 1);
     expect(File(p.join(artifacts, 'evidence.json')).existsSync(), isTrue);
   });
+
+  test('fails a passed Maestro run when the VM log did not attach', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final errors = StringBuffer();
+    final artifacts = p.join(root.path, '_artifacts', 'missing-vm-log');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          logcatAttacher: RecordingLogcatAttacher(logText: 'I/flutter: boot\n'),
+          output: StringBuffer(),
+          errorOutput: errors,
+        ).run([
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 1);
+    expect(errors.toString(), contains('missing: vm-log-attached'));
+    expect(errors.toString(), isNot(contains('I/flutter: boot')));
+  });
+
+  test(
+    'fails a passed Maestro proof when the journey signal is absent',
+    () async {
+      final root = await _createRepository();
+      addTearDown(() => root.delete(recursive: true));
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      File(p.join(root.path, 'harness', 'oracles.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
+''');
+      final errors = StringBuffer();
+      final artifacts = p.join(root.path, '_artifacts', 'missing-signal');
+      const secret = 'refreshToken-secret-value';
+
+      final result =
+          await RuntimeEvidenceWorkflow(
+            rootDirectory: root,
+            processRunner: FakeRuntimeEvidenceProcessRunner(),
+            bindingResolver: FakeRuntimeEvidenceBindingResolver(
+              root,
+              extraTargets: {'auth.journey': 'maestro/login.yaml'},
+              extraKinds: {'auth.journey': 'maestro-flow'},
+            ),
+            locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+            logcatAttacher: RecordingLogcatAttacher(
+              logText:
+                  '[GoRouter] going to /auth/sign-in\n'
+                  '[network] [DEBUG] POST /auth/password/login → 401\n'
+                  '$secret\n',
+            ),
+            output: StringBuffer(),
+            errorOutput: errors,
+          ).run([
+            '--task',
+            'runtime-task',
+            '--device',
+            'emulator-5554',
+            '--target',
+            'maestro/login.yaml',
+            '--artifacts-dir',
+            artifacts,
+          ]);
+
+      final manifest = File(
+        p.join(artifacts, 'evidence.json'),
+      ).readAsStringSync();
+      expect(result, 1);
+      expect(errors.toString(), contains('missing: login-succeeded'));
+      expect(manifest, contains('"missing": ['));
+      expect(manifest, contains('login-succeeded'));
+      expect(manifest, isNot(contains(secret)));
+      expect(manifest, isNot(contains('POST /auth/password/login')));
+    },
+  );
 }
 
 class RecordingLogcatAttacher implements RuntimeLogcatAttacher {
+  RecordingLogcatAttacher({
+    this.logText = '[GoRouter] setting initial location null\n',
+  });
+
+  final String logText;
   var starts = 0;
   var stops = 0;
 
@@ -718,7 +820,7 @@ class RecordingLogcatAttacher implements RuntimeLogcatAttacher {
   Future<void> start({required String device, required File logFile}) async {
     starts++;
     logFile.parent.createSync(recursive: true);
-    logFile.writeAsStringSync('logcat\n');
+    logFile.writeAsStringSync(logText);
   }
 
   @override

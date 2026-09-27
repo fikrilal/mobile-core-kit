@@ -37,7 +37,9 @@ Prefer the narrowest credible independent boundary:
 1. an existing regression/unit/widget/Bloc test for deterministic behavior;
 2. the pinned OpenAPI contract for endpoint, DTO, and auth-scheme shape;
 3. a registered integration test for device/runtime **wiring**;
-4. a registered `maestro-flow` for a local real-app user journey (not CI);
+4. a registered `maestro-flow` for a local real-app user journey (not CI).
+   The flow declares `logSignals`: an id plus a success substring. Evidence
+   records the ids, not the log line;
 5. a registered golden or metric assertion when pixels or performance are the
    acceptance boundary;
 6. an explicit manual-review procedure only when automation is not credible.

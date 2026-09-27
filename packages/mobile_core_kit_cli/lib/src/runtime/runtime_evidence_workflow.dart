@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart';
 import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_registry.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_binding.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_process.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_log_signals.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_vm_log.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
@@ -240,16 +242,21 @@ class RuntimeEvidenceWorkflow {
       }
       exitCode = failures == 0 ? 0 : 1;
       outcome = failures == 0 ? 'passed' : 'failed';
-      return exitCode;
     } finally {
       await _detachLogcat();
       for (final file in artifacts.logFiles) {
         _boundLog(file);
       }
+      if (exitCode == 0 &&
+          _missingMaestroLogSignals(artifacts, options.targets) > 0) {
+        exitCode = 1;
+        outcome = 'failed';
+      }
       _output.writeln(
         'Maestro iterate $outcome. Logs: ${artifacts.displayDirectory}/logs',
       );
     }
+    return exitCode;
   }
 
   Future<int> _runEvidence(RuntimeEvidenceOptions options) async {
@@ -268,10 +275,11 @@ class RuntimeEvidenceWorkflow {
     var outcome = 'failed';
     var boundary = 'runtime.preflight';
     var exitCode = 1;
+    var maestroSelected = false;
     String envSource = 'unavailable';
     String googleServicesSource = 'unavailable';
     try {
-      final maestroSelected = selectedTargets.keys.any(
+      maestroSelected = selectedTargets.keys.any(
         (id) => binding.runtimeKinds[id] == 'maestro-flow',
       );
       final dartSelected = selectedTargets.keys.any(
@@ -388,7 +396,6 @@ class RuntimeEvidenceWorkflow {
       }
       exitCode = failures == 0 ? 0 : 1;
       outcome = failures == 0 ? 'passed' : 'failed';
-      return exitCode;
     } finally {
       await _detachLogcat();
       for (final mutation in mutations.reversed) {
@@ -396,6 +403,12 @@ class RuntimeEvidenceWorkflow {
       }
       for (final file in artifacts.logFiles) {
         _boundLog(file);
+      }
+      if (maestroSelected &&
+          _annotateMaestroLogSignals(artifacts, results) > 0) {
+        exitCode = 1;
+        outcome = 'failed';
+        boundary = 'runtime.log-signals';
       }
       _writeSummary(
         artifacts,
@@ -423,6 +436,74 @@ class RuntimeEvidenceWorkflow {
         'Mobile evidence $outcome. See: ${artifacts.displayDirectory}/evidence.json',
       );
     }
+    return exitCode;
+  }
+
+  int _missingMaestroLogSignals(
+    _RuntimeEvidenceArtifacts artifacts,
+    List<String> targets,
+  ) {
+    if (_logcatAttacher == null) return 0;
+    final signals = _logSignalsByTarget();
+    final log = _readLogcat(artifacts);
+    var failures = 0;
+    for (final target in targets) {
+      if (!_isMaestroYaml(target)) continue;
+      final report = evaluateMaestroLog(
+        log: log,
+        signals: signals[target] ?? const [],
+      );
+      if (report.passed) continue;
+      failures++;
+      _errorOutput.writeln(
+        'FAIL [runtime.log-signals] $target missing: '
+        '${report.missingIds.join(', ')}',
+      );
+    }
+    return failures;
+  }
+
+  int _annotateMaestroLogSignals(
+    _RuntimeEvidenceArtifacts artifacts,
+    List<_RuntimeTargetResult> results,
+  ) {
+    if (_logcatAttacher == null) return 0;
+    final signals = _logSignalsByTarget();
+    final log = _readLogcat(artifacts);
+    var failures = 0;
+    for (var index = 0; index < results.length; index++) {
+      final result = results[index];
+      if (!_isMaestroYaml(result.target)) continue;
+      final report = evaluateMaestroLog(
+        log: log,
+        signals: signals[result.target] ?? const [],
+      );
+      final failed = result.exitCode == 0 && !report.passed;
+      if (!report.passed) {
+        _errorOutput.writeln(
+          'FAIL [runtime.log-signals] ${result.target} missing: '
+          '${report.missingIds.join(', ')}',
+        );
+      }
+      results[index] = result.withLogSignals(
+        report,
+        exitCode: failed ? 1 : result.exitCode,
+      );
+      if (failed) failures++;
+    }
+    return failures;
+  }
+
+  Map<String, List<MaestroLogSignal>> _logSignalsByTarget() {
+    final registry = File(p.join(rootDirectory.path, oracleRegistryPath));
+    if (!registry.existsSync()) return const {};
+    return OracleRegistry.load(rootDirectory).logSignalsByTarget;
+  }
+
+  String _readLogcat(_RuntimeEvidenceArtifacts artifacts) {
+    final file = artifacts.logFile('logcat');
+    if (!file.existsSync()) return '';
+    return file.readAsStringSync();
   }
 
   bool _isMaestroYaml(String target) {
@@ -574,6 +655,12 @@ class RuntimeEvidenceWorkflow {
   File _resolveFile(String path) =>
       File(p.isAbsolute(path) ? path : p.join(rootDirectory.path, path));
 
+  String _missingSignalSuffix(_RuntimeTargetResult result) {
+    final report = result.logSignals;
+    if (report == null || report.passed) return '';
+    return ' missing ${report.missingIds.join(', ')}';
+  }
+
   void _writeSummary(
     _RuntimeEvidenceArtifacts artifacts, {
     required RuntimeEvidenceBinding binding,
@@ -594,7 +681,8 @@ class RuntimeEvidenceWorkflow {
       '## Registered Results',
       '',
       for (final result in results)
-        '- ${result.exitCode == 0 ? 'PASS' : 'FAIL'} `${result.oracleId}` -> `${result.target}`',
+        '- ${result.exitCode == 0 ? 'PASS' : 'FAIL'} `${result.oracleId}` -> `${result.target}`'
+            '${_missingSignalSuffix(result)}',
     ];
     artifacts.summaryFile.writeAsStringSync('${lines.join('\n')}\n');
   }
@@ -806,18 +894,35 @@ class _RuntimeTargetResult {
     required this.oracleId,
     required this.target,
     required this.exitCode,
+    this.logSignals,
   });
 
   final String oracleId;
   final String target;
   final int exitCode;
+  final MaestroLogSignalReport? logSignals;
+
+  _RuntimeTargetResult withLogSignals(
+    MaestroLogSignalReport report, {
+    required int exitCode,
+  }) {
+    return _RuntimeTargetResult(
+      oracleId: oracleId,
+      target: target,
+      exitCode: exitCode,
+      logSignals: report,
+    );
+  }
 
   Map<String, Object?> toJson() => {
     'oracleId': oracleId,
     'target': target,
     'outcome': exitCode == 0 ? 'passed' : 'failed',
     'exitCode': exitCode,
-    'boundary': 'runtime.integration',
+    'boundary': logSignals != null && !logSignals!.passed
+        ? 'runtime.log-signals'
+        : 'runtime.integration',
+    if (logSignals != null) 'logSignals': logSignals!.toJson(),
   };
 }
 

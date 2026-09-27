@@ -27,8 +27,9 @@ Raw `maestro test` and Maestro MCP are debug only. They never satisfy
 `runtime logs` command.
 
 YAML runs attach `flutter logs` plus the Dart VM Logging stream, then
-stop both. Do not `fvm flutter run` next to Maestro: `launchApp` kills
-that process.
+stop both. A run fails without a developer log line, or without the
+flow's `logSignals` substring from `harness/oracles.yaml`. Do not
+`fvm flutter run` next to Maestro: `launchApp` kills that process.
 
 The `dev` APK must already be installed. `--flavor prod` is rejected.
 

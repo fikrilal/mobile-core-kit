@@ -23,6 +23,9 @@ oracles:
     kind: maestro-flow
     target: maestro/login.yaml
     covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
 ''');
     final controlRoot = Directory(p.join(root.path, '.tmp', 'mobilekit'));
     controlRoot.createSync(recursive: true);

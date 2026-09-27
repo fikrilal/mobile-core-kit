@@ -49,8 +49,11 @@ shells out to `maestro test`; it does not build or `flutter install`.
 Maestro `launchApp` is the driver. YAML runs attach `flutter logs` for
 that device and subscribe to the Dart VM Logging stream (`[GoRouter]`,
 `[SessionManager]`, `[network]`, and the other `dart:developer` logs),
-then stop. Do not `fvm flutter run` alongside Maestro: `launchApp`
-kills it. YAML rules: `docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
+then stop. The run fails when that stream is missing, or when a
+registered flow's `logSignals` substring is absent. `evidence.json`
+records the signal ids only. Do not `fvm flutter run` alongside
+Maestro: `launchApp` kills it. YAML rules:
+`docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
 
 ```bash
 # Iterate. Not handoff.

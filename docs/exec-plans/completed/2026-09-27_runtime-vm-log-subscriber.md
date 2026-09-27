@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** runtime-vm-log-subscriber
-**Status:** active
+**Status:** completed
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** While Maestro evidence is attached, also subscribe to the Dart VM Logging stream and drop repeated FlutterJNI viewport-metrics lines from the local log. Do not launch `flutter run`. No commit, push, or draft PR.

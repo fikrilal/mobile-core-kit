@@ -96,6 +96,9 @@ oracles:
     kind: maestro-flow
     target: maestro/login.yaml
     covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
 ''');
   File(p.join(root.path, 'integration_test', 'auth_test.dart'))
     ..parent.createSync(recursive: true)

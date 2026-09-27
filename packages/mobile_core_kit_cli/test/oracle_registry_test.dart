@@ -39,6 +39,27 @@ void main() {
     );
   });
 
+  test('rejects a maestro flow without logSignals', () async {
+    final root = await _fixture();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    File(p.join(root.path, 'harness', 'oracles.yaml')).writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
+''');
+
+    expect(
+      () => OracleRegistry.load(root),
+      throwsA(_error('oracle.registry-invalid')),
+    );
+  });
+
   test('rejects missing target and malformed registry', () async {
     final root = await _fixture();
     addTearDown(() => root.delete(recursive: true));
