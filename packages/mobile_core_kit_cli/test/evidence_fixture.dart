@@ -7,10 +7,10 @@ void writeEvidenceFixture(Directory root) {
   File(p.join(root.path, sourcePlan))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('Baseline.\n');
-  File(p.join(root.path, 'docs/engineering/harness_operating_evidence.json'))
+  File(p.join(root.path, 'docs/engineering/harness/harness_operating_evidence.json'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('{"schemaVersion":1,"records":[]}\n');
-  File(p.join(root.path, 'docs/engineering/harness_improvements.json'))
+  File(p.join(root.path, 'docs/engineering/harness/harness_improvements.json'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('{"schemaVersion":1,"hypotheses":[]}\n');
   File(p.join(root.path, 'harness/evidence_calibration.json'))

@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** high
 **Authority:** Implement the approved localization enforcement proposal end to end in mobile-core-kit, including the lint contract, behavioral evidence, template policy, version marker, ADR, and documentation; do not modify downstream consumers.
-**Allowed paths:** docs/exec-plans/active/2026-08-16_localization-enforcement.md, docs/exec-plans/completed/2026-08-16_localization-enforcement.md, packages/mobile_core_kit_lints/, packages/mobile_core_kit_cli/lib/src/template/template_manifest.dart, analysis_options.yaml, docs/engineering/localization.md, docs/engineering/localization_playbook.md, ADR/records/0015-localization-user-visible-sinks.md
+**Allowed paths:** docs/exec-plans/active/2026-08-16_localization-enforcement.md, docs/exec-plans/completed/2026-08-16_localization-enforcement.md, packages/mobile_core_kit_lints/, packages/mobile_core_kit_cli/lib/src/template/template_manifest.dart, analysis_options.yaml, docs/engineering/platform/localization.md, docs/engineering/platform/localization_playbook.md, ADR/records/0015-localization-user-visible-sinks.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 4

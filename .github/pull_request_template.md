@@ -48,7 +48,7 @@ Hosted checks:
 - [ ] Tests added/updated where behavior changed
 - [ ] Screenshots/video attached (UI changes)
 - [ ] Logs/error traces attached (runtime or failure-path changes)
-- [ ] Mobile runtime evidence attached for medium/high UI/runtime PRs (see `docs/engineering/mobile_runtime_harness.md`)
+- [ ] Mobile runtime evidence attached for medium/high UI/runtime PRs (see `docs/engineering/harness/mobile_runtime_harness.md`)
 - [ ] Runtime evidence fingerprint matches the final reviewed candidate
 - [ ] No speculative refactor mixed into this PR
 - [ ] Handoff used fresh action-specific evidence and explicit publication authority

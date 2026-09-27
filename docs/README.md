@@ -4,23 +4,23 @@ This repo is intended to be **cloned by product teams**. To keep docs scalable a
 
 ## Where should this doc go?
 
-- `docs/engineering/` — day-to-day guides and patterns you apply while building (UI state, testing, validation, Clean Architecture).
+- `docs/engineering/` — day-to-day guides, grouped by subject: `harness/` (task loop, oracles, runtime, CLI), `architecture/` (layers, validation, UI state), `quality/` (testing), `platform/` (CI, Firebase, localization), and `api/` (request shapes).
   High-signal examples:
-  - `docs/engineering/testing_strategy.md`
-  - `docs/engineering/agent_pr_loop.md`
-  - `docs/engineering/mobilekit_cli_reference.md`
-  - `docs/engineering/parallel_agent_workflow.md`
-  - agent harness measurements: `docs/engineering/harness_baseline.md`
-  - structured task authority and preflight: `docs/engineering/task_authority.md`
-  - bounded task verification and repair: `docs/engineering/controlled_verification_loop.md`
-  - isolated current-agent worktrees: `docs/engineering/current_agent_workspaces.md`
-  - registered independent acceptance evidence: `docs/engineering/behavioral_oracles.md`
-  - task-bound sanitized device evidence: `docs/engineering/mobile_runtime_harness.md`
-  - Maestro YAML subset (allowed/banned commands): `docs/engineering/maestro_flows.md`
-  - queued event intake, read-only maintenance, independent CI, and verified handoff: `docs/engineering/event_maintenance_handoff.md`
-  - calibrated sanitized operating evidence and gate-honesty policy: `docs/engineering/harness_operating_evidence.md`
-  - deterministic, human-terminal harness improvement: `docs/engineering/controlled_harness_improvement.md`
-  - duplication harness overview, profiles, and commands: `docs/engineering/duplication_harness.md`
+  - `docs/engineering/quality/testing_strategy.md`
+  - `docs/engineering/harness/agent_pr_loop.md`
+  - `docs/engineering/harness/mobilekit_cli_reference.md`
+  - `docs/engineering/harness/parallel_agent_workflow.md`
+  - agent harness measurements: `docs/engineering/harness/harness_baseline.md`
+  - structured task authority and preflight: `docs/engineering/harness/task_authority.md`
+  - bounded task verification and repair: `docs/engineering/harness/controlled_verification_loop.md`
+  - isolated current-agent worktrees: `docs/engineering/harness/current_agent_workspaces.md`
+  - registered independent acceptance evidence: `docs/engineering/harness/behavioral_oracles.md`
+  - task-bound sanitized device evidence: `docs/engineering/harness/mobile_runtime_harness.md`
+  - Maestro YAML subset (allowed/banned commands): `docs/engineering/harness/maestro_flows.md`
+  - queued event intake, read-only maintenance, independent CI, and verified handoff: `docs/engineering/harness/event_maintenance_handoff.md`
+  - calibrated sanitized operating evidence and gate-honesty policy: `docs/engineering/harness/harness_operating_evidence.md`
+  - deterministic, human-terminal harness improvement: `docs/engineering/harness/controlled_harness_improvement.md`
+  - duplication harness overview, profiles, and commands: `docs/engineering/harness/duplication_harness.md`
 - `docs/template/` — “what to change when cloning” setup and customization guides (env, deep links, rebrand, and backend integration).
 - `docs/contracts/` — cross-team contracts and guarantees (backend/API semantics, auth rules, error codes, idempotency expectations).
 - `docs/explainers/` — deep dives on “how this works” that are not daily guides (complex flows, tricky components, feature internals).

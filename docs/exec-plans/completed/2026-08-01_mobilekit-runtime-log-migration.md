@@ -112,7 +112,7 @@ session log, and stopped it successfully.
   Flutter arguments, pinned Flutter resolution, and runtime artifact paths.
 - Added detached Dart process handling with injectable process controls for
   deterministic tests.
-- Updated `docs/engineering/mobile_runtime_harness.md` to use the CLI and
+- Updated `docs/engineering/harness/mobile_runtime_harness.md` to use the CLI and
   removed the legacy Flutter log helper.
 - Kept device evidence as a separate runtime CLI workflow.
 

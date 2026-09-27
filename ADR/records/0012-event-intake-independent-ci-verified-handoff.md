@@ -89,7 +89,7 @@ external outcomes. `mobilekit task verify` remains the completion gate.
 
 ## More Information
 
-* [Event, maintenance, CI, and handoff guide](../../docs/engineering/event_maintenance_handoff.md)
-* [Structured task authority](../../docs/engineering/task_authority.md)
-* [Controlled verification loop](../../docs/engineering/controlled_verification_loop.md)
-* [Behavioral oracles](../../docs/engineering/behavioral_oracles.md)
+* [Event, maintenance, CI, and handoff guide](../../docs/engineering/harness/event_maintenance_handoff.md)
+* [Structured task authority](../../docs/engineering/harness/task_authority.md)
+* [Controlled verification loop](../../docs/engineering/harness/controlled_verification_loop.md)
+* [Behavioral oracles](../../docs/engineering/harness/behavioral_oracles.md)

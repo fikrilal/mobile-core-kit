@@ -393,5 +393,5 @@ cubit that emits `failure` and expecting `AppSnackBar`.
 - Login state/cubit: `lib/features/auth/subfeatures/sign_in/presentation/cubit/login/`
 - GET-shaped list: `lib/features/account/subfeatures/security/presentation/pages/me_sessions_page.dart` (load/error body; revoke still uses a listener)
 - Merchant route load: `lib/navigation/merchant_onboarding/merchant_onboarding_routes_list.dart`
-- Validation (VOs, aggregates): `docs/engineering/validation_architecture.md`
+- Validation (VOs, aggregates): `docs/engineering/architecture/validation_architecture.md`
 - Tokens / fields: `lib/core/design_system/`

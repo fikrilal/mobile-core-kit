@@ -53,6 +53,11 @@ A record may be added only when all of these conditions are true:
    marker, CI run ID, candidate revision, and harness revision pass
    `evidence verify`.
 6. Normal source review accepts the ledger change.
+7. `ci.revision` is a commit in this repository and is contained by a
+   remote-tracking branch. An invented hash, or a commit that exists only
+   on this machine, is rejected. `reproduced: true` is still required, and
+   it does not by itself make the ledger eligible. Eligibility stays at
+   five reviewed tasks, two risk classes, and one repair or escalation.
 
 Promotion is an ordinary reviewed source edit. There is intentionally no
 `evidence promote` command: accepting self-asserted review and CI flags through

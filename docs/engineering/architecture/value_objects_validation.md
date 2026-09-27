@@ -195,5 +195,5 @@ A: Normalization belongs in the field VO. The data layer unwraps the already
 normalized value while building the request model; passwords and other
 byte-sensitive values must remain unchanged when their VO policy requires it.
 
-See [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+See [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 for the decision boundary and trade-offs.

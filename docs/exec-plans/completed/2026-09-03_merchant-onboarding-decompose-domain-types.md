@@ -5,7 +5,7 @@
 **Status:** completed
 **Owner:** Antigravity
 **Risk:** high
-**Authority:** Decompose monolithic domain value object and entity grab-bag files into discrete, single-concept files adhering to the repository conventions in docs/engineering/model_entity_guide.md and docs/engineering/project_architecture.md, without altering domain invariants, wire contracts, or UI behavior.
+**Authority:** Decompose monolithic domain value object and entity grab-bag files into discrete, single-concept files adhering to the repository conventions in docs/engineering/architecture/model_entity_guide.md and docs/engineering/architecture/project_architecture.md, without altering domain invariants, wire contracts, or UI behavior.
 **Allowed paths:** docs/exec-plans/active/2026-09-03_merchant-onboarding-decompose-domain-types.md, docs/exec-plans/completed/2026-09-03_merchant-onboarding-decompose-domain-types.md, lib/features/merchant_onboarding/, test/features/merchant_onboarding/, integration_test/merchant_onboarding_live_test.dart
 **Allowed actions:** edit, verify
 **Maximum risk:** high

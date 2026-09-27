@@ -19,11 +19,11 @@ For non-trivial changes, create an execution plan first:
 
 Use these documents together, not interchangeably:
 - operating contract: `AGENTS.md`
-- architecture rules: `docs/engineering/project_architecture.md`
-- mechanical enforcement: `docs/engineering/guardrails.md`
-- runtime evidence: `docs/engineering/mobile_runtime_harness.md`
-- CLI commands: `docs/engineering/mobilekit_cli_reference.md`
-- multi-agent coordination: `docs/engineering/parallel_agent_workflow.md`
+- architecture rules: `docs/engineering/architecture/project_architecture.md`
+- mechanical enforcement: `docs/engineering/harness/guardrails.md`
+- runtime evidence: `docs/engineering/harness/mobile_runtime_harness.md`
+- CLI commands: `docs/engineering/harness/mobilekit_cli_reference.md`
+- multi-agent coordination: `docs/engineering/harness/parallel_agent_workflow.md`
 
 ## Loop Contract
 
@@ -39,16 +39,16 @@ Before implementation starts:
 
 Before verification, commit, push, or draft-PR work, run report-only preflight
 for that exact action. An allowed edit does not authorize external mutation.
-The full contract is in `docs/engineering/task_authority.md`.
+The full contract is in `docs/engineering/harness/task_authority.md`.
 
 When isolation is requested, prepare the current-agent workspace from the
 primary checkout and continue the same session from the reported path. Follow
-`docs/engineering/current_agent_workspaces.md`; do not copy dirty primary files
+`docs/engineering/harness/current_agent_workspaces.md`; do not copy dirty primary files
 or interpret cancellation as permission to terminate the host agent.
 
 An internal event may activate only an already-complete queued V2 plan through
 `mobilekit event intake --once`; it cannot derive scope from issue/webhook
-text. See `docs/engineering/event_maintenance_handoff.md`.
+text. See `docs/engineering/harness/event_maintenance_handoff.md`.
 
 Risk classes:
 - `low`: local UI/refactor/tests/docs with no auth/network/session/runtime/release impact
@@ -80,7 +80,7 @@ dart run mobile_core_kit_cli:mobilekit task verify --task <task-id> --env dev
 
 After a failure, the agent repairs through ordinary tools and runs
 `mobilekit task repair --task <task-id>` before verification can repeat. See
-`docs/engineering/controlled_verification_loop.md`.
+`docs/engineering/harness/controlled_verification_loop.md`.
 
 Targeted checks when the full gate is unnecessary or too expensive:
 
@@ -103,7 +103,7 @@ reshape shared logic, for example:
 - cleanup work prompted by agent-generated duplication
 
 Treat duplication detection as a self-review signal, not a default hard gate.
-See `docs/engineering/duplication_harness.md` for:
+See `docs/engineering/harness/duplication_harness.md` for:
 - when to run the core vs small-helper vs presentation profile
 - how to interpret actionable vs reviewed acceptable groups
 - how to record allowlist entries
@@ -116,7 +116,7 @@ Runtime evidence is expected for:
 - changes where static checks do not prove behavior sufficiently
 
 Collect runtime evidence using:
-- `docs/engineering/mobile_runtime_harness.md`
+- `docs/engineering/harness/mobile_runtime_harness.md`
 
 For a user-facing flow, after `task verify`: `runtime evidence --task
 <id> --target maestro/<flow>.yaml` on a local emulator. Omit `--task`

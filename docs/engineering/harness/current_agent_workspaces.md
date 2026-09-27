@@ -64,6 +64,6 @@ abandoned lock.
 ## Concurrency
 
 Each concurrent agent needs a separate task, branch, and worktree. Authorized
-paths must be disjoint, following `docs/engineering/parallel_agent_workflow.md`.
+paths must be disjoint, following `docs/engineering/harness/parallel_agent_workflow.md`.
 Device/runtime evidence remains single-flight per device. Phase 4 does not add
 emulator pools, per-worktree application IDs, or nested-agent orchestration.

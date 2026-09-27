@@ -120,7 +120,7 @@ canonical full/CI profile.
 
 * `_WIP/2026-08-10_mobile-harness-loop-engineering-research.md`
 * `_WIP/2026-08-10_mobile-loop-engineering-proposal.md`
-* `docs/engineering/project_architecture.md`
-* `docs/engineering/agent_pr_loop.md`
-* `docs/engineering/mobile_runtime_harness.md`
+* `docs/engineering/architecture/project_architecture.md`
+* `docs/engineering/harness/agent_pr_loop.md`
+* `docs/engineering/harness/mobile_runtime_harness.md`
 * `ADR/records/0002-clean-architecture-vertical-slices.md`

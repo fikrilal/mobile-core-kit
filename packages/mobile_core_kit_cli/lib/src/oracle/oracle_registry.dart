@@ -236,12 +236,36 @@ class OracleRegistry {
     } on TaskPlanError catch (error) {
       throw OracleRegistryError('oracle.registry-invalid', error.message);
     }
-    if (!File(p.join(root.path, normalized)).existsSync()) {
+    final targetFile = File(p.join(root.path, normalized));
+    if (!targetFile.existsSync()) {
       throw OracleRegistryError(
         'oracle.target-missing',
         "Oracle '$id' target does not exist: '$normalized'.",
       );
     }
+    if (kind == 'golden-test' && !normalized.endsWith('_test.dart')) {
+      throw OracleRegistryError(
+        'oracle.registry-invalid',
+        "Oracle '$id' golden target must be a *_test.dart file.",
+      );
+    }
+  }
+
+  List<String> pathsForKind(String kind) {
+    if (!_oracleKinds.contains(kind)) {
+      throw OracleRegistryError(
+        'oracle.kind-unknown',
+        "Unknown oracle kind '$kind'.",
+      );
+    }
+    final paths =
+        definitions.values
+            .where((oracle) => oracle.kind == kind)
+            .map((oracle) => oracle.target)
+            .toSet()
+            .toList()
+          ..sort();
+    return paths;
   }
 }
 
@@ -263,7 +287,6 @@ const _oracleKinds = {
   'integration-test',
   'maestro-flow',
   'golden-test',
-  'metric-assertion',
   'regression-test',
   'procedure',
   'manual-review',

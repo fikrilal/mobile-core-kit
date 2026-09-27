@@ -123,9 +123,70 @@ void main() {
   });
 
   test('checked-in ledger remains empty until evidence is promoted', () {
-    final ledger = readOperatingEvidence(Directory.current);
+    final root = Directory.current;
+    final ledger = readOperatingEvidence(root);
+    final assessment = assessOperatingEvidence(ledger);
 
     expect(ledger.records, isEmpty);
+    expect(assessment.eligible, isFalse);
+    expect(assessment.missing, contains('five-reviewed-tasks'));
+  });
+
+  test('reader rejects a revision that is not on a remote', () async {
+    final gitRoot = Directory.systemTemp.createTempSync('evidence-git-');
+    addTearDown(() => gitRoot.deleteSync(recursive: true));
+    await Process.run('git', ['init'], workingDirectory: gitRoot.path);
+    await Process.run('git', [
+      'config',
+      'user.email',
+      'mobilekit@example.invalid',
+    ], workingDirectory: gitRoot.path);
+    await Process.run('git', [
+      'config',
+      'user.name',
+      'Mobilekit Test',
+    ], workingDirectory: gitRoot.path);
+    final planPath =
+        'docs/exec-plans/completed/2026-08-12_test-task-authority.md';
+    final plan = File(p.join(gitRoot.path, planPath))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync(taskPlanFixture(status: 'completed'));
+    await Process.run('git', ['add', planPath], workingDirectory: gitRoot.path);
+    await Process.run('git', [
+      'commit',
+      '-m',
+      'plan',
+    ], workingDirectory: gitRoot.path);
+    final head = await Process.run('git', [
+      'rev-parse',
+      'HEAD',
+    ], workingDirectory: gitRoot.path);
+    final sha = head.stdout.toString().trim();
+    final localRecord = Map<String, Object?>.from(record)
+      ..['completedPlanSha256'] = sha256
+          .convert(plan.readAsBytesSync())
+          .toString()
+      ..['ci'] = {'reproduced': true, 'revision': sha, 'runId': 1}
+      ..['harnessRevision'] = sha;
+    File(p.join(gitRoot.path, operatingEvidencePath))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync(
+        jsonEncode({
+          'schemaVersion': 1,
+          'records': [localRecord],
+        }),
+      );
+
+    expect(
+      () => readOperatingEvidence(gitRoot),
+      throwsA(
+        isA<OperatingEvidenceError>().having(
+          (error) => error.code,
+          'code',
+          'evidence.local-only-revision',
+        ),
+      ),
+    );
   });
 
   test('narrow mutation pilot kills every representative policy mutant', () {

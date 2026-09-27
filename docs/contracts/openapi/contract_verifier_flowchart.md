@@ -4,7 +4,7 @@ Source of truth:
 - `packages/mobile_core_kit_cli/lib/src/contracts/openapi_contract_workflow.dart`
 - `packages/mobile_core_kit_cli/lib/src/verification/verification_profile.dart` (Step `verify.contracts`)
 - `docs/contracts/openapi/README.md`
-- `docs/engineering/behavioral_oracles.md`
+- `docs/engineering/harness/behavioral_oracles.md`
 - `harness/oracles.yaml`
 
 ---

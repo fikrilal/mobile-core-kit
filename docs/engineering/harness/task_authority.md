@@ -30,13 +30,13 @@ Event intake cannot add these grants. It may only activate one checked-in
 queued V2 plan whose full authority already exists. Handoff dry-run rechecks
 the relevant action and freshness but also does not grant permission; the
 mutating handoff requires a separate explicit user decision and one expiring
-action-specific challenge. See `docs/engineering/event_maintenance_handoff.md`.
+action-specific challenge. See `docs/engineering/harness/event_maintenance_handoff.md`.
 
 Oracle IDs resolve from `harness/oracles.yaml`, participate in the immutable
 authority hash, and persist in versioned task state. Missing, unknown, or
 impact-incompatible selections fail at `task begin` and preflight. Older
 completed V2 plans remain readable, but new medium/high-risk tasks cannot omit
-the field. See `docs/engineering/behavioral_oracles.md`.
+the field. See `docs/engineering/harness/behavioral_oracles.md`.
 
 ## Local baseline
 
@@ -81,7 +81,7 @@ state cannot be trusted. On success it prints the task-owned paths, protected
 pre-existing paths, effective risk, and a stable task fingerprint. Preflight
 remains report-only. `mobilekit task verify` is the separate controlled action
 that invokes the canonical risk-selected profile; see
-`docs/engineering/controlled_verification_loop.md`.
+`docs/engineering/harness/controlled_verification_loop.md`.
 
 Do not edit authority metadata in place after `task begin`. If scope or action
 authority must change, make the human decision explicit and establish a new
@@ -90,4 +90,4 @@ baseline. Never delete or rewrite unrelated dirty work to make preflight pass.
 When a task workspace is prepared, its canonical path becomes part of the
 authority evidence. Controlled actions from the primary or another worktree
 fail; state/status remains shared and rediscoverable. See
-`docs/engineering/current_agent_workspaces.md`.
+`docs/engineering/harness/current_agent_workspaces.md`.

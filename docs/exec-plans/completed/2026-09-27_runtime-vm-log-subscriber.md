@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** While Maestro evidence is attached, also subscribe to the Dart VM Logging stream and drop repeated FlutterJNI viewport-metrics lines from the local log. Do not launch `flutter run`. No commit, push, or draft PR.
-**Allowed paths:** docs/exec-plans/active/2026-09-27_runtime-vm-log-subscriber.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/runtime_vm_log_test.dart, packages/mobile_core_kit_cli/pubspec.yaml, packages/mobile_core_kit_cli/pubspec.lock, pubspec.lock, docs/engineering/mobile_runtime_harness.md, docs/engineering/maestro_flows.md, docs/engineering/mobilekit_cli_reference.md, maestro/README.md
+**Allowed paths:** docs/exec-plans/active/2026-09-27_runtime-vm-log-subscriber.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/runtime_vm_log_test.dart, packages/mobile_core_kit_cli/pubspec.yaml, packages/mobile_core_kit_cli/pubspec.lock, pubspec.lock, docs/engineering/harness/mobile_runtime_harness.md, docs/engineering/harness/maestro_flows.md, docs/engineering/harness/mobilekit_cli_reference.md, maestro/README.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

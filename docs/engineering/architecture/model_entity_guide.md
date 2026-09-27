@@ -10,7 +10,7 @@ This guide defines how this repository writes:
 Use this document when the question is:
 - how should this type be written?
 
-Use `docs/engineering/data_domain_guide.md` when the question is:
+Use `docs/engineering/architecture/data_domain_guide.md` when the question is:
 - where should this code live, and who should own the behavior?
 
 ## 1. Core Rules
@@ -338,8 +338,8 @@ If no deterministic invariant exists:
 
 ## 13. Related Docs
 
-- `docs/engineering/data_domain_guide.md`
-- `docs/engineering/project_architecture.md`
-- `docs/engineering/validation_architecture.md`
-- [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+- `docs/engineering/architecture/data_domain_guide.md`
+- `docs/engineering/architecture/project_architecture.md`
+- `docs/engineering/architecture/validation_architecture.md`
+- [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 - `lib/core/domain/README.md`

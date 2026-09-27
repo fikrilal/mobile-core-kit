@@ -198,7 +198,9 @@ jobs:
           strict-env-schema: "false"
 
       - name: Run portable golden evidence
-        run: flutter test test/core/design_system/adaptive/goldens --reporter expanded
+        run: |
+          mapfile -t golden_targets < <(dart run mobile_core_kit_cli:mobilekit oracle paths --kind golden-test)
+          flutter test "${golden_targets[@]}" --reporter expanded
 
       - name: Prove Android debug assembly
         run: flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=ENV=dev
@@ -218,8 +220,10 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
-            flutter test integration_test/auth_happy_path_test.dart -d emulator-5554 --flavor dev --dart-define=ENV=dev
-            flutter test integration_test/startup_deep_link_resume_test.dart -d emulator-5554 --flavor dev --dart-define=ENV=dev
+            mapfile -t integration_targets < <(dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test)
+            for target in "${integration_targets[@]}"; do
+              flutter test "$target" -d emulator-5554 --flavor dev --dart-define=ENV=dev
+            done
 
       - name: Upload golden failures
         if: failure()

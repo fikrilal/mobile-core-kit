@@ -194,6 +194,6 @@ DiscoverFailure _mapApiFailure(ApiFailure f) {
 
 - `docs/engineering/api/api_usage_post.md` — POST variants and patterns.
 - `docs/engineering/api/api_usage_get_paginated.md` — Deep dive on cursor pagination.
-- `docs/engineering/data_domain_guide.md` — Layer responsibilities and canonical patterns.
-- `docs/engineering/ui_state_architecture.md` — `BlocBuilder` + `BlocListener`.
+- `docs/engineering/architecture/data_domain_guide.md` — Layer responsibilities and canonical patterns.
+- `docs/engineering/architecture/ui_state_architecture.md` — `BlocBuilder` + `BlocListener`.
 - `docs/engineering/api/api_pagination_cursor_support.md` — Cursor pagination details.

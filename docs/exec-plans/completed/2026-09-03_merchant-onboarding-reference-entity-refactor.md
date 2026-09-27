@@ -18,7 +18,7 @@ Related issue/PR: N/A
 
 ## Objective
 
-Bring reference data modeling in `lib/features/merchant_onboarding` into strict compliance with the codebase guide docs (`docs/engineering/model_entity_guide.md` and `docs/engineering/project_architecture.md`):
+Bring reference data modeling in `lib/features/merchant_onboarding` into strict compliance with the codebase guide docs (`docs/engineering/architecture/model_entity_guide.md` and `docs/engineering/architecture/project_architecture.md`):
 1. Convert the manually written, verbose `MerchantReferenceData` class into a canonical `@freezed` entity in `lib/features/merchant_onboarding/domain/entity/merchant_reference_data_entity.dart` (along with its option entities: `BusinessTypeOptionEntity`, `BankOptionEntity`, etc.).
 2. Move the typed catalog ID value objects (`BusinessTypeId`, `BankId`, etc.) out of the entity file into `lib/features/merchant_onboarding/domain/value/merchant_reference_ids.dart`.
 3. Delete the non-standard directory `lib/features/merchant_onboarding/domain/reference/`.
@@ -29,7 +29,7 @@ Bring reference data modeling in `lib/features/merchant_onboarding` into strict 
 
 - Architecture constraints:
   - Domain purity: Entities and value objects remain framework-free and pure Dart.
-  - Entity standard: Follow `docs/engineering/model_entity_guide.md` (§3) using Freezed for immutable entities.
+  - Entity standard: Follow `docs/engineering/architecture/model_entity_guide.md` (§3) using Freezed for immutable entities.
 - Product/runtime constraints:
   - Backward compatibility: Retain convenient lookup helpers (e.g. `businessTypeById`, `bankById`) on the entity so existing callers in step widgets and aggregates remain concise and clear.
 - Out of scope:

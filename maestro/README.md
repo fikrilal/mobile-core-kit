@@ -3,8 +3,8 @@
 Black-box YAML against Semantics and visible text. Flutter `Key`s are
 invisible to Maestro.
 
-Rules (allowed/banned commands, selectors): `docs/engineering/maestro_flows.md`.
-Proof contract: `docs/engineering/mobile_runtime_harness.md`.
+Rules (allowed/banned commands, selectors): `docs/engineering/harness/maestro_flows.md`.
+Proof contract: `docs/engineering/harness/mobile_runtime_harness.md`.
 
 Kit CLI is the only completion run. Omit `--task` to iterate:
 
@@ -22,7 +22,7 @@ dart run mobile_core_kit_cli:mobilekit runtime evidence \
 ```
 
 Raw `maestro test` and Maestro MCP do not satisfy `handoff check`.
-See `docs/engineering/mobile_runtime_harness.md`.
+See `docs/engineering/harness/mobile_runtime_harness.md`.
 
 ## Device
 

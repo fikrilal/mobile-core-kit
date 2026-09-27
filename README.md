@@ -5,7 +5,7 @@ Reusable, opinionated boilerplate for Flutter mobile apps with core services, ne
 
 This repo is meant to be cloned and customized as a **starting point** for production apps. It hosts the shared “mobile core” (networking, auth, theming, analytics, config, etc.) that you can reuse across multiple Flutter projects instead of re‑building the same foundations every time.
 
-> Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/firebase_setup.md`).
+> Firebase note: this repo includes **demo Firebase configuration** so the template runs out of the box. Replace it with your own Firebase project before shipping a real app (see `docs/engineering/platform/firebase_setup.md`).
 
 > Status: entering stable phase. The foundation is ready for comfortable use in new mobile products and will continue to receive maintenance and improvements.
 
@@ -109,7 +109,7 @@ This repo uses `custom_lint` to enforce architecture import boundaries in both I
 
 - Rules config: `lint/architecture_lints.yaml`
 - Run locally: `dart run mobile_core_kit_cli:mobilekit lint` (also included in `dart run mobile_core_kit_cli:mobilekit verify --profile fast --env dev`)
-- Guardrails index: `docs/engineering/guardrails.md`
+- Guardrails index: `docs/engineering/harness/guardrails.md`
 - If lints don’t show in the IDE after `flutter pub get`, restart the Dart analysis server:
   - VS Code: `Dart: Restart Analysis Server`
   - Android Studio: `Tools > Dart > Restart Dart Analysis Server`
@@ -122,7 +122,7 @@ Run all checks (config generation + analyze + custom lint + tests + format check
 dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev
 ```
 
-See `docs/engineering/guardrails.md` for the full list of guardrails (lints +
+See `docs/engineering/harness/guardrails.md` for the full list of guardrails (lints +
 CLI verification workflows + scaffolding).
 
 ## Project Structure
@@ -167,7 +167,7 @@ Each main file:
 - During `bootstrapLocator()`, initializes Firebase using `DefaultFirebaseOptions` from `firebase_options.dart`.
 - Configures Crashlytics to collect only in production (best effort).
 
-See `docs/engineering/firebase_setup.md` for full details, including how to point the template at a different Firebase project.
+See `docs/engineering/platform/firebase_setup.md` for full details, including how to point the template at a different Firebase project.
 
 ## Analytics
 
@@ -181,23 +181,24 @@ See `docs/engineering/firebase_setup.md` for full details, including how to poin
   - `lib/features/auth/analytics/auth_analytics_screens.dart`
   - `lib/features/auth/analytics/auth_analytics_targets.dart`
 
-See `docs/engineering/analytics_documentation.md` for patterns and examples.
+See `docs/engineering/platform/analytics_documentation.md` for patterns and examples.
 
 ## Documentation
 
 For deeper details on the architecture and patterns used in this template:
 
-- `docs/engineering/architecture_linting.md`
-- `docs/engineering/mobilekit_cli_reference.md`
-- `docs/engineering/guardrails.md`
-- `docs/engineering/ai_agent_workflow.md`
-- `docs/engineering/project_architecture.md`
-- `docs/engineering/model_entity_guide.md`
-- `docs/engineering/ui_state_architecture.md`
-- `docs/engineering/validation_architecture.md`
-- `docs/engineering/validation_cookbook.md`
-- `docs/engineering/value_objects_validation.md`
-- `docs/engineering/firebase_setup.md`
+- `docs/engineering/architecture/architecture_linting.md`
+- `docs/engineering/harness/mobilekit_cli_reference.md`
+- `docs/engineering/harness/guardrails.md`
+- `docs/engineering/harness/agent_pr_loop.md`
+- `docs/engineering/harness/parallel_agent_workflow.md`
+- `docs/engineering/architecture/project_architecture.md`
+- `docs/engineering/architecture/model_entity_guide.md`
+- `docs/engineering/architecture/ui_state_architecture.md`
+- `docs/engineering/architecture/validation_architecture.md`
+- `docs/engineering/architecture/validation_cookbook.md`
+- `docs/engineering/architecture/value_objects_validation.md`
+- `docs/engineering/platform/firebase_setup.md`
 
 Template customization guides:
 
@@ -207,4 +208,4 @@ Template customization guides:
 
 `AGENTS.md` contains repo-specific tooling notes (verification commands, architecture constraints, authoring preferences).
 
-See `docs/engineering/architecture_linting.md` for details on rule semantics and how to extend them.
+See `docs/engineering/architecture/architecture_linting.md` for details on rule semantics and how to extend them.

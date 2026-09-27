@@ -82,6 +82,6 @@ Define `abstract class AuthRouteProvider { String get forgotPassword; ... }` in 
 
 Linked decisions and resources:
 
-* `docs/engineering/project_architecture.md` explains the modular feature layout that downstream apps may extend into multi‑app workspaces.
+* `docs/engineering/architecture/project_architecture.md` explains the modular feature layout that downstream apps may extend into multi‑app workspaces.
 * `ADR/examples/0001-multi-app-monorepo-architecture.md` sets the broader monorepo direction.
 * Once this ADR is in place we should record per-feature contracts (auth, payment, profile) and add tests or lint rules to ensure shared code no longer imports app routes.

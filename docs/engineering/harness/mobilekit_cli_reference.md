@@ -227,7 +227,7 @@ mobilekit contract openapi sync \
 the impact coverage of active/queued V2 plans. `contract openapi verify`
 validates OpenAPI 3 structure and the locked SHA-256 digest. Sync validates
 before writing, records no source path, and requires explicit acceptance. See
-`docs/engineering/behavioral_oracles.md`.
+`docs/engineering/harness/behavioral_oracles.md`.
 
 ### Operating evidence
 
@@ -244,7 +244,7 @@ counts, observations, and missing eligibility categories without changing
 policy. The non-default mutation pilot proves three representative eligibility
 weakening errors are detected. Promotion remains a separately authorized,
 independently reviewed source edit; the CLI does not ingest agent telemetry or
-self-assert review. See `docs/engineering/harness_operating_evidence.md`.
+self-assert review. See `docs/engineering/harness/harness_operating_evidence.md`.
 
 ### Controlled harness improvement
 
@@ -259,7 +259,7 @@ only categorical reviewed evidence. `shadow` evaluates one approved hypothesis
 against its disjoint later evidence window and makes no mutation. The loop is
 disabled while operating evidence is insufficient; eligibility grants no task
 or publication authority. See
-`docs/engineering/controlled_harness_improvement.md`.
+`docs/engineering/harness/controlled_harness_improvement.md`.
 
 ### Task authority and risk
 
@@ -289,14 +289,14 @@ then invokes the canonical verification owner under the plan timeout. Stable,
 sanitized failure evidence and finite repair counters are stored locally.
 After the conversational agent changes code, `task repair` records whether the
 candidate fingerprint meaningfully changed; it never edits code itself. See
-`docs/engineering/task_authority.md` and
-`docs/engineering/controlled_verification_loop.md`.
+`docs/engineering/harness/task_authority.md` and
+`docs/engineering/harness/controlled_verification_loop.md`.
 
 `task workspace prepare` creates a deterministic `agent/<task-id>` branch and
 linked worktree from the recorded base without copying dirty primary files.
 Task state is shared and rediscoverable from either checkout. Cancellation is
 state-only; cleanup requires an exact, cancelled, clean owned worktree and
-preserves the branch. See `docs/engineering/current_agent_workspaces.md`.
+preserves the branch. See `docs/engineering/harness/current_agent_workspaces.md`.
 
 Supported actions are `edit`, `verify`, `commit`, `push`, and `draft-pr`.
 They are independent grants. Automated path and impact classification can
@@ -315,7 +315,7 @@ complete queued V2 plan, records a private idempotent receipt, and starts the
 normal task boundary. Maintenance accepts no command input and runs only its
 fixed registry; codegen is isolated and tracked source is checked before and
 after. CI classification reads the exact base/head Git revisions and changed
-V2 plans. See `docs/engineering/event_maintenance_handoff.md`.
+V2 plans. See `docs/engineering/harness/event_maintenance_handoff.md`.
 
 ### Verified handoff
 
@@ -339,7 +339,7 @@ requires the dry-run's unexpired one-time value in
 push, and draft-PR approvals are not interchangeable. Merge, deploy, signing,
 migration, release, force push, and ready-for-review transitions are not
 supported. Full syntax and uncertain-outcome handling are documented in
-`docs/engineering/event_maintenance_handoff.md`.
+`docs/engineering/harness/event_maintenance_handoff.md`.
 
 `env verify` accepts repeatable `--env, -e <dev|staging|prod>`, `--all`, and
 `--strict`. Strict checks enforce production invariants for `prod`.
@@ -437,7 +437,7 @@ include `--device`, optional `--task`, repeatable `--target`,
 `maestro-flow`; real env is required), and `--google-services-json`.
 Evidence defaults to `_artifacts/mobile/<timestamp>/evidence.json`; raw
 logs are bounded, ignored, owner-restricted local diagnostics. See
-`docs/engineering/mobile_runtime_harness.md`.
+`docs/engineering/harness/mobile_runtime_harness.md`.
 
 ## Exit codes
 

@@ -10,7 +10,7 @@ oracles:
     covers: [api]
   runtime.mobile-evidence:
     kind: procedure
-    target: docs/engineering/mobile_runtime_harness.md
+    target: docs/engineering/harness/mobile_runtime_harness.md
     covers: [platform]
   auth.integration:
     kind: integration-test
@@ -62,13 +62,17 @@ oracles:
     kind: integration-test
     target: integration_test/startup_deep_link_resume_test.dart
     covers: [navigation]
+  ui.adaptive-goldens:
+    kind: golden-test
+    target: test/core/design_system/adaptive/goldens/adaptive_settings_matrix_golden_test.dart
+    covers: [ui]
   ui.human-review:
     kind: manual-review
-    target: docs/engineering/mobile_runtime_harness.md
+    target: docs/engineering/harness/mobile_runtime_harness.md
     covers: [ui]
   external.human-review:
     kind: manual-review
-    target: docs/engineering/agent_pr_loop.md
+    target: docs/engineering/harness/agent_pr_loop.md
     covers: [external-systems]
   auth.refresh-logout-persistence:
     kind: regression-test

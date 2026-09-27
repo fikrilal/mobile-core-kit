@@ -39,6 +39,41 @@ void main() {
     );
   });
 
+  test('accepts a golden file and rejects a metric kind', () async {
+    final root = await _fixture();
+    addTearDown(() => root.delete(recursive: true));
+    final golden = File(
+      p.join(root.path, 'test', 'goldens', 'sample_golden_test.dart'),
+    )..parent.createSync(recursive: true);
+    golden.writeAsStringSync('void main() {}\n');
+    File(p.join(root.path, 'harness', 'oracles.yaml')).writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  ui.sample-goldens:
+    kind: golden-test
+    target: test/goldens/sample_golden_test.dart
+    covers: [ui]
+''');
+
+    final registry = OracleRegistry.load(root);
+    expect(registry.pathsForKind('golden-test'), [
+      'test/goldens/sample_golden_test.dart',
+    ]);
+
+    File(p.join(root.path, 'harness', 'oracles.yaml')).writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  startup.budget:
+    kind: metric-assertion
+    target: test/goldens/sample_golden_test.dart
+    covers: [ui]
+''');
+    expect(
+      () => OracleRegistry.load(root),
+      throwsA(_error('oracle.registry-invalid')),
+    );
+  });
+
   test('rejects a maestro flow without logSignals', () async {
     final root = await _fixture();
     addTearDown(() => root.delete(recursive: true));

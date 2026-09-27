@@ -40,4 +40,4 @@ Common places to find it:
 - Android: register your package names (including flavor suffixes) and add SHA-1/SHA-256 fingerprints.
 - iOS: run `flutterfire configure` and ensure `GoogleService-Info.plist` + URL schemes are correct.
 
-See `docs/engineering/firebase_setup.md` for the full Firebase wiring guide.
+See `docs/engineering/platform/firebase_setup.md` for the full Firebase wiring guide.

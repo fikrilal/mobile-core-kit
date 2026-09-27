@@ -5,7 +5,7 @@
 **Status:** completed
 **Owner:** Antigravity
 **Risk:** high
-**Authority:** Refactor the merchant onboarding presentation layer from an over-engineered 800-LOC BLoC back to a clean, minimal Cubit adhering to docs/engineering/ui_state_architecture.md §3 ('forms use Cubit'), eliminating 31 redundant event classes (YAGNI/KISS), moving step metadata to MerchantOnboardingStep extension, and keeping OwnerMoveDirection in presentation/models/ without altering business invariants or wire contracts.
+**Authority:** Refactor the merchant onboarding presentation layer from an over-engineered 800-LOC BLoC back to a clean, minimal Cubit adhering to docs/engineering/architecture/ui_state_architecture.md §3 ('forms use Cubit'), eliminating 31 redundant event classes (YAGNI/KISS), moving step metadata to MerchantOnboardingStep extension, and keeping OwnerMoveDirection in presentation/models/ without altering business invariants or wire contracts.
 **Allowed paths:** docs/exec-plans/active/2026-09-03_merchant-onboarding-clean-cubit.md, docs/exec-plans/completed/2026-09-03_merchant-onboarding-clean-cubit.md, lib/features/merchant_onboarding/, lib/navigation/merchant_onboarding/, test/features/merchant_onboarding/, test/core/di/registrars/registrars_smoke_test.dart, integration_test/merchant_onboarding_live_test.dart
 **Allowed actions:** edit, verify
 **Maximum risk:** high
@@ -19,7 +19,7 @@ Related issue/PR: N/A
 ## Objective
 
 Refactor the merchant onboarding multi-step form controller into a clean, concise Cubit:
-1. Adhere to `docs/engineering/ui_state_architecture.md` §3 ("Keep it simple: lists and details use Bloc; forms use Cubit").
+1. Adhere to `docs/engineering/architecture/ui_state_architecture.md` §3 ("Keep it simple: lists and details use Bloc; forms use Cubit").
 2. Delete `merchant_onboarding_event.dart` (eliminating 31 boilerplate event classes that violated YAGNI).
 3. Move wizard step metadata (`stepFieldPaths`, `nextStep`, `previousStep`, `stepForPath`) into `MerchantOnboardingStep` extension on `merchant_onboarding_state.dart`.
 4. Keep `OwnerMoveDirection` in `presentation/models/owner_move_direction.dart`.
@@ -31,7 +31,7 @@ Refactor the merchant onboarding multi-step form controller into a clean, concis
 
 ## Constraints
 
-- Architecture constraints: Follow `docs/engineering/ui_state_architecture.md` (single immutable Freezed state, one-shot effects broadcast stream, concise Cubit).
+- Architecture constraints: Follow `docs/engineering/architecture/ui_state_architecture.md` (single immutable Freezed state, one-shot effects broadcast stream, concise Cubit).
 - Zero comments policy: No single-line or doc comments in `merchant_onboarding` code.
 - Out of scope: Wire payload changes, backend contract changes, UI layout/styling modifications.
 
@@ -110,7 +110,7 @@ Revert working tree to baseline revision.
 
 ## Completion Notes
 
-- Refactored `MerchantOnboardingBloc` to `MerchantOnboardingCubit` adhering to `docs/engineering/ui_state_architecture.md` §3 ("forms use Cubit").
+- Refactored `MerchantOnboardingBloc` to `MerchantOnboardingCubit` adhering to `docs/engineering/architecture/ui_state_architecture.md` §3 ("forms use Cubit").
 - Deleted 31 redundant event classes (`merchant_onboarding_event.dart`), eliminating over 500 lines of boilerplate indirection.
 - Encapsulated step routing and field path metadata in `MerchantOnboardingStep` extensions within `merchant_onboarding_state.dart`.
 - Removed `presentation/bloc/` directory and test bloc directory.

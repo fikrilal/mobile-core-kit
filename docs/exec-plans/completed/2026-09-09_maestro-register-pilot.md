@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Run the local agent journey loop for email/password registration on a local Android emulator against the real dev backend. Bind Maestro evidence via `mobilekit runtime evidence` for `maestro/register.yaml`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
-**Allowed paths:** docs/exec-plans/queued/2026-09-09_maestro-register-pilot.md, docs/exec-plans/active/2026-09-09_maestro-register-pilot.md, docs/exec-plans/completed/2026-09-09_maestro-register-pilot.md, maestro/, harness/oracles.yaml, lib/features/auth/subfeatures/registration/presentation/pages/register_page.dart, docs/engineering/mobile_runtime_harness.md
+**Allowed paths:** docs/exec-plans/queued/2026-09-09_maestro-register-pilot.md, docs/exec-plans/active/2026-09-09_maestro-register-pilot.md, docs/exec-plans/completed/2026-09-09_maestro-register-pilot.md, maestro/, harness/oracles.yaml, lib/features/auth/subfeatures/registration/presentation/pages/register_page.dart, docs/engineering/harness/mobile_runtime_harness.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

@@ -2,11 +2,11 @@
 
 **Plan version:** 2
 **Task ID:** maestro-log-signals
-**Status:** active
+**Status:** completed
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Fail a Maestro evidence run when the Dart VM log did not attach, or when the registered flow's success line is absent. Record only signal ids in evidence.json. No commit, push, or draft PR.
-**Allowed paths:** docs/exec-plans/active/2026-09-27_maestro-log-signals.md, docs/exec-plans/active/2026-09-27_runtime-vm-log-subscriber.md, docs/exec-plans/completed/2026-09-27_runtime-vm-log-subscriber.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/oracle/oracle_registry.dart, packages/mobile_core_kit_cli/test/runtime_log_signals_test.dart, packages/mobile_core_kit_cli/test/runtime_evidence_workflow_test.dart, packages/mobile_core_kit_cli/test/oracle_registry_test.dart, packages/mobile_core_kit_cli/test/runtime_evidence_binding_test.dart, packages/mobile_core_kit_cli/test/completion_evidence_test.dart, harness/oracles.yaml, docs/engineering/mobile_runtime_harness.md, docs/engineering/behavioral_oracles.md, docs/engineering/maestro_flows.md, maestro/README.md
+**Allowed paths:** docs/exec-plans/active/2026-09-27_maestro-log-signals.md, docs/exec-plans/active/2026-09-27_runtime-vm-log-subscriber.md, docs/exec-plans/completed/2026-09-27_runtime-vm-log-subscriber.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/oracle/oracle_registry.dart, packages/mobile_core_kit_cli/test/runtime_log_signals_test.dart, packages/mobile_core_kit_cli/test/runtime_evidence_workflow_test.dart, packages/mobile_core_kit_cli/test/oracle_registry_test.dart, packages/mobile_core_kit_cli/test/runtime_evidence_binding_test.dart, packages/mobile_core_kit_cli/test/completion_evidence_test.dart, harness/oracles.yaml, docs/engineering/harness/mobile_runtime_harness.md, docs/engineering/harness/behavioral_oracles.md, docs/engineering/harness/maestro_flows.md, maestro/README.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

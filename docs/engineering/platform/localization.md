@@ -3,7 +3,7 @@
 This repo uses Flutter’s first‑party localization toolchain (`gen-l10n`) with ARB files and a small, explicit runtime surface.
 
 If you’re looking for day‑to‑day steps (add a string, add a locale, pseudo‑locale QA), see:
-`docs/engineering/localization_playbook.md`
+`docs/engineering/platform/localization_playbook.md`
 
 ---
 

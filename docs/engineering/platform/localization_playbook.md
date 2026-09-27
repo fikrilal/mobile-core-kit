@@ -1,7 +1,7 @@
 # Localization Playbook — Use, Modify, Scale
 
 This is the “how to” companion to the architecture doc:
-`docs/engineering/localization.md`
+`docs/engineering/platform/localization.md`
 
 ---
 

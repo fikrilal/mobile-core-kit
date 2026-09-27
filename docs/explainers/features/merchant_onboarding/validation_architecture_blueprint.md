@@ -529,9 +529,9 @@ owner references, holder-type conditions, declarations, and terms version.
 
 ## Related Repository Decisions
 
-- [Validation architecture](../../../engineering/validation_architecture.md)
-- [UI state architecture](../../../engineering/ui_state_architecture.md)
-- [Testing strategy](../../../engineering/testing_strategy.md)
+- [Validation architecture](../../../engineering/architecture/validation_architecture.md)
+- [UI state architecture](../../../engineering/architecture/ui_state_architecture.md)
+- [Testing strategy](../../../engineering/quality/testing_strategy.md)
 - [ADR 0017: Input cardinality and validation boundaries](../../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 
 This case applies the architecture selectively: raw input is justified by form

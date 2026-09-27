@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Run the local Maestro journey for `maestro/password_reset_request.yaml` on a local Android emulator against the real dev backend. Bind kit-CLI evidence with `runtime evidence --task maestro-password-reset-request`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
-**Allowed paths:** docs/exec-plans/queued/2026-09-11_maestro-password-reset-request.md, docs/exec-plans/active/2026-09-11_maestro-password-reset-request.md, docs/exec-plans/completed/2026-09-11_maestro-password-reset-request.md, maestro/, harness/oracles.yaml, docs/engineering/mobile_runtime_harness.md, lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_request_page.dart, lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart
+**Allowed paths:** docs/exec-plans/queued/2026-09-11_maestro-password-reset-request.md, docs/exec-plans/active/2026-09-11_maestro-password-reset-request.md, docs/exec-plans/completed/2026-09-11_maestro-password-reset-request.md, maestro/, harness/oracles.yaml, docs/engineering/harness/mobile_runtime_harness.md, lib/features/auth/subfeatures/password_recovery/presentation/pages/password_reset_request_page.dart, lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

@@ -19,7 +19,7 @@ push, platform integrations, or medium/high-risk UI interactions.
    preparation options can supply it.
 
 An arbitrary `integration_test` path is not completion evidence. Register and
-authorize the oracle first; see `docs/engineering/behavioral_oracles.md`.
+authorize the oracle first; see `docs/engineering/harness/behavioral_oracles.md`.
 
 ## Deterministic evidence lane
 
@@ -53,7 +53,7 @@ then stop. The run fails when that stream is missing, or when a
 registered flow's `logSignals` substring is absent. `evidence.json`
 records the signal ids only. Do not `fvm flutter run` alongside
 Maestro: `launchApp` kills it. YAML rules:
-`docs/engineering/maestro_flows.md`. Flow map: `maestro/README.md`.
+`docs/engineering/harness/maestro_flows.md`. Flow map: `maestro/README.md`.
 
 ```bash
 # Iterate. Not handoff.
@@ -145,11 +145,11 @@ preflight, or this operating guide. Do not rely on agent memory.
 
 ## Related docs
 
-- `docs/engineering/behavioral_oracles.md`
-- `docs/engineering/task_authority.md`
-- `docs/engineering/agent_pr_loop.md`
-- `docs/engineering/mobilekit_cli_reference.md`
-- `docs/engineering/maestro_flows.md`
+- `docs/engineering/harness/behavioral_oracles.md`
+- `docs/engineering/harness/task_authority.md`
+- `docs/engineering/harness/agent_pr_loop.md`
+- `docs/engineering/harness/mobilekit_cli_reference.md`
+- `docs/engineering/harness/maestro_flows.md`
 - `maestro/README.md`
 
 ## Local acceptance gate
@@ -189,7 +189,7 @@ root. Use this shape, replacing placeholders with real reviewed values:
   },
   "reviews": [{
     "oracleId": "ui.human-review",
-    "target": "docs/engineering/mobile_runtime_harness.md",
+    "target": "docs/engineering/harness/mobile_runtime_harness.md",
     "outcome": "passed",
     "reviewer": "human:reviewer-id",
     "reviewedAt": "2026-09-06T00:00:00Z",

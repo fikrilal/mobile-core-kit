@@ -14,8 +14,8 @@ Important: We use Bloc/Cubit only in presentation. No GetX.
 4. Reusability with discipline. Share only when ≥2 slices need it now.
 5. Evolvability. Scales to extracting large features into local packages.
 6. Presentation uses Bloc/Cubit with a single source of truth per screen.
-7. Enforced boundaries. Import rules are enforced via `custom_lint` (see `docs/engineering/architecture_linting.md`).
-8. Localization-first. User-facing copy lives in ARB (see `docs/engineering/localization.md`).
+7. Enforced boundaries. Import rules are enforced via `custom_lint` (see `docs/engineering/architecture/architecture_linting.md`).
+8. Localization-first. User-facing copy lives in ARB (see `docs/engineering/platform/localization.md`).
 
 ---
 
@@ -257,9 +257,9 @@ Folder rules:
 - Prefer Freezed for entities/values where immutability and equality matter.
 
 See also (validation):
-- docs/engineering/validation_architecture.md:1
-- docs/engineering/value_objects_validation.md:1
-- docs/engineering/validation_cookbook.md:1
+- docs/engineering/architecture/validation_architecture.md:1
+- docs/engineering/architecture/value_objects_validation.md:1
+- docs/engineering/architecture/validation_cookbook.md:1
 
 ---
 
@@ -285,7 +285,7 @@ Mapping & error policy:
   Feature domain can model pagination using `cursor`/`limit` Param VOs.
 
 For the detailed datasource/repository rules, see:
-- `docs/engineering/data_domain_guide.md`
+- `docs/engineering/architecture/data_domain_guide.md`
 
 ---
 
@@ -301,11 +301,11 @@ Contains Bloc/Cubit, state, pages, and feature widgets.
 - No GetX — all new and refactored UI state uses Bloc/Cubit.
 
 See the dedicated UI state guide (`BlocBuilder` + `BlocListener`):
-`docs/engineering/ui_state_architecture.md`
+`docs/engineering/architecture/ui_state_architecture.md`
 
 Form validation references:
-- docs/engineering/validation_architecture.md:1
-- docs/engineering/validation_cookbook.md:1
+- docs/engineering/architecture/validation_architecture.md:1
+- docs/engineering/architecture/validation_cookbook.md:1
 
 Folder rules and conventions:
 - bloc/ vs cubit/: prefer Cubit for ≤3 intents and simple flows; use Bloc for multi‑input orchestration or when using event transformers.

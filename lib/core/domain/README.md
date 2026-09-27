@@ -100,6 +100,6 @@ Move code into `core/domain` only when it is truly foundational.
 
 ## Related docs
 
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/architecture/project_architecture.md`
 - `docs/template/current_user.md`
 - `docs/core/session/README.md`

@@ -7,7 +7,7 @@ Use this document when the question is:
 - where do they live?
 - when should we add a new guardrail?
 
-Use `docs/engineering/agent_pr_loop.md` for the delivery workflow.
+Use `docs/engineering/harness/agent_pr_loop.md` for the delivery workflow.
 
 ## Principles
 
@@ -85,7 +85,7 @@ Examples:
 - service locator usage is limited to composition roots
 
 Source of truth:
-- `docs/engineering/architecture_linting.md`
+- `docs/engineering/architecture/architecture_linting.md`
 
 ### 2. UI/content consistency
 
@@ -133,7 +133,7 @@ Typical path:
 - update `lint/architecture_lints.yaml`
 - or add/extend a custom lint in `packages/mobile_core_kit_lints/`
 - update tests for the lint plugin when needed
-- document stable policy in `docs/engineering/architecture_linting.md`
+- document stable policy in `docs/engineering/architecture/architecture_linting.md`
 
 ### Verify-workflow path
 Use when the rule is repository-wide and better expressed as a command.
@@ -160,7 +160,7 @@ If suppressions become common, fix the rule or the boundary instead.
 
 ## Related Docs
 
-- `docs/engineering/agent_pr_loop.md`
-- `docs/engineering/mobilekit_cli_reference.md`
-- `docs/engineering/architecture_linting.md`
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/harness/agent_pr_loop.md`
+- `docs/engineering/harness/mobilekit_cli_reference.md`
+- `docs/engineering/architecture/architecture_linting.md`
+- `docs/engineering/architecture/project_architecture.md`

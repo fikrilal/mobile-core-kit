@@ -488,5 +488,5 @@ TextField(
 
 This cookbook is intentionally self-contained so you can reuse it across projects without referencing project-specific paths.
 
-See [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+See [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 for the cardinality, cohesion, and invariant decision policy.

@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Run the local agent journey loop for email/password login on a local Android emulator against the real dev backend. Bind Maestro evidence via `mobilekit runtime evidence`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
-**Allowed paths:** docs/exec-plans/queued/2026-09-08_maestro-login-pilot.md, docs/exec-plans/active/2026-09-08_maestro-login-pilot.md, docs/exec-plans/completed/2026-09-08_maestro-login-pilot.md, maestro/, lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart, docs/engineering/mobile_runtime_harness.md
+**Allowed paths:** docs/exec-plans/queued/2026-09-08_maestro-login-pilot.md, docs/exec-plans/active/2026-09-08_maestro-login-pilot.md, docs/exec-plans/completed/2026-09-08_maestro-login-pilot.md, maestro/, lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart, docs/engineering/harness/mobile_runtime_harness.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2
@@ -131,7 +131,7 @@ Before `task begin`:
   handoff clears. `runtime.mobile-evidence` still needs a human
   procedure receipt.
 - 2026-09-09: Promoted twice-seen Maestro gaps into
-  `docs/engineering/mobile_runtime_harness.md` and `maestro/README.md`.
+  `docs/engineering/harness/mobile_runtime_harness.md` and `maestro/README.md`.
   Do not pair evidence with `runtime logs --mode run`. App must already
   be installed. YAML: regex anchors, no `hideKeyboard`, profile gate,
   unique register-then-login. `mobilekit_cli_reference.md` and

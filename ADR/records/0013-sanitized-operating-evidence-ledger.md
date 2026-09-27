@@ -88,7 +88,7 @@ boundaries.
 
 ## More Information
 
-* [Harness operating evidence](../../docs/engineering/harness_operating_evidence.md)
-* [Harness baseline](../../docs/engineering/harness_baseline.md)
-* [Controlled verification loop](../../docs/engineering/controlled_verification_loop.md)
+* [Harness operating evidence](../../docs/engineering/harness/harness_operating_evidence.md)
+* [Harness baseline](../../docs/engineering/harness/harness_baseline.md)
+* [Controlled verification loop](../../docs/engineering/harness/controlled_verification_loop.md)
 * [Agent-first harness decision](0011-agent-first-harness-and-loop-engineering.md)

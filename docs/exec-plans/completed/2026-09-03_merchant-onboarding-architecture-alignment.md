@@ -18,7 +18,7 @@ Related issue/PR: N/A
 
 ## Objective
 
-Bring `lib/features/merchant_onboarding` into compliance with the repository's engineering guides (`docs/engineering/data_domain_guide.md`, `docs/engineering/model_entity_guide.md`, and `docs/engineering/project_architecture.md`):
+Bring `lib/features/merchant_onboarding` into compliance with the repository's engineering guides (`docs/engineering/architecture/data_domain_guide.md`, `docs/engineering/architecture/model_entity_guide.md`, and `docs/engineering/architecture/project_architecture.md`):
 1. Eliminate standalone mapper files in `data/mapper/` by collocating model-to-domain conversion (`toDomain()`) on remote models and aggregate-to-request mapping (`fromApplication(...)`) as a factory on the submit request model.
 2. Eliminate the pure pass-through `LoadMerchantReferenceDataUseCase` in accordance with `data_domain_guide.md` Section 11, having `MerchantOnboardingCubit` consume `MerchantOnboardingRepository.loadReferenceData()` directly.
 3. Extract failure mapping and backend error codes out of `MerchantOnboardingRepositoryImpl` into `data/error/merchant_onboarding_failure_mapper.dart` and `data/error/merchant_onboarding_error_codes.dart`.
@@ -30,8 +30,8 @@ Bring `lib/features/merchant_onboarding` into compliance with the repository's e
 
 - Architecture constraints:
   - Preserve the Clean Architecture and Vertical Slices boundary: `Domain` stays pure Dart and framework-free; `Data` owns serialization, network, and error mapping; `Presentation` consumes domain types and use cases/repositories via DI.
-  - Follow `docs/engineering/model_entity_guide.md`: request models mirror backend schema, response models own `toDomain()` / `toEntity()`, Freezed + json_serializable with generated `*.freezed.dart` and `*.g.dart`.
-  - Follow `docs/engineering/data_domain_guide.md`: no separate mapper files for pure structural conversions; no pass-through use cases; failure mapping belongs in `data/error/`.
+  - Follow `docs/engineering/architecture/model_entity_guide.md`: request models mirror backend schema, response models own `toDomain()` / `toEntity()`, Freezed + json_serializable with generated `*.freezed.dart` and `*.g.dart`.
+  - Follow `docs/engineering/architecture/data_domain_guide.md`: no separate mapper files for pure structural conversions; no pass-through use cases; failure mapping belongs in `data/error/`.
   - Follow canonical repository error handling: use `toEitherWithFallback(...)` on `ApiResponse<T>`, map left using `mapMerchantOnboardingFailure`, catch unexpected errors with `MerchantUnexpectedFailure`.
 - Product/runtime constraints:
   - Network wire schema must remain byte-identical with `backend.openapi.yaml` (integer basis points for ownership, string with leading zeroes for bank account, same JSON keys).

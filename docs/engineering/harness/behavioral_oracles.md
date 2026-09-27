@@ -40,8 +40,9 @@ Prefer the narrowest credible independent boundary:
 4. a registered `maestro-flow` for a local real-app user journey (not CI).
    The flow declares `logSignals`: an id plus a success substring. Evidence
    records the ids, not the log line;
-5. a registered golden or metric assertion when pixels or performance are the
-   acceptance boundary;
+5. a registered `golden-test` when pixels are the acceptance boundary. There
+   is no `metric-assertion` kind: this repo does not enforce a numeric
+   runtime threshold;
 6. an explicit manual-review procedure only when automation is not credible.
 
 Do not register placeholder files, broad directories, arbitrary shell
@@ -77,7 +78,7 @@ Completion-grade runtime evidence can execute `integration-test` and
 `--target` may narrow that set; it cannot introduce an unregistered path.
 Device execution remains explicit and single-flight. `maestro-flow` is local
 agent journey proof: not CI, not Maestro Cloud. See
-`docs/engineering/mobile_runtime_harness.md`.
+`docs/engineering/harness/mobile_runtime_harness.md`.
 
 ## Match acceptance scenarios to assertions
 

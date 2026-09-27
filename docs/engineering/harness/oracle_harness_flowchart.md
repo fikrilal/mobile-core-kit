@@ -9,7 +9,7 @@ Source of truth:
 - `packages/mobile_core_kit_cli/lib/src/task/task_plan.dart` (`TaskAction`, `TaskBoundaries`)
 - `packages/mobile_core_kit_cli/lib/src/runtime/runtime_evidence_binding.dart`
 - `packages/mobile_core_kit_cli/lib/src/verification/verification_profile.dart`
-- `docs/engineering/behavioral_oracles.md`
+- `docs/engineering/harness/behavioral_oracles.md`
 - `harness/oracles.yaml`
 
 ---
@@ -134,7 +134,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    Registry["harness/oracles.yaml<br/>(7 registered oracles)"] --> BeginGate{"mobilekit task begin<br/>Coverage & target check"}
+    Registry["harness/oracles.yaml<br/>(checked-in registry)"] --> BeginGate{"mobilekit task begin<br/>Coverage & target check"}
     Plan["V2 Plan<br/>Impacts + Oracle IDs"] --> BeginGate
 
     BeginGate -->|"gap"| Reject["FAIL (exit 1)<br/>plan-empty / unknown / missing"]

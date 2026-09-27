@@ -7,6 +7,46 @@
       "reason": "Distinct backend contracts and distinct user DTO types; shared token/session conversion alone is not worth forcing a common DTO abstraction.",
       "reviewedOn": "2026-04-19",
       "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/core/infra/network/download/dio_presigned_download_client.dart",
+      "secondPath": "lib/core/infra/network/upload/dio_presigned_upload_client.dart",
+      "category": "parallel_client",
+      "reason": "Presigned download and upload clients share progress and error handling. A shared helper is a separate refactor, not a silent clone of one feature into another.",
+      "reviewedOn": "2026-09-27",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/core/infra/network/download/dio_presigned_download_client.dart",
+      "secondPath": "lib/core/infra/network/exceptions/api_failure.dart",
+      "category": "error_mapping",
+      "reason": "The download client and ApiFailure both map Dio failures. They are not the same type and should not be merged.",
+      "reviewedOn": "2026-09-27",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/auth/domain/value/login_credentials.dart",
+      "secondPath": "lib/features/auth/domain/value/registration_credentials.dart",
+      "category": "value_object",
+      "reason": "Login and registration credentials are distinct value objects with parallel field checks. Combining them would hide which flow owns the fields.",
+      "reviewedOn": "2026-09-27",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/account/subfeatures/profile/domain/value/family_name.dart",
+      "secondPath": "lib/features/account/subfeatures/profile/domain/value/given_name.dart",
+      "category": "value_object",
+      "reason": "Family name and given name are separate domain values with the same shape. One type would erase the distinction the API requires.",
+      "reviewedOn": "2026-09-27",
+      "status": "reviewed_acceptable"
+    },
+    {
+      "firstPath": "lib/features/account/subfeatures/profile/domain/value/family_name.dart",
+      "secondPath": "lib/features/auth/domain/value/display_name.dart",
+      "category": "value_object",
+      "reason": "Family name and display name are different concepts that happen to validate a trimmed string the same way.",
+      "reviewedOn": "2026-09-27",
+      "status": "reviewed_acceptable"
     }
   ]
 }

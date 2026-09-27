@@ -45,5 +45,5 @@ Example split:
 
 ## Related docs
 
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/architecture/project_architecture.md`
 - `ADR/records/0009-graduated-feature-decomposition.md`

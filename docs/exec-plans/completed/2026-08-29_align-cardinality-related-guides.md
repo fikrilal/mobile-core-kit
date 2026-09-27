@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** low
 **Authority:** Align the API POST and testing guides with ADR 0017's scalar/VO/input/aggregate policy, without changing historical plans, production code, or tests.
-**Allowed paths:** docs/exec-plans/active/2026-08-29_align-cardinality-related-guides.md, docs/exec-plans/completed/2026-08-29_align-cardinality-related-guides.md, docs/engineering/api/api_usage_post.md, docs/engineering/testing_strategy.md
+**Allowed paths:** docs/exec-plans/active/2026-08-29_align-cardinality-related-guides.md, docs/exec-plans/completed/2026-08-29_align-cardinality-related-guides.md, docs/engineering/api/api_usage_post.md, docs/engineering/quality/testing_strategy.md
 **Allowed actions:** edit, verify
 **Maximum risk:** low
 **Repair limit:** 1

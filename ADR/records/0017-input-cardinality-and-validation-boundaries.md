@@ -148,6 +148,6 @@ Compliance is confirmed when:
 ## More Information
 
 * [Superseded ADR 0016](0016-validated-form-boundaries.md)
-* [Validation architecture](../../docs/engineering/validation_architecture.md)
-* [Value Objects and form validation](../../docs/engineering/value_objects_validation.md)
-* [Validation cookbook](../../docs/engineering/validation_cookbook.md)
+* [Validation architecture](../../docs/engineering/architecture/validation_architecture.md)
+* [Value Objects and form validation](../../docs/engineering/architecture/value_objects_validation.md)
+* [Validation cookbook](../../docs/engineering/architecture/validation_cookbook.md)

@@ -47,9 +47,9 @@ in place.
 - [x] Update `.github/pull_request_template.md`.
 - [x] Update `.github/workflows/android.yml`.
 - [x] Update `.github/actions/flutter-bootstrap/action.yml` where relevant.
-- [x] Update `docs/engineering/guardrails.md`.
-- [x] Update `docs/engineering/agent_pr_loop.md`.
-- [x] Update `docs/engineering/duplication_harness.md`.
+- [x] Update `docs/engineering/harness/guardrails.md`.
+- [x] Update `docs/engineering/harness/agent_pr_loop.md`.
+- [x] Update `docs/engineering/harness/duplication_harness.md`.
 - [x] Update any additional references found by searching old public command strings.
 - [x] Delete old public script wrappers after confirming equivalent `mobilekit` commands exist.
 - [x] Keep internal files required by lints, config generation, duplication profiles, or report filtering.

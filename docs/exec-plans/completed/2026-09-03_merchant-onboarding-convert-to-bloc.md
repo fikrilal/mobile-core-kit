@@ -5,7 +5,7 @@
 **Status:** completed
 **Owner:** Antigravity
 **Risk:** high
-**Authority:** Convert the multi-step merchant onboarding presentation layer from a monolithic Cubit to an event-driven BLoC (MerchantOnboardingBloc) following docs/engineering/ui_state_architecture.md §3 and §5, extracting OwnerMoveDirection to its own file, and updating DI, router, page, step widgets, and tests without changing wire contracts or UI behavior.
+**Authority:** Convert the multi-step merchant onboarding presentation layer from a monolithic Cubit to an event-driven BLoC (MerchantOnboardingBloc) following docs/engineering/architecture/ui_state_architecture.md §3 and §5, extracting OwnerMoveDirection to its own file, and updating DI, router, page, step widgets, and tests without changing wire contracts or UI behavior.
 **Allowed paths:** docs/exec-plans/active/2026-09-03_merchant-onboarding-convert-to-bloc.md, docs/exec-plans/completed/2026-09-03_merchant-onboarding-convert-to-bloc.md, lib/features/merchant_onboarding/, lib/navigation/merchant_onboarding/, test/features/merchant_onboarding/, test/core/di/registrars/registrars_smoke_test.dart, integration_test/merchant_onboarding_live_test.dart
 **Allowed actions:** edit, verify
 **Maximum risk:** high
@@ -19,7 +19,7 @@ Related issue/PR: N/A
 ## Objective
 
 Convert the merchant onboarding multi-step form to an event-driven `MerchantOnboardingBloc` under `lib/features/merchant_onboarding/presentation/bloc/merchant_onboarding/`:
-1. Follow `docs/engineering/ui_state_architecture.md` (§3 and §5) which prescribes `Bloc` for multi-step wizards and branching flows.
+1. Follow `docs/engineering/architecture/ui_state_architecture.md` (§3 and §5) which prescribes `Bloc` for multi-step wizards and branching flows.
 2. Define explicit typed events in `merchant_onboarding_event.dart`.
 3. Extract `OwnerMoveDirection` to `presentation/models/owner_move_direction.dart`.
 4. Migrate `merchant_onboarding_state.dart` and `merchant_onboarding_effect.dart` into `presentation/bloc/merchant_onboarding/`.
@@ -31,7 +31,7 @@ Convert the merchant onboarding multi-step form to an event-driven `MerchantOnbo
 
 ## Constraints
 
-- Architecture constraints: Follow `docs/engineering/ui_state_architecture.md` (single immutable state snapshot, one-shot effects broadcast stream, explicit typed events).
+- Architecture constraints: Follow `docs/engineering/architecture/ui_state_architecture.md` (single immutable state snapshot, one-shot effects broadcast stream, explicit typed events).
 - Zero comments policy: No single-line or doc comments in `merchant_onboarding` code.
 - Out of scope: Wire payload changes, backend contract changes, UI theme or layout modifications.
 
@@ -113,7 +113,7 @@ Revert working tree to baseline revision.
 
 ## Completion Notes
 
-- Converted `MerchantOnboardingCubit` to event-driven `MerchantOnboardingBloc` matching `docs/engineering/ui_state_architecture.md` §3 & §5.
+- Converted `MerchantOnboardingCubit` to event-driven `MerchantOnboardingBloc` matching `docs/engineering/architecture/ui_state_architecture.md` §3 & §5.
 - Created `lib/features/merchant_onboarding/presentation/models/owner_move_direction.dart`.
 - Created discrete events in `lib/features/merchant_onboarding/presentation/bloc/merchant_onboarding/merchant_onboarding_event.dart`.
 - Migrated state and effect files to `lib/features/merchant_onboarding/presentation/bloc/merchant_onboarding/`.

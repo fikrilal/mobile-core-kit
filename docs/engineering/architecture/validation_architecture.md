@@ -1,6 +1,6 @@
 # Validation Architecture — Bloc‑Driven, Layered, Predictable
 
-A universal guide for input validation across features with Bloc/Cubit in presentation and Value Objects (VOs) in domain. This pairs with `docs/engineering/ui_state_architecture.md` and complements `docs/engineering/value_objects_validation.md`.
+A universal guide for input validation across features with Bloc/Cubit in presentation and Value Objects (VOs) in domain. This pairs with `docs/engineering/architecture/ui_state_architecture.md` and complements `docs/engineering/architecture/value_objects_validation.md`.
 
 Goals:
 - Single source of truth for rules in the domain layer (Value Objects).
@@ -34,7 +34,7 @@ lib/features/<feature>/
     repository/            # Map server-side messages → domain failures
 ```
 
-See also: `docs/engineering/project_architecture.md`.
+See also: `docs/engineering/architecture/project_architecture.md`.
 
 ## 3) Layers & Responsibilities
 
@@ -88,7 +88,7 @@ Typical flow for a form field:
 This gives fast feedback without compromising correctness if UI code is bypassed.
 
 The template-level decision matrix and applicability boundary are recorded in
-[ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md).
+[ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md).
 
 ### Choosing the smallest useful boundary
 
@@ -210,10 +210,10 @@ Practical pattern:
   - `lib/features/auth/subfeatures/sign_in/presentation/pages/sign_in_page.dart:1`
 
 - UI state guide (complementary)
-  - `docs/engineering/ui_state_architecture.md:1`
+  - `docs/engineering/architecture/ui_state_architecture.md:1`
 
 - Portable examples (copy‑ready snippets)
-  - `docs/engineering/validation_cookbook.md:1`
+  - `docs/engineering/architecture/validation_cookbook.md:1`
 
 ## 11) Anti‑Patterns to Avoid
 
@@ -227,4 +227,4 @@ Practical pattern:
 
 ---
 
-For deeper VO details and examples, see `docs/engineering/value_objects_validation.md`.
+For deeper VO details and examples, see `docs/engineering/architecture/value_objects_validation.md`.

@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Run the local Maestro journey for `maestro/merchant_onboarding.yaml` on a local Android emulator against the real dev backend. Bind kit-CLI evidence with `runtime evidence --task maestro-merchant-onboarding`. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
-**Allowed paths:** docs/exec-plans/queued/2026-09-11_maestro-merchant-onboarding.md, docs/exec-plans/active/2026-09-11_maestro-merchant-onboarding.md, docs/exec-plans/completed/2026-09-11_maestro-merchant-onboarding.md, maestro/, harness/oracles.yaml, docs/engineering/mobile_runtime_harness.md, lib/features/merchant_onboarding/presentation/, lib/features/home/presentation/pages/home_page.dart
+**Allowed paths:** docs/exec-plans/queued/2026-09-11_maestro-merchant-onboarding.md, docs/exec-plans/active/2026-09-11_maestro-merchant-onboarding.md, docs/exec-plans/completed/2026-09-11_maestro-merchant-onboarding.md, maestro/, harness/oracles.yaml, docs/engineering/harness/mobile_runtime_harness.md, lib/features/merchant_onboarding/presentation/, lib/features/home/presentation/pages/home_page.dart
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

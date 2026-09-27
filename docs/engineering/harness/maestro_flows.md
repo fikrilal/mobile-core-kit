@@ -6,7 +6,7 @@ This page is the **repo subset**. Do not copy every command from upstream
 into YAML.
 
 Flow inventory: `maestro/README.md`. Proof contract:
-`docs/engineering/mobile_runtime_harness.md`.
+`docs/engineering/harness/mobile_runtime_harness.md`.
 
 ## Proof vs iterate
 

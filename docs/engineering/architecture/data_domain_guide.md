@@ -10,7 +10,7 @@ Use this document when deciding:
 - how remote/local persistence should map into domain objects
 
 For the exact shape of models and entities, see:
-- `docs/engineering/model_entity_guide.md`
+- `docs/engineering/architecture/model_entity_guide.md`
 
 ## Goals
 
@@ -94,7 +94,7 @@ Rule:
 
 See also:
 - `lib/core/domain/README.md`
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/architecture/project_architecture.md`
 
 ## 3. Datasource Rules
 
@@ -211,7 +211,7 @@ General rule:
 - repositories orchestrate when multiple models or additional metadata need to be combined
 
 For detailed model/entity authoring rules, see:
-- `docs/engineering/model_entity_guide.md`
+- `docs/engineering/architecture/model_entity_guide.md`
 
 ## 5. Repository Rules
 
@@ -444,7 +444,7 @@ forwarder.
 Do not add use cases only for ceremony.
 
 For request boundaries, follow
-[ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md):
+[ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md):
 use a raw scalar -> VO for one invariant, `XInput` -> validated aggregate for
 several cohesive invariants, or a scalar/input/command when no invariant needs
 proof. Grouping and validation are separate decisions.
@@ -508,9 +508,9 @@ When adding new code, ask:
 
 ## 14. Related Docs
 
-- `docs/engineering/model_entity_guide.md`
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/architecture/model_entity_guide.md`
+- `docs/engineering/architecture/project_architecture.md`
 - `docs/engineering/api/api_error_handling_contract.md`
 - `docs/engineering/api/api_pagination_cursor_support.md`
-- [ADR 0017](../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
+- [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md)
 - `lib/core/domain/README.md`

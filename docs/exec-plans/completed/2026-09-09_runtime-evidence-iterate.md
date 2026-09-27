@@ -6,7 +6,7 @@
 **Owner:** fikrilal
 **Risk:** high
 **Authority:** Implement `_WIP/2026-09-09_runtime-journey-cli.md`: optional `--task` on `runtime evidence` for Maestro YAML, auto-attach `flutter logs` for the Maestro process, delete the public `runtime logs` command. No new kit verb. No commit, push, or draft-PR. No CI, Maestro Cloud, or MCP-as-proof.
-**Allowed paths:** docs/exec-plans/queued/2026-09-09_runtime-evidence-iterate.md, docs/exec-plans/active/2026-09-09_runtime-evidence-iterate.md, docs/exec-plans/completed/2026-09-09_runtime-evidence-iterate.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/runtime_evidence_workflow_test.dart, packages/mobile_core_kit_cli/test/runtime_log_workflow_test.dart, packages/mobile_core_kit_cli/test/mobilekit_cli_test.dart, docs/engineering/mobile_runtime_harness.md, docs/engineering/mobilekit_cli_reference.md, docs/engineering/agent_pr_loop.md, maestro/README.md
+**Allowed paths:** docs/exec-plans/queued/2026-09-09_runtime-evidence-iterate.md, docs/exec-plans/active/2026-09-09_runtime-evidence-iterate.md, docs/exec-plans/completed/2026-09-09_runtime-evidence-iterate.md, packages/mobile_core_kit_cli/lib/src/runtime/, packages/mobile_core_kit_cli/lib/src/cli/mobilekit_cli.dart, packages/mobile_core_kit_cli/test/runtime_evidence_workflow_test.dart, packages/mobile_core_kit_cli/test/runtime_log_workflow_test.dart, packages/mobile_core_kit_cli/test/mobilekit_cli_test.dart, docs/engineering/harness/mobile_runtime_harness.md, docs/engineering/harness/mobilekit_cli_reference.md, docs/engineering/harness/agent_pr_loop.md, maestro/README.md
 **Allowed actions:** edit, verify
 **Maximum risk:** high
 **Repair limit:** 2

@@ -43,8 +43,8 @@ raw nested input
 ## Constraints
 
 - Architecture constraints:
-  - Follow ADR 0017 and `docs/engineering/validation_architecture.md`.
-  - Follow `docs/engineering/ui_state_architecture.md` for Cubit state and one-shot effects.
+  - Follow ADR 0017 and `docs/engineering/architecture/validation_architecture.md`.
+  - Follow `docs/engineering/architecture/ui_state_architecture.md` for Cubit state and one-shot effects.
   - Keep presentation input, validated domain values, and data representations distinct.
   - The submit use case is the non-bypassable final local validation gate.
   - The repository submit method accepts only a fully validated application.
@@ -325,7 +325,7 @@ deep-link, and resume behavior remains intact. The registered
 - no raw sensitive values in screenshots, logs, or recorded artifacts.
 
 Store only sanitized evidence allowed by
-`docs/engineering/mobile_runtime_harness.md`. If no compatible device exists,
+`docs/engineering/harness/mobile_runtime_harness.md`. If no compatible device exists,
 record the exact limitation and do not claim runtime success.
 
 ## Rollback

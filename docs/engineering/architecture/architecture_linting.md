@@ -179,7 +179,7 @@ Typical path:
 
 ## Related Docs
 
-- `docs/engineering/project_architecture.md`
-- `docs/engineering/guardrails.md`
-- `docs/engineering/mobilekit_cli_reference.md`
-- `docs/engineering/data_domain_guide.md`
+- `docs/engineering/architecture/project_architecture.md`
+- `docs/engineering/harness/guardrails.md`
+- `docs/engineering/harness/mobilekit_cli_reference.md`
+- `docs/engineering/architecture/data_domain_guide.md`

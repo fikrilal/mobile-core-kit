@@ -5,7 +5,7 @@ import 'package:mobile_core_kit_cli/src/evidence/operating_evidence.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:path/path.dart' as p;
 
-const harnessImprovementPath = 'docs/engineering/harness_improvements.json';
+const harnessImprovementPath = 'docs/engineering/harness/harness_improvements.json';
 
 class HarnessImprovementError implements Exception {
   const HarnessImprovementError(this.code, this.message);

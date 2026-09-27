@@ -156,14 +156,7 @@ class MobilekitCli {
         workflow: (context, workflowArguments) =>
             KnowledgeWorkflow(context).run(workflowArguments),
       ),
-      'oracle' => _runGroupedWorkflow(
-        group: 'oracle',
-        subcommand: 'verify',
-        arguments: arguments.skip(1).toList(),
-        usage: 'Usage: mobilekit oracle verify',
-        workflow: (context, workflowArguments) =>
-            OracleWorkflow(context).run(workflowArguments),
-      ),
+      'oracle' => _runOracle(arguments.skip(1).toList()),
       'evidence' => _runWorkflow(
         command: 'evidence',
         arguments: arguments.skip(1).toList(),
@@ -250,6 +243,40 @@ class MobilekitCli {
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
+  }
+
+  Future<int> _runOracle(List<String> arguments) async {
+    const usage =
+        'Usage: mobilekit oracle verify | '
+        'oracle paths --kind <kind>';
+    if (arguments.isEmpty) {
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    if (_isHelp(arguments.first)) {
+      _writeCommandUsage(_output, usage);
+      return 0;
+    }
+    if (arguments.first == 'verify') {
+      return _runWorkflow(
+        command: 'oracle verify',
+        arguments: arguments.skip(1).toList(),
+        usage: usage,
+        workflow: (context) => OracleWorkflow(context).run(const []),
+      );
+    }
+    if (arguments.first == 'paths') {
+      return _runWorkflow(
+        command: 'oracle paths',
+        arguments: arguments.skip(1).toList(),
+        usage: usage,
+        workflow: (context) =>
+            OracleWorkflow(context).paths(arguments.skip(1).toList()),
+      );
+    }
+    _errorOutput.writeln("ERROR: Unknown oracle command '${arguments.first}'.");
+    _writeCommandUsage(_errorOutput, usage);
+    return 2;
   }
 
   Future<int> _runContract(List<String> arguments) async {

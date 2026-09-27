@@ -12,7 +12,7 @@ Use this document when the question is:
 - what is actionable debt vs acceptable parallel structure?
 - how do I add an allowlist entry?
 
-Use `docs/engineering/agent_pr_loop.md` for the broader delivery workflow.
+Use `docs/engineering/harness/agent_pr_loop.md` for the broader delivery workflow.
 
 ## Why This Exists
 
@@ -332,7 +332,7 @@ Implementation and config:
 - `duplication/presentation_duplication_allowlist.json`
 
 Workflow docs:
-- `docs/engineering/agent_pr_loop.md`
-- `docs/engineering/guardrails.md`
+- `docs/engineering/harness/agent_pr_loop.md`
+- `docs/engineering/harness/guardrails.md`
 - `docs/exec-plans/active/2026-04-19_duplication-harness-phase2.md`
 - `docs/exec-plans/active/2026-04-19_flutter-presentation-duplication.md`
