@@ -71,3 +71,8 @@ fvm flutter test --coverage <all non-golden test files>
 Phase 1 intentionally does not set new duration, coverage, duplication, or file
 size budgets. Coverage remains above the existing 55% CI floor. Later phases
 may select or calibrate additional gates only from reviewed task outcomes.
+
+The duplication rows above are the 2026-08-10 observation, when both profiles
+exited 0. `core` is now blocking: actionable groups exit 1 inside
+`verify --profile full` and `verify --profile ci`. `small-helpers` stays a
+report. See `duplication_harness.md`.

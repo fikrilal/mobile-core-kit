@@ -45,22 +45,23 @@ flowchart TB
         FHelper -->|"unregistered pair"| A2["Actionable duplicate group"]
     end
 
-    Exit0["EXIT 0 — ALWAYS (review signal)<br/>message: add to allowlist (with review reason)<br/>or refactor.<br/>fatalFound flag exists but is NEVER set by the CLI;<br/>only unit tests exercise exit 1"]
+    ExitCore["EXIT 1 — core actionable groups<br/>the runner sets fatalFound for core"]
+    ExitAdvisory["EXIT 0 — reviewed groups, and<br/>actionable small-helpers or presentation<br/>message: add to allowlist (with review reason)<br/>or refactor"]
 
-    FailPaths["Actual non-zero exits:<br/>jscpd itself fails -> its exit code passes through<br/>report missing / invalid JSON -> exit 2"]
+    FailPaths["Other non-zero exits:<br/>jscpd itself fails -> its exit code passes through<br/>report missing / invalid JSON -> exit 2"]
 
-    R1 --> Exit0
-    R2 --> Exit0
-    A1 --> Exit0
-    A2 --> Exit0
+    R1 --> ExitAdvisory
+    R2 --> ExitAdvisory
+    A1 --> ExitCore
+    A2 --> ExitAdvisory
     Cmd -.-> FailPaths
 
-    VerifyWiring["Runs inside verify --profile full / ci as steps:<br/>verify.duplication.core + verify.duplication.small-helpers<br/>(same review-signal behavior; skip flags emit a warning)"]
+    VerifyWiring["Runs inside verify --profile full and ci,<br/>which are fail-fast:<br/>verify.duplication.core exits 1 on actionable groups<br/>verify.duplication.small-helpers stays a report"]
 
-    Policy["Enforcement is POLICY-level, not mechanical:<br/>AGENTS.md requires these checks for non-trivial changes;<br/>agents are expected to refactor/reuse or allowlist<br/>with a written review reason"]
+    Policy["Core enforcement is the process exit.<br/>small-helpers and presentation stay advisory.<br/>AGENTS.md states the same exit behavior."]
 
-    Exit0 --- VerifyWiring
-    Exit0 --- Policy
+    ExitCore --- VerifyWiring
+    ExitAdvisory --- Policy
 ```
 
 ## Compact version
@@ -73,12 +74,12 @@ flowchart LR
     Report --> Filter{"DuplicationReportFilter<br/>drop same-file clones ·<br/>match canonical file pair against<br/>PROFILE-SPECIFIC duplication/*_allowlist.json"}
 
     Filter -->|"allowlisted"| Reviewed["Reviewed acceptable group<br/>(reported, not actionable)"]
-    Filter -->|"unregistered"| Actionable["Actionable groups reported:<br/>file pair + occurrences/maxLines/maxTokens<br/>(no line ranges)"]
+    Filter -->|"core unregistered"| CoreFail["EXIT 1<br/>fatalFound is set for core"]
+    Filter -->|"small-helpers or presentation<br/>unregistered"| Advisory["EXIT 0<br/>actionable groups stay a report"]
 
-    Reviewed --> Zero["EXIT 0"]
-    Actionable --> Zero
+    Reviewed --> Advisory
 
-    Zero --- Note["Review signal only —<br/>fatalFound is never set by CLI;<br/>exit 1 requires programmatic use.<br/>exit 2 = broken/missing report"]
+    CoreFail --- Note["exit 2 = broken or missing report.<br/>jscpd's own failure passes through.<br/>verify --profile full and ci fail-fast<br/>on verify.duplication.core"]
 ```
 
 ## Corrections vs. the original flowchart
@@ -87,4 +88,4 @@ flowchart LR
 2. **Single shared allowlist node split into per-profile files**: core → `duplication/duplication_allowlist.json`, small-helpers → `duplication/small_helper_duplication_allowlist.json`, presentation → `duplication/presentation_duplication_allowlist.json`.
 3. **"Emits Cloned Line Ranges" corrected** — output prints grouped file-pair statistics (`occurrences`, `maxLines`, `maxTokens`) only; line data stays inside the raw jscpd JSON report.
 4. **Profile descriptions made literal** — actual scan roots, thresholds (`60/20` tokens), and ignore lists replace impressionistic labels ("mappers/models", "date/currency/string utils").
-5. **Added omitted pieces**: third `presentation` profile (explicit-opt-in only), same-file clone filtering, order-insensitive canonical pair matching, wiring into `verify --profile full/ci`, and the policy-level (AGENTS.md) nature of the actual enforcement.
+5. **Added omitted pieces**: third `presentation` profile (explicit-opt-in only), same-file clone filtering, order-insensitive canonical pair matching, and wiring into `verify --profile full` and `ci`. Core enforcement is the process exit inside those fail-fast profiles. `small-helpers` and `presentation` stay advisory.

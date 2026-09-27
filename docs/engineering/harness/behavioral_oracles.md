@@ -10,8 +10,7 @@ that the behavior request was understood correctly.
 `harness/oracles.yaml` is the checked-in registry. Each stable ID declares:
 
 - a kind such as verification profile, pinned contract, integration test,
-  maestro flow, golden, metric assertion, regression test, procedure, or
-  manual review;
+  maestro flow, golden, regression test, procedure, or manual review;
 - one profile name or repository-relative target;
 - the task impact areas it can credibly cover.
 

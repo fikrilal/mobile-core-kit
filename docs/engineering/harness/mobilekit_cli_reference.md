@@ -155,14 +155,15 @@ The profiles are intentionally different:
 - `fast` runs dependency/environment preflight, generated config and
   localization, knowledge validation, formatting, analyzer/custom lints, both
   harness-package test suites, and optional focused application tests;
-- `full` adds generated-output freshness, advisory core/small-helper
-  duplication reports, operating-evidence integrity, and every root
-  application test;
+- `full` adds generated-output freshness, a blocking core duplication
+  check, an advisory small-helper duplication report, operating-evidence
+  integrity, and every root application test;
 - `runtime` delegates selected integration targets to the device evidence
   workflow and requires `--device`;
-- `ci` has the same repository proof sequence as `full`; GitHub Actions adds
-  independent platform, coverage, golden, dependency, and secret-scanning
-  lanes around it.
+- `ci` runs the same repository proof sequence as `full`, fail-fast,
+  including `verify.duplication.core`. Actionable core groups exit 1.
+  GitHub Actions adds independent platform, coverage, golden, dependency,
+  and secret-scanning lanes around that profile.
 
 Every profile is fail-fast and reports stable step identifiers plus remediation.
 Explicit profiles reject weakening skip flags and file-mutating fixes. The old
@@ -191,7 +192,9 @@ mobilekit duplication check --profile presentation
 
 Without `--profile`, the core and small-helper profiles run sequentially. The
 reviewed policy files live under `duplication/`; jscpd profile configuration
-remains in the root `.jscpd*.json` files.
+remains in the root `.jscpd*.json` files. Actionable groups in `core` exit 1.
+`small-helpers` and `presentation` report actionable groups and exit 0. A
+missing or invalid report exits 2, and a jscpd failure passes through.
 
 ## Configuration and repository checks
 

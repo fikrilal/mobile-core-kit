@@ -293,7 +293,7 @@ The duplication harness does **not**:
 - replace code review
 - make every duplicated line a bug
 
-It is a self-review and reviewer-support tool.
+It reports maintainability debt for review. The `core` profile is also a gate.
 
 ## Workflow Placement
 
@@ -302,13 +302,15 @@ Recommended use:
   patterns
 - expect the core profile and small-helper profile to run during
   `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`
+  and during `verify --profile ci`
 - review the output before opening/updating the PR
 - if a duplicate is acceptable, record it explicitly
 - if it is debt, either fix it now or call it out as follow-up debt
 
-This is intentionally **not** a default hard CI gate.
-The value is in surfacing maintainability debt at the right time, not in adding
-another blunt failing check.
+`verify --profile ci` is fail-fast and includes `verify.duplication.core`.
+Actionable core groups exit 1, so that profile is a CI gate. `small-helpers`
+and `presentation` still report actionable groups and exit 0. Their sets are
+large review signals, not failing checks.
 
 ## Current Repository State
 

@@ -140,7 +140,7 @@ Those streams are diagnostic, not completion evidence.
 ## Failure promotion
 
 If the same runtime failure or setup gap appears twice, promote it into a
-registered regression/integration oracle, a stable metric assertion, a CLI
+registered regression/integration oracle, a CLI
 preflight, or this operating guide. Do not rely on agent memory.
 
 ## Related docs
@@ -163,7 +163,7 @@ outstanding. It first requires successful static verification for the current
 task fingerprint. Full/CI verification supplies results for the pinned OpenAPI
 contract and registered tests within the canonical test suites. Integration
 oracles require passing runtime manifests and matching target identities;
-procedure, manual-review, and metric assertions require explicit review receipts.
+procedure and manual-review require explicit review receipts.
 
 For automatic discovery, keep runtime artifacts below `_artifacts/mobile/`
 (the default), including when selecting `--artifacts-dir`. Manifests elsewhere
@@ -174,7 +174,7 @@ run invalidates an earlier pass for the same candidate. A narrowed `--target` ru
 Durable summary size/hash checks reject missing or modified artifacts; transient
 logs are deliberately not required for durable acceptance.
 
-For a manual/procedure/metric oracle, a human reviews the selected procedure and
+For a manual or procedure oracle, a human reviews the selected procedure and
 records `.tmp/mobilekit/tasks/<task-id>/manual-evidence.json` in the task control
 root. Use this shape, replacing placeholders with real reviewed values:
 

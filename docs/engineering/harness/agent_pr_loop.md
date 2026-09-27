@@ -102,7 +102,7 @@ reshape shared logic, for example:
 - repeated workflow tails
 - cleanup work prompted by agent-generated duplication
 
-Treat duplication detection as a self-review signal, not a default hard gate.
+The core profile fails the lane when it reports actionable groups. `small-helpers` and `presentation` stay review reports and exit 0.
 See `docs/engineering/harness/duplication_harness.md` for:
 - when to run the core vs small-helper vs presentation profile
 - how to interpret actionable vs reviewed acceptable groups
