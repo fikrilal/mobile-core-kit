@@ -19,9 +19,8 @@ class TaskControlRootLocator {
         'Unable to discover the primary Git worktree.',
       );
     }
-    final first = LineSplitter.split(
-      '${result.stdout}',
-    ).firstWhere((line) => line.startsWith('worktree '), orElse: () => '');
+    final first = LineSplitter.split('${result.stdout}')
+        .firstWhere((line) => line.startsWith('worktree '), orElse: () => '');
     if (first.isEmpty) {
       throw const TaskControlError(
         'workspace.discovery-invalid',

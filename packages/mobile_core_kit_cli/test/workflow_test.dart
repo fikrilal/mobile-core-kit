@@ -104,9 +104,8 @@ void main() {
       final repository = await _createRepository();
       addTearDown(() => repository.delete(recursive: true));
 
-      final result = await MobilekitCli(
-        currentDirectory: repository,
-      ).run(['scaffold', 'feature', 'review']);
+      final result = await MobilekitCli(currentDirectory: repository)
+          .run(['scaffold', 'feature', 'review']);
 
       expect(result, 0);
       expect(
@@ -119,9 +118,8 @@ void main() {
         isTrue,
       );
       expect(
-        File(
-          'lib/features/review/presentation/pages/review_page.dart',
-        ).existsSync(),
+        File('lib/features/review/presentation/pages/review_page.dart')
+            .existsSync(),
         isFalse,
       );
     },
@@ -180,16 +178,13 @@ Future<Directory> _createRepository() async {
   final repository = await Directory.systemTemp.createTemp(
     'mobile_core_kit_cli_workflow_test_',
   );
-  File(
-    p.join(repository.path, 'pubspec.yaml'),
-  ).writeAsStringSync('name: test_repository\n');
+  File(p.join(repository.path, 'pubspec.yaml'))
+      .writeAsStringSync('name: test_repository\n');
   File(p.join(repository.path, '.git')).writeAsStringSync('gitdir: test\n');
-  Directory(
-    p.join(repository.path, 'lib/core/foundation/config'),
-  ).createSync(recursive: true);
-  Directory(
-    p.join(repository.path, 'lib/features'),
-  ).createSync(recursive: true);
+  Directory(p.join(repository.path, 'lib/core/foundation/config'))
+      .createSync(recursive: true);
+  Directory(p.join(repository.path, 'lib/features'))
+      .createSync(recursive: true);
   Directory(p.join(repository.path, '.tmp')).createSync(recursive: true);
   File(p.join(repository.path, 'AGENTS.md')).writeAsStringSync('''
 ```text
@@ -208,9 +203,8 @@ jobs:
     name: CI Required
     run: mobilekit verify --profile ci
 ''');
-  File(
-    p.join(repository.path, '.tmp/untranslated_messages.json'),
-  ).writeAsStringSync('{}\n');
+  File(p.join(repository.path, '.tmp/untranslated_messages.json'))
+      .writeAsStringSync('{}\n');
   writeEvidenceFixture(repository);
 
   for (final environment in ['dev', 'staging', 'prod']) {

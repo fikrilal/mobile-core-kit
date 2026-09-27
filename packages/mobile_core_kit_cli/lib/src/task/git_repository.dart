@@ -31,11 +31,8 @@ class NativeGitRepository implements GitRepository {
 
   @override
   Future<String> head() async {
-    final revision = (await _git(const [
-      'rev-parse',
-      '--verify',
-      'HEAD',
-    ])).trim();
+    final revision = (await _git(const ['rev-parse', '--verify', 'HEAD']))
+        .trim();
     if (!RegExp(r'^[0-9a-f]{40,64}$').hasMatch(revision)) {
       throw const TaskControlError(
         'git.head-invalid',

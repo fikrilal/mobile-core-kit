@@ -280,9 +280,10 @@ OperatingEvidenceRecord _parseRecord(Directory root, Object? value) {
     allowed: _impactCategories,
     requireNonEmpty: true,
   );
-  if (_planImpacts(
-    plan,
-  ).toSet().difference(impactCategories.toSet()).isNotEmpty) {
+  if (_planImpacts(plan)
+      .toSet()
+      .difference(impactCategories.toSet())
+      .isNotEmpty) {
     throw _invalid();
   }
   if (map['firstPass'] is! bool) throw _invalid();

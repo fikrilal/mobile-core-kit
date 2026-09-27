@@ -6,7 +6,7 @@ import 'package:mobile_core_kit/core/design_system/widgets/badge/app_icon_badge.
 import 'package:mobile_core_kit/core/design_system/widgets/collection/collection.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 /// Screen listing all available widget showcases for developers.
 class WidgetShowcasesScreen extends StatelessWidget {

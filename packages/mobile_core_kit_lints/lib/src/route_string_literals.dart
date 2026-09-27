@@ -15,8 +15,7 @@ class RouteStringLiteralsLint extends DartLintRule {
   static const _code = LintCode(
     name: 'route_string_literals',
     problemMessage: 'Route string literal is not allowed: {0}',
-    correctionMessage:
-        'Use route constants (e.g., `AppRoutes.*`, `<feature>Routes.*`). Suppress with `// ignore: route_string_literals` for rare cases.',
+    correctionMessage: 'Use route constants (e.g., `AppRoutes.*`, `<feature>Routes.*`). Suppress with `// ignore: route_string_literals` for rare cases.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

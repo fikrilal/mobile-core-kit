@@ -184,92 +184,85 @@ void main() {
     expect(firebaseItem.description, contains('demo project'));
   });
 
-  test(
-    'environment schema accepts disabled deep links and enforces manifest policy',
-    () async {
-      final repository = await Directory.systemTemp.createTemp(
-        'mobilekit_environment_policy_test_',
-      );
-      addTearDown(() => repository.delete(recursive: true));
-      _write(repository, '.env/dev.yaml', _environmentYaml(deepLinkHost: null));
+  test('environment schema accepts disabled deep links and enforces manifest policy', () async {
+    final repository = await Directory.systemTemp.createTemp(
+      'mobilekit_environment_policy_test_',
+    );
+    addTearDown(() => repository.delete(recursive: true));
+    _write(repository, '.env/dev.yaml', _environmentYaml(deepLinkHost: null));
 
-      final output = StringBuffer();
-      final errors = StringBuffer();
-      final noManifestResult = await EnvironmentSchemaWorkflow(
-        WorkflowContext(
-          rootDirectory: repository,
-          execute: (_) async => 0,
-          output: output,
-          errorOutput: errors,
-        ),
-      ).run(['--env', 'dev']);
-      expect(noManifestResult, 0, reason: errors.toString());
+    final output = StringBuffer();
+    final errors = StringBuffer();
+    final noManifestResult = await EnvironmentSchemaWorkflow(
+      WorkflowContext(
+        rootDirectory: repository,
+        execute: (_) async => 0,
+        output: output,
+        errorOutput: errors,
+      ),
+    ).run(['--env', 'dev']);
+    expect(noManifestResult, 0, reason: errors.toString());
 
-      Directory(
-        p.join(repository.path, 'lib/core/foundation/config'),
-      ).createSync(recursive: true);
-      final generatedResult = await BuildConfigWorkflow(
-        WorkflowContext(rootDirectory: repository, execute: (_) async => 0),
-      ).run(['--env', 'dev']);
-      expect(generatedResult, 0);
-      expect(
-        _read(
-          repository,
-          'lib/core/foundation/config/build_config_values.dart',
-        ),
-        contains('const List<String> _devDeepLinkAllowedHosts = [];'),
-      );
+    Directory(p.join(repository.path, 'lib/core/foundation/config'))
+        .createSync(recursive: true);
+    final generatedResult = await BuildConfigWorkflow(
+      WorkflowContext(rootDirectory: repository, execute: (_) async => 0),
+    ).run(['--env', 'dev']);
+    expect(generatedResult, 0);
+    expect(
+      _read(repository, 'lib/core/foundation/config/build_config_values.dart'),
+      contains('const List<String> _devDeepLinkAllowedHosts = [];'),
+    );
 
-      _writeManifest(
-        repository,
-        deepLinkMode: DeepLinkMode.disabled,
-        deepLinkHost: null,
-      );
-      final disabledErrors = StringBuffer();
-      final disabledResult = await EnvironmentSchemaWorkflow(
-        WorkflowContext(
-          rootDirectory: repository,
-          execute: (_) async => 0,
-          errorOutput: disabledErrors,
-        ),
-      ).run(['--env', 'dev']);
-      expect(disabledResult, 0, reason: disabledErrors.toString());
+    _writeManifest(
+      repository,
+      deepLinkMode: DeepLinkMode.disabled,
+      deepLinkHost: null,
+    );
+    final disabledErrors = StringBuffer();
+    final disabledResult = await EnvironmentSchemaWorkflow(
+      WorkflowContext(
+        rootDirectory: repository,
+        execute: (_) async => 0,
+        errorOutput: disabledErrors,
+      ),
+    ).run(['--env', 'dev']);
+    expect(disabledResult, 0, reason: disabledErrors.toString());
 
-      _write(
-        repository,
-        '.env/dev.yaml',
-        _environmentYaml(deepLinkHost: 'links.example.app'),
-      );
-      final staleErrors = StringBuffer();
-      final staleResult = await EnvironmentSchemaWorkflow(
-        WorkflowContext(
-          rootDirectory: repository,
-          execute: (_) async => 0,
-          errorOutput: staleErrors,
-        ),
-      ).run(['--env', 'dev']);
-      expect(staleResult, 1);
-      expect(
-        staleErrors.toString(),
-        contains('must be empty when deep links are disabled'),
-      );
+    _write(
+      repository,
+      '.env/dev.yaml',
+      _environmentYaml(deepLinkHost: 'links.example.app'),
+    );
+    final staleErrors = StringBuffer();
+    final staleResult = await EnvironmentSchemaWorkflow(
+      WorkflowContext(
+        rootDirectory: repository,
+        execute: (_) async => 0,
+        errorOutput: staleErrors,
+      ),
+    ).run(['--env', 'dev']);
+    expect(staleResult, 1);
+    expect(
+      staleErrors.toString(),
+      contains('must be empty when deep links are disabled'),
+    );
 
-      _writeManifest(
-        repository,
-        deepLinkMode: DeepLinkMode.enabled,
-        deepLinkHost: 'links.example.app',
-      );
-      final enabledErrors = StringBuffer();
-      final enabledResult = await EnvironmentSchemaWorkflow(
-        WorkflowContext(
-          rootDirectory: repository,
-          execute: (_) async => 0,
-          errorOutput: enabledErrors,
-        ),
-      ).run(['--env', 'dev']);
-      expect(enabledResult, 0, reason: enabledErrors.toString());
-    },
-  );
+    _writeManifest(
+      repository,
+      deepLinkMode: DeepLinkMode.enabled,
+      deepLinkHost: 'links.example.app',
+    );
+    final enabledErrors = StringBuffer();
+    final enabledResult = await EnvironmentSchemaWorkflow(
+      WorkflowContext(
+        rootDirectory: repository,
+        execute: (_) async => 0,
+        errorOutput: enabledErrors,
+      ),
+    ).run(['--env', 'dev']);
+    expect(enabledResult, 0, reason: enabledErrors.toString());
+  });
 
   test('doctor marks keep-demo as a production blocker', () async {
     final repository = await Directory.systemTemp.createTemp(

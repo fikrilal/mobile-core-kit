@@ -54,11 +54,13 @@ appId: dev.fikril.mobile.corekit.dev
 - tapOn: "Merchant onboarding (demo)"
 - scrollUntilVisible:
     element:
-      text: "^Contact phone$"
+      text: "^Next$"
     direction: DOWN
 - tapOn:
     below:
       text: "^Contact phone$"
+    above:
+      text: "^Next$"
 - inputText: "+15551234567"
 - tapOn: "Merchant onboarding (demo)"
 - tapOn: "Next"

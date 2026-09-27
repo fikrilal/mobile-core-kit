@@ -16,7 +16,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/do
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_cubit.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/cubit/request_account_deletion/request_account_deletion_state.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/account_deletion/presentation/localization/account_deletion_failure_localizer.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class RequestAccountDeletionPage extends StatelessWidget {
   const RequestAccountDeletionPage({super.key, required this.userContext});

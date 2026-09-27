@@ -85,9 +85,9 @@ RiskReason classifyPath(String path) {
   );
 }
 
-bool isAuthSensitivePath(String path) => RegExp(
-  r'(?:^|/)(?:auth|session|account_deletion)(?:/|[._-])',
-).hasMatch(normalizeRepositoryPath(path));
+bool isAuthSensitivePath(String path) =>
+    RegExp(r'(?:^|/)(?:auth|session|account_deletion)(?:/|[._-])')
+        .hasMatch(normalizeRepositoryPath(path));
 
 List<RiskReason> _impactReasons(TaskImpactAreas impacts) {
   final reasons = <RiskReason>[];

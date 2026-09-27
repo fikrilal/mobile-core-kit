@@ -13,9 +13,9 @@ void main() {
     addTearDown(() => root.delete(recursive: true));
 
     expect(
-      () => OracleRegistry.load(
-        root,
-      ).validatePlan(parseTaskPlan('plan.md', taskPlanFixture())),
+      () =>
+          OracleRegistry.load(root)
+              .validatePlan(parseTaskPlan('plan.md', taskPlanFixture())),
       returnsNormally,
     );
   });

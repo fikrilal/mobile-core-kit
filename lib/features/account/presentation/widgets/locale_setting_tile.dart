@@ -7,7 +7,7 @@ import 'package:mobile_core_kit/core/design_system/widgets/badge/app_icon_badge.
 import 'package:mobile_core_kit/core/design_system/widgets/list/app_list_tile.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class LocaleSettingTile extends StatelessWidget {
   const LocaleSettingTile({

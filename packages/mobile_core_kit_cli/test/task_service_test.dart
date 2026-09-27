@@ -196,9 +196,8 @@ Future<_ServiceFixture> _serviceFixture({String? plan}) async {
   File(p.join(root.path, _planPath))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(plan ?? taskPlanFixture());
-  Directory(
-    p.join(root.path, 'lib/features/example'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'lib/features/example'))
+      .createSync(recursive: true);
   final repository = _FakeGitRepository(
     worktree: const [
       RepositoryChange(path: 'user.txt', sources: [ChangeSource.untracked]),

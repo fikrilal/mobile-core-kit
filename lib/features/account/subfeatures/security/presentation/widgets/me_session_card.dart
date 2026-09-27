@@ -10,7 +10,7 @@ import 'package:mobile_core_kit/core/foundation/utilities/date_utils.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/widgets/me_session_status_pill.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class MeSessionCard extends StatelessWidget {
   const MeSessionCard({

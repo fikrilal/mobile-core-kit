@@ -33,7 +33,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/presentatio
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
 import 'package:mobile_core_kit/navigation/account/account_routes.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({

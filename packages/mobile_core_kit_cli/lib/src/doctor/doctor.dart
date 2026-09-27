@@ -196,12 +196,12 @@ class Doctor {
         ? android.readAsStringSync()
         : '';
     final iosContents = ios.existsSync() ? ios.readAsStringSync() : '';
-    final androidHost = RegExp(
-      r'android:host="([^"]+)"',
-    ).firstMatch(androidContents)?.group(1);
-    final iosHost = RegExp(
-      r'<string>applinks:([^<]+)</string>',
-    ).firstMatch(iosContents)?.group(1);
+    final androidHost = RegExp(r'android:host="([^"]+)"')
+        .firstMatch(androidContents)
+        ?.group(1);
+    final iosHost = RegExp(r'<string>applinks:([^<]+)</string>')
+        .firstMatch(iosContents)
+        ?.group(1);
     final androidClaim = androidContents.contains('android:autoVerify="true"');
     final iosClaim = iosContents.contains('applinks:');
     final runtimeEnv = File(p.join(root.path, '.env/dev.yaml'));
@@ -225,8 +225,7 @@ class Doctor {
         return const DoctorCheck(
           label: 'deep-link policy',
           status: DoctorCheckStatus.warning,
-          detail:
-              'Disabled deep links have a non-empty ignored runtime host list; clear .env/*.yaml and regenerate BuildConfig.',
+          detail: 'Disabled deep links have a non-empty ignored runtime host list; clear .env/*.yaml and regenerate BuildConfig.',
         );
       }
       return const DoctorCheck(

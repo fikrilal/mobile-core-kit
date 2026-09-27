@@ -184,9 +184,9 @@ bool _runtimeRequired(List<String> paths, TaskImpactAreas impacts) {
   );
 }
 
-bool _isExecutionPlan(String path) => RegExp(
-  r'^docs/exec-plans/(?:active|queued|completed)/[^/]+\.md$',
-).hasMatch(path);
+bool _isExecutionPlan(String path) =>
+    RegExp(r'^docs/exec-plans/(?:active|queued|completed)/[^/]+\.md$')
+        .hasMatch(path);
 
 void _validateRevision(String revision, String label) {
   if (!RegExp(r'^[0-9a-f]{40,64}$').hasMatch(revision) ||

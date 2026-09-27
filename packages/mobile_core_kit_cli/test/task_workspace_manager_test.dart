@@ -64,9 +64,8 @@ void main() {
     final fixture = await _nativeFixture(taskId: 'dirty-workspace-task');
     addTearDown(() => fixture.root.delete(recursive: true));
     final prepared = await fixture.manager.prepare('dirty-workspace-task');
-    File(
-      p.join(prepared.workspace.path, 'dirty.txt'),
-    ).writeAsStringSync('dirty');
+    File(p.join(prepared.workspace.path, 'dirty.txt'))
+        .writeAsStringSync('dirty');
     fixture.manager.cancel('dirty-workspace-task');
 
     await expectLater(
@@ -130,9 +129,8 @@ Future<_NativeFixture> _nativeFixture({String taskId = _taskId}) async {
         allowedPaths: '$planPath, lib/features/example/',
       ),
     );
-  Directory(
-    p.join(root.path, 'lib/features/example'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'lib/features/example'))
+      .createSync(recursive: true);
   await _git(root, ['add', '.']);
   await _git(root, ['commit', '-qm', 'seed']);
   final baseRevision = (await _git(root, ['rev-parse', 'HEAD'])).trim();

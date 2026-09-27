@@ -164,9 +164,8 @@ paths:
 
         // Check no files were created
         expect(
-          Directory(
-            p.join(tempDir.path, 'lib', 'features', 'orders'),
-          ).existsSync(),
+          Directory(p.join(tempDir.path, 'lib', 'features', 'orders'))
+              .existsSync(),
           isFalse,
         );
         expect(executedCommands, isEmpty);
@@ -305,71 +304,64 @@ paths:
       },
     );
 
-    test(
-      'skips feature skeleton if feature already exists and only scaffolds data',
-      () async {
-        final context = createContext();
+    test('skips feature skeleton if feature already exists and only scaffolds data', () async {
+      final context = createContext();
 
-        // Pre-create the feature directory
-        final featureDir = Directory(
-          p.join(tempDir.path, 'lib', 'features', 'orders'),
-        );
-        featureDir.createSync(recursive: true);
+      // Pre-create the feature directory
+      final featureDir = Directory(
+        p.join(tempDir.path, 'lib', 'features', 'orders'),
+      );
+      featureDir.createSync(recursive: true);
+      File(p.join(featureDir.path, 'existing_file.txt'))
+          .writeAsStringSync('keep me');
+
+      final workflow = ScaffoldAllWorkflow(context);
+      final code = await workflow.run([
+        '--openapi-spec',
+        'openapi.yaml',
+        '--feature',
+        'orders',
+        '--operation',
+        'orders.get',
+        '--no-codegen',
+      ]);
+
+      expect(code, 0);
+      final out = output.toString();
+      expect(
+        out,
+        contains(
+          'Feature "lib/features/orders" already exists; skipping skeleton creation.',
+        ),
+      );
+      expect(out, contains('Scaffolding data layer for operation: orders.get'));
+
+      // Check existing file was not deleted
+      expect(
+        File(p.join(featureDir.path, 'existing_file.txt')).existsSync(),
+        isTrue,
+      );
+
+      // Check data layer file was created
+      expect(
         File(
-          p.join(featureDir.path, 'existing_file.txt'),
-        ).writeAsStringSync('keep me');
-
-        final workflow = ScaffoldAllWorkflow(context);
-        final code = await workflow.run([
-          '--openapi-spec',
-          'openapi.yaml',
-          '--feature',
-          'orders',
-          '--operation',
-          'orders.get',
-          '--no-codegen',
-        ]);
-
-        expect(code, 0);
-        final out = output.toString();
-        expect(
-          out,
-          contains(
-            'Feature "lib/features/orders" already exists; skipping skeleton creation.',
+          p.join(
+            tempDir.path,
+            'lib',
+            'features',
+            'orders',
+            'data',
+            'model',
+            'remote',
+            'get_response_model.dart',
           ),
-        );
-        expect(
-          out,
-          contains('Scaffolding data layer for operation: orders.get'),
-        );
+        ).existsSync(),
+        isTrue,
+      );
 
-        // Check existing file was not deleted
-        expect(
-          File(p.join(featureDir.path, 'existing_file.txt')).existsSync(),
-          isTrue,
-        );
-
-        // Check data layer file was created
-        expect(
-          File(
-            p.join(
-              tempDir.path,
-              'lib',
-              'features',
-              'orders',
-              'data',
-              'model',
-              'remote',
-              'get_response_model.dart',
-            ),
-          ).existsSync(),
-          isTrue,
-        );
-
-        // No codegen because of --no-codegen
-        expect(executedCommands, isEmpty);
-      },
-    );
+      // No codegen because of --no-codegen
+      expect(executedCommands, isEmpty);
+    });
 
     test('fails if operation is not found in OpenAPI spec', () async {
       final context = createContext();
@@ -394,9 +386,8 @@ paths:
     });
 
     test('MobilekitCli dispatches scaffold all subcommand', () async {
-      File(
-        p.join(tempDir.path, 'pubspec.yaml'),
-      ).writeAsStringSync('name: test_repo\n');
+      File(p.join(tempDir.path, 'pubspec.yaml'))
+          .writeAsStringSync('name: test_repo\n');
       File(p.join(tempDir.path, '.mobilekit', 'template.yaml'))
         ..parent.createSync(recursive: true)
         ..writeAsStringSync(

@@ -49,8 +49,10 @@ class HandoffMutationResult {
   final String outcome;
 }
 
-typedef HandoffPreflight =
-    Future<TaskPreflightResult> Function(String taskId, TaskAction action);
+typedef HandoffPreflight = Future<TaskPreflightResult> Function(
+  String taskId,
+  TaskAction action,
+);
 
 class HandoffService {
   HandoffService({

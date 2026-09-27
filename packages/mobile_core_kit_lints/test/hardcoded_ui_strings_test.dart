@@ -44,11 +44,9 @@ void main() {
               .findLiteralArguments(sink.target, invocation.$2)
               .toList();
 
-          expect(
-            matches.map((match) => match.argument),
-            [argument],
-            reason: '${sink.target}.$argument',
-          );
+          expect(matches.map((match) => match.argument), [
+            argument,
+          ], reason: '${sink.target}.$argument');
         }
 
         for (final index in sink.positionalArguments) {
@@ -63,11 +61,9 @@ void main() {
               .findLiteralArguments(sink.target, invocation.$2)
               .toList();
 
-          expect(
-            matches.map((match) => match.argument),
-            ['positional[$index]'],
-            reason: '${sink.target}.positional[$index]',
-          );
+          expect(matches.map((match) => match.argument), [
+            'positional[$index]',
+          ], reason: '${sink.target}.positional[$index]');
         }
       }
     });
@@ -231,8 +227,8 @@ dev_dependencies:
   mobile_core_kit_lints:
     path: ${p.join(repositoryRoot, 'packages/mobile_core_kit_lints')}
 ''');
-      await File(p.join(fixture.path, 'analysis_options.yaml')).writeAsString(
-        '''
+      await File(p.join(fixture.path, 'analysis_options.yaml'))
+          .writeAsString('''
 analyzer:
   plugins:
     - custom_lint
@@ -245,8 +241,7 @@ custom_lint:
       sinks:
         - target: MoodChartItem
           named_arguments: [label]
-''',
-      );
+''');
       final source = File(p.join(fixture.path, 'lib/features/example.dart'));
       await source.parent.create(recursive: true);
       await File(p.join(fixture.path, 'lib/widgets.dart')).writeAsString('''

@@ -18,8 +18,7 @@ class HardcodedUiStringsLint extends DartLintRule {
   static const _code = LintCode(
     name: 'hardcoded_ui_strings',
     problemMessage: 'Hardcoded UI string at {0}.{1}: {2}',
-    correctionMessage:
-        'Use `context.l10n.*` or pass already-localized copy into the component. Suppress with `// ignore: hardcoded_ui_strings` only for a reviewed exception.',
+    correctionMessage: 'Use `context.l10n.*` or pass already-localized copy into the component. Suppress with `// ignore: hardcoded_ui_strings` only for a reviewed exception.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

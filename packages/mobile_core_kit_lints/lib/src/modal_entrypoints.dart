@@ -14,10 +14,8 @@ class ModalEntrypointsLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'modal_entrypoints',
-    problemMessage:
-        'Direct modal entrypoint "{0}" is not allowed here. Use `showAdaptiveModal` / `showAdaptiveSideSheet`.',
-    correctionMessage:
-        'Feature/app code should call adaptive modal entrypoints (from `lib/core/adaptive/widgets/`).',
+    problemMessage: 'Direct modal entrypoint "{0}" is not allowed here. Use `showAdaptiveModal` / `showAdaptiveSideSheet`.',
+    correctionMessage: 'Feature/app code should call adaptive modal entrypoints (from `lib/core/adaptive/widgets/`).',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

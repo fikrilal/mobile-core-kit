@@ -15,10 +15,8 @@ class HardcodedFontSizesLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'hardcoded_font_sizes',
-    problemMessage:
-        'Hardcoded font sizing "{0}" is not allowed. Use TextTheme roles instead.',
-    correctionMessage:
-        'Use `Theme.of(context).textTheme.*` (or AppText/Heading/Paragraph wrappers).',
+    problemMessage: 'Hardcoded font sizing "{0}" is not allowed. Use TextTheme roles instead.',
+    correctionMessage: 'Use `Theme.of(context).textTheme.*` (or AppText/Heading/Paragraph wrappers).',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

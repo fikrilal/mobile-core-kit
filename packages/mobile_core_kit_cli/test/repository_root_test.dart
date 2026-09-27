@@ -11,9 +11,8 @@ void main() {
     );
     addTearDown(() => tempDirectory.delete(recursive: true));
 
-    File(
-      p.join(tempDirectory.path, 'pubspec.yaml'),
-    ).writeAsStringSync('name: test\n');
+    File(p.join(tempDirectory.path, 'pubspec.yaml'))
+        .writeAsStringSync('name: test\n');
     final markerFile =
         File(p.join(tempDirectory.path, '.mobilekit', 'template.yaml'))
           ..parent.createSync(recursive: true)
@@ -38,12 +37,10 @@ void main() {
     );
     addTearDown(() => tempDirectory.delete(recursive: true));
 
-    File(
-      p.join(tempDirectory.path, 'pubspec.yaml'),
-    ).writeAsStringSync('name: test\n');
-    File(
-      p.join(tempDirectory.path, '.git'),
-    ).writeAsStringSync('gitdir: test\n');
+    File(p.join(tempDirectory.path, 'pubspec.yaml'))
+        .writeAsStringSync('name: test\n');
+    File(p.join(tempDirectory.path, '.git'))
+        .writeAsStringSync('gitdir: test\n');
 
     final nestedDirectory = Directory(p.join(tempDirectory.path, 'lib', 'src'))
       ..createSync(recursive: true);

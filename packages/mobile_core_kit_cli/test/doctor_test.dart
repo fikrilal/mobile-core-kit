@@ -160,12 +160,10 @@ Future<Directory> _createRepository() async {
     ..writeAsStringSync(
       'schema: 1\ntemplate: mobile_core_kit\nversion: 2026-08-01\n',
     );
-  File(
-    p.join(directory.path, 'pubspec.yaml'),
-  ).writeAsStringSync('name: test\n');
-  File(
-    p.join(directory.path, '.fvmrc'),
-  ).writeAsStringSync('{"flutter":"3.41.4"}\n');
+  File(p.join(directory.path, 'pubspec.yaml'))
+      .writeAsStringSync('name: test\n');
+  File(p.join(directory.path, '.fvmrc'))
+      .writeAsStringSync('{"flutter":"3.41.4"}\n');
   return directory;
 }
 

@@ -128,8 +128,7 @@ final _markers = <_ResidualMarker>[
   _ResidualMarker(
     id: 'Android namespace',
     pattern: RegExp(r'com\.example\.mobile_core_kit'),
-    detail: (_) =>
-        'The Android namespace or Kotlin package still uses the template default.',
+    detail: (_) => 'The Android namespace or Kotlin package still uses the template default.',
     severity: _applicationSeverity,
   ),
   _ResidualMarker(
@@ -168,8 +167,7 @@ final _markers = <_ResidualMarker>[
       r'<your-[^>]+>|https?://[a-z0-9-]+-(?:core|auth|profile)\.example\.com',
       caseSensitive: false,
     ),
-    detail: (_) =>
-        'Environment examples still contain placeholder endpoints or client IDs; configure real user-owned values before release.',
+    detail: (_) => 'Environment examples still contain placeholder endpoints or client IDs; configure real user-owned values before release.',
     severity: (path, _) => path == '.env/prod.yaml'
         ? ResidualDefaultSeverity.blocking
         : ResidualDefaultSeverity.reviewRequired,

@@ -14,7 +14,7 @@ import 'package:mobile_core_kit/features/account/subfeatures/security/presentati
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_state.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/widgets/me_session_card.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/widgets/skeleton/me_sessions_skeleton.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class MeSessionsPage extends StatelessWidget {
   const MeSessionsPage({super.key});

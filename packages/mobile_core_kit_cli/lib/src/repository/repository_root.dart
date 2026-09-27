@@ -21,9 +21,8 @@ class RepositoryRootLocator {
   }
 
   bool _looksLikeRepositoryRoot(Directory directory) {
-    final hasPubspec = File(
-      p.join(directory.path, 'pubspec.yaml'),
-    ).existsSync();
+    final hasPubspec = File(p.join(directory.path, 'pubspec.yaml'))
+        .existsSync();
     if (!hasPubspec) return false;
 
     final hasGitMetadata =

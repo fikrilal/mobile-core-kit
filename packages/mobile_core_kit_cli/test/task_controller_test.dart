@@ -234,9 +234,8 @@ Future<_ControllerFixture> _fixture({
   File(p.join(root.path, _planPath))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(plan ?? taskPlanFixture());
-  Directory(
-    p.join(root.path, 'lib/features/example'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'lib/features/example'))
+      .createSync(recursive: true);
   final repository = _FakeGitRepository();
   final store = _MemoryTaskStateStore();
   final episodes = _MemoryEpisodeStore();

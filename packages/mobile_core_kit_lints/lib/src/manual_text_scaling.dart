@@ -15,10 +15,8 @@ class ManualTextScalingLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'manual_text_scaling',
-    problemMessage:
-        'Manual text scaling "{0}" is not allowed. Text scaling is applied at the app root via AdaptiveScope.',
-    correctionMessage:
-        'Remove per-widget scaling and rely on `MediaQueryData.textScaler` (clamped via `TextScaler.clamp`).',
+    problemMessage: 'Manual text scaling "{0}" is not allowed. Text scaling is applied at the app root via AdaptiveScope.',
+    correctionMessage: 'Remove per-widget scaling and rely on `MediaQueryData.textScaler` (clamped via `TextScaler.clamp`).',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

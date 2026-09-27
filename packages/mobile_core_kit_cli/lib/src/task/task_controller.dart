@@ -26,11 +26,10 @@ class TaskLaneExecution {
   final bool infrastructureUnavailable;
 }
 
-typedef TaskLaneRunner =
-    Future<TaskLaneExecution> Function(
-      VerificationProfile profile,
-      DateTime deadline,
-    );
+typedef TaskLaneRunner = Future<TaskLaneExecution> Function(
+  VerificationProfile profile,
+  DateTime deadline,
+);
 
 class TaskVerificationResult {
   const TaskVerificationResult({

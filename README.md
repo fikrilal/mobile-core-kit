@@ -27,7 +27,7 @@ your product features.
 
 ## Prerequisites
 
-- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.41.4`).
+- Flutter (managed via FVM) – see `.fvmrc` for the pinned SDK version (`3.47.5`).
 - Dart SDK bundled with Flutter.
 - Firebase CLI if you want to reconfigure Firebase (`flutterfire configure`).
 

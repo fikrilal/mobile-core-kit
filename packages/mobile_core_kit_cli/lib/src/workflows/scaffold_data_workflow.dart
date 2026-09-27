@@ -42,8 +42,7 @@ class ScaffoldDataWorkflow {
       ..addOption(
         'operation',
         abbr: 'o',
-        help:
-            'OpenAPI operationId or "METHOD /path", e.g. "merchantOnboarding.applications.submit".',
+        help: 'OpenAPI operationId or "METHOD /path", e.g. "merchantOnboarding.applications.submit".',
       )
       ..addOption(
         'openapi-spec',
@@ -422,9 +421,10 @@ class ScaffoldDataWorkflow {
   }
 
   static List<String> _extractPathParameters(String path) {
-    return RegExp(
-      r'\{([a-zA-Z0-9_]+)\}',
-    ).allMatches(path).map((m) => m.group(1)!).toList();
+    return RegExp(r'\{([a-zA-Z0-9_]+)\}')
+        .allMatches(path)
+        .map((m) => m.group(1)!)
+        .toList();
   }
 
   static String _createEndpointEntry(String name, String path) {

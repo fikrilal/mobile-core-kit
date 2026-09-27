@@ -13,9 +13,8 @@ void main() {
     addTearDown(() => fixture.delete(recursive: true));
     final errors = StringBuffer();
 
-    final result = await KnowledgeWorkflow(
-      _context(fixture, errors: errors),
-    ).run(const []);
+    final result = await KnowledgeWorkflow(_context(fixture, errors: errors))
+        .run(const []);
 
     expect(result, 0);
     expect(errors, isEmpty);
@@ -27,9 +26,8 @@ void main() {
     File(p.join(fixture.path, 'AGENTS.md')).writeAsStringSync('No map.\n');
     final errors = StringBuffer();
 
-    final result = await KnowledgeWorkflow(
-      _context(fixture, errors: errors),
-    ).run(const []);
+    final result = await KnowledgeWorkflow(_context(fixture, errors: errors))
+        .run(const []);
 
     expect(result, 1);
     expect(errors.toString(), contains('required `lib/core` project map'));
@@ -38,14 +36,12 @@ void main() {
   test('fails on a broken normative Markdown link', () async {
     final fixture = await _fixture();
     addTearDown(() => fixture.delete(recursive: true));
-    File(
-      p.join(fixture.path, 'docs', 'README.md'),
-    ).writeAsStringSync('[missing](not_here.md)\n');
+    File(p.join(fixture.path, 'docs', 'README.md'))
+        .writeAsStringSync('[missing](not_here.md)\n');
     final errors = StringBuffer();
 
-    final result = await KnowledgeWorkflow(
-      _context(fixture, errors: errors),
-    ).run(const []);
+    final result = await KnowledgeWorkflow(_context(fixture, errors: errors))
+        .run(const []);
 
     expect(result, 1);
     expect(errors.toString(), contains('links to missing path'));
@@ -54,16 +50,14 @@ void main() {
   test('fails when active plan metadata contradicts its directory', () async {
     final fixture = await _fixture();
     addTearDown(() => fixture.delete(recursive: true));
-    File(
-      p.join(fixture.path, 'docs', 'exec-plans', 'active', 'task.md'),
-    ).writeAsStringSync(
-      _plan.replaceFirst('Status: active', 'Status: completed'),
-    );
+    File(p.join(fixture.path, 'docs', 'exec-plans', 'active', 'task.md'))
+        .writeAsStringSync(
+          _plan.replaceFirst('Status: active', 'Status: completed'),
+        );
     final errors = StringBuffer();
 
-    final result = await KnowledgeWorkflow(
-      _context(fixture, errors: errors),
-    ).run(const []);
+    final result = await KnowledgeWorkflow(_context(fixture, errors: errors))
+        .run(const []);
 
     expect(result, 1);
     expect(errors.toString(), contains('stored under `active/`'));
@@ -77,9 +71,8 @@ void main() {
     ).writeAsStringSync('env:\n  COVERAGE_MIN: "100.0"\nrun: flutter test\n');
     final errors = StringBuffer();
 
-    final result = await KnowledgeWorkflow(
-      _context(fixture, errors: errors),
-    ).run(const []);
+    final result = await KnowledgeWorkflow(_context(fixture, errors: errors))
+        .run(const []);
 
     expect(result, 1);
     expect(errors.toString(), contains('mobilekit verify --profile ci'));
@@ -97,14 +90,12 @@ WorkflowContext _context(Directory root, {required StringSink errors}) {
 
 Future<Directory> _fixture() async {
   final root = await Directory.systemTemp.createTemp('mobilekit_knowledge_');
-  Directory(
-    p.join(root.path, 'lib', 'core', 'foundation'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'lib', 'core', 'foundation'))
+      .createSync(recursive: true);
   Directory(p.join(root.path, 'lib', 'core', 'runtime')).createSync();
   File(p.join(root.path, 'AGENTS.md')).writeAsStringSync(_agents);
-  File(
-    p.join(root.path, 'README.md'),
-  ).writeAsStringSync('[Documentation](docs/README.md)\n');
+  File(p.join(root.path, 'README.md'))
+      .writeAsStringSync('[Documentation](docs/README.md)\n');
   File(p.join(root.path, 'docs', 'README.md'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('Documentation.\n');

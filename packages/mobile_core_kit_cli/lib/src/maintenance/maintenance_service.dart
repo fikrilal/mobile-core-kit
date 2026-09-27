@@ -103,12 +103,11 @@ class MaintenanceResult {
   final List<MaintenanceStepResult> steps;
 }
 
-typedef MaintenanceCommandRunner =
-    Future<int> Function(
-      Directory workingDirectory,
-      List<String> command,
-      Duration timeout,
-    );
+typedef MaintenanceCommandRunner = Future<int> Function(
+  Directory workingDirectory,
+  List<String> command,
+  Duration timeout,
+);
 
 class MaintenanceService {
   MaintenanceService({

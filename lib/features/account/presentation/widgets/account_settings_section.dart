@@ -9,7 +9,7 @@ import 'package:mobile_core_kit/core/runtime/appearance/theme_mode_controller.da
 import 'package:mobile_core_kit/core/runtime/localization/locale_controller.dart';
 import 'package:mobile_core_kit/features/account/presentation/widgets/locale_setting_tile.dart';
 import 'package:mobile_core_kit/features/account/presentation/widgets/theme_mode_setting_tile.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class AccountSettingsSection extends StatelessWidget {
   const AccountSettingsSection({

@@ -84,8 +84,10 @@ class VmPortForward {
   final Future<void> Function() remove;
 }
 
-typedef VmPortForwarder =
-    Future<VmPortForward> Function(String device, int devicePort);
+typedef VmPortForwarder = Future<VmPortForward> Function(
+  String device,
+  int devicePort,
+);
 
 /// Live `flutter logs` streams plus a way to stop the process.
 class FlutterLogsSession {

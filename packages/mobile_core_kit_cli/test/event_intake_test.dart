@@ -168,12 +168,10 @@ Future<_EventFixture> _fixture({EventTaskBegin? begin}) async {
   File(p.join(root.path, _queuedPath))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(_plan());
-  Directory(
-    p.join(root.path, 'docs/exec-plans/active'),
-  ).createSync(recursive: true);
-  Directory(
-    p.join(root.path, 'lib/features/example'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'docs/exec-plans/active'))
+      .createSync(recursive: true);
+  Directory(p.join(root.path, 'lib/features/example'))
+      .createSync(recursive: true);
   late _EventFixture fixture;
   fixture = _EventFixture(root: root);
   fixture.service = EventIntakeService(

@@ -51,9 +51,8 @@ void main() {
         'auth.journey': 'maestro-flow',
       });
 
-      File(
-        p.join(root.path, 'lib', 'features', 'example', 'changed.dart'),
-      ).writeAsStringSync('// changed\n');
+      File(p.join(root.path, 'lib', 'features', 'example', 'changed.dart'))
+          .writeAsStringSync('// changed\n');
       await expectLater(
         resolver.resolve('runtime-binding-task'),
         throwsA(_controlError('runtime.task-not-verified')),
@@ -106,9 +105,8 @@ oracles:
   File(p.join(root.path, 'maestro', 'login.yaml'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('appId: example\n');
-  Directory(
-    p.join(root.path, 'lib', 'features', 'example'),
-  ).createSync(recursive: true);
+  Directory(p.join(root.path, 'lib', 'features', 'example'))
+      .createSync(recursive: true);
   await _git(root, ['add', '.']);
   await _git(root, ['commit', '-qm', 'seed']);
   return root;

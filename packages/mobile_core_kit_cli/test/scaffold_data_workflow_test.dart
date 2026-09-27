@@ -518,27 +518,25 @@ components:
       },
     );
 
-    test(
-      'adds missing imports and _tag to an existing bare datasource stub',
-      () async {
-        final context = createContext();
-        final workflow = ScaffoldDataWorkflow(context);
+    test('adds missing imports and _tag to an existing bare datasource stub', () async {
+      final context = createContext();
+      final workflow = ScaffoldDataWorkflow(context);
 
-        // Create a bare datasource stub without log_utils, api_response, or _tag
-        final dsFile = File(
-          p.join(
-            tempDir.path,
-            'lib',
-            'features',
-            'orders',
-            'data',
-            'datasource',
-            'remote',
-            'orders_remote_datasource.dart',
-          ),
-        )..createSync(recursive: true);
+      // Create a bare datasource stub without log_utils, api_response, or _tag
+      final dsFile = File(
+        p.join(
+          tempDir.path,
+          'lib',
+          'features',
+          'orders',
+          'data',
+          'datasource',
+          'remote',
+          'orders_remote_datasource.dart',
+        ),
+      )..createSync(recursive: true);
 
-        dsFile.writeAsStringSync('''
+      dsFile.writeAsStringSync('''
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
 
 class OrdersRemoteDataSource {
@@ -550,45 +548,44 @@ class OrdersRemoteDataSource {
 }
 ''');
 
-        final code = await workflow.run([
-          '--openapi-spec',
-          'openapi.yaml',
-          '--feature',
-          'orders',
-          '--operation',
-          'orders.get',
-          '--no-codegen',
-        ]);
-        expect(code, 0);
+      final code = await workflow.run([
+        '--openapi-spec',
+        'openapi.yaml',
+        '--feature',
+        'orders',
+        '--operation',
+        'orders.get',
+        '--no-codegen',
+      ]);
+      expect(code, 0);
 
-        final content = dsFile.readAsStringSync();
-        expect(
-          content,
-          contains(
-            "import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';",
-          ),
-        );
-        expect(
-          content,
-          contains(
-            "import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';",
-          ),
-        );
-        expect(
-          content,
-          contains("final String _tag = 'OrdersRemoteDataSource';"),
-        );
-        expect(content, contains('Future<ApiResponse<GetResponseModel>> get('));
+      final content = dsFile.readAsStringSync();
+      expect(
+        content,
+        contains(
+          "import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';",
+        ),
+      );
+      expect(
+        content,
+        contains(
+          "import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';",
+        ),
+      );
+      expect(
+        content,
+        contains("final String _tag = 'OrdersRemoteDataSource';"),
+      );
+      expect(content, contains('Future<ApiResponse<GetResponseModel>> get('));
 
-        // Check imports are sorted alphabetically
-        final lines = content
-            .split('\n')
-            .where((l) => l.startsWith('import '))
-            .toList();
-        final sortedLines = List<String>.from(lines)..sort();
-        expect(lines, equals(sortedLines));
-      },
-    );
+      // Check imports are sorted alphabetically
+      final lines = content
+          .split('\n')
+          .where((l) => l.startsWith('import '))
+          .toList();
+      final sortedLines = List<String>.from(lines)..sort();
+      expect(lines, equals(sortedLines));
+    });
   });
 
   group('OpenApiSchemaResolver', () {

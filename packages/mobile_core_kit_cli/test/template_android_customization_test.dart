@@ -53,9 +53,8 @@ void main() {
       reason: result.message,
     );
 
-    final gradle = File(
-      p.join(repository.path, 'android/app/build.gradle.kts'),
-    ).readAsStringSync();
+    final gradle = File(p.join(repository.path, 'android/app/build.gradle.kts'))
+        .readAsStringSync();
     expect(gradle, contains('namespace = "com.example.shopping"'));
     expect(gradle, contains('applicationId = "com.example.shopping"'));
     expect(gradle, contains('applicationIdSuffix = ".dev"'));
@@ -69,9 +68,8 @@ void main() {
     expect(gradle, contains('id("com.google.firebase.crashlytics")'));
 
     expect(
-      File(
-        p.join(repository.path, 'android/app/src/main/AndroidManifest.xml'),
-      ).readAsStringSync(),
+      File(p.join(repository.path, 'android/app/src/main/AndroidManifest.xml'))
+          .readAsStringSync(),
       contains('android:label="Example Shopping"'),
     );
     expect(
@@ -115,15 +113,17 @@ void main() {
       'com.example.shopping.dev',
     );
     expect(
-      _engine(
-        repository,
-      ).nextManifest.customization.androidStagingApplicationId,
+      _engine(repository)
+          .nextManifest
+          .customization
+          .androidStagingApplicationId,
       'com.example.shopping.staging',
     );
     expect(
-      _engine(
-        repository,
-      ).nextManifest.customization.androidProductionApplicationId,
+      _engine(repository)
+          .nextManifest
+          .customization
+          .androidProductionApplicationId,
       'com.example.shopping',
     );
   });

@@ -15,10 +15,8 @@ class HardcodedUiColorsLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'hardcoded_ui_colors',
-    problemMessage:
-        'Hardcoded UI color "{0}" is not allowed. Use ColorScheme/SemanticColors roles instead.',
-    correctionMessage:
-        'Use `Theme.of(context).colorScheme`, `context.cs.*`, or `context.semanticColors.*`.',
+    problemMessage: 'Hardcoded UI color "{0}" is not allowed. Use ColorScheme/SemanticColors roles instead.',
+    correctionMessage: 'Use `Theme.of(context).colorScheme`, `context.cs.*`, or `context.semanticColors.*`.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

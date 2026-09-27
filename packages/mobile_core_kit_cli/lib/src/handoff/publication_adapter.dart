@@ -185,9 +185,8 @@ String normalizePublicationRemote(String value) {
       'Origin must be credential-free HTTPS or git@host SCP syntax.',
     );
   }
-  final match = RegExp(
-    r'^/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?$',
-  ).firstMatch(uri.path);
+  final match = RegExp(r'^/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?$')
+      .firstMatch(uri.path);
   if (match == null) {
     throw const TaskControlError(
       'handoff.remote-invalid',

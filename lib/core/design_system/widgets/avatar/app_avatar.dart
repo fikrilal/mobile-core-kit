@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/avatar/avatar_size.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 /// A reusable circular avatar component with sensible fallbacks:
 /// photo -> initials -> generic person icon.

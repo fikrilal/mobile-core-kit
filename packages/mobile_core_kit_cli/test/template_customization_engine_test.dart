@@ -64,15 +64,13 @@ void main() {
         contains("package:example_app/core.dart"),
       );
       expect(
-        File(
-          p.join(repository.path, 'test', 'app_test.dart'),
-        ).readAsStringSync(),
+        File(p.join(repository.path, 'test', 'app_test.dart'))
+            .readAsStringSync(),
         contains("package:example_app/core.dart"),
       );
       expect(
-        File(
-          p.join(repository.path, 'integration_test', 'app_test.dart'),
-        ).readAsStringSync(),
+        File(p.join(repository.path, 'integration_test', 'app_test.dart'))
+            .readAsStringSync(),
         contains("package:example_app/core.dart"),
       );
       expect(
@@ -87,9 +85,8 @@ void main() {
         contains("package:mobile_core_kit/core.dart"),
       );
       expect(
-        File(
-          p.join(repository.path, 'lib', 'l10n', 'app_en.arb'),
-        ).readAsStringSync(),
+        File(p.join(repository.path, 'lib', 'l10n', 'app_en.arb'))
+            .readAsStringSync(),
         contains('"appTitle": "Example App"'),
       );
       final pseudo = File(
@@ -99,9 +96,8 @@ void main() {
       expect(pseudo, contains('⟫"'));
       expect(pseudo, contains('Ḗẋåḿρŀḗ Åρρ'));
       expect(
-        File(
-          p.join(repository.path, 'lib', 'l10n', 'app_ar.arb'),
-        ).readAsStringSync(),
+        File(p.join(repository.path, 'lib', 'l10n', 'app_ar.arb'))
+            .readAsStringSync(),
         contains('"appTitle": "⟪RTL⟫ Example App"'),
       );
       expect(

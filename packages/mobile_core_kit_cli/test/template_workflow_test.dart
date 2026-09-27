@@ -72,9 +72,8 @@ void main() {
     expect(result, 0);
     expect(errors, isEmpty);
     expect(
-      File(
-        p.join(repository.path, projectManifestRelativePath),
-      ).readAsStringSync(),
+      File(p.join(repository.path, projectManifestRelativePath))
+          .readAsStringSync(),
       contains('dart_package:'),
     );
     expect(output.toString(), contains('Wrote .mobilekit/project.yaml.'));
@@ -173,9 +172,8 @@ void main() {
       expect(secondResult, 0);
       expect(secondCommands, isEmpty);
       expect(
-        File(
-          p.join(repository.path, projectManifestRelativePath),
-        ).readAsStringSync(),
+        File(p.join(repository.path, projectManifestRelativePath))
+            .readAsStringSync(),
         existingManifest,
       );
     },
@@ -207,9 +205,8 @@ void main() {
     final manifestBefore = File(
       p.join(repository.path, projectManifestRelativePath),
     ).readAsStringSync();
-    File(
-      p.join(repository.path, 'README.md'),
-    ).writeAsStringSync('# user-owned-heading\n');
+    File(p.join(repository.path, 'README.md'))
+        .writeAsStringSync('# user-owned-heading\n');
 
     final result = await workflow.run(TemplateLifecycleCommand.customize, [
       '--config',
@@ -220,9 +217,8 @@ void main() {
     expect(result, 1);
     expect(errors.toString(), contains('conflicts'));
     expect(
-      File(
-        p.join(repository.path, projectManifestRelativePath),
-      ).readAsStringSync(),
+      File(p.join(repository.path, projectManifestRelativePath))
+          .readAsStringSync(),
       manifestBefore,
     );
   });
@@ -341,9 +337,8 @@ description: 'A new Flutter project.'
 dev_dependencies:
   build_runner: ^2.12.2
 ''');
-  File(
-    p.join(repository.path, 'README.md'),
-  ).writeAsStringSync('# mobile-core-kit\n');
+  File(p.join(repository.path, 'README.md'))
+      .writeAsStringSync('# mobile-core-kit\n');
   File(p.join(repository.path, 'lib', 'l10n', 'app_en.arb'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('''
@@ -354,9 +349,8 @@ dev_dependencies:
   File(p.join(repository.path, '.env', 'dev.yaml'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(_validEnvironment);
-  Directory(
-    p.join(repository.path, 'lib', 'core', 'foundation', 'config'),
-  ).createSync(recursive: true);
+  Directory(p.join(repository.path, 'lib', 'core', 'foundation', 'config'))
+      .createSync(recursive: true);
   return repository;
 }
 

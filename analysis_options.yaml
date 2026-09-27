@@ -12,6 +12,10 @@
 include: lint/flutter_lints.yaml
 
 analyzer:
+  errors:
+    # custom_lint still registers through this legacy list. The diagnostic
+    # is the config key, not application code.
+    analysis_options_deprecated_plugins: ignore
   exclude:
     - build/**
     - android/**

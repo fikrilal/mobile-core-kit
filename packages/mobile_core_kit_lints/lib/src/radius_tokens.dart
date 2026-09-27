@@ -15,10 +15,8 @@ class RadiusTokensLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'radius_tokens',
-    problemMessage:
-        'Hardcoded radius "{0}" is not allowed. Use `AppRadii.*` tokens instead.',
-    correctionMessage:
-        'Prefer `AppRadii.radius*` (or an existing radius token) when using BorderRadius/Radius.',
+    problemMessage: 'Hardcoded radius "{0}" is not allowed. Use `AppRadii.*` tokens instead.',
+    correctionMessage: 'Prefer `AppRadii.radius*` (or an existing radius token) when using BorderRadius/Radius.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

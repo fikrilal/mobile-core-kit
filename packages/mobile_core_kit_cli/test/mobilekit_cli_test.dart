@@ -223,9 +223,8 @@ void main() {
         'mobile_core_kit_cli_workflow_test_',
       );
       addTearDown(() => tempDirectory.delete(recursive: true));
-      File(
-        p.join(tempDirectory.path, 'pubspec.yaml'),
-      ).writeAsStringSync('name: test_repository\n');
+      File(p.join(tempDirectory.path, 'pubspec.yaml'))
+          .writeAsStringSync('name: test_repository\n');
       File(p.join(tempDirectory.path, '.mobilekit', 'template.yaml'))
         ..parent.createSync(recursive: true)
         ..writeAsStringSync(
@@ -284,12 +283,10 @@ void main() {
       'mobile_core_kit_cli_profile_test_',
     );
     addTearDown(() => tempDirectory.delete(recursive: true));
-    File(
-      p.join(tempDirectory.path, 'pubspec.yaml'),
-    ).writeAsStringSync('name: test_repository\n');
-    File(
-      p.join(tempDirectory.path, '.git'),
-    ).writeAsStringSync('gitdir: test\n');
+    File(p.join(tempDirectory.path, 'pubspec.yaml'))
+        .writeAsStringSync('name: test_repository\n');
+    File(p.join(tempDirectory.path, '.git'))
+        .writeAsStringSync('gitdir: test\n');
     final errors = StringBuffer();
     var invoked = false;
 
@@ -312,12 +309,10 @@ void main() {
       'mobile_core_kit_cli_runtime_profile_test_',
     );
     addTearDown(() => tempDirectory.delete(recursive: true));
-    File(
-      p.join(tempDirectory.path, 'pubspec.yaml'),
-    ).writeAsStringSync('name: test_repository\n');
-    File(
-      p.join(tempDirectory.path, '.git'),
-    ).writeAsStringSync('gitdir: test\n');
+    File(p.join(tempDirectory.path, 'pubspec.yaml'))
+        .writeAsStringSync('name: test_repository\n');
+    File(p.join(tempDirectory.path, '.git'))
+        .writeAsStringSync('gitdir: test\n');
     final errors = StringBuffer();
 
     final result = await MobilekitCli(
@@ -336,12 +331,10 @@ void main() {
         'mobile_core_kit_cli_failure_test_',
       );
       addTearDown(() => tempDirectory.delete(recursive: true));
-      File(
-        p.join(tempDirectory.path, 'pubspec.yaml'),
-      ).writeAsStringSync('name: test_repository\n');
-      File(
-        p.join(tempDirectory.path, '.git'),
-      ).writeAsStringSync('gitdir: test\n');
+      File(p.join(tempDirectory.path, 'pubspec.yaml'))
+          .writeAsStringSync('name: test_repository\n');
+      File(p.join(tempDirectory.path, '.git'))
+          .writeAsStringSync('gitdir: test\n');
       final errors = StringBuffer();
 
       final result = await MobilekitCli(
@@ -359,9 +352,8 @@ void main() {
   test('rejects an unknown grouped command', () async {
     final errors = StringBuffer();
 
-    final result = await MobilekitCli(
-      errorOutput: errors,
-    ).run(['config', 'write']);
+    final result = await MobilekitCli(errorOutput: errors)
+        .run(['config', 'write']);
 
     expect(result, 2);
     expect(errors.toString(), contains("Unknown config command 'write'"));
