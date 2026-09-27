@@ -51,12 +51,16 @@ appId: dev.fikril.mobile.corekit.dev
     above:
       text: "^Contact phone$"
 - inputText: ${MAESTRO_TEST_EMAIL}
-- swipe:
-    start: 50%, 40%
-    end: 50%, 15%
+- tapOn: "Merchant onboarding (demo)"
+- scrollUntilVisible:
+    element:
+      text: "^Contact phone$"
+    direction: DOWN
 - tapOn:
-    point: 50%, 50%
+    below:
+      text: "^Contact phone$"
 - inputText: "+15551234567"
+- tapOn: "Merchant onboarding (demo)"
 - tapOn: "Next"
 
 # 2. Owners
@@ -86,9 +90,10 @@ appId: dev.fikril.mobile.corekit.dev
       text: "^Ownership percentage.*$"
 - inputText: "100"
 - tapOn: "Merchant onboarding (demo)"
-- swipe:
-    start: 50%, 40%
-    end: 50%, 15%
+- scrollUntilVisible:
+    element:
+      text: ".*Primary contact.*"
+    direction: DOWN
 - tapOn:
     below:
       text: "^Email$"
@@ -124,9 +129,10 @@ appId: dev.fikril.mobile.corekit.dev
       text: "^Account number$"
 - inputText: "1234567890"
 - tapOn: "Merchant onboarding (demo)"
-- swipe:
-    start: 50%, 40%
-    end: 50%, 15%
+- scrollUntilVisible:
+    element:
+      text: "^Payout schedule$"
+    direction: DOWN
 - tapOn:
     below:
       text: "^Account holder type$"
@@ -136,6 +142,10 @@ appId: dev.fikril.mobile.corekit.dev
     visible: "Business"
     timeout: 5000
 - tapOn: "Business"
+- scrollUntilVisible:
+    element:
+      text: "^Payout schedule$"
+    direction: DOWN
 - tapOn:
     below:
       text: "^Payout schedule$"
@@ -153,25 +163,9 @@ appId: dev.fikril.mobile.corekit.dev
     element:
       text: ".*The information provided is accurate.*"
     direction: DOWN
-    centerElement: true
 - tapOn: ".*The information provided is accurate.*"
-- scrollUntilVisible:
-    element:
-      text: ".*I am authorized to submit this application.*"
-    direction: DOWN
-    centerElement: true
 - tapOn: ".*I am authorized to submit this application.*"
-- scrollUntilVisible:
-    element:
-      text: ".*I accept the demo terms.*"
-    direction: DOWN
-    centerElement: true
 - tapOn: ".*I accept the demo terms.*"
-- scrollUntilVisible:
-    element:
-      text: "Submit application"
-    direction: DOWN
-    centerElement: true
 - tapOn: "Submit application"
 - extendedWaitUntil:
     visible: "Application .* submitted.*"
