@@ -80,7 +80,7 @@ All listed commands passed. The package test suite passed with 23 tests, and
 the full pinned verification passed with 553 Flutter tests. Installed-mode
 verification also passed after refreshing a stale same-version global CLI
 snapshot; the recovery command is documented in
-`docs/engineering/guardrails.md`.
+`docs/engineering/harness/guardrails.md`.
 
 ```bash
 dart format packages/mobile_core_kit_cli

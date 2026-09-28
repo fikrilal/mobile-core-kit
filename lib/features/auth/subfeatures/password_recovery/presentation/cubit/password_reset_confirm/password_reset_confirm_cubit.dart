@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
@@ -10,7 +8,6 @@ import 'package:mobile_core_kit/features/auth/domain/input/password_reset_confir
 import 'package:mobile_core_kit/features/auth/domain/usecase/confirm_password_reset_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
 import 'package:mobile_core_kit/features/auth/domain/value/reset_token.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/password_recovery/presentation/cubit/password_reset_confirm/password_reset_confirm_state.dart';
 
 class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
@@ -22,9 +19,6 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
 
   final ConfirmPasswordResetUseCase _confirmPasswordReset;
   final SessionManager _sessionManager;
-  final _effects = StreamController<PasswordResetConfirmEffect>.broadcast();
-
-  Stream<PasswordResetConfirmEffect> get effects => _effects.stream;
 
   void tokenChanged(String value) {
     final result = ResetToken.create(value);
@@ -171,7 +165,6 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
         );
       },
       orElse: () {
-        _effects.add(PasswordResetConfirmFailureEffect(failure));
         emit(
           state.copyWith(
             status: PasswordResetConfirmStatus.failure,
@@ -180,11 +173,5 @@ class PasswordResetConfirmCubit extends Cubit<PasswordResetConfirmState> {
         );
       },
     );
-  }
-
-  @override
-  Future<void> close() async {
-    unawaited(_effects.close());
-    return super.close();
   }
 }

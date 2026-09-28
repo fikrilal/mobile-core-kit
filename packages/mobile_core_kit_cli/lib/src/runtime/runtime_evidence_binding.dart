@@ -18,6 +18,7 @@ class RuntimeEvidenceBinding {
     required this.taskFingerprint,
     required this.oracleIds,
     required this.runtimeTargets,
+    required this.runtimeKinds,
   });
 
   final String taskId;
@@ -29,6 +30,7 @@ class RuntimeEvidenceBinding {
   final String taskFingerprint;
   final List<String> oracleIds;
   final Map<String, String> runtimeTargets;
+  final Map<String, String> runtimeKinds;
 }
 
 abstract interface class RuntimeEvidenceBindingResolver {
@@ -65,16 +67,20 @@ class TaskRuntimeEvidenceBindingResolver
       throw TaskControlError(error.code, error.message);
     }
     final targets = <String, String>{};
+    final kinds = <String, String>{};
     for (final id in state.oracleIds) {
       final oracle = registry.definitions[id];
-      if (oracle?.kind == 'integration-test') {
+      if (oracle?.kind == 'integration-test' ||
+          oracle?.kind == 'maestro-flow') {
         targets[id] = oracle!.target;
+        kinds[id] = oracle.kind;
       }
     }
     if (targets.isEmpty) {
       throw const TaskControlError(
         'runtime.oracle-missing',
-        'The task must select at least one registered integration-test oracle.',
+        'The task must select at least one registered integration-test or '
+            'maestro-flow oracle.',
       );
     }
     return RuntimeEvidenceBinding(
@@ -87,6 +93,7 @@ class TaskRuntimeEvidenceBindingResolver
       taskFingerprint: preflight.taskFingerprint,
       oracleIds: state.oracleIds,
       runtimeTargets: Map.unmodifiable(targets),
+      runtimeKinds: Map.unmodifiable(kinds),
     );
   }
 }

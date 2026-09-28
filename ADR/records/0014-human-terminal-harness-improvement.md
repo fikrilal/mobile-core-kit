@@ -86,7 +86,7 @@ full verification remains the implementation gate.
 
 ## More Information
 
-* [Controlled harness improvement](../../docs/engineering/controlled_harness_improvement.md)
-* [Harness operating evidence](../../docs/engineering/harness_operating_evidence.md)
-* [Controlled verification loop](../../docs/engineering/controlled_verification_loop.md)
+* [Controlled harness improvement](../../docs/engineering/harness/controlled_harness_improvement.md)
+* [Harness operating evidence](../../docs/engineering/harness/harness_operating_evidence.md)
+* [Controlled verification loop](../../docs/engineering/harness/controlled_verification_loop.md)
 * [Agent-first harness decision](0011-agent-first-harness-and-loop-engineering.md)

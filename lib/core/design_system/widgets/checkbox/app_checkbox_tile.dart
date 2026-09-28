@@ -91,11 +91,16 @@ class AppCheckboxTile extends StatelessWidget {
       label,
       color: labelColor,
       fontWeight: FontWeight.w600,
+      overflow: TextOverflow.visible,
     );
 
     final helperWidget = helperText == null
         ? null
-        : AppText.bodySmall(helperText!, color: helperColor);
+        : AppText.bodySmall(
+            helperText!,
+            color: helperColor,
+            overflow: TextOverflow.visible,
+          );
 
     final textColumn = Expanded(
       child: Column(

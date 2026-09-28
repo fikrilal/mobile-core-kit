@@ -12,7 +12,7 @@ import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/current_user_state.dart';
 import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.dart';
 import 'package:mobile_core_kit/navigation/account/account_routes.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 class SecurityPrivacyPage extends StatelessWidget {
   const SecurityPrivacyPage({super.key, required this.userContext});

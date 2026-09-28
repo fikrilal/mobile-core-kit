@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +19,6 @@ import 'package:mobile_core_kit/core/runtime/user_context/user_context_service.d
 import 'package:mobile_core_kit/features/account/presentation/pages/account_page.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/profile_image/profile_image_cubit.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/cubit/logout/logout_state.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/sign_out/presentation/localization/logout_failure_localizer.dart';
 import 'package:mobile_core_kit/features/home/presentation/pages/home_page.dart';
@@ -30,6 +27,7 @@ import 'package:mobile_core_kit/navigation/app_redirect.dart';
 import 'package:mobile_core_kit/navigation/app_routes.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes_list.dart';
 import 'package:mobile_core_kit/navigation/dev_tools/dev_tools_routes_list.dart';
+import 'package:mobile_core_kit/navigation/merchant_onboarding/merchant_onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/onboarding/onboarding_routes_list.dart';
 import 'package:mobile_core_kit/navigation/shell/app_shell_page.dart';
 
@@ -95,59 +93,42 @@ GoRouter createRouter() {
       ...authRoutes,
       ...onboardingRoutes,
       ...accountRoutes,
+      ...merchantOnboardingRoutes,
     ],
   );
 }
 
-class _AccountRoutePage extends StatefulWidget {
+class _AccountRoutePage extends StatelessWidget {
   const _AccountRoutePage();
 
   @override
-  State<_AccountRoutePage> createState() => _AccountRoutePageState();
-}
-
-class _AccountRoutePageState extends State<_AccountRoutePage> {
-  StreamSubscription<LogoutEffect>? _logoutEffectSubscription;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _logoutEffectSubscription ??= context.read<LogoutCubit>().effects.listen(
-      _handleLogoutEffect,
-    );
-  }
-
-  void _handleLogoutEffect(LogoutEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case LogoutFailureEffect(:final failure):
+  Widget build(BuildContext context) {
+    return BlocListener<LogoutCubit, LogoutState>(
+      listenWhen: (previous, current) =>
+          current.status == LogoutStatus.failure &&
+          current.failure != null &&
+          (previous.status != LogoutStatus.failure ||
+              previous.failure != current.failure),
+      listener: (context, state) {
+        final failure = state.failure;
+        if (failure == null) return;
         AppSnackBar.showError(
           context,
           message: messageForLogoutFailure(failure, context.l10n),
         );
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_logoutEffectSubscription?.cancel());
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LogoutCubit, LogoutState>(
-      builder: (context, logoutState) {
-        return AccountPage(
-          userContext: locator<UserContextService>(),
-          themeModeController: locator<ThemeModeController>(),
-          localeController: locator<LocaleController>(),
-          imagePicker: locator<ImagePickerService>(),
-          isLoggingOut: logoutState.isSubmitting,
-          onLogout: () => context.read<LogoutCubit>().logout(),
-        );
       },
+      child: BlocBuilder<LogoutCubit, LogoutState>(
+        builder: (context, logoutState) {
+          return AccountPage(
+            userContext: locator<UserContextService>(),
+            themeModeController: locator<ThemeModeController>(),
+            localeController: locator<LocaleController>(),
+            imagePicker: locator<ImagePickerService>(),
+            isLoggingOut: logoutState.isSubmitting,
+            onLogout: () => context.read<LogoutCubit>().logout(),
+          );
+        },
+      ),
     );
   }
 }

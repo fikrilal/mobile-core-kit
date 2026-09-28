@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mobile_core_kit_cli/src/runtime/runtime_log_signals.dart';
 import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
@@ -22,12 +23,14 @@ class OracleDefinition {
     required this.kind,
     required this.target,
     required this.covers,
+    this.logSignals = const [],
   });
 
   final String id;
   final String kind;
   final String target;
   final Set<String> covers;
+  final List<MaestroLogSignal> logSignals;
 }
 
 class OracleRegistry {
@@ -99,12 +102,14 @@ class OracleRegistry {
           "Oracle '$id' repeats an impact area.",
         );
       }
+      final logSignals = _parseLogSignals(id, kind, value);
       _validateTarget(root, id: id, kind: kind, target: target);
       definitions[id] = OracleDefinition(
         id: id,
         kind: kind,
         target: target,
         covers: Set.unmodifiable(covers),
+        logSignals: List.unmodifiable(logSignals),
       );
     }
     return OracleRegistry._(root, Map.unmodifiable(definitions));
@@ -141,6 +146,75 @@ class OracleRegistry {
     }
   }
 
+  static List<MaestroLogSignal> _parseLogSignals(
+    String id,
+    String kind,
+    YamlMap value,
+  ) {
+    final raw = value['logSignals'];
+    if (kind != 'maestro-flow') {
+      if (raw != null) {
+        throw OracleRegistryError(
+          'oracle.registry-invalid',
+          "Oracle '$id' declares logSignals but is not a maestro-flow.",
+        );
+      }
+      return const [];
+    }
+    if (raw is! YamlList || raw.isEmpty) {
+      throw OracleRegistryError(
+        'oracle.registry-invalid',
+        "Oracle '$id' must declare at least one logSignals entry.",
+      );
+    }
+    final signals = <MaestroLogSignal>[];
+    final ids = <String>{};
+    for (final item in raw) {
+      if (item is! YamlMap || item.keys.length != 2) {
+        throw OracleRegistryError(
+          'oracle.registry-invalid',
+          "Oracle '$id' logSignals entries must contain id and contains.",
+        );
+      }
+      final signalId = item['id'];
+      final contains = item['contains'];
+      if (signalId is! String ||
+          !RegExp(r'^[a-z][a-z0-9-]{1,40}$').hasMatch(signalId) ||
+          signalId == vmLogAttachedSignalId ||
+          contains is! String ||
+          contains.isEmpty ||
+          contains.length > 80 ||
+          contains.contains('\n') ||
+          contains.contains('@') ||
+          contains.contains('Bearer') ||
+          contains.contains('eyJ')) {
+        throw OracleRegistryError(
+          'oracle.registry-invalid',
+          "Oracle '$id' has an invalid logSignals entry.",
+        );
+      }
+      if (!ids.add(signalId)) {
+        throw OracleRegistryError(
+          'oracle.registry-invalid',
+          "Oracle '$id' repeats log signal '$signalId'.",
+        );
+      }
+      signals.add(MaestroLogSignal(id: signalId, contains: contains));
+    }
+    return signals;
+  }
+
+  Map<String, List<MaestroLogSignal>> get logSignalsByTarget {
+    final signals = <String, List<MaestroLogSignal>>{};
+    for (final oracle in definitions.values) {
+      if (oracle.kind != 'maestro-flow') continue;
+      final previous = signals[oracle.target];
+      if (previous != null && previous.isNotEmpty) continue;
+      signals[oracle.target] = oracle.logSignals;
+    }
+    return Map.unmodifiable(signals);
+  }
+
   static void _validateTarget(
     Directory root, {
     required String id,
@@ -162,12 +236,36 @@ class OracleRegistry {
     } on TaskPlanError catch (error) {
       throw OracleRegistryError('oracle.registry-invalid', error.message);
     }
-    if (!File(p.join(root.path, normalized)).existsSync()) {
+    final targetFile = File(p.join(root.path, normalized));
+    if (!targetFile.existsSync()) {
       throw OracleRegistryError(
         'oracle.target-missing',
         "Oracle '$id' target does not exist: '$normalized'.",
       );
     }
+    if (kind == 'golden-test' && !normalized.endsWith('_test.dart')) {
+      throw OracleRegistryError(
+        'oracle.registry-invalid',
+        "Oracle '$id' golden target must be a *_test.dart file.",
+      );
+    }
+  }
+
+  List<String> pathsForKind(String kind) {
+    if (!_oracleKinds.contains(kind)) {
+      throw OracleRegistryError(
+        'oracle.kind-unknown',
+        "Unknown oracle kind '$kind'.",
+      );
+    }
+    final paths =
+        definitions.values
+            .where((oracle) => oracle.kind == kind)
+            .map((oracle) => oracle.target)
+            .toSet()
+            .toList()
+          ..sort();
+    return paths;
   }
 }
 
@@ -187,8 +285,8 @@ const _oracleKinds = {
   'verification-profile',
   'contract',
   'integration-test',
+  'maestro-flow',
   'golden-test',
-  'metric-assertion',
   'regression-test',
   'procedure',
   'manual-review',

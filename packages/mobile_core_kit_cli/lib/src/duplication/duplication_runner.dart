@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mobile_core_kit_cli/src/duplication/duplication_enforcement.dart';
 import 'package:mobile_core_kit_cli/src/duplication/duplication_report_filter.dart';
 import 'package:path/path.dart' as p;
 
@@ -48,6 +49,7 @@ class DuplicationRunner {
         reportPath: filter.report,
         allowlistPath: filter.allowlist,
         scanRoots: filter.scanRoots,
+        fatalFound: enforcementFor(profile) == DuplicationEnforcement.blocking,
       );
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: Invalid duplication report data.');

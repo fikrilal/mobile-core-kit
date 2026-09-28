@@ -44,11 +44,9 @@ void main() {
               .findLiteralArguments(sink.target, invocation.$2)
               .toList();
 
-          expect(
-            matches.map((match) => match.argument),
-            [argument],
-            reason: '${sink.target}.$argument',
-          );
+          expect(matches.map((match) => match.argument), [
+            argument,
+          ], reason: '${sink.target}.$argument');
         }
 
         for (final index in sink.positionalArguments) {
@@ -63,11 +61,9 @@ void main() {
               .findLiteralArguments(sink.target, invocation.$2)
               .toList();
 
-          expect(
-            matches.map((match) => match.argument),
-            ['positional[$index]'],
-            reason: '${sink.target}.positional[$index]',
-          );
+          expect(matches.map((match) => match.argument), [
+            'positional[$index]',
+          ], reason: '${sink.target}.positional[$index]');
         }
       }
     });

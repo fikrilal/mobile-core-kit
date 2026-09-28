@@ -22,6 +22,9 @@ class NetworkException implements Exception {
       case DioExceptionType.receiveTimeout:
         message = 'Receive timeout';
         break;
+      case DioExceptionType.transformTimeout:
+        message = 'Transform timeout';
+        break;
       case DioExceptionType.badResponse:
         // Try to extract error message from response if possible
         if (data is Map && data.containsKey('message')) {

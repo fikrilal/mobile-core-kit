@@ -12,7 +12,6 @@ import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/inpu
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/repository/profile_draft_repository.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/domain/usecase/patch_me_profile_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -163,7 +162,7 @@ void main() {
       await cubit.close();
     });
 
-    test('emits failure effect for submit failure', () async {
+    test('submits and emits submitting -> failure', () async {
       when(
         () => patchMeProfile(any()),
       ).thenAnswer((_) async => left(const AuthFailure.serverError()));
@@ -173,19 +172,24 @@ void main() {
         patchMeProfile,
         sessionManager,
       );
-      final effects = <CompleteProfileEffect>[];
-      final effectSub = cubit.effects.listen(effects.add);
+      final emitted = <CompleteProfileState>[];
+      final sub = cubit.stream.listen(emitted.add);
 
       cubit.givenNameChanged('John');
       await cubit.submit();
       await pumpEventQueue();
 
+      expect(
+        emitted.map((s) => s.status).toList(),
+        containsAllInOrder([
+          CompleteProfileStatus.submitting,
+          CompleteProfileStatus.failure,
+        ]),
+      );
       expect(cubit.state.status, CompleteProfileStatus.failure);
       expect(cubit.state.failure, const AuthFailure.serverError());
-      expect(effects, hasLength(1));
-      expect(effects.single, isA<CompleteProfileFailureEffect>());
 
-      await effectSub.cancel();
+      await sub.cancel();
       await cubit.close();
     });
   });

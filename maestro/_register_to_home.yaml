@@ -1,0 +1,72 @@
+# Subflow: onboarding → register → complete profile → Home.
+# Parent must launchApp. Unique MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD.
+# See maestro/README.md.
+appId: dev.fikril.mobile.corekit.dev
+---
+- extendedWaitUntil:
+    visible: ".*(Continue onboarding|Sign in to your account).*"
+    timeout: 20000
+- runFlow:
+    when:
+      visible: "Continue onboarding"
+    commands:
+      - tapOn: "Continue onboarding"
+- extendedWaitUntil:
+    visible: "Sign in to your account"
+    timeout: 20000
+- tapOn: ".*Create one"
+- extendedWaitUntil:
+    visible: "Create a new account"
+    timeout: 10000
+- tapOn:
+    below:
+      text: '^Email$'
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: "Create Account"
+    index: 0
+- tapOn:
+    containsChild:
+      text: "Show password"
+- tapOn: "Show password"
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- tapOn:
+    text: "Create Account"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      text: "Create a new account"
+      enabled: true
+    timeout: 10000
+- tapOn:
+    text: "Create a new account"
+    enabled: true
+- extendedWaitUntil:
+    visible: "Complete your profile"
+    timeout: 30000
+- runFlow:
+    when:
+      visible: "Not now"
+    commands:
+      - tapOn: "Not now"
+- tapOn:
+    below:
+      text: '^First Name$'
+- inputText: "Pilot"
+- tapOn: "Complete your profile"
+- tapOn:
+    below:
+      text: '^Last Name$'
+- inputText: "User"
+- tapOn: "Complete your profile"
+- tapOn:
+    text: "Continue"
+    enabled: true
+- runFlow:
+    when:
+      visible: "Not now"
+    commands:
+      - tapOn: "Not now"
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 20000

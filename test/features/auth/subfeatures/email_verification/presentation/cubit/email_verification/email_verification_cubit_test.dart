@@ -6,7 +6,6 @@ import 'package:mobile_core_kit/core/foundation/validation/validation_error_code
 import 'package:mobile_core_kit/features/auth/domain/usecase/resend_email_verification_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/verify_email_usecase.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/email_verification/presentation/cubit/email_verification/email_verification_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -142,7 +141,7 @@ void main() {
       await cubit.close();
     });
 
-    test('emits failure effect for resend failure', () async {
+    test('emits submitting -> failure for resend failure', () async {
       when(
         () => resendEmailVerification(),
       ).thenAnswer((_) async => left(const AuthFailure.tooManyRequests()));
@@ -151,18 +150,20 @@ void main() {
         verifyEmail,
         resendEmailVerification,
       );
-      final effects = <EmailVerificationEffect>[];
-      final effectSub = cubit.effects.listen(effects.add);
+      final emitted = <EmailVerificationState>[];
+      final sub = cubit.stream.listen(emitted.add);
 
       await cubit.resendVerificationEmail();
       await pumpEventQueue();
 
-      expect(cubit.state.status, EmailVerificationStatus.failure);
-      expect(cubit.state.failure, const AuthFailure.tooManyRequests());
-      expect(effects, hasLength(1));
-      expect(effects.single, isA<EmailVerificationFailureEffect>());
+      expect(emitted.length, 2);
+      expect(emitted[0].status, EmailVerificationStatus.submitting);
+      expect(emitted[0].lastAction, EmailVerificationAction.resend);
+      expect(emitted[1].status, EmailVerificationStatus.failure);
+      expect(emitted[1].lastAction, EmailVerificationAction.resend);
+      expect(emitted[1].failure, const AuthFailure.tooManyRequests());
 
-      await effectSub.cancel();
+      await sub.cancel();
       await cubit.close();
     });
   });

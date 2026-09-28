@@ -48,7 +48,7 @@ This phase must:
   - [x] micro-widget
   - [x] action item / option row
 - [x] Add reviewed-acceptable support only if the first pass proves necessary.
-- [x] Document usage in `docs/engineering/agent_pr_loop.md`.
+- [x] Document usage in `docs/engineering/harness/agent_pr_loop.md`.
 - [x] Run the presentation detector, analyze, and custom lints.
 
 ## Decision Log

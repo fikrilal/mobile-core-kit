@@ -6,7 +6,9 @@ import 'package:path/path.dart' as p;
 /// Filters a jscpd JSON report against a reviewed-acceptable allowlist.
 ///
 /// A duplicate pair is actionable unless it appears in the allowlist
-/// (matched by canonical file-pair). Any actionable pair fails the run.
+/// (matched by canonical file-pair). Actionable groups fail the run only
+/// when [fatalFound] is true. The runner sets that for the `core` profile
+/// and leaves `small-helpers` and `presentation` as reports.
 class DuplicationReportFilter {
   const DuplicationReportFilter({
     required this.rootDirectory,

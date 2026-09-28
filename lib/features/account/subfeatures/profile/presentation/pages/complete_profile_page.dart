@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/tokens/surface_tokens.dart';
@@ -13,44 +11,10 @@ import 'package:mobile_core_kit/core/presentation/localization/auth_failure_loca
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/core/presentation/localization/validation_error_localizer.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/profile/presentation/cubit/complete_profile/complete_profile_state.dart';
 
-class CompleteProfilePage extends StatefulWidget {
+class CompleteProfilePage extends StatelessWidget {
   const CompleteProfilePage({super.key});
-
-  @override
-  State<CompleteProfilePage> createState() => _CompleteProfilePageState();
-}
-
-class _CompleteProfilePageState extends State<CompleteProfilePage> {
-  StreamSubscription<CompleteProfileEffect>? _effectSubscription;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _effectSubscription ??= context.read<CompleteProfileCubit>().effects.listen(
-      _handleEffect,
-    );
-  }
-
-  void _handleEffect(CompleteProfileEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case CompleteProfileFailureEffect(:final failure):
-        AppSnackBar.showError(
-          context,
-          message: messageForAuthFailure(failure, context.l10n),
-        );
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_effectSubscription?.cancel());
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +22,22 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       appBar: AppBar(
         title: AppText.titleMedium(context.l10n.profileCompleteTitle),
       ),
-      body: const _CompleteProfileForm(),
+      body: BlocListener<CompleteProfileCubit, CompleteProfileState>(
+        listenWhen: (previous, current) =>
+            current.status == CompleteProfileStatus.failure &&
+            current.failure != null &&
+            (previous.status != CompleteProfileStatus.failure ||
+                previous.failure != current.failure),
+        listener: (context, state) {
+          final failure = state.failure;
+          if (failure == null) return;
+          AppSnackBar.showError(
+            context,
+            message: messageForAuthFailure(failure, context.l10n),
+          );
+        },
+        child: const _CompleteProfileForm(),
+      ),
     );
   }
 }

@@ -1,0 +1,62 @@
+# Cold start: onboarding → sign-in → create account → profile → home.
+# Unique email/password per run (MAESTRO_TEST_*). Do not reuse a user
+# who already completed profile.
+# Same selector rules as login.yaml. See maestro/README.md.
+appId: dev.fikril.mobile.corekit.dev
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      visible: "Continue onboarding"
+    commands:
+      - tapOn: "Continue onboarding"
+- extendedWaitUntil:
+    visible: "Sign in to your account"
+    timeout: 20000
+- tapOn: ".*Create one"
+- extendedWaitUntil:
+    visible: "Create a new account"
+    timeout: 10000
+- tapOn:
+    below:
+      text: '^Email$'
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: "Create Account"
+    index: 0
+- tapOn:
+    containsChild:
+      text: "Show password"
+- tapOn: "Show password"
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- tapOn:
+    text: "Create Account"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      text: "Create a new account"
+      enabled: true
+    timeout: 10000
+- tapOn:
+    text: "Create a new account"
+    enabled: true
+- extendedWaitUntil:
+    visible: "Complete your profile"
+    timeout: 30000
+- tapOn:
+    below:
+      text: '^First Name$'
+- inputText: "Pilot"
+- tapOn: "Complete your profile"
+- tapOn:
+    below:
+      text: '^Last Name$'
+- inputText: "User"
+- tapOn: "Complete your profile"
+- tapOn:
+    text: "Continue"
+    enabled: true
+- extendedWaitUntil:
+    visible: "Home"
+    timeout: 20000

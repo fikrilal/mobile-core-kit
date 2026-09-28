@@ -3,13 +3,22 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart';
+import 'package:mobile_core_kit_cli/src/doctor/executable_finder.dart';
+import 'package:mobile_core_kit_cli/src/oracle/oracle_registry.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_binding.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_process.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_log_signals.dart';
+import 'package:mobile_core_kit_cli/src/runtime/runtime_vm_log.dart';
 import 'package:mobile_core_kit_cli/src/task/git_repository.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
 import 'package:path/path.dart' as p;
+
+export 'package:mobile_core_kit_cli/src/runtime/runtime_vm_log.dart'
+    show FlutterRuntimeLogcatAttacher, RuntimeLogcatAttacher;
+
+typedef RuntimeBinaryLocator = String? Function(String executable);
 
 const runtimeEvidenceSchemaVersion = 1;
 
@@ -24,7 +33,7 @@ class RuntimeEvidenceOptions {
     required this.googleServicesJson,
   });
 
-  final String taskId;
+  final String? taskId;
   final String device;
   final String flavor;
   final List<String> targets;
@@ -42,6 +51,8 @@ class RuntimeEvidenceWorkflow {
     DateTime Function()? now,
     StringSink? output,
     StringSink? errorOutput,
+    RuntimeBinaryLocator? locateBinary,
+    RuntimeLogcatAttacher? logcatAttacher,
   }) : rootDirectory = rootDirectory,
        _processRunner =
            processRunner ??
@@ -53,7 +64,11 @@ class RuntimeEvidenceWorkflow {
            bindingResolver ?? TaskRuntimeEvidenceBindingResolver(rootDirectory),
        _now = now ?? DateTime.now,
        _output = output ?? stdout,
-       _errorOutput = errorOutput ?? stderr;
+       _errorOutput = errorOutput ?? stderr,
+       _locateBinary =
+           locateBinary ??
+           ((executable) => ExecutableFinder().find(executable)),
+       _logcatAttacher = logcatAttacher;
 
   final Directory rootDirectory;
   final RuntimeEvidenceProcessRunner _processRunner;
@@ -61,12 +76,17 @@ class RuntimeEvidenceWorkflow {
   final DateTime Function() _now;
   final StringSink _output;
   final StringSink _errorOutput;
+  final RuntimeBinaryLocator _locateBinary;
+  final RuntimeLogcatAttacher? _logcatAttacher;
 
   static void writeUsage(StringSink output) {
     output.writeln('Usage: mobilekit runtime evidence [options]');
     output.writeln();
     output.writeln('Options:');
-    output.writeln('  --task <id>              Required verified task ID.');
+    output.writeln(
+      '  --task <id>              Required for Dart targets and Maestro '
+      'proof; omit to iterate a maestro/*.yaml.',
+    );
     output.writeln(
       '  --device <id>            Required device or emulator id.',
     );
@@ -105,7 +125,11 @@ class RuntimeEvidenceWorkflow {
     }
 
     try {
-      return await _runEvidence(_optionsFrom(parsed));
+      final options = _optionsFrom(parsed);
+      if (options.taskId == null) {
+        return await _runIterate(options);
+      }
+      return await _runEvidence(options);
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
       return 2;
@@ -136,10 +160,8 @@ class RuntimeEvidenceWorkflow {
     ..addOption('google-services-json');
 
   RuntimeEvidenceOptions _optionsFrom(ArgResults parsed) {
-    final taskId = parsed.option('task');
-    if (taskId == null || taskId.isEmpty) {
-      throw const FormatException('--task is required.');
-    }
+    final rawTaskId = parsed.option('task');
+    final taskId = (rawTaskId == null || rawTaskId.isEmpty) ? null : rawTaskId;
     final device = parsed.option('device');
     if (device == null || device.isEmpty) {
       throw const FormatException('--device is required.');
@@ -147,19 +169,98 @@ class RuntimeEvidenceWorkflow {
     if (parsed.rest.isNotEmpty) {
       throw FormatException("Unknown argument '${parsed.rest.first}'.");
     }
+    final targets = List<String>.unmodifiable(parsed.multiOption('target'));
+    if (taskId == null) {
+      if (targets.isEmpty) {
+        throw const FormatException(
+          '--task is required for Dart targets and for Maestro proof; '
+          'omit only to iterate a maestro/*.yaml.',
+        );
+      }
+      for (final target in targets) {
+        if (!_isMaestroYaml(target)) {
+          throw const FormatException('--task is required for Dart targets.');
+        }
+      }
+    }
     return RuntimeEvidenceOptions(
       taskId: taskId,
       device: device,
       flavor: parsed.option('flavor')!,
-      targets: List.unmodifiable(parsed.multiOption('target')),
+      targets: targets,
       artifactsDirectory: parsed.option('artifacts-dir'),
       allowExampleEnvFallback: !parsed.flag('no-example-env-fallback'),
       googleServicesJson: parsed.option('google-services-json'),
     );
   }
 
+  Future<int> _runIterate(RuntimeEvidenceOptions options) async {
+    if (options.flavor == 'prod') {
+      throw const FormatException('maestro-flow rejects --flavor prod.');
+    }
+    if ((options.googleServicesJson ?? '').contains(
+      'google-services.ci.json',
+    )) {
+      throw const FormatException(
+        'maestro-flow rejects the CI Firebase fixture.',
+      );
+    }
+    if (_locateBinary('maestro') == null) {
+      throw const TaskControlError(
+        'runtime.maestro-missing',
+        'The maestro CLI is not on PATH.',
+      );
+    }
+    final artifacts = _RuntimeEvidenceArtifacts(
+      rootDirectory: rootDirectory,
+      requestedDirectory: options.artifactsDirectory,
+      now: _now,
+    );
+    artifacts.create();
+    var exitCode = 1;
+    var outcome = 'failed';
+    try {
+      await _attachLogcat(options.device, artifacts);
+      var failures = 0;
+      for (final target in options.targets) {
+        final targetFile = _resolveFile(target);
+        if (!targetFile.existsSync()) {
+          _errorOutput.writeln('ERROR: Target not found: $target');
+          failures++;
+          continue;
+        }
+        _output.writeln('==> Iterating $target (flavor=${options.flavor})');
+        final targetExit = await _processRunner.run(
+          command: ['maestro', 'test', '--udid', options.device, target],
+          workingDirectory: rootDirectory,
+          logFile: artifacts.logFile(target.replaceAll('/', '_')),
+          output: _output,
+          errorOutput: _errorOutput,
+        );
+        _boundLog(artifacts.logFile(target.replaceAll('/', '_')));
+        if (targetExit != 0) failures++;
+      }
+      exitCode = failures == 0 ? 0 : 1;
+      outcome = failures == 0 ? 'passed' : 'failed';
+    } finally {
+      await _detachLogcat();
+      for (final file in artifacts.logFiles) {
+        _boundLog(file);
+      }
+      if (exitCode == 0 &&
+          _missingMaestroLogSignals(artifacts, options.targets) > 0) {
+        exitCode = 1;
+        outcome = 'failed';
+      }
+      _output.writeln(
+        'Maestro iterate $outcome. Logs: ${artifacts.displayDirectory}/logs',
+      );
+    }
+    return exitCode;
+  }
+
   Future<int> _runEvidence(RuntimeEvidenceOptions options) async {
-    final binding = await _bindingResolver.resolve(options.taskId);
+    final binding = await _bindingResolver.resolve(options.taskId!);
     final selectedTargets = _selectTargets(binding, options.targets);
     final artifacts = _RuntimeEvidenceArtifacts(
       rootDirectory: rootDirectory,
@@ -174,10 +275,33 @@ class RuntimeEvidenceWorkflow {
     var outcome = 'failed';
     var boundary = 'runtime.preflight';
     var exitCode = 1;
+    var maestroSelected = false;
     String envSource = 'unavailable';
     String googleServicesSource = 'unavailable';
     try {
-      final environment = _prepareEnvironment(options);
+      maestroSelected = selectedTargets.keys.any(
+        (id) => binding.runtimeKinds[id] == 'maestro-flow',
+      );
+      final dartSelected = selectedTargets.keys.any(
+        (id) => binding.runtimeKinds[id] == 'integration-test',
+      );
+      if (maestroSelected && options.flavor == 'prod') {
+        throw const FormatException('maestro-flow rejects --flavor prod.');
+      }
+      if (maestroSelected &&
+          (options.googleServicesJson ?? '').contains(
+            'google-services.ci.json',
+          )) {
+        throw const FormatException(
+          'maestro-flow rejects the CI Firebase fixture.',
+        );
+      }
+
+      final environment = _prepareEnvironment(
+        options,
+        allowExampleFallback:
+            !maestroSelected && options.allowExampleEnvFallback,
+      );
       if (environment == null) return 1;
       envSource = environment.source;
       if (environment.mutation != null) mutations.add(environment.mutation!);
@@ -208,10 +332,18 @@ class RuntimeEvidenceWorkflow {
         return 1;
       }
 
-      boundary = 'runtime.integration';
+      boundary = maestroSelected && !dartSelected
+          ? 'runtime.maestro'
+          : dartSelected && !maestroSelected
+          ? 'runtime.integration'
+          : 'runtime.device';
+      if (maestroSelected) {
+        await _attachLogcat(options.device, artifacts);
+      }
       var failures = 0;
       for (final entry in selectedTargets.entries) {
         final target = entry.value;
+        final kind = binding.runtimeKinds[entry.key] ?? 'integration-test';
         final targetFile = _resolveFile(target);
         if (!targetFile.existsSync()) {
           _errorOutput.writeln('ERROR: Target not found: $target');
@@ -225,20 +357,28 @@ class RuntimeEvidenceWorkflow {
           failures++;
           continue;
         }
+        if (kind == 'maestro-flow' && _locateBinary('maestro') == null) {
+          throw const TaskControlError(
+            'runtime.maestro-missing',
+            'The maestro CLI is not on PATH.',
+          );
+        }
         final logFile = artifacts.logFile(target.replaceAll('/', '_'));
         _output.writeln(
           '==> Running $target (oracle=${entry.key}, flavor=${options.flavor})',
         );
         final targetExit = await _processRunner.run(
-          command: [
-            'flutter',
-            'test',
-            '-d',
-            options.device,
-            '--flavor',
-            options.flavor,
-            target,
-          ],
+          command: kind == 'maestro-flow'
+              ? ['maestro', 'test', '--udid', options.device, target]
+              : [
+                  'flutter',
+                  'test',
+                  '-d',
+                  options.device,
+                  '--flavor',
+                  options.flavor,
+                  target,
+                ],
           workingDirectory: rootDirectory,
           logFile: logFile,
           output: _output,
@@ -256,13 +396,19 @@ class RuntimeEvidenceWorkflow {
       }
       exitCode = failures == 0 ? 0 : 1;
       outcome = failures == 0 ? 'passed' : 'failed';
-      return exitCode;
     } finally {
+      await _detachLogcat();
       for (final mutation in mutations.reversed) {
         mutation.restore();
       }
       for (final file in artifacts.logFiles) {
         _boundLog(file);
+      }
+      if (maestroSelected &&
+          _annotateMaestroLogSignals(artifacts, results) > 0) {
+        exitCode = 1;
+        outcome = 'failed';
+        boundary = 'runtime.log-signals';
       }
       _writeSummary(
         artifacts,
@@ -289,6 +435,107 @@ class RuntimeEvidenceWorkflow {
       _output.writeln(
         'Mobile evidence $outcome. See: ${artifacts.displayDirectory}/evidence.json',
       );
+    }
+    return exitCode;
+  }
+
+  int _missingMaestroLogSignals(
+    _RuntimeEvidenceArtifacts artifacts,
+    List<String> targets,
+  ) {
+    if (_logcatAttacher == null) return 0;
+    final signals = _logSignalsByTarget();
+    final log = _readLogcat(artifacts);
+    var failures = 0;
+    for (final target in targets) {
+      if (!_isMaestroYaml(target)) continue;
+      final report = evaluateMaestroLog(
+        log: log,
+        signals: signals[target] ?? const [],
+      );
+      if (report.passed) continue;
+      failures++;
+      _errorOutput.writeln(
+        'FAIL [runtime.log-signals] $target missing: '
+        '${report.missingIds.join(', ')}',
+      );
+    }
+    return failures;
+  }
+
+  int _annotateMaestroLogSignals(
+    _RuntimeEvidenceArtifacts artifacts,
+    List<_RuntimeTargetResult> results,
+  ) {
+    if (_logcatAttacher == null) return 0;
+    final signals = _logSignalsByTarget();
+    final log = _readLogcat(artifacts);
+    var failures = 0;
+    for (var index = 0; index < results.length; index++) {
+      final result = results[index];
+      if (!_isMaestroYaml(result.target)) continue;
+      final report = evaluateMaestroLog(
+        log: log,
+        signals: signals[result.target] ?? const [],
+      );
+      final failed = result.exitCode == 0 && !report.passed;
+      if (!report.passed) {
+        _errorOutput.writeln(
+          'FAIL [runtime.log-signals] ${result.target} missing: '
+          '${report.missingIds.join(', ')}',
+        );
+      }
+      results[index] = result.withLogSignals(
+        report,
+        exitCode: failed ? 1 : result.exitCode,
+      );
+      if (failed) failures++;
+    }
+    return failures;
+  }
+
+  Map<String, List<MaestroLogSignal>> _logSignalsByTarget() {
+    final registry = File(p.join(rootDirectory.path, oracleRegistryPath));
+    if (!registry.existsSync()) return const {};
+    return OracleRegistry.load(rootDirectory).logSignalsByTarget;
+  }
+
+  String _readLogcat(_RuntimeEvidenceArtifacts artifacts) {
+    final file = artifacts.logFile('logcat');
+    if (!file.existsSync()) return '';
+    return file.readAsStringSync();
+  }
+
+  bool _isMaestroYaml(String target) {
+    final normalized = p.posix.normalize(target.replaceAll(r'\', '/'));
+    return normalized.startsWith('maestro/') &&
+        normalized.endsWith('.yaml') &&
+        !normalized.contains('..');
+  }
+
+  Future<void> _attachLogcat(
+    String device,
+    _RuntimeEvidenceArtifacts artifacts,
+  ) async {
+    final attacher = _logcatAttacher;
+    if (attacher == null) return;
+    try {
+      await attacher.start(
+        device: device,
+        logFile: artifacts.logFile('logcat'),
+      );
+    } catch (error) {
+      _errorOutput.writeln('WARN: logcat attach failed: $error');
+    }
+  }
+
+  Future<void> _detachLogcat() async {
+    final attacher = _logcatAttacher;
+    if (attacher == null) return;
+    try {
+      await attacher.stop();
+    } catch (error) {
+      _errorOutput.writeln('WARN: logcat stop failed: $error');
     }
   }
 
@@ -343,13 +590,16 @@ class RuntimeEvidenceWorkflow {
     return result;
   }
 
-  _PreparedFile? _prepareEnvironment(RuntimeEvidenceOptions options) {
+  _PreparedFile? _prepareEnvironment(
+    RuntimeEvidenceOptions options, {
+    required bool allowExampleFallback,
+  }) {
     final envFile = _resolveFile('.env/${options.flavor}.yaml');
     if (envFile.existsSync() && envFile.lengthSync() > 0) {
       return const _PreparedFile('existing');
     }
     final exampleFile = _resolveFile('.env/${options.flavor}.example.yaml');
-    if (options.allowExampleEnvFallback &&
+    if (allowExampleFallback &&
         options.flavor != 'prod' &&
         exampleFile.existsSync() &&
         exampleFile.lengthSync() > 0) {
@@ -405,6 +655,12 @@ class RuntimeEvidenceWorkflow {
   File _resolveFile(String path) =>
       File(p.isAbsolute(path) ? path : p.join(rootDirectory.path, path));
 
+  String _missingSignalSuffix(_RuntimeTargetResult result) {
+    final report = result.logSignals;
+    if (report == null || report.passed) return '';
+    return ' missing ${report.missingIds.join(', ')}';
+  }
+
   void _writeSummary(
     _RuntimeEvidenceArtifacts artifacts, {
     required RuntimeEvidenceBinding binding,
@@ -425,7 +681,8 @@ class RuntimeEvidenceWorkflow {
       '## Registered Results',
       '',
       for (final result in results)
-        '- ${result.exitCode == 0 ? 'PASS' : 'FAIL'} `${result.oracleId}` -> `${result.target}`',
+        '- ${result.exitCode == 0 ? 'PASS' : 'FAIL'} `${result.oracleId}` -> `${result.target}`'
+            '${_missingSignalSuffix(result)}',
     ];
     artifacts.summaryFile.writeAsStringSync('${lines.join('\n')}\n');
   }
@@ -445,13 +702,15 @@ class RuntimeEvidenceWorkflow {
     required List<_RuntimeTargetResult> results,
   }) {
     final artifactEntries = <Map<String, Object?>>[];
-    for (final file in [artifacts.summaryFile, ...artifacts.logFiles]) {
+    final summary = artifacts.summaryFile;
+    final summaryPath = summary.path;
+    for (final file in [summary, ...artifacts.logFiles]) {
       if (!file.existsSync()) continue;
       artifactEntries.add({
         'path': artifacts.relativePath(file),
         'sha256': sha256.convert(file.readAsBytesSync()).toString(),
         'sizeBytes': file.lengthSync(),
-        'durability': file == artifacts.summaryFile
+        'durability': file.path == summaryPath
             ? 'durable-summary'
             : 'transient-local-log',
       });
@@ -635,18 +894,35 @@ class _RuntimeTargetResult {
     required this.oracleId,
     required this.target,
     required this.exitCode,
+    this.logSignals,
   });
 
   final String oracleId;
   final String target;
   final int exitCode;
+  final MaestroLogSignalReport? logSignals;
+
+  _RuntimeTargetResult withLogSignals(
+    MaestroLogSignalReport report, {
+    required int exitCode,
+  }) {
+    return _RuntimeTargetResult(
+      oracleId: oracleId,
+      target: target,
+      exitCode: exitCode,
+      logSignals: report,
+    );
+  }
 
   Map<String, Object?> toJson() => {
     'oracleId': oracleId,
     'target': target,
     'outcome': exitCode == 0 ? 'passed' : 'failed',
     'exitCode': exitCode,
-    'boundary': 'runtime.integration',
+    'boundary': logSignals != null && !logSignals!.passed
+        ? 'runtime.log-signals'
+        : 'runtime.integration',
+    if (logSignals != null) 'logSignals': logSignals!.toJson(),
   };
 }
 

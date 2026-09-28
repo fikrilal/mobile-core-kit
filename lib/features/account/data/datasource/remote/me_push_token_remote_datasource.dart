@@ -31,9 +31,7 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(),
       data: MePushTokenUpsertRequestModel(
         platform: platform.apiValue,
         token: token,
@@ -52,9 +50,7 @@ class MePushTokenRemoteDataSource implements PushTokenRegistrar {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(),
     );
 
     return response;

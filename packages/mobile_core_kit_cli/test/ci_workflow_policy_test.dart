@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 void main() {
   final root = Directory.current;
@@ -16,10 +17,11 @@ void main() {
     p.join(root.path, 'harness', 'fixtures', 'google-services.ci.json'),
   ).readAsStringSync();
 
-  test('required workflow exposes one stable aggregate over four lanes', () {
+  test('required workflow exposes one stable aggregate over five lanes', () {
     for (final name in [
       'CI Risk',
       'CI Full',
+      'CI Coverage',
       'CI Runtime',
       'CI Governance',
       'CI Required',
@@ -38,6 +40,70 @@ void main() {
     expect(required, contains('mobilekit verify --profile ci --env dev'));
     expect(required, contains('mobilekit ci classify'));
   });
+
+  test(
+    'aggregate executes fail-closed coverage and selected runtime policy',
+    () async {
+      final workflow = loadYaml(required) as YamlMap;
+      final jobs = workflow['jobs'] as YamlMap;
+      final aggregate = jobs['required'] as YamlMap;
+      expect(aggregate['needs'], contains('coverage'));
+      final script =
+          ((aggregate['steps'] as YamlList).single as YamlMap)['run'] as String;
+      for (final scenario in [
+        ('success', 'success', 'true', 0),
+        ('failure', 'success', 'true', 1),
+        ('cancelled', 'success', 'true', 1),
+        ('skipped', 'success', 'true', 1),
+        ('success', 'skipped', 'true', 1),
+        ('success', 'failure', 'true', 1),
+        ('success', 'skipped', 'false', 0),
+      ]) {
+        final result = await Process.run(
+          'bash',
+          ['-c', script],
+          environment: {
+            'RISK_RESULT': 'success',
+            'FULL_RESULT': 'success',
+            'GOVERNANCE_RESULT': 'success',
+            'COVERAGE_RESULT': scenario.$1,
+            'RUNTIME_RESULT': scenario.$2,
+            'RUNTIME_REQUIRED': scenario.$3,
+          },
+        );
+        expect(result.exitCode, scenario.$4, reason: '$scenario');
+      }
+      final runtime = jobs['runtime'] as YamlMap;
+      final emulator = (runtime['steps'] as YamlList)
+          .cast<YamlMap>()
+          .singleWhere(
+            (step) => '${step['uses']}'.startsWith(
+              'reactivecircus/android-emulator-runner@',
+            ),
+          );
+      final scriptText = (emulator['with'] as YamlMap)['script'] as String;
+      expect(
+        scriptText,
+        contains('mobilekit oracle paths --kind integration-test'),
+      );
+      expect(scriptText, contains('flutter test "\$target"'));
+      final golden = (runtime['steps'] as YamlList).cast<YamlMap>().singleWhere(
+        (step) => '${step['name']}' == 'Run portable golden evidence',
+      );
+      expect(
+        '${golden['run']}',
+        contains('mobilekit oracle paths --kind golden-test'),
+      );
+      expect(emulator['continue-on-error'], isNull);
+      final coverage = jobs['coverage'] as YamlMap;
+      expect(
+        (coverage['steps'] as YamlList).any(
+          (step) => '${step['run']}'.contains('Coverage gate failed'),
+        ),
+        isTrue,
+      );
+    },
+  );
 
   test('CI Full prepares every environment validated by the CI profile', () {
     final fullLane = RegExp(
@@ -118,7 +184,7 @@ void main() {
   test('required workflow is bounded and has no publication capability', () {
     expect(required, contains('permissions:\n  contents: read'));
     expect(required, contains('cancel-in-progress: true'));
-    expect(RegExp(r'timeout-minutes:').allMatches(required).length, 5);
+    expect(RegExp(r'timeout-minutes:').allMatches(required).length, 6);
     for (final unavailable in [
       'git push',
       'gh pr create',

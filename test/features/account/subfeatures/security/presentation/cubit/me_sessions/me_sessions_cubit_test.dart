@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -10,7 +8,6 @@ import 'package:mobile_core_kit/features/account/subfeatures/security/domain/ent
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/list_me_sessions_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/usecase/revoke_me_session_usecase.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_cubit.dart';
-import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_effect.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/presentation/cubit/me_sessions/me_sessions_state.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -30,8 +27,6 @@ void main() {
 
   late _MockListMeSessionsUseCase listMeSessions;
   late _MockRevokeMeSessionUseCase revokeMeSession;
-  late List<MeSessionsEffect> effects;
-  late StreamSubscription<MeSessionsEffect> effectSubscription;
 
   final session1 = MeSessionEntity(
     id: 's1',
@@ -62,7 +57,6 @@ void main() {
   setUp(() {
     listMeSessions = _MockListMeSessionsUseCase();
     revokeMeSession = _MockRevokeMeSessionUseCase();
-    effects = [];
   });
 
   blocTest<MeSessionsCubit, MeSessionsState>(
@@ -200,18 +194,14 @@ void main() {
   );
 
   blocTest<MeSessionsCubit, MeSessionsState>(
-    'loadMore keeps current list and emits failure effect when usecase fails',
+    'loadMore keeps current list and sets failure when usecase fails',
     setUp: () {
       when(
         () => listMeSessions(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
       when(() => revokeMeSession(any())).thenAnswer((_) async => right(unit));
     },
-    build: () {
-      final cubit = MeSessionsCubit(listMeSessions, revokeMeSession);
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
-    },
+    build: () => MeSessionsCubit(listMeSessions, revokeMeSession),
     seed: () => MeSessionsState(
       status: MeSessionsStatus.success,
       sessions: [session1],
@@ -234,34 +224,24 @@ void main() {
         nextCursor: 'cursor-1',
         limit: 25,
         hasMore: true,
+        failure: const AuthFailure.network(),
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowMeSessionsLoadMoreFailure>()]);
-      expect(
-        (effects.single as ShowMeSessionsLoadMoreFailure).failure,
-        const AuthFailure.network(),
-      );
-      await effectSubscription.cancel();
-    },
   );
 
   blocTest<MeSessionsCubit, MeSessionsState>(
-    'revokeSession emits submitting then updated sessions and success effect',
+    'revokeSession emits submitting then success with updated sessions',
     build: () {
       when(() => listMeSessions(any())).thenAnswer(
         (_) async =>
             right(const MeSessionsPageEntity(items: [], hasMore: false)),
       );
       when(() => revokeMeSession(any())).thenAnswer((_) async => right(unit));
-      final cubit = MeSessionsCubit(
+      return MeSessionsCubit(
         listMeSessions,
         revokeMeSession,
         now: () => DateTime.utc(2026, 3, 5, 12),
       );
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
     },
     seed: () => MeSessionsState(
       status: MeSessionsStatus.success,
@@ -286,14 +266,11 @@ void main() {
           ),
         ],
         hasMore: false,
+        revokeStatus: MeSessionRevokeStatus.success,
+        lastRevokedSessionId: 's1',
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowRevokeSessionSuccess>()]);
-      expect((effects.single as ShowRevokeSessionSuccess).sessionId, 's1');
-      await effectSubscription.cancel();
-
+    verify: (_) {
       final request =
           verify(() => revokeMeSession(captureAny())).captured.single
               as RevokeMeSessionRequestEntity;
@@ -302,7 +279,7 @@ void main() {
   );
 
   blocTest<MeSessionsCubit, MeSessionsState>(
-    'revokeSession emits submitting then idle and failure effect when revoke usecase fails',
+    'revokeSession emits submitting then failure when revoke usecase fails',
     build: () {
       when(() => listMeSessions(any())).thenAnswer(
         (_) async =>
@@ -311,9 +288,7 @@ void main() {
       when(
         () => revokeMeSession(any()),
       ).thenAnswer((_) async => left(const AuthFailure.network()));
-      final cubit = MeSessionsCubit(listMeSessions, revokeMeSession);
-      effectSubscription = cubit.effects.listen(effects.add);
-      return cubit;
+      return MeSessionsCubit(listMeSessions, revokeMeSession);
     },
     seed: () => MeSessionsState(
       status: MeSessionsStatus.success,
@@ -333,25 +308,15 @@ void main() {
         status: MeSessionsStatus.success,
         sessions: [session1],
         hasMore: false,
+        revokeStatus: MeSessionRevokeStatus.failure,
+        revokeFailure: const AuthFailure.network(),
       ),
     ],
-    verify: (_) async {
-      await Future<void>.delayed(Duration.zero);
-      expect(effects, [isA<ShowRevokeSessionFailure>()]);
-      expect(
-        (effects.single as ShowRevokeSessionFailure).failure,
-        const AuthFailure.network(),
-      );
-      await effectSubscription.cancel();
+    verify: (_) {
+      final request =
+          verify(() => revokeMeSession(captureAny())).captured.single
+              as RevokeMeSessionRequestEntity;
+      expect(request.sessionId, 's1');
     },
   );
-
-  test('closes effects stream on close', () async {
-    final cubit = MeSessionsCubit(listMeSessions, revokeMeSession);
-    final done = expectLater(cubit.effects, emitsDone);
-
-    await cubit.close();
-
-    await done;
-  });
 }

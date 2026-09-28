@@ -134,6 +134,10 @@ void main() {
       'failed',
     );
     expect(
+      result.steps.singleWhere((s) => s.id == MaintenanceStepId.codegen).status,
+      'passed',
+    );
+    expect(
       maintenanceRegistry
           .expand((step) => step.commands)
           .every(
@@ -142,6 +146,62 @@ void main() {
       isTrue,
     );
   });
+
+  for (final initial in ['already dirty', 'baseline\n']) {
+    test('detects content mutation from $initial', () async {
+      final fixture = _fixture();
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      final file = File(p.join(fixture.root.path, 'tracked.txt'));
+      file.writeAsStringSync(initial);
+      final service = MaintenanceService(
+        root: fixture.root,
+        controlRoot: fixture.root,
+        steps: [maintenanceRegistry.first],
+        runCommand: (_, __, ___) async {
+          file.writeAsStringSync('another change');
+          return 0;
+        },
+      );
+      await expectLater(
+        service.runOnce(),
+        throwsA(_controlError('maintenance.source-mutated')),
+      );
+    });
+  }
+
+  test(
+    'codegen failure leaves dependency outcome passed and keeps sandbox alive',
+    () async {
+      final fixture = _fixture();
+      addTearDown(() => fixture.root.deleteSync(recursive: true));
+      String? sandboxPath;
+      final service = MaintenanceService(
+        root: fixture.root,
+        controlRoot: fixture.root,
+        runCommand: (_, command, __) async {
+          if (!command.any((part) => part.contains('codegen verify'))) return 0;
+          sandboxPath = p.dirname(command.last);
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          expect(Directory(sandboxPath!).existsSync(), isTrue);
+          return 9;
+        },
+      );
+      final result = await service.runOnce();
+      expect(
+        result.steps
+            .singleWhere((s) => s.id == MaintenanceStepId.codegen)
+            .status,
+        'failed',
+      );
+      expect(
+        result.steps
+            .singleWhere((s) => s.id == MaintenanceStepId.dependencies)
+            .status,
+        'passed',
+      );
+      expect(Directory(sandboxPath!).existsSync(), isFalse);
+    },
+  );
 
   test(
     'fails closed if any maintenance command changes repository state',

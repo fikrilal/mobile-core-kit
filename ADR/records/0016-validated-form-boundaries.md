@@ -157,8 +157,8 @@ Compliance is confirmed when:
 
 ## More Information
 
-* [Validation architecture](../../docs/engineering/validation_architecture.md)
-* [Value Objects and form validation](../../docs/engineering/value_objects_validation.md)
-* [Model and entity guide](../../docs/engineering/model_entity_guide.md)
+* [Validation architecture](../../docs/engineering/architecture/validation_architecture.md)
+* [Value Objects and form validation](../../docs/engineering/architecture/value_objects_validation.md)
+* [Model and entity guide](../../docs/engineering/architecture/model_entity_guide.md)
 * [Login boundary execution plan](../../docs/exec-plans/completed/2026-08-28_login-validated-domain-boundary.md)
 * [Register boundary execution plan](../../docs/exec-plans/completed/2026-08-29_register-validated-domain-boundary.md)

@@ -41,7 +41,8 @@ class FcmTokenProviderImpl implements FcmTokenProvider {
       final settings = await _firebaseMessaging.requestPermission();
       return switch (settings.authorizationStatus) {
         AuthorizationStatus.authorized => PushPermissionState.granted,
-        AuthorizationStatus.denied => PushPermissionState.denied,
+        AuthorizationStatus.denied ||
+        AuthorizationStatus.deniedPermanently => PushPermissionState.denied,
         AuthorizationStatus.notDetermined => PushPermissionState.notDetermined,
         AuthorizationStatus.provisional => PushPermissionState.provisional,
       };

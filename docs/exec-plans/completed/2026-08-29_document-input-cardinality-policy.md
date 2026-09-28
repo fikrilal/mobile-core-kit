@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** low
 **Authority:** Record the approved cardinality, cohesion, and invariant decision policy in a new ADR that supersedes ADR 0016; align related validation/data/model guides and the queued single-field refactor plans without changing production or test code.
-**Allowed paths:** docs/exec-plans/active/2026-08-29_document-input-cardinality-policy.md, docs/exec-plans/completed/2026-08-29_document-input-cardinality-policy.md, ADR/records/0016-validated-form-boundaries.md, ADR/records/0017-input-cardinality-and-validation-boundaries.md, docs/engineering/validation_architecture.md, docs/engineering/value_objects_validation.md, docs/engineering/validation_cookbook.md, docs/engineering/data_domain_guide.md, docs/engineering/model_entity_guide.md, docs/exec-plans/queued/2026-08-29_request-password-reset-validated-boundary.md, docs/exec-plans/queued/2026-08-29_verify-email-token-boundary.md
+**Allowed paths:** docs/exec-plans/active/2026-08-29_document-input-cardinality-policy.md, docs/exec-plans/completed/2026-08-29_document-input-cardinality-policy.md, ADR/records/0016-validated-form-boundaries.md, ADR/records/0017-input-cardinality-and-validation-boundaries.md, docs/engineering/architecture/validation_architecture.md, docs/engineering/architecture/value_objects_validation.md, docs/engineering/architecture/validation_cookbook.md, docs/engineering/architecture/data_domain_guide.md, docs/engineering/architecture/model_entity_guide.md, docs/exec-plans/queued/2026-08-29_request-password-reset-validated-boundary.md, docs/exec-plans/queued/2026-08-29_verify-email-token-boundary.md
 **Allowed actions:** edit, verify
 **Maximum risk:** low
 **Repair limit:** 2

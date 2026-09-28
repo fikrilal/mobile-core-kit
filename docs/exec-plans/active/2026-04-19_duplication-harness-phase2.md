@@ -56,7 +56,7 @@ Phase 2 must:
   - [x] formatter
   - [x] normalization helper
 - [x] Update the core duplication profile comments/output expectations if needed.
-- [x] Document duplication-harness usage in `docs/engineering/agent_pr_loop.md`.
+- [x] Document duplication-harness usage in `docs/engineering/harness/agent_pr_loop.md`.
 - [x] Update any docs index or related references if needed.
 - [x] Run duplication harness, analyze, and custom lints.
 

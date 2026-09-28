@@ -57,4 +57,28 @@ class OracleWorkflow {
       return 1;
     }
   }
+
+  Future<int> paths(List<String> arguments) async {
+    if (arguments.length != 2 || arguments.first != '--kind') {
+      throw const FormatException('Expected `oracle paths --kind <kind>`.');
+    }
+    try {
+      final paths = OracleRegistry.load(
+        context.rootDirectory,
+      ).pathsForKind(arguments[1]);
+      if (paths.isEmpty) {
+        context.errorOutput.writeln(
+          "FAIL [oracle.kind-empty] No '$arguments[1]' oracles are registered.",
+        );
+        return 1;
+      }
+      for (final path in paths) {
+        context.output.writeln(path);
+      }
+      return 0;
+    } on OracleRegistryError catch (error) {
+      context.errorOutput.writeln('FAIL [${error.code}] ${error.message}');
+      return 1;
+    }
+  }
 }

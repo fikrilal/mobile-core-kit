@@ -111,6 +111,6 @@ profile remains the release gate.
 
 ## More Information
 
-* [Localization architecture](../../docs/engineering/localization.md)
-* [Localization playbook](../../docs/engineering/localization_playbook.md)
+* [Localization architecture](../../docs/engineering/platform/localization.md)
+* [Localization playbook](../../docs/engineering/platform/localization_playbook.md)
 * [Localization enforcement proposal](../../_WIP/2026-08-16_localization-enforcement-and-consumer-adoption-proposal.md)

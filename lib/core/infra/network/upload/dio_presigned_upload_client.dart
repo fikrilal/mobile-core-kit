@@ -87,6 +87,7 @@ final class DioPresignedUploadClient implements PresignedUploadClient {
     switch (e.type) {
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
         return -2;
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.connectionError:

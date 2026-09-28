@@ -778,5 +778,432 @@
   "devPseudoLocaleArXbSubtitle": "Pseudo-locale (forced RTL)",
   "@devPseudoLocaleArXbSubtitle": {
     "description": "Developer-only subtitle describing the ar-XB pseudo-locale."
+  },
+  "merchantOnboardingHomeEntry": "Start merchant onboarding demo",
+  "@merchantOnboardingHomeEntry": {
+    "description": "Home entry button opening the merchant-onboarding demo route."
+  },
+  "merchantOnboardingTitle": "Merchant onboarding (demo)",
+  "@merchantOnboardingTitle": {
+    "description": "Title of the merchant-onboarding demo route."
+  },
+  "merchantOnboardingStepOf": "Step {current} of {total}",
+  "@merchantOnboardingStepOf": {
+    "description": "Progress indicator showing the current step number.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "merchantOnboardingStepBusiness": "Business profile",
+  "@merchantOnboardingStepBusiness": {
+    "description": "Title of step one (business profile)."
+  },
+  "merchantOnboardingStepOwners": "Owners",
+  "@merchantOnboardingStepOwners": {
+    "description": "Title of step two (owners)."
+  },
+  "merchantOnboardingStepSettlement": "Settlement",
+  "@merchantOnboardingStepSettlement": {
+    "description": "Title of step three (settlement)."
+  },
+  "merchantOnboardingStepReview": "Review & submit",
+  "@merchantOnboardingStepReview": {
+    "description": "Title of step four (review and submit)."
+  },
+  "merchantOnboardingActionNext": "Next",
+  "@merchantOnboardingActionNext": {
+    "description": "Advance-to-next-step action."
+  },
+  "merchantOnboardingActionBack": "Back",
+  "@merchantOnboardingActionBack": {
+    "description": "Back-to-previous-step action."
+  },
+  "merchantOnboardingActionSubmit": "Submit application",
+  "@merchantOnboardingActionSubmit": {
+    "description": "Final submit action."
+  },
+  "merchantOnboardingActionAddOwner": "Add owner",
+  "@merchantOnboardingActionAddOwner": {
+    "description": "Adds a dynamic owner row."
+  },
+  "merchantOnboardingActionRemoveOwner": "Remove owner",
+  "@merchantOnboardingActionRemoveOwner": {
+    "description": "Removes one dynamic owner row."
+  },
+  "merchantOnboardingActionMoveUp": "Move up",
+  "@merchantOnboardingActionMoveUp": {
+    "description": "Reorders an owner row upwards."
+  },
+  "merchantOnboardingActionMoveDown": "Move down",
+  "@merchantOnboardingActionMoveDown": {
+    "description": "Reorders an owner row downwards."
+  },
+  "merchantOnboardingActionEdit": "Edit",
+  "@merchantOnboardingActionEdit": {
+    "description": "Review edit action returning to the owning step."
+  },
+  "merchantOnboardingActionRetry": "Retry",
+  "@merchantOnboardingActionRetry": {
+    "description": "Retry action after a reference-data failure."
+  },
+  "merchantOnboardingLoadingReference": "Loading reference data…",
+  "@merchantOnboardingLoadingReference": {
+    "description": "Message shown while reference data loads."
+  },
+  "merchantOnboardingReferenceFailure": "Reference data failed to load.",
+  "@merchantOnboardingReferenceFailure": {
+    "description": "Message shown when reference data fails to load."
+  },
+  "merchantOnboardingDiscardTitle": "Discard changes?",
+  "@merchantOnboardingDiscardTitle": {
+    "description": "Title of the discard-confirmation dialog."
+  },
+  "merchantOnboardingDiscardMessage": "Your entered draft will be lost if you leave this demo.",
+  "@merchantOnboardingDiscardMessage": {
+    "description": "Body of the discard-confirmation dialog."
+  },
+  "merchantOnboardingSubmitSuccess": "Application {applicationId} submitted (demo, no backend).",
+  "@merchantOnboardingSubmitSuccess": {
+    "description": "Success feedback with the deterministic demo application id.",
+    "placeholders": {
+      "applicationId": {
+        "type": "String"
+      }
+    }
+  },
+  "merchantOnboardingSubmitFailure": "Submission failed. Please try again.",
+  "@merchantOnboardingSubmitFailure": {
+    "description": "Generic submission failure message shown as a banner."
+  },
+  "merchantOnboardingNotProvided": "—",
+  "@merchantOnboardingNotProvided": {
+    "description": "Placeholder for empty review values."
+  },
+  "merchantOnboardingOwnerN": "Owner {n}",
+  "@merchantOnboardingOwnerN": {
+    "description": "Dynamic owner row heading with its display order.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "merchantOnboardingPrimaryContactHelper": "Exactly one owner must be the primary contact.",
+  "@merchantOnboardingPrimaryContactHelper": {
+    "description": "Helper text for the exactly-one primary contact rule."
+  },
+  "merchantOnboardingTermsVersionLabel": "Demo terms version {version}",
+  "@merchantOnboardingTermsVersionLabel": {
+    "description": "Review label showing the accepted demo terms version.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "merchantOnboardingFieldLegalName": "Legal business name",
+  "merchantOnboardingFieldBusinessType": "Business type",
+  "merchantOnboardingFieldRegistrationNumber": "Registration number",
+  "merchantOnboardingFieldRegistrationHint": "Required for this business type",
+  "merchantOnboardingFieldIndustry": "Industry",
+  "merchantOnboardingFieldMonthlySales": "Monthly sales range",
+  "merchantOnboardingFieldContactEmail": "Contact email",
+  "merchantOnboardingFieldContactPhone": "Contact phone",
+  "merchantOnboardingFieldOwnerName": "Full name",
+  "merchantOnboardingFieldOwnerRole": "Role",
+  "merchantOnboardingFieldOwnershipPercentage": "Ownership percentage (%)",
+  "merchantOnboardingFieldOwnerEmail": "Email",
+  "merchantOnboardingFieldPrimaryContact": "Primary contact",
+  "merchantOnboardingFieldBank": "Bank",
+  "merchantOnboardingFieldAccountHolderName": "Account holder name",
+  "merchantOnboardingFieldAccountNumber": "Account number",
+  "merchantOnboardingFieldHolderType": "Account holder type",
+  "merchantOnboardingFieldOwnerReference": "Owning owner",
+  "merchantOnboardingFieldPayoutSchedule": "Payout schedule",
+  "merchantOnboardingDeclarationInformationAccurate": "The information provided is accurate",
+  "merchantOnboardingDeclarationAuthorizedToSubmit": "I am authorized to submit this application",
+  "merchantOnboardingDeclarationTermsAccepted": "I accept the demo terms",
+  "merchantOnboardingErrorBusinessLegalNameRequired": "Enter the business legal name (2-100 characters).",
+  "merchantOnboardingErrorBusinessLegalNameInvalid": "Legal name must be 2-100 characters.",
+  "merchantOnboardingErrorBusinessTypeRequired": "Select a business type.",
+  "merchantOnboardingErrorBusinessTypeUnsupported": "This business type is no longer supported. Update the selection.",
+  "merchantOnboardingErrorBusinessRegistrationRequired": "This business type requires a registration number.",
+  "merchantOnboardingErrorBusinessRegistrationInvalid": "Registration number must be 4-30 letters, digits, or dashes.",
+  "merchantOnboardingErrorBusinessIndustryRequired": "Select an industry.",
+  "merchantOnboardingErrorBusinessIndustryUnsupported": "This industry is no longer supported. Update the selection.",
+  "merchantOnboardingErrorBusinessSalesRangeRequired": "Select a monthly sales range.",
+  "merchantOnboardingErrorBusinessSalesRangeUnsupported": "This sales range is no longer supported. Update the selection.",
+  "merchantOnboardingErrorContactEmailRequired": "Enter a contact email.",
+  "merchantOnboardingErrorContactEmailInvalid": "Enter a valid email address.",
+  "merchantOnboardingErrorContactPhoneRequired": "Enter a contact phone number.",
+  "merchantOnboardingErrorContactPhoneInvalid": "Enter a valid phone number (8-15 digits, may start with +).",
+  "merchantOnboardingErrorOwnersRequired": "Add at least one owner.",
+  "merchantOnboardingErrorOwnersLimitExceeded": "An application can list at most five owners.",
+  "merchantOnboardingErrorOwnerNameRequired": "Enter the owner's full name (2-100 characters).",
+  "merchantOnboardingErrorOwnerNameInvalid": "Full name must be 2-100 characters.",
+  "merchantOnboardingErrorOwnerRoleRequired": "Select the owner's role.",
+  "merchantOnboardingErrorOwnerRoleUnsupported": "This role is no longer supported. Update the selection.",
+  "merchantOnboardingErrorOwnerPercentageRequired": "Owning roles require an ownership percentage.",
+  "merchantOnboardingErrorOwnerPercentageNotAllowed": "This role does not hold ownership; clear the percentage.",
+  "merchantOnboardingErrorOwnerPercentageInvalid": "Enter a percentage between 0.01 and 100 with up to two decimals.",
+  "merchantOnboardingErrorOwnerEmailRequired": "Enter the owner's email.",
+  "merchantOnboardingErrorOwnerEmailInvalid": "Enter a valid email address.",
+  "merchantOnboardingErrorOwnersEmailDuplicate": "This email duplicates an earlier owner.",
+  "merchantOnboardingErrorOwnersPrimaryInvalid": "Exactly one owner must be the primary contact.",
+  "merchantOnboardingErrorOwnersTotalInvalid": "Ownership percentages must total exactly 100%.",
+  "merchantOnboardingErrorSettlementBankRequired": "Select a bank.",
+  "merchantOnboardingErrorSettlementBankUnsupported": "This bank is no longer supported. Update the selection.",
+  "merchantOnboardingErrorSettlementHolderNameRequired": "Enter the account holder name (2-100 characters).",
+  "merchantOnboardingErrorSettlementHolderNameInvalid": "Account holder name must be 2-100 characters.",
+  "merchantOnboardingErrorSettlementAccountNumberRequired": "Enter the account number.",
+  "merchantOnboardingErrorSettlementAccountNumberInvalid": "Account number must be 6-24 digits (spaces are ignored).",
+  "merchantOnboardingErrorSettlementHolderTypeRequired": "Select an account holder type.",
+  "merchantOnboardingErrorSettlementHolderTypeUnsupported": "This holder type is no longer supported. Update the selection.",
+  "merchantOnboardingErrorSettlementOwnerRequired": "Select the owner who holds this account.",
+  "merchantOnboardingErrorSettlementOwnerUnknown": "The referenced owner no longer exists.",
+  "merchantOnboardingErrorSettlementOwnerNotAllowed": "This holder type cannot reference an owner.",
+  "merchantOnboardingErrorSettlementScheduleRequired": "Select a payout schedule.",
+  "merchantOnboardingErrorSettlementScheduleUnsupported": "This payout schedule is no longer supported. Update the selection.",
+  "merchantOnboardingErrorSettlementScheduleUnsupportedByBank": "The selected bank does not support this payout schedule.",
+  "merchantOnboardingErrorDeclarationsInformationAccurateRequired": "Confirm the information is accurate.",
+  "merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": "Confirm you are authorized to submit.",
+  "merchantOnboardingErrorDeclarationsTermsAcceptedRequired": "Accept the demo terms to submit.",
+  "merchantOnboardingErrorDeclarationsTermsVersionStale": "The terms version changed. Review and accept again.",
+  "@merchantOnboardingFieldLegalName": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Legal Name"
+  },
+  "@merchantOnboardingFieldBusinessType": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Business Type"
+  },
+  "@merchantOnboardingFieldRegistrationNumber": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Registration Number"
+  },
+  "@merchantOnboardingFieldRegistrationHint": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Registration Hint"
+  },
+  "@merchantOnboardingFieldIndustry": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Industry"
+  },
+  "@merchantOnboardingFieldMonthlySales": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Monthly Sales"
+  },
+  "@merchantOnboardingFieldContactEmail": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Contact Email"
+  },
+  "@merchantOnboardingFieldContactPhone": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Contact Phone"
+  },
+  "@merchantOnboardingFieldOwnerName": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Owner Name"
+  },
+  "@merchantOnboardingFieldOwnerRole": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Owner Role"
+  },
+  "@merchantOnboardingFieldOwnershipPercentage": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Ownership Percentage"
+  },
+  "@merchantOnboardingFieldOwnerEmail": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Owner Email"
+  },
+  "@merchantOnboardingFieldPrimaryContact": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Primary Contact"
+  },
+  "@merchantOnboardingFieldBank": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Bank"
+  },
+  "@merchantOnboardingFieldAccountHolderName": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Account Holder Name"
+  },
+  "@merchantOnboardingFieldAccountNumber": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Account Number"
+  },
+  "@merchantOnboardingFieldHolderType": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Holder Type"
+  },
+  "@merchantOnboardingFieldOwnerReference": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Owner Reference"
+  },
+  "@merchantOnboardingFieldPayoutSchedule": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Field Payout Schedule"
+  },
+  "@merchantOnboardingDeclarationInformationAccurate": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Declaration Information Accurate"
+  },
+  "@merchantOnboardingDeclarationAuthorizedToSubmit": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Declaration Authorized To Submit"
+  },
+  "@merchantOnboardingDeclarationTermsAccepted": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Declaration Terms Accepted"
+  },
+  "@merchantOnboardingErrorBusinessLegalNameRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Legal Name Required"
+  },
+  "@merchantOnboardingErrorBusinessLegalNameInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Legal Name Invalid"
+  },
+  "@merchantOnboardingErrorBusinessTypeRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Type Required"
+  },
+  "@merchantOnboardingErrorBusinessTypeUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Type Unsupported"
+  },
+  "@merchantOnboardingErrorBusinessRegistrationRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Registration Required"
+  },
+  "@merchantOnboardingErrorBusinessRegistrationInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Registration Invalid"
+  },
+  "@merchantOnboardingErrorBusinessIndustryRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Industry Required"
+  },
+  "@merchantOnboardingErrorBusinessIndustryUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Industry Unsupported"
+  },
+  "@merchantOnboardingErrorBusinessSalesRangeRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Sales Range Required"
+  },
+  "@merchantOnboardingErrorBusinessSalesRangeUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Business Sales Range Unsupported"
+  },
+  "@merchantOnboardingErrorContactEmailRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Contact Email Required"
+  },
+  "@merchantOnboardingErrorContactEmailInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Contact Email Invalid"
+  },
+  "@merchantOnboardingErrorContactPhoneRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Contact Phone Required"
+  },
+  "@merchantOnboardingErrorContactPhoneInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Contact Phone Invalid"
+  },
+  "@merchantOnboardingErrorOwnersRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owners Required"
+  },
+  "@merchantOnboardingErrorOwnersLimitExceeded": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owners Limit Exceeded"
+  },
+  "@merchantOnboardingErrorOwnerNameRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Name Required"
+  },
+  "@merchantOnboardingErrorOwnerNameInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Name Invalid"
+  },
+  "@merchantOnboardingErrorOwnerRoleRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Role Required"
+  },
+  "@merchantOnboardingErrorOwnerRoleUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Role Unsupported"
+  },
+  "@merchantOnboardingErrorOwnerPercentageRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Percentage Required"
+  },
+  "@merchantOnboardingErrorOwnerPercentageNotAllowed": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Percentage Not Allowed"
+  },
+  "@merchantOnboardingErrorOwnerPercentageInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Percentage Invalid"
+  },
+  "@merchantOnboardingErrorOwnerEmailRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Email Required"
+  },
+  "@merchantOnboardingErrorOwnerEmailInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owner Email Invalid"
+  },
+  "@merchantOnboardingErrorOwnersEmailDuplicate": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owners Email Duplicate"
+  },
+  "@merchantOnboardingErrorOwnersPrimaryInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owners Primary Invalid"
+  },
+  "@merchantOnboardingErrorOwnersTotalInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Owners Total Invalid"
+  },
+  "@merchantOnboardingErrorSettlementBankRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Bank Required"
+  },
+  "@merchantOnboardingErrorSettlementBankUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Bank Unsupported"
+  },
+  "@merchantOnboardingErrorSettlementHolderNameRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Holder Name Required"
+  },
+  "@merchantOnboardingErrorSettlementHolderNameInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Holder Name Invalid"
+  },
+  "@merchantOnboardingErrorSettlementAccountNumberRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Account Number Required"
+  },
+  "@merchantOnboardingErrorSettlementAccountNumberInvalid": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Account Number Invalid"
+  },
+  "@merchantOnboardingErrorSettlementHolderTypeRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Holder Type Required"
+  },
+  "@merchantOnboardingErrorSettlementHolderTypeUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Holder Type Unsupported"
+  },
+  "@merchantOnboardingErrorSettlementOwnerRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Owner Required"
+  },
+  "@merchantOnboardingErrorSettlementOwnerUnknown": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Owner Unknown"
+  },
+  "@merchantOnboardingErrorSettlementOwnerNotAllowed": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Owner Not Allowed"
+  },
+  "@merchantOnboardingErrorSettlementScheduleRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Schedule Required"
+  },
+  "@merchantOnboardingErrorSettlementScheduleUnsupported": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Schedule Unsupported"
+  },
+  "@merchantOnboardingErrorSettlementScheduleUnsupportedByBank": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Settlement Schedule Unsupported By Bank"
+  },
+  "@merchantOnboardingErrorDeclarationsInformationAccurateRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Declarations Information Accurate Required"
+  },
+  "@merchantOnboardingErrorDeclarationsAuthorizedToSubmitRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Declarations Authorized To Submit Required"
+  },
+  "@merchantOnboardingErrorDeclarationsTermsAcceptedRequired": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Declarations Terms Accepted Required"
+  },
+  "@merchantOnboardingErrorDeclarationsTermsVersionStale": {
+    "description": "Merchant onboarding demo string: merchant Onboarding Error Declarations Terms Version Stale"
+  },
+  "merchantOnboardingErrorRegistrationConflict": "This registration number is already registered to another business.",
+  "@merchantOnboardingErrorRegistrationConflict": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorRegistrationConflict"
+  },
+  "merchantOnboardingErrorStaleReference": "Some options are no longer available. Please review your selections.",
+  "@merchantOnboardingErrorStaleReference": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorStaleReference"
+  },
+  "merchantOnboardingErrorStaleTerms": "The terms have been updated. Please review and accept them again.",
+  "@merchantOnboardingErrorStaleTerms": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorStaleTerms"
+  },
+  "merchantOnboardingErrorIdempotencyInProgress": "Your submission is still being processed. Please try again shortly.",
+  "@merchantOnboardingErrorIdempotencyInProgress": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorIdempotencyInProgress"
+  },
+  "merchantOnboardingErrorRetryable": "Something went wrong. Please try again.",
+  "@merchantOnboardingErrorRetryable": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorRetryable"
+  },
+  "merchantOnboardingErrorAlreadySubmitted": "An application has already been submitted for this account.",
+  "@merchantOnboardingErrorAlreadySubmitted": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorAlreadySubmitted"
+  },
+  "merchantOnboardingErrorUnauthorized": "You need to sign in again to continue.",
+  "@merchantOnboardingErrorUnauthorized": {
+    "description": "Merchant onboarding demo string: merchantOnboardingErrorUnauthorized"
   }
 }

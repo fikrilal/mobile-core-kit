@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/avatar/avatar.dart';
 import 'package:mobile_core_kit/l10n/gen/app_localizations.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_icons/phosphor_icons.dart';
 
 Widget _wrap(Widget child) {
   return MaterialApp(

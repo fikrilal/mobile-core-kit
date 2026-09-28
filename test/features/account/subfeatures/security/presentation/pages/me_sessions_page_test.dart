@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mobile_core_kit/core/design_system/adaptive/adaptive.dart';
 import 'package:mobile_core_kit/core/design_system/theme/theme.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
+import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/list_me_sessions_request_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/me_session_entity.dart';
 import 'package:mobile_core_kit/features/account/subfeatures/security/domain/entity/revoke_me_session_request_entity.dart';
@@ -113,6 +114,35 @@ void main() {
         ),
         findsNothing,
       );
+    });
+
+    testWidgets('shows revoke error snackbar on revoke failure', (
+      tester,
+    ) async {
+      when(() => listMeSessions(any())).thenAnswer(
+        (_) async => right(
+          MeSessionsPageEntity(items: [activeOtherSession], hasMore: false),
+        ),
+      );
+      when(
+        () => revokeMeSession(any()),
+      ).thenAnswer((_) async => left(const AuthFailure.network()));
+
+      final cubit = MeSessionsCubit(listMeSessions, revokeMeSession);
+      addTearDown(cubit.close);
+
+      await _pumpPage(tester, cubit);
+      final l10n = _l10n(tester);
+
+      expect(find.text('iPhone 14'), findsOneWidget);
+
+      await _pressAppButton(tester, l10n.meSessionsRevokeCta);
+      expect(find.text(l10n.meSessionsRevokeConfirmTitle), findsOneWidget);
+
+      await _pressAppButton(tester, l10n.meSessionsRevokeConfirmCta);
+
+      verify(() => revokeMeSession(any())).called(1);
+      expect(find.text(l10n.errorsOffline), findsOneWidget);
     });
   });
 }

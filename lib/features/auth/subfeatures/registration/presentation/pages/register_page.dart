@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,45 +11,11 @@ import 'package:mobile_core_kit/core/design_system/widgets/snackbar/snackbar.dar
 import 'package:mobile_core_kit/core/presentation/localization/auth_failure_localizer.dart';
 import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_cubit.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/registration/presentation/cubit/register/register_state.dart';
 import 'package:mobile_core_kit/navigation/auth/auth_routes.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
-
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
-  StreamSubscription<RegisterEffect>? _effectSubscription;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _effectSubscription ??= context.read<RegisterCubit>().effects.listen(
-      _handleEffect,
-    );
-  }
-
-  void _handleEffect(RegisterEffect effect) {
-    if (!mounted) return;
-
-    switch (effect) {
-      case RegisterFailureEffect(:final failure):
-        AppSnackBar.showError(
-          context,
-          message: messageForAuthFailure(failure, context.l10n),
-        );
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_effectSubscription?.cancel());
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +23,22 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(
         title: AppText.titleMedium(context.l10n.authCreateAccount),
       ),
-      body: const _RegisterForm(),
+      body: BlocListener<RegisterCubit, RegisterState>(
+        listenWhen: (previous, current) =>
+            current.status == RegisterStatus.failure &&
+            current.failure != null &&
+            (previous.status != RegisterStatus.failure ||
+                previous.failure != current.failure),
+        listener: (context, state) {
+          final failure = state.failure;
+          if (failure == null) return;
+          AppSnackBar.showError(
+            context,
+            message: messageForAuthFailure(failure, context.l10n),
+          );
+        },
+        child: const _RegisterForm(),
+      ),
     );
   }
 }

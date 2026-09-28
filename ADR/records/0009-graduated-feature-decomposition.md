@@ -100,7 +100,7 @@ Current examples in this repository:
 
 See also:
 
-* `docs/engineering/project_architecture.md`
+* `docs/engineering/architecture/project_architecture.md`
 * `lib/core/domain/README.md`
 * `lib/core/runtime/session/README.md`
 * `lib/features/auth/README.md`

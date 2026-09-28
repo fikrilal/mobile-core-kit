@@ -159,6 +159,21 @@ class TaskController {
       );
     }
     if (execution.exitCode == 0) {
+      try {
+        final current = await service.preflight(
+          taskId,
+          action: TaskAction.verify,
+        );
+        if (current.taskFingerprint != preflight.taskFingerprint) {
+          throw const TaskControlError(
+            'task.candidate-changed',
+            'Candidate changed during verification; inspect and reauthorize before retrying.',
+          );
+        }
+      } on TaskControlError catch (error) {
+        await _escalate(state, code: error.code, summary: error.message);
+        rethrow;
+      }
       final verified = state.transition(
         TaskLifecycle.verified,
         at: finished,

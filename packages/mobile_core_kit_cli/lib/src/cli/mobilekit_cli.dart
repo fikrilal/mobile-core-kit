@@ -15,8 +15,6 @@ import 'package:mobile_core_kit_cli/src/oracle/oracle_workflow.dart';
 import 'package:mobile_core_kit_cli/src/process/command_runner.dart';
 import 'package:mobile_core_kit_cli/src/repository/repository_root.dart';
 import 'package:mobile_core_kit_cli/src/runtime/runtime_evidence_workflow.dart';
-import 'package:mobile_core_kit_cli/src/runtime/runtime_log_session.dart';
-import 'package:mobile_core_kit_cli/src/runtime/runtime_log_workflow.dart';
 import 'package:mobile_core_kit_cli/src/task/task_workflow.dart';
 import 'package:mobile_core_kit_cli/src/template/template_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/build_config_workflow.dart';
@@ -27,6 +25,8 @@ import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/scaffold_all_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/scaffold_data_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/verify_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/workflow_context.dart';
@@ -90,6 +90,7 @@ class MobilekitCli {
             platform: _platform,
             output: _output,
             errorOutput: _errorOutput,
+            logcatAttacher: FlutterRuntimeLogcatAttacher(),
           ).run(runtimeArguments),
         ).run(arguments.skip(1).toList()),
       ),
@@ -155,14 +156,7 @@ class MobilekitCli {
         workflow: (context, workflowArguments) =>
             KnowledgeWorkflow(context).run(workflowArguments),
       ),
-      'oracle' => _runGroupedWorkflow(
-        group: 'oracle',
-        subcommand: 'verify',
-        arguments: arguments.skip(1).toList(),
-        usage: 'Usage: mobilekit oracle verify',
-        workflow: (context, workflowArguments) =>
-            OracleWorkflow(context).run(workflowArguments),
-      ),
+      'oracle' => _runOracle(arguments.skip(1).toList()),
       'evidence' => _runWorkflow(
         command: 'evidence',
         arguments: arguments.skip(1).toList(),
@@ -217,7 +211,8 @@ class MobilekitCli {
         command: 'handoff',
         arguments: arguments.skip(1).toList(),
         usage:
-            'Usage: mobilekit handoff dry-run --task <id> '
+            'Usage: mobilekit handoff check --task <id> | '
+            'handoff dry-run --task <id> '
             '--action <commit|push|draft-pr> | '
             'handoff commit --task <id> --message <message> | '
             'handoff push --task <id> | '
@@ -245,10 +240,43 @@ class MobilekitCli {
       return arguments.isEmpty ? 2 : 0;
     }
     return switch (arguments.first) {
-      'logs' => _runRuntimeLogs(arguments.skip(1).toList()),
       'evidence' => _runRuntimeEvidence(arguments.skip(1).toList()),
       _ => _unknownRuntimeCommand(arguments.first),
     };
+  }
+
+  Future<int> _runOracle(List<String> arguments) async {
+    const usage =
+        'Usage: mobilekit oracle verify | '
+        'oracle paths --kind <kind>';
+    if (arguments.isEmpty) {
+      _writeCommandUsage(_errorOutput, usage);
+      return 2;
+    }
+    if (_isHelp(arguments.first)) {
+      _writeCommandUsage(_output, usage);
+      return 0;
+    }
+    if (arguments.first == 'verify') {
+      return _runWorkflow(
+        command: 'oracle verify',
+        arguments: arguments.skip(1).toList(),
+        usage: usage,
+        workflow: (context) => OracleWorkflow(context).run(const []),
+      );
+    }
+    if (arguments.first == 'paths') {
+      return _runWorkflow(
+        command: 'oracle paths',
+        arguments: arguments.skip(1).toList(),
+        usage: usage,
+        workflow: (context) =>
+            OracleWorkflow(context).paths(arguments.skip(1).toList()),
+      );
+    }
+    _errorOutput.writeln("ERROR: Unknown oracle command '${arguments.first}'.");
+    _writeCommandUsage(_errorOutput, usage);
+    return 2;
   }
 
   Future<int> _runContract(List<String> arguments) async {
@@ -303,33 +331,6 @@ class MobilekitCli {
     );
   }
 
-  Future<int> _runRuntimeLogs(List<String> arguments) async {
-    if (arguments.isEmpty || _isHelp(arguments.first)) {
-      RuntimeLogWorkflow.writeUsage(_output);
-      return arguments.isEmpty ? 2 : 0;
-    }
-
-    if (_containsCommandHelp(arguments)) {
-      RuntimeLogWorkflow.writeUsage(_output);
-      return 0;
-    }
-
-    final root = _findRepositoryRoot();
-    if (root == null) return 1;
-
-    final sessionManager = RuntimeLogSessionManager(
-      rootDirectory: root,
-      platform: _platform,
-      output: _output,
-      errorOutput: _errorOutput,
-    );
-    return RuntimeLogWorkflow(
-      sessionManager: sessionManager,
-      output: _output,
-      errorOutput: _errorOutput,
-    ).run(arguments);
-  }
-
   Future<int> _runRuntimeEvidence(List<String> arguments) async {
     if (arguments.isEmpty || arguments.any(_isHelp)) {
       RuntimeEvidenceWorkflow.writeUsage(_output);
@@ -344,6 +345,7 @@ class MobilekitCli {
       platform: _platform,
       output: _output,
       errorOutput: _errorOutput,
+      logcatAttacher: FlutterRuntimeLogcatAttacher(),
     ).run(arguments);
   }
 
@@ -357,9 +359,8 @@ class MobilekitCli {
     output.writeln('Usage: mobilekit runtime <command> [options]');
     output.writeln();
     output.writeln('Commands:');
-    output.writeln('  logs      Manage live Flutter log sessions.');
     output.writeln(
-      '  evidence  Run device integration tests and collect evidence.',
+      '  evidence  Run Maestro YAML or device tests; bind proof with --task.',
     );
     output.writeln();
     output.writeln('Run `mobilekit runtime <command> --help` for usage.');
@@ -392,6 +393,35 @@ class MobilekitCli {
       _writeScaffoldUsage(_output);
       return arguments.isEmpty ? 2 : 0;
     }
+
+    if (arguments.first == 'all') {
+      final root = _findRepositoryRoot();
+      if (root == null) return 1;
+
+      return _runRepositoryWorkflow(
+        command: 'scaffold all',
+        root: root,
+        usage:
+            'Usage: mobilekit scaffold all --feature <name> --operation <id> [options]',
+        workflow: (context) =>
+            ScaffoldAllWorkflow(context).run(arguments.skip(1).toList()),
+      );
+    }
+
+    if (arguments.first == 'data') {
+      final root = _findRepositoryRoot();
+      if (root == null) return 1;
+
+      return _runRepositoryWorkflow(
+        command: 'scaffold data',
+        root: root,
+        usage:
+            'Usage: mobilekit scaffold data --feature <name> --operation <id> [options]',
+        workflow: (context) =>
+            ScaffoldDataWorkflow(context).run(arguments.skip(1).toList()),
+      );
+    }
+
     if (arguments.first != 'feature') {
       _errorOutput.writeln(
         "ERROR: Unknown scaffold command '${arguments.first}'.",
@@ -410,19 +440,19 @@ class MobilekitCli {
       parsed = parser.parse(arguments.skip(1).toList());
     } on FormatException catch (error) {
       _errorOutput.writeln('ERROR: ${error.message}');
-      _writeScaffoldUsage(_errorOutput);
+      _writeScaffoldFeatureUsage(_errorOutput);
       return 2;
     }
 
     if (parsed.flag('help')) {
-      _writeScaffoldUsage(_output);
+      _writeScaffoldFeatureUsage(_output);
       return 0;
     }
     if (parsed.rest.length != 1) {
       _errorOutput.writeln(
         'ERROR: Expected exactly one feature name in snake_case.',
       );
-      _writeScaffoldUsage(_errorOutput);
+      _writeScaffoldFeatureUsage(_errorOutput);
       return 2;
     }
 
@@ -492,8 +522,8 @@ class MobilekitCli {
 
     try {
       final profile = parsed.option('profile');
-      if (profile == null) return runner.runDefault();
-      return runner.run(
+      if (profile == null) return await runner.runDefault();
+      return await runner.run(
         DuplicationProfile.values.firstWhere(
           (candidate) => candidate.label == profile,
         ),
@@ -661,11 +691,13 @@ class MobilekitCli {
       '  maintenance  Run fixed read-only repository observations.',
     );
     output.writeln('  ci        Classify a clean base/head CI candidate.');
-    output.writeln('  handoff   Prepare or execute a verified narrow handoff.');
+    output.writeln(
+      '  handoff   Check acceptance evidence or prepare a narrow handoff.',
+    );
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
     output.writeln('  duplication  Run duplication profiles.');
-    output.writeln('  runtime   Manage runtime evidence and log sessions.');
+    output.writeln('  runtime   Run Maestro YAML or device tests as evidence.');
     output.writeln();
     output.writeln('Run `mobilekit <command> --help` for command usage.');
   }
@@ -677,6 +709,23 @@ class MobilekitCli {
   }
 
   void _writeScaffoldUsage(StringSink output) {
+    output.writeln('Usage: mobilekit scaffold <subcommand> [options]');
+    output.writeln();
+    output.writeln('Subcommands:');
+    output.writeln(
+      '  all             Scaffold feature skeleton and OpenAPI data layer end-to-end.',
+    );
+    output.writeln('  feature <name>  Scaffold standard feature boilerplate.');
+    output.writeln(
+      '  data            Scaffold verified Freezed DTOs and datasource from OpenAPI.',
+    );
+    output.writeln();
+    output.writeln(
+      'Run `mobilekit scaffold <subcommand> --help` for subcommand details.',
+    );
+  }
+
+  void _writeScaffoldFeatureUsage(StringSink output) {
     output.writeln('Usage: mobilekit scaffold feature <name> [options]');
     output.writeln();
     output.writeln('Options:');
@@ -711,12 +760,4 @@ class MobilekitCli {
   bool _isHelp(String argument) => argument == '-h' || argument == '--help';
 
   bool _containsHelp(List<String> arguments) => arguments.any(_isHelp);
-
-  bool _containsCommandHelp(List<String> arguments) {
-    final separatorIndex = arguments.indexOf('--');
-    final commandArguments = separatorIndex == -1
-        ? arguments
-        : arguments.take(separatorIndex);
-    return commandArguments.any(_isHelp);
-  }
 }

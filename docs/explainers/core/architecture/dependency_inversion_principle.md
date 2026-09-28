@@ -220,7 +220,7 @@ This repo uses a pragmatic “core kernel” approach:
 ## 11) Related docs
 
 - Guardrails / boundaries:
-    - `docs/engineering/architecture_linting.md`
+    - `docs/engineering/architecture/architecture_linting.md`
     - `lint/architecture_lints.yaml`
 - Data/Domain responsibilities:
-    - `docs/engineering/data_domain_guide.md`
+    - `docs/engineering/architecture/data_domain_guide.md`

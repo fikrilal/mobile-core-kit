@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_core_kit/core/domain/auth/auth_failure.dart';
 import 'package:mobile_core_kit/core/foundation/validation/find_first_validation_error_for_fields.dart';
 import 'package:mobile_core_kit/features/auth/domain/input/change_password_input.dart';
 import 'package:mobile_core_kit/features/auth/domain/usecase/change_password_usecase.dart';
 import 'package:mobile_core_kit/features/auth/domain/validation/password_field_validator.dart';
-import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_effect.dart';
 import 'package:mobile_core_kit/features/auth/subfeatures/credential_management/presentation/cubit/change_password/change_password_state.dart';
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
@@ -14,9 +11,6 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     : super(ChangePasswordState.initial());
 
   final ChangePasswordUseCase _changePassword;
-  final _effects = StreamController<ChangePasswordEffect>.broadcast();
-
-  Stream<ChangePasswordEffect> get effects => _effects.stream;
 
   void currentPasswordChanged(String value) {
     final currentError = PasswordFieldValidator.validateCurrentPassword(value);
@@ -132,7 +126,6 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     );
 
     result.match((failure) => _handleFailure(failure), (_) {
-      _effects.add(const ChangePasswordSuccessEffect());
       emit(
         state.copyWith(
           status: ChangePasswordStatus.success,
@@ -163,10 +156,8 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
             failure: failure,
           ),
         );
-        _effects.add(ChangePasswordFailureEffect(failure));
       },
       orElse: () {
-        _effects.add(ChangePasswordFailureEffect(failure));
         emit(
           state.copyWith(
             status: ChangePasswordStatus.failure,
@@ -175,11 +166,5 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
         );
       },
     );
-  }
-
-  @override
-  Future<void> close() async {
-    unawaited(_effects.close());
-    return super.close();
   }
 }

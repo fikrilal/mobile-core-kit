@@ -116,6 +116,7 @@ void main() {
     final durable = manifest.readAsStringSync();
     expect(durable, contains('"id": "runtime-task"'));
     expect(durable, contains('"outcome": "passed"'));
+    expect(durable, contains('"durability": "durable-summary"'));
     expect(durable, contains('"environmentPreparation": "existing"'));
     expect(durable, isNot(contains('emulator-5554')));
     expect(durable, isNot(contains(root.path)));
@@ -254,6 +255,10 @@ void main() {
     );
 
     expect(await workflow.run([]), 2);
+    expect(errors.toString(), contains('--device is required'));
+
+    errors.clear();
+    expect(await workflow.run(['--device', 'emulator-5554']), 2);
     expect(errors.toString(), contains('--task is required'));
 
     errors.clear();
@@ -435,6 +440,393 @@ void main() {
       }
     }
   });
+
+  test('runs maestro-flow with maestro test and binds the manifest', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final processRunner = FakeRuntimeEvidenceProcessRunner();
+    final artifacts = p.join(root.path, '_artifacts', 'maestro');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: processRunner,
+          bindingResolver: FakeRuntimeEvidenceBindingResolver(
+            root,
+            extraTargets: {'auth.journey': 'maestro/login.yaml'},
+            extraKinds: {'auth.journey': 'maestro-flow'},
+          ),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          output: StringBuffer(),
+          errorOutput: StringBuffer(),
+        ).run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 0);
+    expect(
+      processRunner.commands.where((command) => command.first == 'maestro'),
+      [
+        ['maestro', 'test', '--udid', 'emulator-5554', 'maestro/login.yaml'],
+      ],
+    );
+    expect(
+      File(p.join(artifacts, 'evidence.json')).readAsStringSync(),
+      allOf(
+        contains('"boundary": "runtime.maestro"'),
+        contains('"target": "maestro/login.yaml"'),
+        contains('"outcome": "passed"'),
+        contains('"durability": "durable-summary"'),
+      ),
+    );
+  });
+
+  test('rejects prod flavor and missing maestro binary', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final errors = StringBuffer();
+    final workflow = RuntimeEvidenceWorkflow(
+      rootDirectory: root,
+      processRunner: FakeRuntimeEvidenceProcessRunner(),
+      bindingResolver: FakeRuntimeEvidenceBindingResolver(
+        root,
+        extraTargets: {'auth.journey': 'maestro/login.yaml'},
+        extraKinds: {'auth.journey': 'maestro-flow'},
+      ),
+      locateBinary: (_) => null,
+      output: StringBuffer(),
+      errorOutput: errors,
+    );
+
+    expect(
+      await workflow.run([
+        '--task',
+        'runtime-task',
+        '--device',
+        'emulator-5554',
+        '--flavor',
+        'prod',
+        '--target',
+        'maestro/login.yaml',
+      ]),
+      2,
+    );
+    expect(errors.toString(), contains('rejects --flavor prod'));
+
+    errors.clear();
+    expect(
+      await workflow.run([
+        '--task',
+        'runtime-task',
+        '--device',
+        'emulator-5554',
+        '--target',
+        'maestro/login.yaml',
+      ]),
+      1,
+    );
+    expect(errors.toString(), contains('runtime.maestro-missing'));
+  });
+
+  test(
+    'maestro-flow refuses example env and the CI Firebase fixture',
+    () async {
+      final root = await _createRepository(includeEnvironment: false);
+      addTearDown(() => root.delete(recursive: true));
+      File(
+        p.join(root.path, '.env', 'dev.example.yaml'),
+      ).writeAsStringSync('core: https://example.test\n');
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      File(p.join(root.path, 'harness', 'fixtures', 'google-services.ci.json'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('{"project_id":"ci"}\n');
+      final errors = StringBuffer();
+      final workflow = RuntimeEvidenceWorkflow(
+        rootDirectory: root,
+        processRunner: FakeRuntimeEvidenceProcessRunner(),
+        bindingResolver: FakeRuntimeEvidenceBindingResolver(
+          root,
+          extraTargets: {'auth.journey': 'maestro/login.yaml'},
+          extraKinds: {'auth.journey': 'maestro-flow'},
+        ),
+        locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+        output: StringBuffer(),
+        errorOutput: errors,
+      );
+
+      expect(
+        await workflow.run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+        ]),
+        1,
+      );
+      expect(errors.toString(), contains('Missing or empty env file'));
+
+      errors.clear();
+      File(
+        p.join(root.path, '.env', 'dev.yaml'),
+      ).writeAsStringSync('core: https://api.example.test\n');
+      expect(
+        await workflow.run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--google-services-json',
+          'harness/fixtures/google-services.ci.json',
+        ]),
+        2,
+      );
+      expect(errors.toString(), contains('CI Firebase fixture'));
+    },
+  );
+
+  test(
+    'iterates maestro yaml without --task and skips evidence.json',
+    () async {
+      final root = await _createRepository();
+      addTearDown(() => root.delete(recursive: true));
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      final processRunner = FakeRuntimeEvidenceProcessRunner();
+      final logcat = RecordingLogcatAttacher();
+      final artifacts = p.join(root.path, '_artifacts', 'iterate');
+
+      final result =
+          await RuntimeEvidenceWorkflow(
+            rootDirectory: root,
+            processRunner: processRunner,
+            locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+            logcatAttacher: logcat,
+            output: StringBuffer(),
+            errorOutput: StringBuffer(),
+          ).run([
+            '--device',
+            'emulator-5554',
+            '--target',
+            'maestro/login.yaml',
+            '--artifacts-dir',
+            artifacts,
+          ]);
+
+      expect(result, 0);
+      expect(processRunner.commands, [
+        ['maestro', 'test', '--udid', 'emulator-5554', 'maestro/login.yaml'],
+      ]);
+      expect(logcat.starts, 1);
+      expect(logcat.stops, 1);
+      expect(File(p.join(artifacts, 'evidence.json')).existsSync(), isFalse);
+      expect(
+        File(p.join(artifacts, 'logs', 'logcat.log')).existsSync(),
+        isTrue,
+      );
+    },
+  );
+
+  test('requires --task for Dart targets', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    final errors = StringBuffer();
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(),
+          output: StringBuffer(),
+          errorOutput: errors,
+        ).run([
+          '--device',
+          'emulator-5554',
+          '--target',
+          'integration_test/first_test.dart',
+        ]);
+
+    expect(result, 2);
+    expect(errors.toString(), contains('--task is required for Dart targets'));
+  });
+
+  test('attaches logcat for maestro proof and always stops it', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final logcat = RecordingLogcatAttacher();
+    final artifacts = p.join(root.path, '_artifacts', 'maestro-logcat');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(
+            failingTarget: 'maestro/login.yaml',
+          ),
+          bindingResolver: FakeRuntimeEvidenceBindingResolver(
+            root,
+            extraTargets: {'auth.journey': 'maestro/login.yaml'},
+            extraKinds: {'auth.journey': 'maestro-flow'},
+          ),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          logcatAttacher: logcat,
+          output: StringBuffer(),
+          errorOutput: StringBuffer(),
+        ).run([
+          '--task',
+          'runtime-task',
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 1);
+    expect(logcat.starts, 1);
+    expect(logcat.stops, 1);
+    expect(File(p.join(artifacts, 'evidence.json')).existsSync(), isTrue);
+  });
+
+  test('fails a passed Maestro run when the VM log did not attach', () async {
+    final root = await _createRepository();
+    addTearDown(() => root.delete(recursive: true));
+    File(p.join(root.path, 'maestro', 'login.yaml'))
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('appId: example\n');
+    final errors = StringBuffer();
+    final artifacts = p.join(root.path, '_artifacts', 'missing-vm-log');
+
+    final result =
+        await RuntimeEvidenceWorkflow(
+          rootDirectory: root,
+          processRunner: FakeRuntimeEvidenceProcessRunner(),
+          locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+          logcatAttacher: RecordingLogcatAttacher(logText: 'I/flutter: boot\n'),
+          output: StringBuffer(),
+          errorOutput: errors,
+        ).run([
+          '--device',
+          'emulator-5554',
+          '--target',
+          'maestro/login.yaml',
+          '--artifacts-dir',
+          artifacts,
+        ]);
+
+    expect(result, 1);
+    expect(errors.toString(), contains('missing: vm-log-attached'));
+    expect(errors.toString(), isNot(contains('I/flutter: boot')));
+  });
+
+  test(
+    'fails a passed Maestro proof when the journey signal is absent',
+    () async {
+      final root = await _createRepository();
+      addTearDown(() => root.delete(recursive: true));
+      File(p.join(root.path, 'maestro', 'login.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('appId: example\n');
+      File(p.join(root.path, 'harness', 'oracles.yaml'))
+        ..parent.createSync(recursive: true)
+        ..writeAsStringSync('''
+schemaVersion: 1
+oracles:
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
+''');
+      final errors = StringBuffer();
+      final artifacts = p.join(root.path, '_artifacts', 'missing-signal');
+      const secret = 'refreshToken-secret-value';
+
+      final result =
+          await RuntimeEvidenceWorkflow(
+            rootDirectory: root,
+            processRunner: FakeRuntimeEvidenceProcessRunner(),
+            bindingResolver: FakeRuntimeEvidenceBindingResolver(
+              root,
+              extraTargets: {'auth.journey': 'maestro/login.yaml'},
+              extraKinds: {'auth.journey': 'maestro-flow'},
+            ),
+            locateBinary: (name) => name == 'maestro' ? '/bin/maestro' : null,
+            logcatAttacher: RecordingLogcatAttacher(
+              logText:
+                  '[GoRouter] going to /auth/sign-in\n'
+                  '[network] [DEBUG] POST /auth/password/login → 401\n'
+                  '$secret\n',
+            ),
+            output: StringBuffer(),
+            errorOutput: errors,
+          ).run([
+            '--task',
+            'runtime-task',
+            '--device',
+            'emulator-5554',
+            '--target',
+            'maestro/login.yaml',
+            '--artifacts-dir',
+            artifacts,
+          ]);
+
+      final manifest = File(
+        p.join(artifacts, 'evidence.json'),
+      ).readAsStringSync();
+      expect(result, 1);
+      expect(errors.toString(), contains('missing: login-succeeded'));
+      expect(manifest, contains('"missing": ['));
+      expect(manifest, contains('login-succeeded'));
+      expect(manifest, isNot(contains(secret)));
+      expect(manifest, isNot(contains('POST /auth/password/login')));
+    },
+  );
+}
+
+class RecordingLogcatAttacher implements RuntimeLogcatAttacher {
+  RecordingLogcatAttacher({
+    this.logText = '[GoRouter] setting initial location null\n',
+  });
+
+  final String logText;
+  var starts = 0;
+  var stops = 0;
+
+  @override
+  Future<void> start({required String device, required File logFile}) async {
+    starts++;
+    logFile.parent.createSync(recursive: true);
+    logFile.writeAsStringSync(logText);
+  }
+
+  @override
+  Future<void> stop() async {
+    stops++;
+  }
 }
 
 const _generatedConfigPath =
@@ -501,7 +893,7 @@ class FakeRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
         command.length > 1 &&
         command.first == 'flutter' &&
         command[1] == 'test';
-    final target = isFlutterTest ? command.last : '';
+    final target = command.last;
     final log =
         logPayload ??
         (isFlutterTest
@@ -525,9 +917,15 @@ class FakeRuntimeEvidenceProcessRunner implements RuntimeEvidenceProcessRunner {
 
 class FakeRuntimeEvidenceBindingResolver
     implements RuntimeEvidenceBindingResolver {
-  FakeRuntimeEvidenceBindingResolver(this.root);
+  FakeRuntimeEvidenceBindingResolver(
+    this.root, {
+    this.extraTargets = const {},
+    this.extraKinds = const {},
+  });
 
   final Directory root;
+  final Map<String, String> extraTargets;
+  final Map<String, String> extraKinds;
 
   @override
   Future<RuntimeEvidenceBinding> resolve(String taskId) async {
@@ -538,6 +936,14 @@ class FakeRuntimeEvidenceBindingResolver
             .map((file) => p.relative(file.path, from: root.path))
             .toList()
           ..sort();
+    final runtimeTargets = {
+      for (final target in targets) _oracleId(target): target,
+      ...extraTargets,
+    };
+    final runtimeKinds = {
+      for (final target in targets) _oracleId(target): 'integration-test',
+      ...extraKinds,
+    };
     return RuntimeEvidenceBinding(
       taskId: taskId,
       planPath: 'docs/exec-plans/active/runtime.md',
@@ -549,8 +955,9 @@ class FakeRuntimeEvidenceBindingResolver
       candidateRevision: '4444444444444444444444444444444444444444',
       taskFingerprint:
           '5555555555555555555555555555555555555555555555555555555555555555',
-      oracleIds: targets.map((target) => _oracleId(target)).toList(),
-      runtimeTargets: {for (final target in targets) _oracleId(target): target},
+      oracleIds: runtimeTargets.keys.toList(),
+      runtimeTargets: runtimeTargets,
+      runtimeKinds: runtimeKinds,
     );
   }
 

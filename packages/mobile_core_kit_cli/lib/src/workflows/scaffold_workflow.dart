@@ -81,13 +81,12 @@ class ScaffoldWorkflow {
 
     final featureDir = p.join('lib', 'features', feature);
     final navDir = p.join('lib', 'navigation', feature);
-    if (context.directory(featureDir).existsSync() ||
-        context.directory(navDir).existsSync()) {
+    final featureExists = context.directory(featureDir).existsSync();
+    if (featureExists && effectiveSlice == feature) {
       context.errorOutput.writeln(
         'Refusing to scaffold: feature already exists.',
       );
       context.errorOutput.writeln('- $featureDir');
-      context.errorOutput.writeln('- $navDir');
       return 2;
     }
 
@@ -176,32 +175,7 @@ class ScaffoldWorkflow {
     final remoteDatasourceImport = _toPackageImport(remoteDatasourceFile);
 
     final outputs = <String, String>{
-      // Feature DI
-      moduleFile: _featureModuleStub(
-        moduleClass: featureModuleClass,
-        cubitClass: cubitClass,
-        cubitImport: cubitImport,
-      ),
-
-      // Navigation
-      routesFile: _routesStub(
-        featureRoutesClass: featureRoutesClass,
-        routeConstName: routeConstName,
-        routePath: routePath,
-      ),
-      routesListFile: _routesListStub(
-        feature: feature,
-        featureRoutesClass: featureRoutesClass,
-        routeConstName: routeConstName,
-        routeName: routeName,
-        cubitClass: cubitClass,
-        cubitImport: cubitImport,
-        pageClass: pageClass,
-        pageImport: pageImport,
-        routesImport: routesImport,
-      ),
-
-      // Presentation
+      // Slice Presentation
       pageFile: _pageStub(
         pageClass: pageClass,
         cubitClass: cubitClass,
@@ -218,61 +192,64 @@ class ScaffoldWorkflow {
       ),
       stateFile: _stateStub(stateClass: stateClass, statusEnum: statusEnum),
 
-      // Domain (minimal placeholders)
-      failureFile: _failureStub(featurePascal),
-      repositoryFile: _repositoryStub(
-        featurePascal: featurePascal,
-        feature: feature,
-        failureImport: failureImport,
-      ),
-
-      // Data (minimal placeholders)
-      remoteDatasourceFile: _remoteDatasourceStub(featurePascal),
-      repositoryImplFile: _repositoryImplStub(
-        featurePascal: featurePascal,
-        feature: feature,
-        remoteDatasourceImport: remoteDatasourceImport,
-        failureImport: failureImport,
-        repositoryImport: repositoryImport,
-      ),
-
-      // Tests (minimal skeleton)
+      // Slice Tests
       cubitTestFile: _cubitTestStub(
         cubitClass: cubitClass,
+        stateClass: stateClass,
         statusEnum: statusEnum,
         cubitImport: cubitImport,
+        stateImport: stateImport,
       ),
     };
 
-    final directories = <String>[
-      featureDir,
-      p.join(featureDir, 'analytics'),
-      p.join(featureDir, 'data', 'datasource', 'local'),
-      p.join(featureDir, 'data', 'datasource', 'remote'),
-      p.join(featureDir, 'data', 'error'),
-      p.join(featureDir, 'data', 'model', 'local'),
-      p.join(featureDir, 'data', 'model', 'remote'),
-      p.join(featureDir, 'data', 'repository'),
-      p.join(featureDir, 'di'),
-      p.join(featureDir, 'domain', 'entity'),
-      p.join(featureDir, 'domain', 'failure'),
-      p.join(featureDir, 'domain', 'repository'),
-      p.join(featureDir, 'domain', 'usecase'),
-      p.join(featureDir, 'domain', 'value'),
-      p.join(featureDir, 'presentation', 'cubit'),
-      cubitDir,
-      p.join(featureDir, 'presentation', 'pages'),
-      p.join(featureDir, 'presentation', 'widgets', 'skeleton'),
-      navDir,
-      p.join(
-        'test',
-        'features',
-        feature,
-        'presentation',
-        'cubit',
-        effectiveSlice,
-      ),
-    ];
+    if (!featureExists) {
+      outputs.addAll({
+        // Feature DI
+        moduleFile: _featureModuleStub(
+          moduleClass: featureModuleClass,
+          cubitClass: cubitClass,
+          cubitImport: cubitImport,
+        ),
+
+        // Navigation
+        routesFile: _routesStub(
+          featureRoutesClass: featureRoutesClass,
+          routeConstName: routeConstName,
+          routePath: routePath,
+        ),
+        routesListFile: _routesListStub(
+          feature: feature,
+          featureRoutesClass: featureRoutesClass,
+          routeConstName: routeConstName,
+          routeName: routeName,
+          cubitClass: cubitClass,
+          cubitImport: cubitImport,
+          pageClass: pageClass,
+          pageImport: pageImport,
+          routesImport: routesImport,
+        ),
+
+        // Domain (minimal placeholders)
+        failureFile: _failureStub(featurePascal),
+        repositoryFile: _repositoryStub(
+          featurePascal: featurePascal,
+          feature: feature,
+          failureImport: failureImport,
+        ),
+
+        // Data (minimal placeholders)
+        remoteDatasourceFile: _remoteDatasourceStub(featurePascal),
+        repositoryImplFile: _repositoryImplStub(
+          featurePascal: featurePascal,
+          feature: feature,
+          remoteDatasourceImport: remoteDatasourceImport,
+          failureImport: failureImport,
+          repositoryImport: repositoryImport,
+        ),
+      });
+    }
+
+    final directories = outputs.keys.map(p.dirname).toSet().toList()..sort();
 
     // Preflight: refuse if any file already exists.
     for (final path in outputs.keys) {
@@ -286,7 +263,9 @@ class ScaffoldWorkflow {
 
     if (dryRun) {
       context.output.writeln(
-        'Dry run: would scaffold feature "$feature" (slice: "$effectiveSlice").',
+        featureExists
+            ? 'Dry run: would scaffold slice "$effectiveSlice" in existing feature "$feature".'
+            : 'Dry run: would scaffold feature "$feature" (slice: "$effectiveSlice").',
       );
       context.output.writeln('');
       context.output.writeln('Directories:');
@@ -309,25 +288,51 @@ class ScaffoldWorkflow {
       context.file(entry.key).writeAsStringSync(entry.value);
     }
 
-    context.output.writeln(
-      'Scaffolded feature "$feature" (slice: "$effectiveSlice").',
-    );
-    context.output.writeln('');
-    context.output.writeln('Generated:');
-    context.output.writeln('- $featureDir');
-    context.output.writeln('- $navDir');
-    context.output.writeln('');
-    context.output.writeln('Next steps:');
-    context.output.writeln(
-      '- Register DI: call `$featureModuleClass.register(getIt)` from `lib/core/di/service_locator.dart`.',
-    );
-    context.output.writeln(
-      '- Add routes: include `${feature}Routes` from `$navDir/${feature}_routes_list.dart` in `lib/navigation/app_router.dart`.',
-    );
-    context.output.writeln(
-      '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify '
-      '--profile full --env dev`.',
-    );
+    if (featureExists) {
+      context.output.writeln(
+        'Scaffolded slice "$effectiveSlice" in existing feature "$feature".',
+      );
+      context.output.writeln('');
+      context.output.writeln('Generated:');
+      for (final file in outputs.keys.toList()..sort()) {
+        context.output.writeln('- $file');
+      }
+      context.output.writeln('');
+      context.output.writeln('Next steps:');
+      context.output.writeln(
+        '- Register DI: add `$cubitClass` factory to `$featureModuleClass.register(locator)` in `$moduleFile`.',
+      );
+      context.output.writeln(
+        '- Add route: define static const `$routeConstName = \'$routePath\';` in `$routesFile` and add GoRoute to `$routesListFile`.',
+      );
+      context.output.writeln(
+        '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify --profile full --env dev`.',
+      );
+    } else {
+      context.output.writeln(
+        'Scaffolded feature "$feature" (slice: "$effectiveSlice").',
+      );
+      context.output.writeln('');
+      context.output.writeln('Generated:');
+      context.output.writeln('- $featureDir');
+      context.output.writeln('- $navDir');
+      context.output.writeln('');
+      context.output.writeln('Next steps:');
+      context.output.writeln(
+        '- Register DI: call `$featureModuleClass.register(locator)` from `lib/core/di/registrars/feature_modules_registrar.dart`.',
+      );
+      final routesVarName = '${_toCamelCase(feature)}Routes';
+      context.output.writeln(
+        '- Add routes: include `$routesVarName` from `$navDir/${feature}_routes_list.dart` in `lib/navigation/app_router.dart`.',
+      );
+      context.output.writeln(
+        '- Register architecture boundary: add `lib/features/$feature/**` to exceptions under `features_no_cross_feature_imports` in `lint/architecture_lints.yaml`.',
+      );
+      context.output.writeln(
+        '- Run verify: `dart run mobile_core_kit_cli:mobilekit verify '
+        '--profile full --env dev`.',
+      );
+    }
     context.output.writeln('');
     final l10nPrefix = _toCamelCase(baseSnake);
     context.output.writeln(
@@ -421,6 +426,7 @@ String _routesListStub({
   required String pageImport,
   required String routesImport,
 }) {
+  final routesVarName = '${_toCamelCase(feature)}Routes';
   return '''
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -430,7 +436,7 @@ import '$cubitImport';
 import '$pageImport';
 import '$routesImport';
 
-final List<GoRoute> ${feature}Routes = [
+final List<GoRoute> $routesVarName = [
   GoRoute(
     path: $featureRoutesClass.$routeConstName,
     name: '$routeName',
@@ -454,13 +460,13 @@ String _pageStub({
   return '''
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_core_kit/core/adaptive/tokens/surface_tokens.dart';
-import 'package:mobile_core_kit/core/adaptive/widgets/app_page_container.dart';
-import 'package:mobile_core_kit/core/localization/l10n.dart';
-import 'package:mobile_core_kit/core/theme/tokens/spacing.dart';
-import 'package:mobile_core_kit/core/theme/typography/components/text.dart';
-import 'package:mobile_core_kit/core/widgets/button/button.dart';
-import 'package:mobile_core_kit/core/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/core/design_system/adaptive/adaptive.dart';
+import 'package:mobile_core_kit/core/design_system/theme/tokens/spacing.dart';
+import 'package:mobile_core_kit/core/design_system/theme/typography/components/text.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/button/button.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/loading/loading.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/state_message/state_message.dart';
+import 'package:mobile_core_kit/core/presentation/localization/l10n.dart';
 import '$cubitImport';
 import '$stateImport';
 
@@ -491,22 +497,22 @@ class $pageClass extends StatelessWidget {
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const AppDotWave(),
-        const SizedBox(height: AppSpacing.space12),
-        AppText.bodyMedium(context.l10n.commonLoading),
-      ],
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppDotWave(color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: AppSpacing.space12),
+          AppText.bodyMedium(context.l10n.commonLoading),
+        ],
+      ),
     );
   }
 
   Widget _buildSuccessState(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AppText.titleLarge(context.l10n.commonOk),
-        const SizedBox(height: AppSpacing.space12),
+    return AppStateMessagePanel(
+      title: context.l10n.commonOk,
+      actions: [
         AppButton.primary(
           text: context.l10n.commonOk,
           onPressed: () {},
@@ -515,13 +521,15 @@ class $pageClass extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String message) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AppText.titleLarge(context.l10n.errorsUnexpected),
-        const SizedBox(height: AppSpacing.space8),
-        AppText.bodyMedium(message, textAlign: TextAlign.center),
+  Widget _buildErrorState(BuildContext context, String? message) {
+    return AppStateMessagePanel(
+      title: context.l10n.errorsUnexpected,
+      description: message,
+      actions: [
+        AppButton.primary(
+          text: context.l10n.commonConfirm,
+          onPressed: () => context.read<$cubitClass>().load(),
+        ),
       ],
     );
   }
@@ -595,12 +603,18 @@ final class ${failureClass}Unexpected extends $failureClass {
 String _remoteDatasourceStub(String featurePascal) {
   final datasourceClass = '${featurePascal}RemoteDataSource';
   return '''
+import 'package:mobile_core_kit/core/foundation/config/api_host.dart';
+import 'package:mobile_core_kit/core/foundation/utilities/log_utils.dart';
 import 'package:mobile_core_kit/core/infra/network/api/api_helper.dart';
+import 'package:mobile_core_kit/core/infra/network/api/api_response.dart';
 
 class $datasourceClass {
   $datasourceClass(this._apiHelper);
+  final String _tag = '$datasourceClass';
 
   final ApiHelper _apiHelper;
+
+  ApiHelper get apiHelper => _apiHelper;
 
   // TODO: Add real endpoints here.
 }
@@ -648,6 +662,8 @@ class $implClass implements $repositoryClass {
 
   final $datasourceClass _remote;
 
+  $datasourceClass get remote => _remote;
+
   @override
   Future<Either<$failureClass, Unit>> placeholder() async {
     try {
@@ -663,20 +679,36 @@ class $implClass implements $repositoryClass {
 
 String _cubitTestStub({
   required String cubitClass,
+  required String stateClass,
   required String statusEnum,
   required String cubitImport,
+  required String stateImport,
 }) {
   return '''
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '$cubitImport';
+import '$stateImport';
 
 void main() {
-  test('$cubitClass starts in initial state', () async {
-    final cubit = $cubitClass();
-    addTearDown(cubit.close);
+  group('$cubitClass', () {
+    test('starts in initial state', () {
+      final cubit = $cubitClass();
+      addTearDown(cubit.close);
 
-    expect(cubit.state.status, $statusEnum.initial);
+      expect(cubit.state.status, $statusEnum.initial);
+    });
+
+    blocTest<$cubitClass, $stateClass>(
+      'emits loading then success on load()',
+      build: () => $cubitClass(),
+      act: (cubit) => cubit.load(),
+      expect: () => [
+        predicate<$stateClass>((state) => state.status == $statusEnum.loading),
+        predicate<$stateClass>((state) => state.status == $statusEnum.success),
+      ],
+    );
   });
 }
 ''';

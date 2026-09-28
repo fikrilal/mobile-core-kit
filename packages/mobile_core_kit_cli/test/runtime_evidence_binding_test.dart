@@ -44,6 +44,11 @@ void main() {
       expect(binding.taskFingerprint, preflight.taskFingerprint);
       expect(binding.runtimeTargets, {
         'auth.integration': 'integration_test/auth_test.dart',
+        'auth.journey': 'maestro/login.yaml',
+      });
+      expect(binding.runtimeKinds, {
+        'auth.integration': 'integration-test',
+        'auth.journey': 'maestro-flow',
       });
 
       File(
@@ -71,13 +76,11 @@ Future<Directory> _fixture() async {
       taskPlanFixture(
         taskId: 'runtime-binding-task',
         allowedPaths: '$_planPath, lib/features/example/',
-        oracleIds: 'auth.integration',
-        impacts: validImpactFixture
-            .replaceFirst('- Auth/session: no', '- Auth/session: yes')
-            .replaceFirst(
-              '- UI/UX/accessibility: yes',
-              '- UI/UX/accessibility: no',
-            ),
+        oracleIds: 'auth.integration, auth.journey',
+        impacts: validImpactFixture.replaceFirst(
+          '- Auth/session: no',
+          '- Auth/session: yes',
+        ),
       ),
     );
   File(p.join(root.path, 'harness', 'oracles.yaml'))
@@ -89,10 +92,20 @@ oracles:
     kind: integration-test
     target: integration_test/auth_test.dart
     covers: [auth]
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
 ''');
   File(p.join(root.path, 'integration_test', 'auth_test.dart'))
     ..parent.createSync(recursive: true)
     ..writeAsStringSync('// oracle\n');
+  File(p.join(root.path, 'maestro', 'login.yaml'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync('appId: example\n');
   Directory(
     p.join(root.path, 'lib', 'features', 'example'),
   ).createSync(recursive: true);

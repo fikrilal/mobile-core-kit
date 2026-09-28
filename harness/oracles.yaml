@@ -10,21 +10,79 @@ oracles:
     covers: [api]
   runtime.mobile-evidence:
     kind: procedure
-    target: docs/engineering/mobile_runtime_harness.md
+    target: docs/engineering/harness/mobile_runtime_harness.md
     covers: [platform]
   auth.integration:
     kind: integration-test
     target: integration_test/auth_happy_path_test.dart
     covers: [auth]
+  auth.journey:
+    kind: maestro-flow
+    target: maestro/login.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: login-succeeded
+        contains: "POST /auth/password/login → 2"
+  auth.register-journey:
+    kind: maestro-flow
+    target: maestro/register.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: register-succeeded
+        contains: "POST /auth/password/register → 2"
+  merchant.onboarding-journey:
+    kind: maestro-flow
+    target: maestro/merchant_onboarding.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: application-submitted
+        contains: "POST /merchant-onboarding/applications → 2"
+  auth.password-reset-request:
+    kind: maestro-flow
+    target: maestro/password_reset_request.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: reset-requested
+        contains: "POST /auth/password/reset/request → 2"
+  auth.logout-journey:
+    kind: maestro-flow
+    target: maestro/logout.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: logout-succeeded
+        contains: "POST /auth/logout → 2"
+  auth.change-password-journey:
+    kind: maestro-flow
+    target: maestro/change_password.yaml
+    covers: [auth, ui]
+    logSignals:
+      - id: password-changed
+        contains: "POST /auth/password/change → 2"
   startup.integration:
     kind: integration-test
     target: integration_test/startup_deep_link_resume_test.dart
     covers: [navigation]
+  ui.adaptive-goldens:
+    kind: golden-test
+    target: test/core/design_system/adaptive/goldens/adaptive_settings_matrix_golden_test.dart
+    covers: [ui]
   ui.human-review:
     kind: manual-review
-    target: docs/engineering/mobile_runtime_harness.md
+    target: docs/engineering/harness/mobile_runtime_harness.md
     covers: [ui]
   external.human-review:
     kind: manual-review
-    target: docs/engineering/agent_pr_loop.md
+    target: docs/engineering/harness/agent_pr_loop.md
     covers: [external-systems]
+  auth.refresh-logout-persistence:
+    kind: regression-test
+    target: test/core/runtime/session/session_manager_refresh_logout_persistence_test.dart
+    covers: [auth]
+  auth.expiry-persistence:
+    kind: regression-test
+    target: test/core/runtime/session/session_expiry_persistence_test.dart
+    covers: [auth]
+  navigation.pending-link-recovery:
+    kind: regression-test
+    target: test/core/runtime/navigation/pending_deep_link_controller_test.dart
+    covers: [navigation]

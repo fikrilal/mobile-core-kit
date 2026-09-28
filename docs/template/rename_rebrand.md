@@ -63,7 +63,7 @@ If you maintain separate iOS flavors/schemes, ensure each scheme has its own bun
 
 After changing app identifiers, reconfigure Firebase:
 
-- Run `flutterfire configure` (see `docs/engineering/firebase_setup.md`).
+- Run `flutterfire configure` (see `docs/engineering/platform/firebase_setup.md`).
 - Replace:
   - `lib/firebase_options.dart`
   - `android/app/google-services.json`

@@ -6,7 +6,7 @@
 **Owner:** Codex
 **Risk:** low
 **Authority:** Record the approved template-level raw input to validated aggregate form boundary in an ADR and align existing engineering guides with the implemented LoginInput/RegisterInput patterns, without changing production or test code.
-**Allowed paths:** docs/exec-plans/active/2026-08-29_document-validated-form-boundaries.md, docs/exec-plans/completed/2026-08-29_document-validated-form-boundaries.md, ADR/records/0016-validated-form-boundaries.md, docs/engineering/validation_architecture.md, docs/engineering/value_objects_validation.md, docs/engineering/validation_cookbook.md, docs/engineering/testing_strategy.md, docs/engineering/data_domain_guide.md, docs/engineering/model_entity_guide.md, docs/engineering/api/api_usage_post.md
+**Allowed paths:** docs/exec-plans/active/2026-08-29_document-validated-form-boundaries.md, docs/exec-plans/completed/2026-08-29_document-validated-form-boundaries.md, ADR/records/0016-validated-form-boundaries.md, docs/engineering/architecture/validation_architecture.md, docs/engineering/architecture/value_objects_validation.md, docs/engineering/architecture/validation_cookbook.md, docs/engineering/quality/testing_strategy.md, docs/engineering/architecture/data_domain_guide.md, docs/engineering/architecture/model_entity_guide.md, docs/engineering/api/api_usage_post.md
 **Allowed actions:** edit, verify
 **Maximum risk:** low
 **Repair limit:** 2

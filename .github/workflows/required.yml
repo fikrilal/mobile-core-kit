@@ -77,12 +77,103 @@ jobs:
       - name: Run canonical clean-checkout verification
         run: dart run mobile_core_kit_cli:mobilekit verify --profile ci --env dev
 
+  coverage:
+    name: CI Coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      COVERAGE_MIN: "55.0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare dev env config
+        run: |
+          mkdir -p .env
+          if [[ -n "${ENV_DEV_YAML:-}" ]]; then
+            printf '%s\n' "$ENV_DEV_YAML" > .env/dev.yaml
+            echo "Resolved .env/dev.yaml from secret."
+          elif [[ -f .env/dev.example.yaml ]]; then
+            cp .env/dev.example.yaml .env/dev.yaml
+            echo "Resolved .env/dev.yaml from .env/dev.example.yaml."
+          else
+            echo "::error::.env/dev.yaml is missing and .env/dev.example.yaml was not found."
+            exit 1
+          fi
+          if [[ ! -s .env/dev.yaml ]]; then
+            echo "::error::.env/dev.yaml is empty after preparation."
+            exit 1
+          fi
+        env:
+          ENV_DEV_YAML: ${{ secrets.ENV_DEV_YAML }}
+
+      - name: Bootstrap Flutter + generated config
+        uses: ./.github/actions/flutter-bootstrap
+        with:
+          env: dev
+          validate-env-schema: "true"
+          strict-env-schema: "false"
+          install-dependencies: "true"
+
+      - name: Test with coverage (exclude goldens)
+        run: |
+          mapfile -t non_golden_tests < <(
+            find test -type f -name '*_test.dart' ! -path '*/goldens/*' | sort
+          )
+          if [[ "${#non_golden_tests[@]}" -eq 0 ]]; then
+            echo "::error::No non-golden test files discovered."
+            exit 1
+          fi
+          flutter test --coverage "${non_golden_tests[@]}"
+
+      - name: Enforce line coverage floor
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          lcov = Path('coverage/lcov.info')
+          if not lcov.exists():
+            raise SystemExit('coverage/lcov.info not found')
+
+          found = 0
+          hit = 0
+          for line in lcov.read_text(encoding='utf-8').splitlines():
+            if not line.startswith('DA:'):
+              continue
+            found += 1
+            _, payload = line.split(':', 1)
+            _, hits = payload.split(',', 1)
+            if int(hits) > 0:
+              hit += 1
+
+          if found == 0:
+            raise SystemExit('No executable lines found in lcov report')
+
+          coverage = (hit / found) * 100.0
+          threshold = float(os.environ.get('COVERAGE_MIN', '0'))
+          print(f'Line coverage: {coverage:.2f}% (threshold: {threshold:.2f}%)')
+          if coverage < threshold:
+            raise SystemExit(
+              f'Coverage gate failed: {coverage:.2f}% < {threshold:.2f}%'
+            )
+          PY
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          retention-days: 7
+
   runtime:
     name: CI Runtime
     needs: risk
     if: needs.risk.outputs.runtime_required == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     env:
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
@@ -107,10 +198,28 @@ jobs:
           strict-env-schema: "false"
 
       - name: Run portable golden evidence
-        run: flutter test test/core/design_system/adaptive/goldens --reporter expanded
+        run: |
+          mapfile -t golden_targets < <(dart run mobile_core_kit_cli:mobilekit oracle paths --kind golden-test)
+          flutter test "${golden_targets[@]}" --reporter expanded
 
       - name: Prove Android debug assembly
         run: flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=ENV=dev
+
+      - name: Enable emulator acceleration
+        run: |
+          sudo -n true
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Execute registered integration oracles on Android
+        uses: reactivecircus/android-emulator-runner@69c8581131285561115a2e413eb0037446bdc2d6 # v2.35.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test > integration_targets.txt && while IFS= read -r target || [ -n "$target" ]; do case "$target" in *.dart) flutter test "$target" -d emulator-5554 --flavor dev --dart-define=ENV=dev || exit 1 ;; esac; done < integration_targets.txt
 
       - name: Upload golden failures
         if: failure()
@@ -149,6 +258,7 @@ jobs:
     needs:
       - risk
       - full
+      - coverage
       - runtime
       - governance
     if: always()
@@ -157,6 +267,8 @@ jobs:
     env:
       RISK_RESULT: ${{ needs.risk.result }}
       FULL_RESULT: ${{ needs.full.result }}
+      COVERAGE_RESULT: ${{ needs.coverage.result }}
+      RUNTIME_REQUIRED: ${{ needs.risk.outputs.runtime_required }}
       RUNTIME_RESULT: ${{ needs.runtime.result }}
       GOVERNANCE_RESULT: ${{ needs.governance.result }}
     steps:
@@ -164,10 +276,11 @@ jobs:
         run: |
           if [[ "$RISK_RESULT" != "success" || \
                 "$FULL_RESULT" != "success" || \
+                "$COVERAGE_RESULT" != "success" || \
                 "$GOVERNANCE_RESULT" != "success" ]]; then
             exit 1
           fi
-          if [[ "$RUNTIME_RESULT" != "success" && \
-                "$RUNTIME_RESULT" != "skipped" ]]; then
+          if [[ "$RUNTIME_REQUIRED" == "true" && "$RUNTIME_RESULT" != "success" ]] || \
+             [[ "$RUNTIME_REQUIRED" != "true" && "$RUNTIME_RESULT" != "skipped" && "$RUNTIME_RESULT" != "success" ]]; then
             exit 1
           fi

@@ -79,7 +79,7 @@ git diff --check
 
 ## Completion Notes
 
-- Added `docs/engineering/mobilekit_cli_reference.md` with pinned execution,
+- Added `docs/engineering/harness/mobilekit_cli_reference.md` with pinned execution,
   local activation, command groups, options, runtime workflows, and exit-code
   semantics.
 - Linked the reference from `README.md`, `docs/README.md`, `AGENTS.md`, and the

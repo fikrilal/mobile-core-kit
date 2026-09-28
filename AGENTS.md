@@ -27,7 +27,7 @@
 
 ## Testing Guidelines
 
-- Follow `docs/engineering/testing_strategy.md` (source of truth).
+- Follow `docs/engineering/quality/testing_strategy.md` (source of truth).
 - Quick rules of thumb:
   - Mirror paths: `lib/...` → `test/...`
   - Name files `*_test.dart`
@@ -72,7 +72,7 @@
   - template/scaffold update
   - engineering doc update
   - source-local `README.md`
-- If multiple agents are working concurrently, follow `docs/engineering/parallel_agent_workflow.md`.
+- If multiple agents are working concurrently, follow `docs/engineering/harness/parallel_agent_workflow.md`.
   Prefer `git worktree` + one branch per agent.
 - Keep `AGENTS.md` small. Use it for the operating contract. Put detailed guidance in:
   - `docs/engineering/*`
@@ -82,7 +82,7 @@
 ### Project Map
 
 This compact map is machine-checked by `mobilekit knowledge verify`. Detailed
-ownership stays in `docs/engineering/project_architecture.md`.
+ownership stays in `docs/engineering/architecture/project_architecture.md`.
 
 ```text
 lib/
@@ -111,6 +111,7 @@ Minimum checks (pick what’s relevant to what you changed):
 
 - Lint checks: `dart run mobile_core_kit_cli:mobilekit lint`
 - Tests: `fvm flutter test`
+- Local user-journey proof (not CI): `mobilekit runtime evidence --target maestro/<flow>.yaml` after `task verify`. Raw Maestro CLI/MCP is iteration only. YAML rules: `docs/engineering/harness/maestro_flows.md`. Proof: `docs/engineering/harness/mobile_runtime_harness.md`.
 - Codegen (if touching Freezed/JSON/build config): `dart run build_runner build`
 - Core duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile core`
 - Small-helper duplication harness (for non-trivial Dart/code changes): `dart run mobile_core_kit_cli:mobilekit duplication check --profile small-helpers`
@@ -142,8 +143,8 @@ Risk-based evidence expectations:
 
 Runtime evidence guidance:
 
-- For medium/high-risk mobile changes, follow `docs/engineering/mobile_runtime_harness.md`
-- PR delivery workflow and evidence expectations are defined in `docs/engineering/agent_pr_loop.md`
+- For medium/high-risk mobile changes, follow `docs/engineering/harness/mobile_runtime_harness.md`
+- PR delivery workflow and evidence expectations are defined in `docs/engineering/harness/agent_pr_loop.md`
 - Hosted completion uses the stable `CI Required` aggregate; local task state
   is never accepted as hosted CI evidence.
 
@@ -153,9 +154,9 @@ Runtime evidence guidance:
 - Reuse existing `lib/core/` tokens, theme extensions, widgets, and shared services before adding new UI primitives.
 - Prefer small widgets and private helpers when they improve readability, not as ceremony.
 - Follow the established architecture and state-management patterns:
-  - `docs/engineering/project_architecture.md`
-  - `docs/engineering/ui_state_architecture.md`
-  - `docs/engineering/validation_architecture.md`
+  - `docs/engineering/architecture/project_architecture.md`
+  - `docs/engineering/architecture/ui_state_architecture.md`
+  - `docs/engineering/architecture/validation_architecture.md`
 - Respect existing DI and navigation patterns:
   - register feature dependencies in `di/*_module.dart`
   - use established route constants and argument patterns under `navigation/*`
@@ -179,14 +180,14 @@ Runtime evidence guidance:
   - If a decision changes, add a new ADR and mark the old one as superseded.
   - Link the ADR from relevant docs (usually under `docs/engineering/` or `docs/template/`).
 - High-signal entry points:
-  - Architecture & boundaries: `docs/engineering/project_architecture.md`
-  - UI state: `docs/engineering/ui_state_architecture.md`
-  - Testing: `docs/engineering/testing_strategy.md`
-  - Agent delivery loop: `docs/engineering/agent_pr_loop.md`
-  - Parallel coordination: `docs/engineering/parallel_agent_workflow.md`
-  - Runtime evidence: `docs/engineering/mobile_runtime_harness.md`
-  - Event intake, maintenance, CI, and handoff: `docs/engineering/event_maintenance_handoff.md`
-  - CLI command reference: `docs/engineering/mobilekit_cli_reference.md`
+  - Architecture & boundaries: `docs/engineering/architecture/project_architecture.md`
+  - UI state: `docs/engineering/architecture/ui_state_architecture.md`
+  - Testing: `docs/engineering/quality/testing_strategy.md`
+  - Agent delivery loop: `docs/engineering/harness/agent_pr_loop.md`
+  - Parallel coordination: `docs/engineering/harness/parallel_agent_workflow.md`
+  - Runtime evidence: `docs/engineering/harness/mobile_runtime_harness.md`
+  - Event intake, maintenance, CI, and handoff: `docs/engineering/harness/event_maintenance_handoff.md`
+  - CLI command reference: `docs/engineering/harness/mobilekit_cli_reference.md`
   - Detailed topic docs remain indexed from `docs/README.md`
 - After every code change, run the verification commands in “Agent Verification (required)” above.
 - For non-trivial changes, default to the repo's harness workflow:

@@ -6,7 +6,7 @@ import 'package:mobile_core_kit_cli/src/task/task_plan.dart';
 import 'package:path/path.dart' as p;
 
 const operatingEvidencePath =
-    'docs/engineering/harness_operating_evidence.json';
+    'docs/engineering/harness/harness_operating_evidence.json';
 const evidenceCalibrationPath = 'harness/evidence_calibration.json';
 
 class OperatingEvidenceError implements Exception {
@@ -107,7 +107,9 @@ class EvidenceCalibration {
 OperatingEvidenceLedger readOperatingEvidence(Directory root) {
   final file = File(p.join(root.path, operatingEvidencePath));
   final decoded = _readJson(file, kind: 'Operating evidence');
-  return parseOperatingEvidence(root, decoded);
+  final ledger = parseOperatingEvidence(root, decoded);
+  _requireRemoteCommits(root, ledger);
+  return ledger;
 }
 
 OperatingEvidenceLedger parseOperatingEvidence(Directory root, Object? value) {
@@ -436,9 +438,37 @@ List<String> _planImpacts(TaskPlan plan) => <String>[
   if (plan.impacts.ui) 'ui',
 ];
 
+void _requireRemoteCommits(Directory root, OperatingEvidenceLedger ledger) {
+  for (final record in ledger.records) {
+    final exists = Process.runSync('git', [
+      'cat-file',
+      '-e',
+      '${record.ciRevision}^{commit}',
+    ], workingDirectory: root.path);
+    if (exists.exitCode != 0) {
+      throw const OperatingEvidenceError(
+        'evidence.unknown-revision',
+        'CI revision is not a commit in this repository.',
+      );
+    }
+    final contained = Process.runSync('git', [
+      'branch',
+      '-r',
+      '--contains',
+      record.ciRevision,
+    ], workingDirectory: root.path);
+    if (contained.exitCode != 0 || contained.stdout.toString().trim().isEmpty) {
+      throw const OperatingEvidenceError(
+        'evidence.local-only-revision',
+        'CI revision is not on a remote-tracking branch.',
+      );
+    }
+  }
+}
+
 void _validateCoverageFloor(Directory root, int basisPoints) {
   final workflow = File(
-    p.join(root.path, '.github', 'workflows', 'governance.yml'),
+    p.join(root.path, '.github', 'workflows', 'required.yml'),
   );
   if (!workflow.existsSync()) throw _invalid();
   final match = RegExp(

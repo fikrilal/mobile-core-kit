@@ -39,6 +39,10 @@ rules:
         allow:
           - lib/features/home/**
 
+      - from: lib/features/merchant_onboarding/**
+        allow:
+          - lib/features/merchant_onboarding/**
+
       - from: lib/features/onboarding/**
         allow:
           - lib/features/onboarding/**

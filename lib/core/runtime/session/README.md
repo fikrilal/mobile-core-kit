@@ -35,5 +35,5 @@ runtime consumes through `core/domain` ports, for example:
 ## Related docs
 
 - `docs/core/session/README.md`
-- `docs/engineering/project_architecture.md`
+- `docs/engineering/architecture/project_architecture.md`
 - `lib/core/domain/README.md`

@@ -187,7 +187,8 @@ The repository contract accepts only `BookReviewSubmission`.
 - On field changes, call VO `create(...)`, store a stable field error in state,
   and localize it in presentation; do not perform side effects in `build`.
 - On submit, perform presentation pre-flight validation, pass the unchanged raw
-  input to the use case, and emit one-shot effects through `Stream<Effect>`.
+  input to the use case, and `emit` `status: success` or `failure`. The page
+  shows a snackbar via `BlocListener`.
 
 ```dart
 // presentation/cubit/create_book_review_cubit.dart
@@ -264,7 +265,7 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - Parsing response envelopes manually in repositories (use `ApiHelper` + typed parsers).
 - Returning raw backend messages to UI without mapping to domain failures.
 - Duplicating validation logic in widgets instead of using VOs.
-- Using broadcast streams for UI effects (can cause duplicate snackbars); prefer a single-subscription effect stream for mutation commands.
+- Snackbar or navigation inside `builder`. Use `BlocListener` + `listenWhen`.
 
 ## Testing Tips
 
@@ -272,7 +273,7 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - Datasource tests: assert path assembly, `itemParser` correctness (pure tests).
 - Repository tests: mock `ApiResponse` success/error; assert Either mapping, 400/422 → validation.
 - Use case tests: final-gate validation branches; ensure repository is not called on invalid inputs.
-- Cubit tests: field errors set on change; `submit()` emits success/failure states and one effect.
+- Cubit tests: field errors set on change; `submit()` emits success/failure states.
 
 ## Migration Checklist
 
@@ -288,6 +289,6 @@ Surfacing field errors (optional): if you need per-field surfacing, adapt the fa
 - api_usage_get_paginated.md — Typed pagination usage for GET/POST lists.
 - api_pagination_cursor_support.md — Cursor pagination details.
 - data_domain_guide.md — Layer responsibilities and canonical patterns.
-- ui_state_architecture.md — State + effects patterns for presentation.
+- ui_state_architecture.md — `BlocBuilder` + `BlocListener`.
 - validation_architecture.md — VO-driven validation and final gate.
 - [ADR 0017](../../../ADR/records/0017-input-cardinality-and-validation-boundaries.md) — Cardinality, cohesion, and invariant policy for request boundaries.

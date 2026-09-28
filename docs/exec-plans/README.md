@@ -54,4 +54,4 @@ changing them after `task begin` requires a fresh baseline.
 - tiny one-file edits with no risk/coordination overhead
 - speculative ideas without an active task (put those in WIP docs first)
 
-See `docs/engineering/task_authority.md` for the complete operating contract.
+See `docs/engineering/harness/task_authority.md` for the complete operating contract.

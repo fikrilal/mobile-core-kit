@@ -24,9 +24,7 @@ class ProfileRemoteDataSource {
       host: ApiHost.profile,
       requiresAuth: true,
       throwOnError: false,
-      headers: <String, String>{
-        'Idempotency-Key': idempotencyKey ?? IdempotencyKeyUtils.generate(),
-      },
+      headers: IdempotencyKeyUtils.headers(idempotencyKey),
       data: request.toJson(),
       parser: MeModel.fromJson,
     );
