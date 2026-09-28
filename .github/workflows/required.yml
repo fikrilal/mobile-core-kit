@@ -220,10 +220,14 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
-            mapfile -t integration_targets < <(dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test)
-            for target in "${integration_targets[@]}"; do
+            dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test > integration_targets.txt
+            while IFS= read -r target || [ -n "$target" ]; do
+              case "$target" in
+                *.dart) ;;
+                *) continue ;;
+              esac
               flutter test "$target" -d emulator-5554 --flavor dev --dart-define=ENV=dev
-            done
+            done < integration_targets.txt
 
       - name: Upload golden failures
         if: failure()
