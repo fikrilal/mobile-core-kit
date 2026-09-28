@@ -15,12 +15,8 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     defaultConfig {
@@ -60,6 +56,19 @@ android {
             dimension = "env"
             // Typically no suffix for prod so it matches the default applicationId.
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+// Gradle 9 rejects mergeNativeLibs when an ABI directory does not exist yet.
+tasks.configureEach {
+    if (name.contains("merge") && name.contains("NativeLibs")) {
+        doNotTrackState("AGP creates per-ABI native lib directories while this task runs.")
     }
 }
 
