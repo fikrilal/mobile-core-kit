@@ -4,8 +4,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     // END: FlutterFire Configuration
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -62,13 +61,6 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
-}
-
-// Gradle 9 rejects mergeNativeLibs when an ABI directory does not exist yet.
-tasks.configureEach {
-    if (name.contains("merge") && name.contains("NativeLibs")) {
-        doNotTrackState("AGP creates per-ABI native lib directories while this task runs.")
     }
 }
 
