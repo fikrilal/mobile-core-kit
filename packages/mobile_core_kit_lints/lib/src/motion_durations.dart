@@ -15,8 +15,10 @@ class MotionDurationsLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'motion_durations',
-    problemMessage: 'Hardcoded motion duration "{0}" is not allowed. Use `MotionDurations.*` tokens instead.',
-    correctionMessage: 'Prefer `MotionDurations.*` constants for UI animation durations (keep timeouts/network durations separate).',
+    problemMessage:
+        'Hardcoded motion duration "{0}" is not allowed. Use `MotionDurations.*` tokens instead.',
+    correctionMessage:
+        'Prefer `MotionDurations.*` constants for UI animation durations (keep timeouts/network durations separate).',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

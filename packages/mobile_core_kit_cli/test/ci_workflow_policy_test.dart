@@ -171,9 +171,9 @@ void main() {
         );
       }
     }
-    final checkoutCount = RegExp(r'uses: actions/checkout@')
-        .allMatches(required)
-        .length;
+    final checkoutCount = RegExp(
+      r'uses: actions/checkout@',
+    ).allMatches(required).length;
     expect(checkoutCount, greaterThan(0));
     expect(
       RegExp(r'persist-credentials: false').allMatches(required).length,

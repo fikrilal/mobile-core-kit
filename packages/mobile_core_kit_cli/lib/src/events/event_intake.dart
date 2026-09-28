@@ -8,10 +8,11 @@ import 'package:mobile_core_kit_cli/src/task/task_service.dart';
 import 'package:mobile_core_kit_cli/src/task/task_state.dart';
 import 'package:path/path.dart' as p;
 
-typedef EventTaskBegin = Future<TaskBeginResult> Function(
-  String planPath,
-  Iterable<String> taskOwnedPaths,
-);
+typedef EventTaskBegin =
+    Future<TaskBeginResult> Function(
+      String planPath,
+      Iterable<String> taskOwnedPaths,
+    );
 
 class EventIntakeResult {
   const EventIntakeResult._({

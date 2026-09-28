@@ -16,7 +16,8 @@ class ApiHelperDatasourcePolicyLint extends DartLintRule {
   static const _code = LintCode(
     name: 'api_helper_datasource_policy',
     problemMessage: 'ApiHelper datasource policy violation: {0}',
-    correctionMessage: 'Add explicit `host:`, `throwOnError: false`, and (optionally) explicit `requiresAuth:` to ApiHelper calls in datasources.',
+    correctionMessage:
+        'Add explicit `host:`, `throwOnError: false`, and (optionally) explicit `requiresAuth:` to ApiHelper calls in datasources.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

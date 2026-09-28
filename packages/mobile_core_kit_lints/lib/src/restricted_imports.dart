@@ -16,7 +16,8 @@ class RestrictedImportsLint extends DartLintRule {
   static const _code = LintCode(
     name: 'restricted_imports',
     problemMessage: 'Import "{0}" from "{1}" is not allowed. {2}',
-    correctionMessage: 'Use an approved wrapper (usually under `lib/core/**`) or update the allowlist in `analysis_options.yaml`.',
+    correctionMessage:
+        'Use an approved wrapper (usually under `lib/core/**`) or update the allowlist in `analysis_options.yaml`.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 
@@ -193,7 +194,8 @@ final List<RestrictedImportRule> _defaultRules = [
       Glob('lib/core/foundation/utilities/log_utils.dart'),
       Glob('lib/core/di/**'),
     ],
-    message: 'Use crash reporting wrappers under `lib/core/platform/crash_reporting/**`.',
+    message:
+        'Use crash reporting wrappers under `lib/core/platform/crash_reporting/**`.',
   ),
   RestrictedImportRule(
     uriPrefix: 'package:firebase_messaging/firebase_messaging.dart',
@@ -212,7 +214,8 @@ final List<RestrictedImportRule> _defaultRules = [
         'lib/features/user/data/datasource/local/profile_avatar_cache_local_datasource.dart',
       ),
     ],
-    message: 'Use shared preferences only in stores/services; avoid direct usage in most features.',
+    message:
+        'Use shared preferences only in stores/services; avoid direct usage in most features.',
   ),
   RestrictedImportRule(
     uriPrefix: 'package:flutter_secure_storage/flutter_secure_storage.dart',
@@ -223,6 +226,7 @@ final List<RestrictedImportRule> _defaultRules = [
   RestrictedImportRule(
     uriPrefix: 'dart:developer',
     allow: [Glob('lib/core/foundation/utilities/log_utils.dart')],
-    message: 'Use `Log.*` helpers from `lib/core/foundation/utilities/log_utils.dart`.',
+    message:
+        'Use `Log.*` helpers from `lib/core/foundation/utilities/log_utils.dart`.',
   ),
 ];

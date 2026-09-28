@@ -401,7 +401,8 @@ class MobilekitCli {
       return _runRepositoryWorkflow(
         command: 'scaffold all',
         root: root,
-        usage: 'Usage: mobilekit scaffold all --feature <name> --operation <id> [options]',
+        usage:
+            'Usage: mobilekit scaffold all --feature <name> --operation <id> [options]',
         workflow: (context) =>
             ScaffoldAllWorkflow(context).run(arguments.skip(1).toList()),
       );
@@ -414,7 +415,8 @@ class MobilekitCli {
       return _runRepositoryWorkflow(
         command: 'scaffold data',
         root: root,
-        usage: 'Usage: mobilekit scaffold data --feature <name> --operation <id> [options]',
+        usage:
+            'Usage: mobilekit scaffold data --feature <name> --operation <id> [options]',
         workflow: (context) =>
             ScaffoldDataWorkflow(context).run(arguments.skip(1).toList()),
       );

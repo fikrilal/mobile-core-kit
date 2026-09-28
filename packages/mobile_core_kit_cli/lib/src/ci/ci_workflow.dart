@@ -29,8 +29,9 @@ class CiWorkflow {
       if (base == null || base.isEmpty || head == null || head.isEmpty) {
         throw const FormatException('--base and --head are required.');
       }
-      final result = await CiClassificationService(root: context.rootDirectory)
-          .classify(base, head);
+      final result = await CiClassificationService(
+        root: context.rootDirectory,
+      ).classify(base, head);
       context.output.write(renderCiOutputs(result));
       return 0;
     } on FormatException catch (error) {

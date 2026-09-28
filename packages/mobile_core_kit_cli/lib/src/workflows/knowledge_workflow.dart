@@ -19,11 +19,13 @@ class KnowledgeWorkflow {
 
     final projectMapResult = await ProjectMapWorkflow(context).run(const []);
     if (projectMapResult != 0) return projectMapResult;
-    final evidenceResult = await EvidenceWorkflow(context)
-        .run(const ['verify']);
+    final evidenceResult = await EvidenceWorkflow(
+      context,
+    ).run(const ['verify']);
     if (evidenceResult != 0) return evidenceResult;
-    final improvementResult = await ImprovementWorkflow(context)
-        .run(const ['check']);
+    final improvementResult = await ImprovementWorkflow(
+      context,
+    ).run(const ['check']);
     if (improvementResult != 0) return improvementResult;
 
     final errors = <String>[

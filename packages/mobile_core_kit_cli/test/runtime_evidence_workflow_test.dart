@@ -145,8 +145,9 @@ void main() {
   test('copies the example environment and explicit Firebase config', () async {
     final root = await _createRepository(includeEnvironment: false);
     addTearDown(() => root.delete(recursive: true));
-    File(p.join(root.path, '.env', 'dev.example.yaml'))
-        .writeAsStringSync('core: https://example.test\n');
+    File(
+      p.join(root.path, '.env', 'dev.example.yaml'),
+    ).writeAsStringSync('core: https://example.test\n');
     final externalGoogleServices = File(
       p.join(root.path, 'secure-google-services.json'),
     )..writeAsStringSync('{"project_id":"example"}\n');
@@ -176,12 +177,14 @@ void main() {
     expect(result, 0);
     expect(File(p.join(root.path, '.env', 'dev.yaml')).existsSync(), isFalse);
     expect(
-      File(p.join(root.path, 'android', 'app', 'google-services.json'))
-          .readAsStringSync(),
+      File(
+        p.join(root.path, 'android', 'app', 'google-services.json'),
+      ).readAsStringSync(),
       '{"project_id":"example"}\n',
     );
-    final durable = File(p.join(artifactsDirectory, 'evidence.json'))
-        .readAsStringSync();
+    final durable = File(
+      p.join(artifactsDirectory, 'evidence.json'),
+    ).readAsStringSync();
     expect(durable, contains('"environmentPreparation": "temporary-example"'));
     expect(durable, contains('"firebasePreparation": "temporary-explicit"'));
     expect(durable, isNot(contains(externalGoogleServices.path)));
@@ -239,8 +242,9 @@ void main() {
   test('rejects missing devices and disabled environment fallback', () async {
     final root = await _createRepository(includeEnvironment: false);
     addTearDown(() => root.delete(recursive: true));
-    File(p.join(root.path, '.env', 'dev.example.yaml'))
-        .writeAsStringSync('core: https://example.test\n');
+    File(
+      p.join(root.path, '.env', 'dev.example.yaml'),
+    ).writeAsStringSync('core: https://example.test\n');
     final errors = StringBuffer();
     final workflow = RuntimeEvidenceWorkflow(
       rootDirectory: root,
@@ -329,8 +333,9 @@ void main() {
     () async {
       final root = await _createRepository(includeEnvironment: false);
       addTearDown(() => root.delete(recursive: true));
-      File(p.join(root.path, '.env', 'dev.example.yaml'))
-          .writeAsStringSync('core: https://example.test\n');
+      File(
+        p.join(root.path, '.env', 'dev.example.yaml'),
+      ).writeAsStringSync('core: https://example.test\n');
       final workflow = RuntimeEvidenceWorkflow(
         rootDirectory: root,
         processRunner: FakeRuntimeEvidenceProcessRunner(),
@@ -357,8 +362,9 @@ void main() {
   test('restores all temporary config after build-config failure', () async {
     final root = await _createRepository(includeEnvironment: false);
     addTearDown(() => root.delete(recursive: true));
-    File(p.join(root.path, '.env', 'dev.example.yaml'))
-        .writeAsStringSync('core: https://example.test\n');
+    File(
+      p.join(root.path, '.env', 'dev.example.yaml'),
+    ).writeAsStringSync('core: https://example.test\n');
     final external = File(p.join(root.path, 'explicit-google.json'))
       ..writeAsStringSync('{"project_id":"temporary"}\n');
     final googleFile = File(
@@ -540,8 +546,9 @@ void main() {
     () async {
       final root = await _createRepository(includeEnvironment: false);
       addTearDown(() => root.delete(recursive: true));
-      File(p.join(root.path, '.env', 'dev.example.yaml'))
-          .writeAsStringSync('core: https://example.test\n');
+      File(
+        p.join(root.path, '.env', 'dev.example.yaml'),
+      ).writeAsStringSync('core: https://example.test\n');
       File(p.join(root.path, 'maestro', 'login.yaml'))
         ..parent.createSync(recursive: true)
         ..writeAsStringSync('appId: example\n');
@@ -576,8 +583,9 @@ void main() {
       expect(errors.toString(), contains('Missing or empty env file'));
 
       errors.clear();
-      File(p.join(root.path, '.env', 'dev.yaml'))
-          .writeAsStringSync('core: https://api.example.test\n');
+      File(
+        p.join(root.path, '.env', 'dev.yaml'),
+      ).writeAsStringSync('core: https://api.example.test\n');
       expect(
         await workflow.run([
           '--task',
@@ -786,8 +794,9 @@ oracles:
             artifacts,
           ]);
 
-      final manifest = File(p.join(artifacts, 'evidence.json'))
-          .readAsStringSync();
+      final manifest = File(
+        p.join(artifacts, 'evidence.json'),
+      ).readAsStringSync();
       expect(result, 1);
       expect(errors.toString(), contains('missing: login-succeeded'));
       expect(manifest, contains('"missing": ['));
@@ -832,23 +841,29 @@ Future<Directory> _createRepository({
   );
   Directory(p.join(root.path, '.env')).createSync(recursive: true);
   Directory(p.join(root.path, 'android', 'app')).createSync(recursive: true);
-  Directory(p.join(root.path, 'lib', 'core', 'foundation', 'config'))
-      .createSync(recursive: true);
+  Directory(
+    p.join(root.path, 'lib', 'core', 'foundation', 'config'),
+  ).createSync(recursive: true);
   Directory(p.join(root.path, 'integration_test')).createSync(recursive: true);
-  File(p.join(root.path, 'integration_test', 'first_test.dart'))
-      .writeAsStringSync('// test\n');
-  File(p.join(root.path, 'integration_test', 'second_test.dart'))
-      .writeAsStringSync('// test\n');
+  File(
+    p.join(root.path, 'integration_test', 'first_test.dart'),
+  ).writeAsStringSync('// test\n');
+  File(
+    p.join(root.path, 'integration_test', 'second_test.dart'),
+  ).writeAsStringSync('// test\n');
   if (includeFailingTarget) {
-    File(p.join(root.path, 'integration_test', 'failing_test.dart'))
-        .writeAsStringSync('// test\n');
+    File(
+      p.join(root.path, 'integration_test', 'failing_test.dart'),
+    ).writeAsStringSync('// test\n');
   }
   if (includeEnvironment) {
-    File(p.join(root.path, '.env', 'dev.yaml'))
-        .writeAsStringSync('core: https://api.example.test\n');
+    File(
+      p.join(root.path, '.env', 'dev.yaml'),
+    ).writeAsStringSync('core: https://api.example.test\n');
   }
-  File(p.join(root.path, 'android', 'app', 'google-services.json'))
-      .writeAsStringSync('{"project_id":"example"}\n');
+  File(
+    p.join(root.path, 'android', 'app', 'google-services.json'),
+  ).writeAsStringSync('{"project_id":"example"}\n');
   return root;
 }
 

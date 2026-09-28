@@ -63,8 +63,9 @@ class OracleWorkflow {
       throw const FormatException('Expected `oracle paths --kind <kind>`.');
     }
     try {
-      final paths = OracleRegistry.load(context.rootDirectory)
-          .pathsForKind(arguments[1]);
+      final paths = OracleRegistry.load(
+        context.rootDirectory,
+      ).pathsForKind(arguments[1]);
       if (paths.isEmpty) {
         context.errorOutput.writeln(
           "FAIL [oracle.kind-empty] No '$arguments[1]' oracles are registered.",

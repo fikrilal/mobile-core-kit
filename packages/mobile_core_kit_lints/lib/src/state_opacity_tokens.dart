@@ -15,8 +15,10 @@ class StateOpacityTokensLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'state_opacity_tokens',
-    problemMessage: 'Hardcoded state opacity "{0}" is not allowed. Use `StateOpacities.*` instead.',
-    correctionMessage: 'Replace numeric alpha values with `StateOpacities.hover/focus/pressed/dragged/disabled*` constants.',
+    problemMessage:
+        'Hardcoded state opacity "{0}" is not allowed. Use `StateOpacities.*` instead.',
+    correctionMessage:
+        'Replace numeric alpha values with `StateOpacities.hover/focus/pressed/dragged/disabled*` constants.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

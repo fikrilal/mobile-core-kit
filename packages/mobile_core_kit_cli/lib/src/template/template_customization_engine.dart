@@ -220,7 +220,8 @@ class TemplateCustomizationEngine {
       const TemplatePlanItem(
         status: TemplatePlanStatus.external,
         target: 'environment and external services',
-        description: 'API endpoints, OIDC client IDs, credentials, and external setup remain user-owned',
+        description:
+            'API endpoints, OIDC client IDs, credentials, and external setup remain user-owned',
       ),
     );
 
@@ -267,8 +268,9 @@ class TemplateCustomizationEngine {
     }
 
     try {
-      _TemplateFileTransaction(rootDirectory)
-          .apply(changes, beforeWrite: beforeWrite);
+      _TemplateFileTransaction(
+        rootDirectory,
+      ).apply(changes, beforeWrite: beforeWrite);
       return const TemplateCustomizationResult(
         outcome: TemplateLifecycleOutcome.applied,
       );
@@ -608,7 +610,8 @@ class _LocalizationTransformation implements TemplateTransformation {
           TemplatePlanItem(
             status: TemplatePlanStatus.conflicted,
             target: relativePath,
-            description: 'appTitle does not match the managed plain, RTL, or pseudo-locale shape',
+            description:
+                'appTitle does not match the managed plain, RTL, or pseudo-locale shape',
           ),
         );
         continue;
@@ -676,8 +679,9 @@ class _AndroidTransformation implements TemplateTransformation {
 
   @override
   TemplateTransformationResult plan(TemplateTransformationContext context) {
-    if (!Directory(p.join(context.rootDirectory.path, 'android'))
-        .existsSync()) {
+    if (!Directory(
+      p.join(context.rootDirectory.path, 'android'),
+    ).existsSync()) {
       return TemplateTransformationResult();
     }
 
@@ -1266,14 +1270,13 @@ class _PbxObject {
   }
 
   List<String> get buildConfigurationIds {
-    final section = RegExp(r'buildConfigurations\s*=\s*\(([\s\S]*?)\);')
-        .firstMatch(text)
-        ?.group(1);
+    final section = RegExp(
+      r'buildConfigurations\s*=\s*\(([\s\S]*?)\);',
+    ).firstMatch(text)?.group(1);
     if (section == null) return const [];
-    return RegExp(r'([A-Fa-f0-9]+) /\*[^*]+\*/')
-        .allMatches(section)
-        .map((match) => match.group(1)!)
-        .toList();
+    return RegExp(
+      r'([A-Fa-f0-9]+) /\*[^*]+\*/',
+    ).allMatches(section).map((match) => match.group(1)!).toList();
   }
 }
 
@@ -1474,7 +1477,8 @@ class _DeepLinkTransformation implements TemplateTransformation {
     if (current.hosts.any((host) => !expected.contains(host))) {
       return _DeepLinkTextResult(
         contents: contents,
-        error: 'deepLinkAllowedHosts contains a user-owned host; resolve it before customization',
+        error:
+            'deepLinkAllowedHosts contains a user-owned host; resolve it before customization',
       );
     }
 
@@ -1738,7 +1742,8 @@ class _DeepLinkTransformation implements TemplateTransformation {
           TemplatePlanItem(
             status: TemplatePlanStatus.external,
             target: path,
-            description: 'protected user-owned file preserved; update it only through its explicit configuration workflow',
+            description:
+                'protected user-owned file preserved; update it only through its explicit configuration workflow',
           ),
     ];
   }
@@ -1760,7 +1765,8 @@ class _FirebaseTransformation implements TemplateTransformation {
         demoDetected
             ? 'BLOCKING for production readiness: the tracked Firebase options still point to the template demo project.'
             : 'keep-demo was selected, but the template demo marker was not detected; verify the external Firebase state.',
-      FirebaseMode.disabled => 'Firebase code is retained, but no Firebase project or native configuration files are changed.',
+      FirebaseMode.disabled =>
+        'Firebase code is retained, but no Firebase project or native configuration files are changed.',
     };
     return TemplateTransformationResult(
       items: [
@@ -1772,17 +1778,20 @@ class _FirebaseTransformation implements TemplateTransformation {
         const TemplatePlanItem(
           status: TemplatePlanStatus.external,
           target: 'API endpoints',
-          description: 'Runtime API endpoints remain in user-owned .env files and are not requested by init.',
+          description:
+              'Runtime API endpoints remain in user-owned .env files and are not requested by init.',
         ),
         const TemplatePlanItem(
           status: TemplatePlanStatus.external,
           target: 'OIDC client IDs',
-          description: 'OIDC client IDs remain in user-owned environment configuration and are not stored in the manifest.',
+          description:
+              'OIDC client IDs remain in user-owned environment configuration and are not stored in the manifest.',
         ),
         const TemplatePlanItem(
           status: TemplatePlanStatus.external,
           target: 'signing',
-          description: 'Android/iOS signing identities, certificates, and provisioning remain external setup.',
+          description:
+              'Android/iOS signing identities, certificates, and provisioning remain external setup.',
         ),
         const TemplatePlanItem(
           status: TemplatePlanStatus.external,
@@ -1793,7 +1802,8 @@ class _FirebaseTransformation implements TemplateTransformation {
         const TemplatePlanItem(
           status: TemplatePlanStatus.external,
           target: 'store metadata',
-          description: 'App-store records, listings, screenshots, and release metadata remain external setup.',
+          description:
+              'App-store records, listings, screenshots, and release metadata remain external setup.',
         ),
       ],
     );
@@ -1849,10 +1859,9 @@ _ParsedDeepLinkHosts _parseDeepLinkHosts(String block) {
 }
 
 List<String> _androidHosts(String filter) {
-  return RegExp(r'android:host="([^"]+)"')
-      .allMatches(filter)
-      .map((match) => match.group(1)!.toLowerCase())
-      .toList();
+  return RegExp(
+    r'android:host="([^"]+)"',
+  ).allMatches(filter).map((match) => match.group(1)!.toLowerCase()).toList();
 }
 
 List<String> _androidHttpsHosts(String contents) {
@@ -1863,10 +1872,9 @@ List<String> _androidHttpsHosts(String contents) {
 }
 
 List<String> _associatedDomains(String block) {
-  return RegExp(r'<string>([^<]+)</string>')
-      .allMatches(block)
-      .map((match) => match.group(1)!.trim())
-      .toList();
+  return RegExp(
+    r'<string>([^<]+)</string>',
+  ).allMatches(block).map((match) => match.group(1)!.trim()).toList();
 }
 
 String _associatedDomainsXml(List<String> domains) {
@@ -1974,7 +1982,9 @@ _AndroidTextResult _replaceAndroidText(
 
 RegExp _flavorSuffixPattern(String flavor) {
   return RegExp(
-    r'''(create[ \t]*\([ \t]*["']''' + flavor + r'''["'][ \t]*\)[ \t]*\{[^{}]*?[ \t]*applicationIdSuffix[ \t]*=[ \t]*")([^"]*)("[ \t]*)''',
+    r'''(create[ \t]*\([ \t]*["']''' +
+        flavor +
+        r'''["'][ \t]*\)[ \t]*\{[^{}]*?[ \t]*applicationIdSuffix[ \t]*=[ \t]*")([^"]*)("[ \t]*)''',
     multiLine: true,
   );
 }

@@ -79,8 +79,9 @@ void main() {
     expect(project, contains('CODE_SIGN_STYLE = Automatic;'));
     expect(project, contains('SWIFT_VERSION = 5.0;'));
 
-    final infoPlist = File(p.join(repository.path, 'ios/Runner/Info.plist'))
-        .readAsStringSync();
+    final infoPlist = File(
+      p.join(repository.path, 'ios/Runner/Info.plist'),
+    ).readAsStringSync();
     expect(infoPlist, contains('<string>Example Shopping</string>'));
     expect(infoPlist, isNot(contains('<string>Mobile Core Kit</string>')));
 

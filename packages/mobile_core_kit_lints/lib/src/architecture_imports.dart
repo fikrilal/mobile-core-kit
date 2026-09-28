@@ -19,7 +19,8 @@ class ArchitectureImportsLint extends DartLintRule {
   static const _code = LintCode(
     name: 'architecture_imports',
     problemMessage: 'Import "{0}" from "{1}" is not allowed (rule: {2}). {3}',
-    correctionMessage: 'Refactor to comply, or add an explicit exception in lint/architecture_lints.yaml.',
+    correctionMessage:
+        'Refactor to comply, or add an explicit exception in lint/architecture_lints.yaml.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

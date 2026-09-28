@@ -23,7 +23,8 @@ class ScaffoldWorkflow {
       ..addOption(
         'slice',
         abbr: 's',
-        help: 'Optional slice name (snake_case), e.g. "list". Defaults to feature name.',
+        help:
+            'Optional slice name (snake_case), e.g. "list". Defaults to feature name.',
       );
 
     final args = parser.parse(argv);

@@ -227,8 +227,8 @@ dev_dependencies:
   mobile_core_kit_lints:
     path: ${p.join(repositoryRoot, 'packages/mobile_core_kit_lints')}
 ''');
-      await File(p.join(fixture.path, 'analysis_options.yaml'))
-          .writeAsString('''
+      await File(p.join(fixture.path, 'analysis_options.yaml')).writeAsString(
+        '''
 analyzer:
   plugins:
     - custom_lint
@@ -241,7 +241,8 @@ custom_lint:
       sinks:
         - target: MoodChartItem
           named_arguments: [label]
-''');
+''',
+      );
       final source = File(p.join(fixture.path, 'lib/features/example.dart'));
       await source.parent.create(recursive: true);
       await File(p.join(fixture.path, 'lib/widgets.dart')).writeAsString('''

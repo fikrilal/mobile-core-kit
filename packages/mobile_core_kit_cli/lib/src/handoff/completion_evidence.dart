@@ -162,8 +162,9 @@ class CompletionEvidenceReader {
         if (entry is Map &&
             entry['outcome'] == 'passed' &&
             entry['reviewer'] is String &&
-            RegExp(r'^human:[a-z0-9][a-z0-9-]{0,63}$')
-                .hasMatch(entry['reviewer'] as String) &&
+            RegExp(
+              r'^human:[a-z0-9][a-z0-9-]{0,63}$',
+            ).hasMatch(entry['reviewer'] as String) &&
             entry['reviewedAt'] is String &&
             DateTime.tryParse(entry['reviewedAt'] as String) != null &&
             entry['oracleId'] is String &&

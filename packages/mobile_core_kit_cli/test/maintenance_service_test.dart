@@ -216,8 +216,9 @@ void main() {
         runCommand: (_, __, ___) async {
           if (!mutated) {
             mutated = true;
-            File(p.join(fixture.root.path, 'tracked.txt'))
-                .writeAsStringSync('changed\n');
+            File(
+              p.join(fixture.root.path, 'tracked.txt'),
+            ).writeAsStringSync('changed\n');
           }
           return 0;
         },
@@ -233,8 +234,9 @@ void main() {
 
 _MaintenanceFixture _fixture() {
   final root = Directory.systemTemp.createTempSync('mobilekit_maintenance_');
-  File(p.join(root.path, '.gitignore'))
-      .writeAsStringSync('.tmp/\n_artifacts/\n');
+  File(
+    p.join(root.path, '.gitignore'),
+  ).writeAsStringSync('.tmp/\n_artifacts/\n');
   File(p.join(root.path, 'tracked.txt')).writeAsStringSync('baseline\n');
   File(
       p.join(

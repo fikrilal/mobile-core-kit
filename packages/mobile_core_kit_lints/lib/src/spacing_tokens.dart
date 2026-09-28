@@ -15,8 +15,10 @@ class SpacingTokensLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'spacing_tokens',
-    problemMessage: 'Hardcoded spacing "{0}" is not allowed. Use `AppSpacing.*` tokens instead.',
-    correctionMessage: 'Prefer `AppSpacing.space*` when using EdgeInsets/SizedBox for layout spacing.',
+    problemMessage:
+        'Hardcoded spacing "{0}" is not allowed. Use `AppSpacing.*` tokens instead.',
+    correctionMessage:
+        'Prefer `AppSpacing.space*` when using EdgeInsets/SizedBox for layout spacing.',
     errorSeverity: ErrorSeverity.ERROR,
   );
 

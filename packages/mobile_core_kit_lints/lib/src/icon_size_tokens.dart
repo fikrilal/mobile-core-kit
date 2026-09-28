@@ -15,7 +15,8 @@ class IconSizeTokensLint extends DartLintRule {
 
   static const _code = LintCode(
     name: 'icon_size_tokens',
-    problemMessage: 'Hardcoded icon size "{0}" is not allowed. Use `AppSizing.iconSize*` tokens instead.',
+    problemMessage:
+        'Hardcoded icon size "{0}" is not allowed. Use `AppSizing.iconSize*` tokens instead.',
     correctionMessage: 'Prefer `AppSizing.iconSize*` for icon sizing.',
     errorSeverity: ErrorSeverity.ERROR,
   );
