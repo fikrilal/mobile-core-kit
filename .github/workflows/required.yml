@@ -219,15 +219,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          script: |
-            dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test > integration_targets.txt
-            while IFS= read -r target || [ -n "$target" ]; do
-              case "$target" in
-                *.dart) ;;
-                *) continue ;;
-              esac
-              flutter test "$target" -d emulator-5554 --flavor dev --dart-define=ENV=dev
-            done < integration_targets.txt
+          script: dart run mobile_core_kit_cli:mobilekit oracle paths --kind integration-test > integration_targets.txt && while IFS= read -r target || [ -n "$target" ]; do case "$target" in *.dart) flutter test "$target" -d emulator-5554 --flavor dev --dart-define=ENV=dev || exit 1 ;; esac; done < integration_targets.txt
 
       - name: Upload golden failures
         if: failure()
