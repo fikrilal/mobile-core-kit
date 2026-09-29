@@ -54,6 +54,10 @@ class AppAvatar extends StatelessWidget {
   final Color? badgeBackgroundColor;
   final Color? badgeIconColor;
 
+  /// Inner clearance kept around initials, as a fraction of the avatar
+  /// diameter, so glyphs never touch the circular edge.
+  static const double _initialsInsetFactor = 0.16;
+
   bool get _hasImage {
     final provider = imageProvider;
     if (provider != null) return true;
@@ -179,12 +183,15 @@ class AppAvatar extends StatelessWidget {
   }) {
     final fallback = Center(
       child: initials != null
-          ? FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                initials,
-                textAlign: TextAlign.center,
-                style: _initialsStyle(context, foreground),
+          ? Padding(
+              padding: EdgeInsets.all(diameter * _initialsInsetFactor),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  initials,
+                  textAlign: TextAlign.center,
+                  style: _initialsStyle(context, foreground),
+                ),
               ),
             )
           : PhosphorIcon(
