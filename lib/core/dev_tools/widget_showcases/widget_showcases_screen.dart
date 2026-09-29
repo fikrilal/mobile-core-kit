@@ -57,7 +57,8 @@ class WidgetShowcasesScreen extends StatelessWidget {
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.userCircle,
       title: 'Avatar',
-      subtitle: 'AppAvatar',
+      subtitle: 'AppAvatar sizes, fallbacks & states',
+      route: DevToolsRoutes.avatarShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
