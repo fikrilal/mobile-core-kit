@@ -63,7 +63,8 @@ class WidgetShowcasesScreen extends StatelessWidget {
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
       title: 'Badge',
-      subtitle: 'AppIconBadge',
+      subtitle: 'AppIconBadge sizes, dot & states',
+      route: DevToolsRoutes.badgeShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,

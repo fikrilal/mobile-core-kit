@@ -10,4 +10,5 @@ abstract class DevToolsRoutes {
   static const String searchShowcase = '/dev/search-showcase';
   static const String typographyShowcase = '/dev/typography-showcase';
   static const String avatarShowcase = '/dev/avatar-showcase';
+  static const String badgeShowcase = '/dev/badge-showcase';
 }

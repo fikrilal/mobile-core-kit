@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:mobile_core_kit/core/design_system/theme/typography/showcase/typography_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/avatar/avatar_showcase_screen.dart';
+import 'package:mobile_core_kit/core/design_system/widgets/badge/badge_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/button/button_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/date_picker/date_picker_showcase_screen.dart';
 import 'package:mobile_core_kit/core/design_system/widgets/field/field_showcase_screen.dart';
@@ -46,5 +47,9 @@ final List<GoRoute> devToolsRoutes = [
   GoRoute(
     path: DevToolsRoutes.avatarShowcase,
     builder: (context, state) => const AvatarShowcaseScreen(),
+  ),
+  GoRoute(
+    path: DevToolsRoutes.badgeShowcase,
+    builder: (context, state) => const BadgeShowcaseScreen(),
   ),
 ];
