@@ -69,7 +69,8 @@ class WidgetShowcasesScreen extends StatelessWidget {
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
       title: 'Checkbox',
-      subtitle: 'AppCheckbox and AppCheckboxTile',
+      subtitle: 'AppCheckbox & AppCheckboxTile states',
+      route: DevToolsRoutes.checkboxShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
