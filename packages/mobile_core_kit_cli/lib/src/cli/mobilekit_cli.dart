@@ -25,6 +25,7 @@ import 'package:mobile_core_kit_cli/src/workflows/knowledge_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/l10n_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/lint_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/project_map_workflow.dart';
+import 'package:mobile_core_kit_cli/src/workflows/remove_feature_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_all_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_data_workflow.dart';
 import 'package:mobile_core_kit_cli/src/workflows/scaffold_workflow.dart';
@@ -228,6 +229,7 @@ class MobilekitCli {
             RiskWorkflow(context).run(arguments.skip(1).toList()),
       ),
       'scaffold' => _runScaffold(arguments.skip(1).toList()),
+      'remove' => _runRemove(arguments.skip(1).toList()),
       'duplication' => _runDuplication(arguments.skip(1).toList()),
       'runtime' => _runRuntime(arguments.skip(1).toList()),
       _ => _unknownCommand(arguments.first),
@@ -476,6 +478,80 @@ class MobilekitCli {
     );
   }
 
+  Future<int> _runRemove(List<String> arguments) async {
+    if (arguments.isEmpty || _isHelp(arguments.first)) {
+      _writeRemoveUsage(_output);
+      return arguments.isEmpty ? 2 : 0;
+    }
+
+    return switch (arguments.first) {
+      'feature' => _runRemoveFeature(arguments.skip(1).toList()),
+      _ => () {
+        _errorOutput.writeln(
+          "ERROR: Unknown remove command '${arguments.first}'.",
+        );
+        _writeRemoveUsage(_errorOutput);
+        return 2;
+      }(),
+    };
+  }
+
+  Future<int> _runRemoveFeature(List<String> arguments) async {
+    final parser = ArgParser()
+      ..addFlag('help', abbr: 'h', negatable: false)
+      ..addFlag('dry-run', abbr: 'n', negatable: false)
+      ..addFlag('yes', abbr: 'y', negatable: false)
+      ..addFlag('keep-l10n', negatable: false)
+      ..addFlag('force-core', negatable: false);
+
+    ArgResults parsed;
+    try {
+      parsed = parser.parse(arguments);
+    } on FormatException catch (error) {
+      _errorOutput.writeln('ERROR: ${error.message}');
+      _writeRemoveFeatureUsage(_errorOutput);
+      return 2;
+    }
+
+    if (parsed.flag('help')) {
+      _writeRemoveFeatureUsage(_output);
+      return 0;
+    }
+
+    if (parsed.rest.length != 1) {
+      _errorOutput.writeln(
+        'ERROR: Expected exactly one feature name in snake_case.',
+      );
+      _writeRemoveFeatureUsage(_errorOutput);
+      return 2;
+    }
+
+    final workflowArguments = <String>['--feature', parsed.rest.single];
+    if (parsed.flag('dry-run')) {
+      workflowArguments.add('--dry-run');
+    }
+    if (parsed.flag('yes')) {
+      workflowArguments.add('--yes');
+    }
+    if (parsed.flag('keep-l10n')) {
+      workflowArguments.add('--keep-l10n');
+    }
+    if (parsed.flag('force-core')) {
+      workflowArguments.add('--force-core');
+    }
+
+    final root = _findRepositoryRoot();
+    if (root == null) return 1;
+
+    return _runRepositoryWorkflow(
+      command: 'remove feature',
+      root: root,
+      usage: 'Usage: mobilekit remove feature <name> [options]',
+      workflow: (context) =>
+          RemoveFeatureWorkflow(context).run(workflowArguments),
+    );
+  }
+
   Future<int> _runDuplication(List<String> arguments) async {
     final parser = ArgParser()
       ..addFlag('help', abbr: 'h', negatable: false)
@@ -696,6 +772,7 @@ class MobilekitCli {
     );
     output.writeln('  risk      Classify current repository change risk.');
     output.writeln('  scaffold  Generate feature scaffolding.');
+    output.writeln('  remove    Remove a feature slice end-to-end.');
     output.writeln('  duplication  Run duplication profiles.');
     output.writeln('  runtime   Run Maestro YAML or device tests as evidence.');
     output.writeln();
@@ -733,6 +810,29 @@ class MobilekitCli {
     output.writeln(
       '  --dry-run           Print outputs without writing files.',
     );
+  }
+
+  void _writeRemoveUsage(StringSink output) {
+    output.writeln('Usage: mobilekit remove <subcommand> [options]');
+    output.writeln();
+    output.writeln('Subcommands:');
+    output.writeln(
+      '  feature <name>  Completely unwire and delete a feature slice.',
+    );
+    output.writeln();
+    output.writeln(
+      'Run `mobilekit remove <subcommand> --help` for subcommand details.',
+    );
+  }
+
+  void _writeRemoveFeatureUsage(StringSink output) {
+    output.writeln('Usage: mobilekit remove feature <name> [options]');
+    output.writeln();
+    output.writeln('Options:');
+    output.writeln('  --dry-run, -n  Preview changes without modifying disk.');
+    output.writeln('  --yes, -y      Confirm deletion without prompt.');
+    output.writeln('  --keep-l10n    Do not prune keys from lib/l10n/*.arb.');
+    output.writeln('  --force-core   Allow removing protected core features.');
   }
 
   void _writeDuplicationUsage(StringSink output) {
