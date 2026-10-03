@@ -1,0 +1,41 @@
+version: 1
+project: my-project
+sfd:
+  dir: .argus/context/sfd
+models:
+  fast: google/gemini-2.5-flash
+  standard: anthropic/claude-3-7-sonnet
+  deep: anthropic/claude-3-7-sonnet:high
+squads:
+  forms:
+  - id-regulatory-sentinel
+  - form-boundary-saboteur
+  - cascade-dropdown-glitcher
+  state:
+  - stock-ledger-auditor
+  - orphan-cascade-hunter
+  sync:
+  - payload-pessimist
+  - sync-deadlock-guard
+  - hardware-sensor-adversary
+  spec:
+  - sfd-clause-detective
+  - rbac-identity-gatekeeper
+  all:
+  - sfd-clause-detective
+  - id-regulatory-sentinel
+  - rbac-identity-gatekeeper
+  - form-boundary-saboteur
+  - cascade-dropdown-glitcher
+  - concurrency-double-tapper
+  - stock-ledger-auditor
+  - orphan-cascade-hunter
+  - payload-pessimist
+  - sync-deadlock-guard
+  - hardware-sensor-adversary
+  auto:
+  - cascade-dropdown-glitcher
+  - form-boundary-saboteur
+  - orphan-cascade-hunter
+  - payload-pessimist
+  - sync-deadlock-guard

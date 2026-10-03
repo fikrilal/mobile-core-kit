@@ -408,6 +408,34 @@ Options:
 - `--force` — overwrite existing model/DTO files.
 - `--no-codegen` — skip running `build_runner` codegen.
 
+## Teardown commands
+
+### `remove feature`
+
+```bash
+mobilekit remove feature <name> [options]
+mobilekit remove feature merchant_onboarding --dry-run
+mobilekit remove feature merchant_onboarding --yes
+```
+
+Completely unwires and removes a feature slice from the codebase end-to-end.
+It purges the feature and navigation directories, associated test suites,
+and maestro YAML flows, while safely unwiring all references across
+`lib/navigation/app_router.dart`, `lib/core/di/registrars/feature_modules_registrar.dart`,
+`lib/features/home/presentation/pages/home_page.dart`, `lint/architecture_lints.yaml`,
+and `harness/oracles.yaml`. It also prunes matching `<featureCamelCase>*` keys from
+all 5 localization `.arb` files.
+
+Foundational core slices (`auth`, `account`, `home`, `onboarding`) are protected
+by default and cannot be removed without `--force-core`.
+
+Options:
+
+- `--dry-run, -n` — preview all directory deletions, file deletions, and code rewrites without modifying the disk.
+- `--yes, -y` — confirm deletion without an interactive prompt.
+- `--keep-l10n` — do not prune keys from `lib/l10n/*.arb`.
+- `--force-core` — allow removing protected core application features.
+
 ## Runtime commands
 
 ### Evidence

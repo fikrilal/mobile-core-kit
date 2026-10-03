@@ -52,17 +52,18 @@ appId: dev.fikril.mobile.corekit.dev
       text: "^Contact phone$"
 - inputText: ${MAESTRO_TEST_EMAIL}
 - tapOn: "Merchant onboarding (demo)"
+- waitForAnimationToEnd
 - scrollUntilVisible:
     element:
-      text: "^Next$"
+      text: "^Contact phone$"
     direction: DOWN
 - tapOn:
     below:
       text: "^Contact phone$"
-    above:
-      text: "^Next$"
+    index: 0
 - inputText: "+15551234567"
 - tapOn: "Merchant onboarding (demo)"
+- waitForAnimationToEnd
 - tapOn: "Next"
 
 # 2. Owners
@@ -104,7 +105,11 @@ appId: dev.fikril.mobile.corekit.dev
 - inputText: ${MAESTRO_TEST_EMAIL}
 - tapOn: "Merchant onboarding (demo)"
 - waitForAnimationToEnd
-- tapOn: "Next"
+- tapOn:
+    text: "^Next$"
+    rightOf:
+      text: "^Back$"
+
 
 # 3. Settlement
 - extendedWaitUntil:
@@ -126,36 +131,59 @@ appId: dev.fikril.mobile.corekit.dev
       text: "^Account number$"
 - inputText: "Pilot Demo LLC"
 - tapOn: "Merchant onboarding (demo)"
+- waitForAnimationToEnd
 - tapOn:
     below:
       text: "^Account number$"
+    above:
+      text: "^Account holder type$"
 - inputText: "1234567890"
 - tapOn: "Merchant onboarding (demo)"
-- scrollUntilVisible:
-    element:
-      text: "^Payout schedule$"
-    direction: DOWN
+- waitForAnimationToEnd
 - tapOn:
     below:
       text: "^Account holder type$"
     above:
-      text: "^Payout schedule$"
+      text: "^Next$"
 - extendedWaitUntil:
-    visible: "Business"
+    visible: "^Owner$"
     timeout: 5000
-- tapOn: "Business"
-- scrollUntilVisible:
-    element:
-      text: "^Payout schedule$"
-    direction: DOWN
+- tapOn: "^Owner$"
+- extendedWaitUntil:
+    notVisible: "^Business$"
+    timeout: 5000
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "^Owning owner$"
+    commands:
+      - tapOn:
+          below:
+            text: "^Owning owner$"
+          above:
+            text: "^Payout schedule$"
+      - extendedWaitUntil:
+          visible: "^Pilot Owner$"
+          timeout: 5000
+      - tapOn: "^Pilot Owner$"
+      - waitForAnimationToEnd
 - tapOn:
     below:
       text: "^Payout schedule$"
+    above:
+      text: "^Next$"
 - extendedWaitUntil:
-    visible: "Daily"
+    visible: "^Weekly$"
     timeout: 5000
-- tapOn: "Daily"
-- tapOn: "Next"
+- tapOn: "^Weekly$"
+- extendedWaitUntil:
+    notVisible: "^Daily$"
+    timeout: 5000
+- waitForAnimationToEnd
+- tapOn:
+    text: "^Next$"
+    rightOf:
+      text: "^Back$"
 
 # 4. Review & Submit
 - extendedWaitUntil:

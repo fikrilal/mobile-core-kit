@@ -1,0 +1,17 @@
+# Argus Behavioral Oracles Registry
+schemaVersion: 1
+oracles:
+  state.reversibility:
+    kind: state-invariant
+    rule: "Deleting an unpushed local transaction must emit a compensatory stock mutation"
+    covers: [inventory, sales, storage]
+
+  boundary.input-sanitization:
+    kind: validation-contract
+    rule: "Input fields must enforce digit-only filtering and explicit length limits"
+    covers: [forms, ui, validation]
+
+  sync.graceful-empty:
+    kind: resilience-contract
+    rule: "Operational download sync on HTTP 200 OK must fallback to empty list when payload is null"
+    covers: [network, sync, download]

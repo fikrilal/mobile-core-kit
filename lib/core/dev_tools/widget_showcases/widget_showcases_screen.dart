@@ -57,17 +57,20 @@ class WidgetShowcasesScreen extends StatelessWidget {
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.userCircle,
       title: 'Avatar',
-      subtitle: 'AppAvatar',
+      subtitle: 'AppAvatar sizes, fallbacks & states',
+      route: DevToolsRoutes.avatarShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
       title: 'Badge',
-      subtitle: 'AppIconBadge',
+      subtitle: 'AppIconBadge sizes, dot & states',
+      route: DevToolsRoutes.badgeShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
       title: 'Checkbox',
-      subtitle: 'AppCheckbox and AppCheckboxTile',
+      subtitle: 'AppCheckbox & AppCheckboxTile states',
+      route: DevToolsRoutes.checkboxShowcase,
     ),
     _WidgetShowcaseItem(
       icon: PhosphorIconsRegular.cube,
