@@ -2,19 +2,19 @@
 
 **Plan version:** 2
 **Task ID:** feature-teardown-dogfooding
-**Status:** queued
+**Status:** completed
 **Owner:** Ahmad Fikril
-**Risk:** medium
+**Risk:** high
 **Authority:** Dogfood the feature removal engine end-to-end against a scaffolded feature, update developer documentation, and prove full repository verification.
-**Allowed paths:** docs/engineering/harness/mobilekit_cli_reference.md, docs/template/first_use_checklist.md, packages/mobile_core_kit_cli/test/cli/mobilekit_cli_test.dart, docs/exec-plans/active/2026-10-03_feature-teardown-dogfooding-and-docs.md
+**Allowed paths:** docs/engineering/harness/mobilekit_cli_reference.md, docs/template/first_use_checklist.md, packages/mobile_core_kit_cli/test/mobilekit_cli_test.dart, docs/exec-plans/active/2026-10-03_feature-teardown-dogfooding-and-docs.md
 **Allowed actions:** edit, verify
-**Maximum risk:** medium
+**Maximum risk:** high
 **Repair limit:** 3
 **Task timeout:** 90m
 **Oracle IDs:** harness.full
 
 Date: 2026-10-03
-Related issue/PR: [Feature Teardown Proposal](../../_WIP/feature_teardown_engine_proposal.md), [Core Engine Plan](../active/2026-10-03_feature-teardown-engine.md)
+Related issue/PR: [Feature Teardown Proposal](../../_WIP/feature_teardown_engine_proposal.md), [Core Engine Plan](../completed/2026-10-03_feature-teardown-engine.md)
 
 ## Objective
 
@@ -61,11 +61,11 @@ Dogfood and validate the `mobilekit remove feature` command end-to-end in the li
 
 ## Implementation Checklist
 
-- [ ] Add CLI contract and routing tests in `packages/mobile_core_kit_cli/test/cli/mobilekit_cli_test.dart`.
-- [ ] Perform live dogfooding roundtrip (`scaffold` -> `remove` -> `verify`).
-- [ ] Update `docs/engineering/harness/mobilekit_cli_reference.md` with command details.
-- [ ] Update `docs/template/first_use_checklist.md` with demo removal recommendations.
-- [ ] Execute `mobilekit verify --profile full --env dev` to complete verification.
+- [x] Add CLI contract and routing tests in `packages/mobile_core_kit_cli/test/cli/mobilekit_cli_test.dart`.
+- [x] Perform live dogfooding roundtrip (`scaffold` -> `remove` -> `verify`).
+- [x] Update `docs/engineering/harness/mobilekit_cli_reference.md` with command details.
+- [x] Update `docs/template/first_use_checklist.md` with demo removal recommendations.
+- [x] Execute `mobilekit verify --profile full --env dev` to complete verification.
 
 ## Decision Log
 
@@ -93,7 +93,12 @@ Revert documentation changes and remove added integration tests in `packages/mob
 
 ## Completion Notes
 
-To be populated upon completion of Plan 2.
+Plan 2 completed:
+1. Added CLI usage and routing contract tests for `remove` and `remove feature` in `mobilekit_cli_test.dart`.
+2. Performed live dogfooding roundtrip by creating a test feature `temp_dogfood` via `mobilekit scaffold feature`, verifying its registration, removing it with `mobilekit remove feature temp_dogfood --yes`, and verifying the clean state.
+3. Updated `docs/engineering/harness/mobilekit_cli_reference.md` with syntax, options, and safety guard documentation.
+4. Updated `docs/template/first_use_checklist.md` to guide new project cloners on pruning reference demos.
+5. Task verified via `mobilekit task verify --task feature-teardown-dogfooding --env dev`, passing all 672 application tests, 281 CLI tests, custom lints, and duplication profiles.
 
 ## Follow-ups
 

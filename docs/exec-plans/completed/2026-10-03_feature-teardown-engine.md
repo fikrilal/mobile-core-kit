@@ -2,7 +2,7 @@
 
 **Plan version:** 2
 **Task ID:** feature-teardown-engine
-**Status:** active
+**Status:** completed
 **Owner:** Ahmad Fikril
 **Risk:** high
 **Authority:** Implement the core feature teardown and unwiring workflow inside packages/mobile_core_kit_cli along with comprehensive unit and mock-filesystem tests.

@@ -63,7 +63,23 @@ only the values owned by the new project:
 The CLI never accepts credentials, writes ignored runtime environment files,
 or overwrites `google-services.json` and `GoogleService-Info.plist`.
 
-## 4. Generate and verify
+## 4. Remove unneeded demo features (optional)
+
+If the new product does not require the included reference case studies (such as
+the `merchant_onboarding` wizard), completely unwire and delete them:
+
+```bash
+# Preview what would be deleted and unwired
+dart run mobile_core_kit_cli:mobilekit remove feature merchant_onboarding --dry-run
+
+# Apply removal and clean up localization keys
+dart run mobile_core_kit_cli:mobilekit remove feature merchant_onboarding --yes
+```
+
+This cleans feature and navigation folders, tests, router entries, DI modules,
+architecture lints, and matching ARB translation strings automatically.
+
+## 5. Generate and verify
 
 `mobilekit init` runs `flutter pub get`, localization generation, build-config
 generation, and `build_runner` when their inputs are present and valid. It

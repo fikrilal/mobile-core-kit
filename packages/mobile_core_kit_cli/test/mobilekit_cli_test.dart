@@ -31,6 +31,7 @@ void main() {
     expect(output.toString(), contains('evidence'));
     expect(output.toString(), contains('improve'));
     expect(output.toString(), contains('risk'));
+    expect(output.toString(), contains('remove'));
     expect(errors, isEmpty);
   });
 
@@ -90,6 +91,48 @@ void main() {
     );
     expect(errors, isEmpty);
   });
+
+  test('prints remove command help without finding a repository', () async {
+    final output = StringBuffer();
+    final errors = StringBuffer();
+
+    final result = await MobilekitCli(
+      currentDirectory: Directory.systemTemp,
+      output: output,
+      errorOutput: errors,
+    ).run(['remove', '--help']);
+
+    expect(result, 0);
+    expect(
+      output.toString(),
+      contains('Usage: mobilekit remove <subcommand> [options]'),
+    );
+    expect(output.toString(), contains('feature <name>'));
+    expect(errors, isEmpty);
+  });
+
+  test(
+    'prints remove feature command help without finding a repository',
+    () async {
+      final output = StringBuffer();
+      final errors = StringBuffer();
+
+      final result = await MobilekitCli(
+        currentDirectory: Directory.systemTemp,
+        output: output,
+        errorOutput: errors,
+      ).run(['remove', 'feature', '--help']);
+
+      expect(result, 0);
+      expect(
+        output.toString(),
+        contains('Usage: mobilekit remove feature <name> [options]'),
+      );
+      expect(output.toString(), contains('--dry-run'));
+      expect(output.toString(), contains('--force-core'));
+      expect(errors, isEmpty);
+    },
+  );
 
   test('prints risk command help without finding a repository', () async {
     final output = StringBuffer();
