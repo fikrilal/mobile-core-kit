@@ -48,6 +48,12 @@ class RemoveFeatureWorkflow {
         'feature',
         abbr: 'f',
         help: 'Feature name (snake_case), e.g. "merchant_onboarding".',
+      )
+      ..addOption(
+        'subfeature',
+        abbr: 's',
+        help:
+            'Optional subfeature/slice name (e.g. "sign_in", "registration", "password_recovery").',
       );
 
     final args = parser.parse(argv);
@@ -71,6 +77,7 @@ class RemoveFeatureWorkflow {
     final dryRun = args.flag('dry-run');
     final keepL10n = args.flag('keep-l10n');
     final forceCore = args.flag('force-core');
+    final subfeature = (args.option('subfeature') ?? '').trim();
 
     var feature = (args.option('feature') ?? '').trim();
     if (feature.isEmpty && args.rest.isNotEmpty) {
@@ -99,7 +106,9 @@ class RemoveFeatureWorkflow {
       return 2;
     }
 
-    if (protectedCoreFeatures.contains(feature) && !forceCore) {
+    if (protectedCoreFeatures.contains(feature) &&
+        !forceCore &&
+        subfeature.isEmpty) {
       context.errorOutput.writeln(
         'Refusing to remove protected core feature "$feature".',
       );
@@ -107,60 +116,105 @@ class RemoveFeatureWorkflow {
         'Protected features: ${protectedCoreFeatures.join(', ')}.',
       );
       context.errorOutput.writeln(
-        'If you really intend to remove this, pass --force-core.',
+        'If you really intend to remove this entire feature, pass --force-core.',
       );
       return 2;
     }
 
     final rootDir = context.rootDirectory;
-    final featureDir = p.join('lib', 'features', feature);
-    final navDir = p.join('lib', 'navigation', feature);
-    final testFeatureDir = p.join('test', 'features', feature);
-    final testNavDir = p.join('test', 'navigation', feature);
-    final maestroFile = p.join('maestro', '$feature.yaml');
+    final isSubfeature = subfeature.isNotEmpty;
 
     final directoriesToDelete = <String>[];
-    for (final dir in [featureDir, navDir, testFeatureDir, testNavDir]) {
-      if (context.directory(dir).existsSync()) {
-        directoriesToDelete.add(dir);
+    final filesToDelete = <String>[];
+
+    if (isSubfeature) {
+      final subfeatureDir = p.join(
+        'lib',
+        'features',
+        feature,
+        'subfeatures',
+        subfeature,
+      );
+      final testSubfeatureDir = p.join(
+        'test',
+        'features',
+        feature,
+        'subfeatures',
+        subfeature,
+      );
+      final maestroFile = p.join('maestro', '$subfeature.yaml');
+
+      if (context.directory(subfeatureDir).existsSync()) {
+        directoriesToDelete.add(subfeatureDir);
+      }
+      if (context.directory(testSubfeatureDir).existsSync()) {
+        directoriesToDelete.add(testSubfeatureDir);
+      }
+      if (context.file(maestroFile).existsSync()) {
+        filesToDelete.add(maestroFile);
+      }
+
+      if (directoriesToDelete.isEmpty && filesToDelete.isEmpty) {
+        context.errorOutput.writeln(
+          'Subfeature "$subfeature" does not exist under $subfeatureDir.',
+        );
+        return 2;
+      }
+    } else {
+      final featureDir = p.join('lib', 'features', feature);
+      final navDir = p.join('lib', 'navigation', feature);
+      final testFeatureDir = p.join('test', 'features', feature);
+      final testNavDir = p.join('test', 'navigation', feature);
+      final maestroFile = p.join('maestro', '$feature.yaml');
+
+      for (final dir in [featureDir, navDir, testFeatureDir, testNavDir]) {
+        if (context.directory(dir).existsSync()) {
+          directoriesToDelete.add(dir);
+        }
+      }
+
+      if (context.file(maestroFile).existsSync()) {
+        filesToDelete.add(maestroFile);
+      }
+
+      if (directoriesToDelete.isEmpty && filesToDelete.isEmpty) {
+        context.errorOutput.writeln(
+          'Feature "$feature" does not exist under lib/features/$feature.',
+        );
+        return 2;
       }
     }
 
-    final filesToDelete = <String>[];
-    if (context.file(maestroFile).existsSync()) {
-      filesToDelete.add(maestroFile);
-    }
-
-    if (directoriesToDelete.isEmpty && filesToDelete.isEmpty) {
-      context.errorOutput.writeln(
-        'Feature "$feature" does not exist under lib/features/$feature.',
-      );
-      return 2;
-    }
-
     // Inspect unwiring points
-    final unwiringChanges = unwiringEngine.unwireFeature(
-      rootDir,
-      feature: feature,
-      dryRun: true,
-    );
+    final unwiringChanges = isSubfeature
+        ? unwiringEngine.unwireSubfeature(
+            rootDir,
+            feature: feature,
+            subfeature: subfeature,
+            dryRun: true,
+          )
+        : unwiringEngine.unwireFeature(rootDir, feature: feature, dryRun: true);
 
     // Inspect ARB keys
-    final featureCamel = _toCamelCase(feature);
+    final targetPrefix = isSubfeature
+        ? _toCamelCase(subfeature)
+        : _toCamelCase(feature);
     final arbDir = context.directory('lib/l10n');
     final arbResults = keepL10n
         ? const <ArbPruneResult>[]
-        : arbPruner.pruneDirectory(arbDir, prefix: featureCamel, dryRun: true);
+        : arbPruner.pruneDirectory(arbDir, prefix: targetPrefix, dryRun: true);
 
     final totalPrunedKeys = arbResults.fold<int>(
       0,
       (sum, item) => sum + item.prunedKeysCount,
     );
 
+    final targetLabel = isSubfeature
+        ? 'subfeature "$subfeature" from feature "$feature"'
+        : 'feature "$feature"';
+
     if (dryRun) {
-      context.output.writeln(
-        'Dry run: would remove feature "$feature" end-to-end.',
-      );
+      context.output.writeln('Dry run: would remove $targetLabel end-to-end.');
       context.output.writeln('');
       context.output.writeln('Directories to delete:');
       for (final dir in directoriesToDelete) {
@@ -190,7 +244,7 @@ class RemoveFeatureWorkflow {
         context.output.writeln('');
         context.output.writeln('Localization keys to prune:');
         context.output.writeln(
-          '- $totalPrunedKeys keys across ${arbResults.length} ARB files with prefix "$featureCamel"',
+          '- $totalPrunedKeys keys across ${arbResults.length} ARB files with prefix "$targetPrefix"',
         );
       }
 
@@ -200,7 +254,16 @@ class RemoveFeatureWorkflow {
     }
 
     // Execute unwiring
-    unwiringEngine.unwireFeature(rootDir, feature: feature, dryRun: false);
+    if (isSubfeature) {
+      unwiringEngine.unwireSubfeature(
+        rootDir,
+        feature: feature,
+        subfeature: subfeature,
+        dryRun: false,
+      );
+    } else {
+      unwiringEngine.unwireFeature(rootDir, feature: feature, dryRun: false);
+    }
 
     // Execute directory and file deletions
     for (final file in filesToDelete) {
@@ -212,10 +275,10 @@ class RemoveFeatureWorkflow {
 
     // Execute ARB pruning
     if (!keepL10n && arbResults.isNotEmpty) {
-      arbPruner.pruneDirectory(arbDir, prefix: featureCamel, dryRun: false);
+      arbPruner.pruneDirectory(arbDir, prefix: targetPrefix, dryRun: false);
     }
 
-    context.output.writeln('Successfully removed feature "$feature".');
+    context.output.writeln('Successfully removed $targetLabel.');
     context.output.writeln('');
     context.output.writeln('Deleted:');
     for (final dir in directoriesToDelete) {
@@ -238,7 +301,7 @@ class RemoveFeatureWorkflow {
     if (!keepL10n && totalPrunedKeys > 0) {
       context.output.writeln('');
       context.output.writeln(
-        'Pruned $totalPrunedKeys localization keys prefixed with "$featureCamel".',
+        'Pruned $totalPrunedKeys localization keys prefixed with "$targetPrefix".',
       );
     }
 

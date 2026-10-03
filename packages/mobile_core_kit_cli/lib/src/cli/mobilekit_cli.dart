@@ -502,7 +502,8 @@ class MobilekitCli {
       ..addFlag('dry-run', abbr: 'n', negatable: false)
       ..addFlag('yes', abbr: 'y', negatable: false)
       ..addFlag('keep-l10n', negatable: false)
-      ..addFlag('force-core', negatable: false);
+      ..addFlag('force-core', negatable: false)
+      ..addOption('subfeature', abbr: 's');
 
     ArgResults parsed;
     try {
@@ -527,6 +528,10 @@ class MobilekitCli {
     }
 
     final workflowArguments = <String>['--feature', parsed.rest.single];
+    final subfeature = parsed.option('subfeature');
+    if (subfeature != null && subfeature.trim().isNotEmpty) {
+      workflowArguments.addAll(['--subfeature', subfeature.trim()]);
+    }
     if (parsed.flag('dry-run')) {
       workflowArguments.add('--dry-run');
     }
@@ -829,10 +834,21 @@ class MobilekitCli {
     output.writeln('Usage: mobilekit remove feature <name> [options]');
     output.writeln();
     output.writeln('Options:');
-    output.writeln('  --dry-run, -n  Preview changes without modifying disk.');
-    output.writeln('  --yes, -y      Confirm deletion without prompt.');
-    output.writeln('  --keep-l10n    Do not prune keys from lib/l10n/*.arb.');
-    output.writeln('  --force-core   Allow removing protected core features.');
+    output.writeln(
+      '  --subfeature, -s <name>  Optional subfeature/slice name.',
+    );
+    output.writeln(
+      '  --dry-run, -n            Preview changes without modifying disk.',
+    );
+    output.writeln(
+      '  --yes, -y                Confirm deletion without prompt.',
+    );
+    output.writeln(
+      '  --keep-l10n              Do not prune keys from lib/l10n/*.arb.',
+    );
+    output.writeln(
+      '  --force-core             Allow removing protected core features.',
+    );
   }
 
   void _writeDuplicationUsage(StringSink output) {

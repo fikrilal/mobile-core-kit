@@ -22,6 +22,138 @@ class UnwiringChange {
 class FeatureUnwiringEngine {
   const FeatureUnwiringEngine();
 
+  /// Inspects or modifies registration points for a specific [subfeature] of [feature].
+  List<UnwiringChange> unwireSubfeature(
+    Directory rootDirectory, {
+    required String feature,
+    required String subfeature,
+    bool dryRun = false,
+  }) {
+    final changes = <UnwiringChange>[];
+
+    // 1. Feature module DI (e.g. lib/features/auth/di/auth_module.dart)
+    final moduleFile = File(
+      '${rootDirectory.path}/lib/features/$feature/di/${feature}_module.dart',
+    );
+    if (moduleFile.existsSync()) {
+      changes.add(
+        _unwireSubfeatureDi(
+          moduleFile,
+          feature: feature,
+          subfeature: subfeature,
+          dryRun: dryRun,
+        ),
+      );
+    }
+
+    // 2. Navigation routes list (e.g. lib/navigation/auth/auth_routes_list.dart)
+    final navFile = File(
+      '${rootDirectory.path}/lib/navigation/$feature/${feature}_routes_list.dart',
+    );
+    if (navFile.existsSync()) {
+      changes.add(
+        _unwireSubfeatureNav(
+          navFile,
+          feature: feature,
+          subfeature: subfeature,
+          dryRun: dryRun,
+        ),
+      );
+    }
+
+    // 3. Maestro flow
+    final maestroFile = File('${rootDirectory.path}/maestro/$subfeature.yaml');
+    if (maestroFile.existsSync()) {
+      changes.add(_unwireLiveTest(maestroFile, dryRun: dryRun));
+    }
+
+    return changes;
+  }
+
+  UnwiringChange _unwireSubfeatureDi(
+    File file, {
+    required String feature,
+    required String subfeature,
+    required bool dryRun,
+  }) {
+    final content = file.readAsStringSync();
+    final subfeaturePascal = _toPascalCase(subfeature);
+
+    // Remove imports referencing subfeature
+    final importRegex = RegExp(
+      '^import\\s+[\'"][^\'"]*features/' +
+          RegExp.escape(feature) +
+          '/subfeatures/' +
+          RegExp.escape(subfeature) +
+          '/[^\'"]*[\'"];\\r?\\n',
+      multiLine: true,
+    );
+
+    // Remove cubit/state registration blocks
+    final cubitRegex = RegExp(
+      r'^\s*if\s*\(!getIt\.isRegistered<[^\>]*' +
+          RegExp.escape(subfeaturePascal) +
+          r'[^\>]*>\(\)\)\s*\{\s*getIt\.registerFactory<[^\>]*>\(\s*\(\)\s*=>\s*[a-zA-Z0-9_]+\([^\)]*\),\s*\);\s*\}\r?\n',
+      multiLine: true,
+    );
+
+    var updated = content.replaceAll(importRegex, '');
+    updated = updated.replaceAll(cubitRegex, '');
+
+    final hasChanges = updated != content;
+    if (hasChanges && !dryRun) {
+      file.writeAsStringSync(updated);
+    }
+
+    return UnwiringChange(
+      filePath: file.path,
+      description: 'Remove DI registration for subfeature "$subfeature"',
+      hasChanges: hasChanges,
+    );
+  }
+
+  UnwiringChange _unwireSubfeatureNav(
+    File file, {
+    required String feature,
+    required bool dryRun,
+    required String subfeature,
+  }) {
+    final content = file.readAsStringSync();
+    final subfeaturePascal = _toPascalCase(subfeature);
+
+    // Remove imports referencing subfeature
+    final importRegex = RegExp(
+      '^import\\s+[\'"][^\'"]*features/' +
+          RegExp.escape(feature) +
+          '/subfeatures/' +
+          RegExp.escape(subfeature) +
+          '/[^\'"]*[\'"];\\r?\\n',
+      multiLine: true,
+    );
+
+    // Remove GoRoute block referencing this subfeature
+    final goRouteRegex = RegExp(
+      r'^\s*GoRoute\(\s*(?:(?!GoRoute\()[\s\S])*?' +
+          RegExp.escape(subfeaturePascal) +
+          r'(?:Page|Cubit)[\s\S]*?\),\r?\n',
+      multiLine: true,
+    );
+
+    var updated = content.replaceAll(importRegex, '');
+    updated = updated.replaceAll(goRouteRegex, '');
+
+    final hasChanges = updated != content;
+    if (hasChanges && !dryRun) {
+      file.writeAsStringSync(updated);
+    }
+
+    return UnwiringChange(
+      filePath: file.path,
+      description: 'Remove GoRoute entry for subfeature "$subfeature"',
+      hasChanges: hasChanges,
+    );
+  }
+
   /// Inspects or modifies all known registration points for [feature] (snake_case).
   ///
   /// If [dryRun] is true, files are read but not modified on disk.
@@ -75,6 +207,34 @@ class FeatureUnwiringEngine {
     if (oraclesFile.existsSync()) {
       changes.add(
         _unwireOracles(oraclesFile, feature: feature, dryRun: dryRun),
+      );
+    }
+
+    // 6. registrars_smoke_test.dart
+    final smokeTestFile = File(
+      '${rootDirectory.path}/test/core/di/registrars/registrars_smoke_test.dart',
+    );
+    if (smokeTestFile.existsSync()) {
+      changes.add(
+        _unwireSmokeTest(smokeTestFile, feature: feature, dryRun: dryRun),
+      );
+    }
+
+    // 7. Live integration test file (if exists, e.g. integration_test/<feature>_live_test.dart)
+    final liveTestFile = File(
+      '${rootDirectory.path}/integration_test/${feature}_live_test.dart',
+    );
+    if (liveTestFile.existsSync()) {
+      changes.add(_unwireLiveTest(liveTestFile, dryRun: dryRun));
+    }
+
+    // 8. home_page_test.dart
+    final homePageTestFile = File(
+      '${rootDirectory.path}/test/features/home/home_page_test.dart',
+    );
+    if (homePageTestFile.existsSync()) {
+      changes.add(
+        _unwireHomePageTest(homePageTestFile, feature: feature, dryRun: dryRun),
       );
     }
 
@@ -270,6 +430,94 @@ class FeatureUnwiringEngine {
     return UnwiringChange(
       filePath: file.path,
       description: 'Remove behavioral oracle registration',
+      hasChanges: hasChanges,
+    );
+  }
+
+  UnwiringChange _unwireLiveTest(File file, {required bool dryRun}) {
+    final hasFile = file.existsSync();
+    if (!dryRun && hasFile) {
+      file.deleteSync();
+    }
+
+    return UnwiringChange(
+      filePath: file.path,
+      description: 'Delete integration test file',
+      hasChanges: hasFile,
+    );
+  }
+
+  UnwiringChange _unwireSmokeTest(
+    File file, {
+    required String feature,
+    required bool dryRun,
+  }) {
+    final content = file.readAsStringSync();
+    final featurePascal = _toPascalCase(feature);
+
+    final importRegex = RegExp(
+      '^import\\s+[\'"][^\'"]*features/' +
+          RegExp.escape(feature) +
+          '/[^\'"]*[\'"];\\r?\\n',
+      multiLine: true,
+    );
+
+    final expectRegex = RegExp(
+      r'^\s*expect\(locator\.isRegistered<[^\>]*' +
+          RegExp.escape(featurePascal) +
+          r'[^\>]*>\(\),\s*isTrue\);\r?\n',
+      multiLine: true,
+    );
+
+    var updated = content.replaceAll(importRegex, '');
+    updated = updated.replaceAll(expectRegex, '');
+
+    final hasChanges = updated != content;
+    if (hasChanges && !dryRun) {
+      file.writeAsStringSync(updated);
+    }
+
+    return UnwiringChange(
+      filePath: file.path,
+      description: 'Remove DI smoke test assertions and imports',
+      hasChanges: hasChanges,
+    );
+  }
+
+  UnwiringChange _unwireHomePageTest(
+    File file, {
+    required String feature,
+    required bool dryRun,
+  }) {
+    final content = file.readAsStringSync();
+
+    final featureCamel = _toCamelCase(feature);
+    final expectRegex = RegExp(
+      r'^\s*expect\(find\.text\([^\)]*' +
+          RegExp.escape(featureCamel) +
+          r'[^\)]*\),\s*findsOneWidget\);\r?\n',
+      multiLine: true,
+      caseSensitive: false,
+    );
+    final literalExpectRegex = RegExp(
+      r'^\s*expect\(find\.text\([^\)]*merchant[^\)]*\),\s*findsOneWidget\);\r?\n',
+      multiLine: true,
+      caseSensitive: false,
+    );
+
+    var updated = content.replaceAll(expectRegex, '');
+    if (feature == 'merchant_onboarding') {
+      updated = updated.replaceAll(literalExpectRegex, '');
+    }
+
+    final hasChanges = updated != content;
+    if (hasChanges && !dryRun) {
+      file.writeAsStringSync(updated);
+    }
+
+    return UnwiringChange(
+      filePath: file.path,
+      description: 'Remove HomePage test assertion for "$feature"',
       hasChanges: hasChanges,
     );
   }
